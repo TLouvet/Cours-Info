@@ -44,11 +44,11 @@ export default function Sidebar() {
   const sidebarContent = (
     <div className="flex flex-col h-full">
       {/* Progress Bar */}
-      <div className="p-4 border-b border-gray-200 dark:border-gray-700">
-        <div className="text-sm text-gray-600 dark:text-gray-400 mb-2">
+      <div className="p-4 border-b border-gray-700">
+        <div className="text-sm text-gray-400 mb-2">
           Progression globale
         </div>
-        <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2">
+        <div className="w-full bg-gray-700 rounded-full h-2">
           <div
             className="bg-cyan-500 h-2 rounded-full transition-all duration-300"
             style={{
@@ -62,7 +62,7 @@ export default function Sidebar() {
             }}
           />
         </div>
-        <div className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+        <div className="text-xs text-gray-400 mt-1">
           {completedSections.length} /{' '}
           {navigation.reduce((acc, session) => acc + (session.sections?.length || 0), 0)} sections
         </div>
@@ -75,7 +75,7 @@ export default function Sidebar() {
             <div key={session.id}>
               <button
                 onClick={() => toggleSession(session.id)}
-                className="w-full flex items-center justify-between px-3 py-2 text-sm font-medium rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+                className="w-full flex items-center justify-between px-3 py-2 text-sm font-medium rounded-lg hover:bg-gray-800 transition-colors"
               >
                 <div className="flex items-center gap-2">
                   {expandedSessions.includes(session.id) ? (
@@ -98,8 +98,8 @@ export default function Sidebar() {
                       href={section.href}
                       className={`group flex items-center gap-2 px-3 py-2 text-sm rounded-lg transition-colors ${
                         isActive(section.href)
-                          ? 'bg-cyan-50 dark:bg-cyan-900/20 text-cyan-700 dark:text-cyan-400'
-                          : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800'
+                          ? 'bg-cyan-900/20 text-cyan-400'
+                          : 'text-gray-300 hover:bg-gray-800'
                       }`}
                       onClick={() => setIsOpen(false)}
                     >
@@ -108,7 +108,7 @@ export default function Sidebar() {
                         className={`flex-shrink-0 w-5 h-5 rounded border-2 flex items-center justify-center transition-colors ${
                           completedSections.includes(section.id)
                             ? 'bg-cyan-500 border-cyan-500'
-                            : 'border-gray-300 dark:border-gray-600 hover:border-cyan-500'
+                            : 'border-gray-600 hover:border-cyan-500'
                         }`}
                       >
                         {completedSections.includes(section.id) && (
@@ -126,10 +126,10 @@ export default function Sidebar() {
       </nav>
 
       {/* Resources Link */}
-      <div className="p-4 border-t border-gray-200 dark:border-gray-700">
+      <div className="p-4 border-t border-gray-700">
         <Link
           href="/resources"
-          className="block px-3 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+          className="block px-3 py-2 text-sm font-medium text-gray-300 rounded-lg hover:bg-gray-800 transition-colors"
           onClick={() => setIsOpen(false)}
         >
           📚 Ressources

@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
-import { ThemeProvider } from "@/components/layout/ThemeProvider";
 import Sidebar from "@/components/layout/Sidebar";
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
@@ -30,34 +29,30 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="fr" suppressHydrationWarning>
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased bg-white dark:bg-gray-900`}
-      >
-        <ThemeProvider>
-          <ReadingProgressBar />
-          <ScrollToTop />
-          <div className="flex min-h-screen">
-            {/* Sidebar */}
-            <Sidebar />
+    <html lang="fr" className="dark">
+      <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
+        <ReadingProgressBar />
+        <ScrollToTop />
+        <div className="flex min-h-screen">
+          {/* Sidebar */}
+          <Sidebar />
 
-            {/* Main Content Area */}
-            <div className="flex-1 flex flex-col">
-              {/* Header */}
-              <Header />
+          {/* Main Content Area */}
+          <div className="flex-1 flex flex-col">
+            {/* Header */}
+            <Header />
 
-              {/* Page Content */}
-              <main className="flex-1 p-4 sm:p-6 lg:p-8 xl:pr-80">
-                <div className="max-w-4xl mx-auto">
-                  {children}
-                </div>
-              </main>
+            {/* Page Content */}
+            <main className="flex-1 p-4 sm:p-6 lg:p-8 xl:pr-80">
+              <div className="max-w-4xl mx-auto">
+                {children}
+              </div>
+            </main>
 
-              {/* Footer */}
-              <Footer />
-            </div>
+            {/* Footer */}
+            <Footer />
           </div>
-        </ThemeProvider>
+        </div>
       </body>
     </html>
   );

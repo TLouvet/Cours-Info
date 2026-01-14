@@ -1,0 +1,412 @@
+# Introduction à TypeScript
+
+**TypeScript = JavaScript + Types**
+
+TypeScript est un sur-ensemble de JavaScript qui ajoute des types statiques. Tout code JavaScript valide est du TypeScript valide.
+
+<Callout type="info" title="Pourquoi TypeScript ?">
+- **Détection d'erreurs** : Les erreurs sont détectées avant l'exécution
+- **Autocomplétion** : Votre éditeur vous aide mieux
+- **Documentation** : Les types servent de documentation
+- **Refactoring** : Plus facile de modifier du code
+- **Utilisé partout** : Standard dans l'industrie (React, Next.js, etc.)
+</Callout>
+
+## JavaScript vs TypeScript
+
+### Exemple JavaScript (sans types)
+
+```javascript
+function greet(name) {
+  return `Hello ${name}!`;
+}
+
+greet('Alice');     // OK
+greet(42);          // OK mais bizarre
+greet();            // OK mais name sera undefined
+```
+
+**Problème** : JavaScript accepte tout sans se plaindre, les erreurs arrivent à l'exécution.
+
+### Même exemple en TypeScript
+
+```typescript
+function greet(name: string): string {
+  return `Hello ${name}!`;
+}
+
+greet('Alice');     // ✅ OK
+greet(42);          // ❌ Erreur: number n'est pas string
+greet();            // ❌ Erreur: argument manquant
+```
+
+**Avantage** : TypeScript détecte les erreurs **avant** d'exécuter le code.
+
+## Types de base
+
+### Variables typées
+
+```typescript
+// Type explicite
+const name: string = 'Alice';
+const age: number = 25;
+const isStudent: boolean = true;
+
+// Type inféré (TypeScript devine le type)
+const name = 'Alice';        // TypeScript sait que c'est un string
+const age = 25;              // TypeScript sait que c'est un number
+const isStudent = true;      // TypeScript sait que c'est un boolean
+```
+
+<Callout type="tip">
+**Type inference** : TypeScript devine souvent les types tout seul. Pas besoin de tout annoter !
+</Callout>
+
+### Tableaux
+
+```typescript
+// Tableau de nombres
+const numbers: number[] = [1, 2, 3, 4, 5];
+
+// Tableau de strings
+const names: string[] = ['Alice', 'Bob', 'Charlie'];
+
+// Syntaxe alternative (même chose)
+const numbers: Array<number> = [1, 2, 3, 4, 5];
+```
+
+### Objets
+
+```typescript
+// Définir la structure d'un objet
+const user: { name: string; age: number } = {
+  name: 'Alice',
+  age: 25
+};
+
+// Ou avec une interface (plus lisible)
+interface User {
+  name: string;
+  age: number;
+  email?: string;  // ? signifie optionnel
+}
+
+const user: User = {
+  name: 'Alice',
+  age: 25
+  // email est optionnel, pas obligé de le mettre
+};
+```
+
+## Fonctions
+
+### Typer les paramètres et le retour
+
+```typescript
+// Sans types (JavaScript)
+function add(a, b) {
+  return a + b;
+}
+
+// Avec types (TypeScript)
+function add(a: number, b: number): number {
+  return a + b;
+}
+
+add(2, 3);        // ✅ OK: 5
+add('2', '3');    // ❌ Erreur: string n'est pas number
+```
+
+### Arrow functions
+
+```typescript
+// Fonction fléchée typée
+const multiply = (a: number, b: number): number => {
+  return a * b;
+};
+
+// Avec return implicite
+const multiply = (a: number, b: number): number => a * b;
+
+// TypeScript peut inférer le type de retour
+const multiply = (a: number, b: number) => a * b;  // retour: number (inféré)
+```
+
+### Paramètres optionnels
+
+```typescript
+function greet(name: string, greeting?: string): string {
+  if (greeting) {
+    return `${greeting}, ${name}!`;
+  }
+  return `Hello, ${name}!`;
+}
+
+greet('Alice');              // "Hello, Alice!"
+greet('Bob', 'Bonjour');     // "Bonjour, Bob!"
+```
+
+### Valeurs par défaut
+
+```typescript
+function greet(name: string, greeting: string = 'Hello'): string {
+  return `${greeting}, ${name}!`;
+}
+
+greet('Alice');              // "Hello, Alice!"
+greet('Bob', 'Hi');          // "Hi, Bob!"
+```
+
+## Types spéciaux
+
+### any (éviter !)
+
+```typescript
+let value: any = 'hello';
+value = 42;           // OK
+value = true;         // OK
+value = [1, 2, 3];    // OK
+```
+
+<Callout type="warning">
+**Évitez `any` !** Il désactive complètement TypeScript. Utilisez-le seulement si vraiment nécessaire.
+</Callout>
+
+### Union types
+
+```typescript
+// Variable qui peut être string OU number
+let id: string | number;
+
+id = '123';     // ✅ OK
+id = 123;       // ✅ OK
+id = true;      // ❌ Erreur
+
+// Utile pour les fonctions
+function printId(id: string | number) {
+  console.log(`ID: ${id}`);
+}
+
+printId('ABC123');  // OK
+printId(456);       // OK
+```
+
+### Type literal
+
+```typescript
+// Variable qui ne peut avoir que certaines valeurs
+let status: 'pending' | 'success' | 'error';
+
+status = 'pending';   // ✅ OK
+status = 'success';   // ✅ OK
+status = 'loading';   // ❌ Erreur: pas dans les valeurs autorisées
+```
+
+## Interfaces vs Types
+
+Deux façons de définir des structures :
+
+### Interface
+
+```typescript
+interface User {
+  name: string;
+  age: number;
+  email?: string;
+}
+
+const user: User = {
+  name: 'Alice',
+  age: 25
+};
+```
+
+### Type Alias
+
+```typescript
+type User = {
+  name: string;
+  age: number;
+  email?: string;
+};
+
+const user: User = {
+  name: 'Alice',
+  age: 25
+};
+```
+
+<Callout type="info">
+**Interface vs Type** : Pour les objets simples, les deux fonctionnent. Les interfaces sont plus extensibles, les types plus flexibles. Dans la plupart des cas, utilisez ce que vous préférez !
+</Callout>
+
+## Exemples pratiques
+
+### Tableau d'objets typé
+
+```typescript
+interface Student {
+  id: number;
+  name: string;
+  grade: number;
+}
+
+const students: Student[] = [
+  { id: 1, name: 'Alice', grade: 15 },
+  { id: 2, name: 'Bob', grade: 12 },
+  { id: 3, name: 'Charlie', grade: 18 }
+];
+
+// TypeScript aide avec l'autocomplétion !
+const names = students.map(s => s.name);  // TypeScript sait que s est un Student
+const passed = students.filter(s => s.grade >= 12);
+```
+
+### Fonctions avec objets typés
+
+```typescript
+interface Product {
+  id: number;
+  name: string;
+  price: number;
+}
+
+function calculateTotal(products: Product[]): number {
+  return products.reduce((sum, p) => sum + p.price, 0);
+}
+
+const cart: Product[] = [
+  { id: 1, name: 'Laptop', price: 1000 },
+  { id: 2, name: 'Mouse', price: 25 }
+];
+
+const total = calculateTotal(cart);  // 1025
+```
+
+## TypeScript avec React (aperçu)
+
+Vous verrez TypeScript en action dans la Séance 2 avec React :
+
+```typescript
+// Props typées
+interface ButtonProps {
+  text: string;
+  onClick: () => void;
+  disabled?: boolean;
+}
+
+function Button({ text, onClick, disabled = false }: ButtonProps) {
+  return (
+    <button onClick={onClick} disabled={disabled}>
+      {text}
+    </button>
+  );
+}
+
+// Utilisation avec autocomplétion complète !
+<Button text="Click me" onClick={() => alert('Clicked!')} />
+```
+
+## Compiler TypeScript
+
+TypeScript ne s'exécute pas directement dans le navigateur. Il doit être **compilé** en JavaScript.
+
+```bash
+# Installer TypeScript
+npm install -g typescript
+
+# Compiler un fichier .ts en .js
+tsc mon-fichier.ts
+
+# Résultat: mon-fichier.js (JavaScript standard)
+```
+
+<Callout type="success">
+**Avec React/Next.js** : La compilation est automatique ! Vous écrivez en TypeScript, le framework s'occupe du reste.
+</Callout>
+
+## Configuration TypeScript
+
+Un fichier `tsconfig.json` configure TypeScript :
+
+```json
+{
+  "compilerOptions": {
+    "target": "ES6",
+    "module": "commonjs",
+    "strict": true,
+    "esModuleInterop": true
+  }
+}
+```
+
+**Avec Next.js/React** : Ce fichier est généré automatiquement, vous n'avez rien à faire !
+
+## Pourquoi l'apprendre maintenant ?
+
+<div className="my-6 grid grid-cols-1 md:grid-cols-2 gap-4">
+  <div className="p-4 bg-green-900/20 border border-green-800 rounded-lg">
+    <h3 className="font-semibold text-green-100 mb-2">✅ Avantages</h3>
+    <ul className="text-sm text-gray-300 space-y-1">
+      <li>Erreurs détectées immédiatement</li>
+      <li>Autocomplétion puissante</li>
+      <li>Code plus robuste</li>
+      <li>Refactoring facile</li>
+      <li>Standard de l'industrie</li>
+    </ul>
+  </div>
+
+  <div className="p-4 bg-blue-900/20 border border-blue-800 rounded-lg">
+    <h3 className="font-semibold text-blue-100 mb-2">📚 En pratique</h3>
+    <ul className="text-sm text-gray-300 space-y-1">
+      <li>React utilise TypeScript</li>
+      <li>Next.js supporte TypeScript</li>
+      <li>VSCode excellent support</li>
+      <li>Documentation vivante</li>
+      <li>Meilleure collaboration</li>
+    </ul>
+  </div>
+</div>
+
+## À retenir
+
+<Callout type="success" title="Les essentiels TypeScript">
+1. **Types de base** : `string`, `number`, `boolean`, `array`
+2. **Interfaces** : Définir la structure des objets
+3. **Typer les fonctions** : Paramètres et retour
+4. **Type inference** : TypeScript devine souvent tout seul
+5. **Union types** : `string | number` pour plusieurs types possibles
+
+**En Séance 2**, vous verrez TypeScript en action avec React !
+</Callout>
+
+## Prochaine étape
+
+<Callout type="tip">
+**Ne vous inquiétez pas !**
+
+Vous n'avez pas besoin de mémoriser toute la syntaxe TypeScript maintenant. En Séance 2, nous l'utiliserons naturellement avec React, et vous verrez à quel point c'est utile dans un vrai projet.
+
+L'essentiel : comprendre que TypeScript = JavaScript + types pour vous aider.
+</Callout>
+
+<Resources resources={[
+  {
+    title: "TypeScript Handbook",
+    description: "Documentation officielle TypeScript",
+    url: "https://www.typescriptlang.org/docs/handbook/intro.html",
+    type: "doc"
+  },
+  {
+    title: "TypeScript for JavaScript Programmers",
+    description: "Guide rapide pour passer de JS à TS",
+    url: "https://www.typescriptlang.org/docs/handbook/typescript-in-5-minutes.html",
+    type: "tutorial"
+  },
+  {
+    title: "TypeScript Playground",
+    description: "Testez TypeScript en ligne",
+    url: "https://www.typescriptlang.org/play",
+    type: "tutorial"
+  }
+]} />

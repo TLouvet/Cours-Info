@@ -10,33 +10,33 @@ interface CalloutProps {
 
 const calloutStyles = {
   info: {
-    container: 'bg-blue-50 dark:bg-blue-900/20 border-blue-200 dark:border-blue-800',
-    icon: 'text-blue-600 dark:text-blue-400',
-    title: 'text-blue-900 dark:text-blue-100',
+    container: 'bg-blue-900/20 border-blue-800',
+    icon: 'text-blue-400',
+    title: 'text-blue-100',
     Icon: FiInfo,
   },
   warning: {
-    container: 'bg-yellow-50 dark:bg-yellow-900/20 border-yellow-200 dark:border-yellow-800',
-    icon: 'text-yellow-600 dark:text-yellow-400',
-    title: 'text-yellow-900 dark:text-yellow-100',
+    container: 'bg-yellow-900/20 border-yellow-800',
+    icon: 'text-yellow-400',
+    title: 'text-yellow-100',
     Icon: FiAlertTriangle,
   },
   success: {
-    container: 'bg-green-50 dark:bg-green-900/20 border-green-200 dark:border-green-800',
-    icon: 'text-green-600 dark:text-green-400',
-    title: 'text-green-900 dark:text-green-100',
+    container: 'bg-green-900/20 border-green-800',
+    icon: 'text-green-400',
+    title: 'text-green-100',
     Icon: FiCheckCircle,
   },
   error: {
-    container: 'bg-red-50 dark:bg-red-900/20 border-red-200 dark:border-red-800',
-    icon: 'text-red-600 dark:text-red-400',
-    title: 'text-red-900 dark:text-red-100',
+    container: 'bg-red-900/20 border-red-800',
+    icon: 'text-red-400',
+    title: 'text-red-100',
     Icon: FiAlertCircle,
   },
   tip: {
-    container: 'bg-cyan-50 dark:bg-cyan-900/20 border-cyan-200 dark:border-cyan-800',
-    icon: 'text-cyan-600 dark:text-cyan-400',
-    title: 'text-cyan-900 dark:text-cyan-100',
+    container: 'bg-cyan-900/20 border-cyan-800',
+    icon: 'text-cyan-400',
+    title: 'text-cyan-100',
     Icon: FiZap,
   },
 };
@@ -63,7 +63,7 @@ export default function Callout({ type = 'info', title, children }: CalloutProps
               {title || defaultTitles[type]}
             </h4>
           )}
-          <div className="text-sm text-gray-700 dark:text-gray-300 prose prose-sm max-w-none">
+          <div className="text-sm text-gray-300 prose prose-sm max-w-none">
             {children}
           </div>
         </div>

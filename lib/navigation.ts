@@ -31,7 +31,7 @@ export const navigation: NavSession[] = [
       { id: 'spread', title: 'Spread Operator', href: '/seance-1/spread' },
       { id: 'modules', title: 'Modules ES6', href: '/seance-1/modules' },
       { id: 'async', title: 'Asynchrone', href: '/seance-1/async' },
-      { id: 'ai-collaboration', title: 'Collaborer avec l\'IA', href: '/seance-1/ai-collaboration' },
+      { id: 'ai-collaboration', title: "Collaborer avec l'IA", href: '/seance-1/ai-collaboration' },
       { id: 'conclusion', title: 'Conclusion', href: '/seance-1/conclusion' },
       { id: 'exercises', title: 'Exercices', href: '/seance-1/exercises' },
       { id: 'quiz', title: 'Quiz de validation', href: '/seance-1/quiz' },

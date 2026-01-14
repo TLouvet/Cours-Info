@@ -3,7 +3,7 @@
 Testez vos connaissances sur les fondamentaux JavaScript ! Ce quiz couvre tous les concepts vus durant la Séance 1.
 
 <Callout type="info" title="À propos de ce quiz">
-- **15 questions** couvrant tous les sujets de la Séance 1
+- **18 questions** couvrant tous les sujets de la Séance 1
 - Réponses avec explications détaillées
 - Validez votre compréhension avant de passer à React
 - Aucune note n'est enregistrée, c'est pour votre apprentissage !
@@ -191,10 +191,48 @@ Testez vos connaissances sur les fondamentaux JavaScript ! Ce quiz couvre tous l
   explanation="Les exports nommés s'importent avec des accolades : import { nom } from 'module'"
 />
 
+## TypeScript
+
+<QuickCheck
+  question="15. Quelle est la différence principale entre JavaScript et TypeScript ?"
+  options={[
+    "TypeScript ajoute des types statiques à JavaScript",
+    "TypeScript est plus rapide que JavaScript",
+    "TypeScript remplace JavaScript complètement",
+    "TypeScript ne fonctionne que dans Node.js"
+  ]}
+  correctAnswer={0}
+  explanation="TypeScript = JavaScript + types. Il ajoute un système de types statiques qui détecte les erreurs avant l'exécution."
+/>
+
+<QuickCheck
+  question="16. Comment typer les paramètres d'une fonction en TypeScript ?"
+  options={[
+    "function add(a: number, b: number): number",
+    "function add(a number, b number) number",
+    "function add<number>(a, b): number",
+    "function add(a, b): number, number"
+  ]}
+  correctAnswer={0}
+  explanation="En TypeScript, on type les paramètres avec parametre: type et le retour avec ): type après les parenthèses."
+/>
+
+<QuickCheck
+  question="17. Que signifie le ? dans une interface TypeScript ?"
+  options={[
+    "La propriété est optionnelle",
+    "La propriété est un booléen",
+    "La propriété peut être nulle",
+    "La propriété est en lecture seule"
+  ]}
+  correctAnswer={0}
+  explanation="Le ? indique qu'une propriété est optionnelle : email?: string signifie que email peut ne pas être fourni."
+/>
+
 ## Collaboration avec l'IA
 
 <QuickCheck
-  question="15. Pourquoi est-il important de connaître JavaScript avant d'utiliser l'IA ?"
+  question="18. Pourquoi est-il important de connaître JavaScript avant d'utiliser l'IA ?"
   options={[
     "Pour valider et comprendre le code généré",
     "L'IA ne peut pas générer de code JavaScript",
@@ -210,9 +248,9 @@ Testez vos connaissances sur les fondamentaux JavaScript ! Ce quiz couvre tous l
 ## Résultats
 
 <Callout type="success" title="Félicitations !">
-Si vous avez répondu correctement à la plupart des questions, vous êtes prêt(e) pour la **Séance 2 - Introduction à React** !
+Si vous avez répondu correctement à la plupart des questions, vous êtes prêt(e) pour la **Séance 2 - Introduction à React avec TypeScript** !
 
-**Score cible :** Au moins 12/15 pour passer confortablement à React.
+**Score cible :** Au moins 15/18 pour passer confortablement à React.
 </Callout>
 
 <Callout type="warning" title="Besoin de réviser ?">
@@ -225,6 +263,7 @@ Si vous avez eu des difficultés avec certaines questions, prenez le temps de r�
 - **Destructuration** → [Destructuration](/seance-1/destructuring)
 - **Spread Operator** → [Spread Operator](/seance-1/spread)
 - **Modules** → [Modules ES6](/seance-1/modules)
+- **TypeScript** → [Introduction à TypeScript](/seance-1/typescript-intro)
 - **IA** → [Collaborer avec l'IA](/seance-1/ai-collaboration)
 </Callout>
 

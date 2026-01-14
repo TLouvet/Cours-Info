@@ -424,18 +424,96 @@ console.log(processUsers(users));`}</CodeBlock>
 - Pas de valeur par défaut pour le paramètre
 </Exercise>
 
-## Pour la suite : React
+## Collaboration avec l'IA et TypeScript
 
-<Callout type="tip" title="Séance 2 - React">
-À la **Séance 2**, vous apprendrez React. Toutes ces compétences JavaScript seront directement utilisées :
+Maintenant que vous connaissez les bases de TypeScript, vous pouvez demander à l'IA de générer du code typé !
+
+### ✅ Prompts incluant TypeScript
+
+```
+"Crée une interface User avec name (string) et age (number),
+puis une fonction filterAdults qui prend un tableau de User
+et retourne uniquement ceux qui ont age >= 18"
+```
+
+**L'IA générera** :
+```typescript
+interface User {
+  name: string;
+  age: number;
+}
+
+const filterAdults = (users: User[]): User[] => {
+  return users.filter(user => user.age >= 18);
+};
+```
+
+<Callout type="tip">
+**Avantage** : En spécifiant les types dans votre prompt, l'IA génère directement du code TypeScript propre et typé !
+</Callout>
+
+### Valider le code TypeScript généré
+
+Quand l'IA génère du code TypeScript, vérifiez :
+
+#### 1. **Types explicites vs inférés**
+
+```typescript
+// ❌ Type manquant sur le paramètre
+const greet = (name) => `Hello ${name}`;
+
+// ✅ Type explicite
+const greet = (name: string) => `Hello ${name}`;
+
+// ✅ Ou avec type de retour
+const greet = (name: string): string => `Hello ${name}`;
+```
+
+#### 2. **Interfaces pour les objets**
+
+```typescript
+// ❌ Pas de type pour l'objet
+const createUser = (name, age) => {
+  return { name, age };
+};
+
+// ✅ Interface définie
+interface User {
+  name: string;
+  age: number;
+}
+
+const createUser = (name: string, age: number): User => {
+  return { name, age };
+};
+```
+
+#### 3. **Types pour les tableaux**
+
+```typescript
+// ❌ Type any implicite
+const numbers = [1, 2, 3];
+numbers.push('hello'); // Aucune erreur !
+
+// ✅ Type explicite
+const numbers: number[] = [1, 2, 3];
+numbers.push('hello'); // ❌ Erreur TypeScript !
+```
+
+## Pour la suite : React avec TypeScript
+
+<Callout type="tip" title="Séance 2 - React avec TypeScript">
+À la **Séance 2**, vous apprendrez React avec TypeScript. Toutes ces compétences seront directement utilisées :
 
 - **Arrow functions** → Composants React
 - **Destructuration** → Props et hooks
 - **`.map()`** → Afficher des listes
 - **Spread operator** → Mise à jour d'état
 - **Template literals** → JSX dynamique
+- **Interfaces** → Types pour les props et le state
+- **Types** → Sécurité et autocomplétion
 
-Avec vos bases solides en JavaScript, React sera beaucoup plus facile à apprendre !
+Avec vos bases solides en JavaScript **et TypeScript**, React sera beaucoup plus facile à apprendre !
 </Callout>
 
 ## Ressources pour progresser

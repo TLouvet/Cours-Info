@@ -1,0 +1,173 @@
+# Tableaux (Arrays)
+
+Les tableaux sont des collections ordonnées d'éléments. En React, vous les utiliserez constamment !
+
+## Création et accès
+
+```javascript
+const fruits = ['pomme', 'banane', 'orange'];
+
+// Accès par index (commence à 0)
+console.log(fruits[0]); // 'pomme'
+console.log(fruits[1]); // 'banane'
+
+// Taille du tableau
+console.log(fruits.length); // 3
+```
+
+## Méthodes de base
+
+```javascript
+const numbers = [1, 2, 3];
+
+// Ajouter à la fin
+numbers.push(4); // [1, 2, 3, 4]
+
+// Retirer le dernier
+numbers.pop(); // [1, 2, 3]
+
+// Vérifier la présence
+numbers.includes(2); // true
+
+// Trouver l'index
+numbers.indexOf(2); // 1
+
+// Vérifier si c'est un tableau
+Array.isArray(numbers); // true
+```
+
+## Méthodes essentielles pour React ⭐
+
+Ces méthodes sont **cruciales** pour React car elles créent de nouveaux tableaux sans modifier l'original (immutabilité).
+
+### .map() - Transformer
+
+Transforme chaque élément et retourne un nouveau tableau.
+
+```javascript
+const numbers = [1, 2, 3];
+const doubled = numbers.map(n => n * 2);
+console.log(doubled); // [2, 4, 6]
+console.log(numbers); // [1, 2, 3] (inchangé)
+```
+
+<Callout type="info" title="En React">
+`.map()` est **partout** en React pour afficher des listes !
+
+```javascript
+const users = ['Alice', 'Bob', 'Charlie'];
+
+return (
+  <ul>
+    {users.map(user => (
+      <li key={user}>{user}</li>
+    ))}
+  </ul>
+);
+```
+</Callout>
+
+### .filter() - Filtrer
+
+Garde seulement les éléments qui passent le test.
+
+```javascript
+const numbers = [1, 2, 3, 4, 5];
+const evens = numbers.filter(n => n % 2 === 0);
+console.log(evens); // [2, 4]
+```
+
+### .find() - Premier match
+
+Retourne le **premier** élément qui correspond.
+
+```javascript
+const users = [
+  { id: 1, name: 'Alice' },
+  { id: 2, name: 'Bob' }
+];
+
+const bob = users.find(user => user.id === 2);
+console.log(bob); // { id: 2, name: 'Bob' }
+```
+
+### .some() / .every()
+
+```javascript
+const numbers = [1, 2, 3, 4];
+
+// Au moins un élément > 2 ?
+numbers.some(n => n > 2); // true
+
+// Tous les éléments > 0 ?
+numbers.every(n => n > 0); // true
+```
+
+### .reduce() - Accumuler
+
+```javascript
+const numbers = [1, 2, 3, 4];
+
+const sum = numbers.reduce((acc, n) => acc + n, 0);
+console.log(sum); // 10
+```
+
+<Exercise
+  title="Pratique : Méthodes de tableaux"
+  difficulty="easy"
+  solution={
+    <CodeBlock language="javascript">{`const products = [
+  { name: 'Laptop', price: 1000 },
+  { name: 'Mouse', price: 25 },
+  { name: 'Keyboard', price: 75 }
+];
+
+// 1. Tous les noms
+const names = products.map(p => p.name);
+// ['Laptop', 'Mouse', 'Keyboard']
+
+// 2. Produits < 100€
+const cheap = products.filter(p => p.price < 100);
+// [{ name: 'Mouse', ... }, { name: 'Keyboard', ... }]
+
+// 3. Prix total
+const total = products.reduce((sum, p) => sum + p.price, 0);
+// 1100`}</CodeBlock>
+  }
+>
+Avec ce tableau de produits :
+
+<CodeBlock language="javascript">{`const products = [
+  { name: 'Laptop', price: 1000 },
+  { name: 'Mouse', price: 25 },
+  { name: 'Keyboard', price: 75 }
+];`}</CodeBlock>
+
+1. Extraire tous les noms dans un tableau
+2. Filtrer les produits à moins de 100€
+3. Calculer le prix total
+
+**Astuce :** Utilisez `.map()`, `.filter()` et `.reduce()`
+</Exercise>
+
+## Tableau de syntaxe
+
+<div className="overflow-x-auto">
+
+| Méthode | Usage | Retourne | Mutable ? |
+|---------|-------|----------|-----------|
+| `.map()` | Transformer chaque élément | Nouveau tableau | ❌ Non |
+| `.filter()` | Filtrer des éléments | Nouveau tableau | ❌ Non |
+| `.find()` | Trouver un élément | Élément ou undefined | ❌ Non |
+| `.some()` | Tester au moins un | boolean | ❌ Non |
+| `.every()` | Tester tous | boolean | ❌ Non |
+| `.reduce()` | Accumuler/réduire | Une valeur | ❌ Non |
+| `.push()` | Ajouter à la fin | Nouvelle longueur | ✅ Oui |
+| `.pop()` | Retirer le dernier | Élément retiré | ✅ Oui |
+
+</div>
+
+<Callout type="warning">
+En React, **privilégiez les méthodes immutables** (`.map()`, `.filter()`, etc.) au lieu de `.push()` ou `.pop()` qui modifient le tableau original.
+</Callout>
+

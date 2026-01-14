@@ -1,0 +1,178 @@
+# Objets
+
+Les objets sont des collections de paires clé-valeur. En React, les props et le state sont des objets !
+
+## Création et accès
+
+```javascript
+const user = {
+  name: 'Alice',
+  age: 25,
+  email: 'alice@example.com'
+};
+
+// Notation point
+console.log(user.name); // 'Alice'
+
+// Notation crochet
+console.log(user['age']); // 25
+
+// Modification
+user.age = 26;
+
+// Ajout de propriété
+user.city = 'Paris';
+```
+
+## Méthodes utiles
+
+```javascript
+const user = { name: 'Alice', age: 25 };
+
+// Toutes les clés
+Object.keys(user); // ['name', 'age']
+
+// Toutes les valeurs
+Object.values(user); // ['Alice', 25]
+
+// Paires clé-valeur
+Object.entries(user);
+// [['name', 'Alice'], ['age', 25]]
+```
+
+<Callout type="info" title="En React">
+Les **props** et le **state** sont des objets ! Vous les manipulerez constamment.
+
+```javascript
+// Props d'un composant
+const UserCard = ({ name, age, email }) => {
+  return <div>{name} - {age} ans</div>;
+};
+
+// State (Séance 3)
+const [user, setUser] = useState({ name: 'Alice', age: 25 });
+```
+</Callout>
+
+## Objets imbriqués
+
+```javascript
+const user = {
+  name: 'Alice',
+  address: {
+    city: 'Paris',
+    country: 'France',
+    zip: '75001'
+  },
+  hobbies: ['lecture', 'sport']
+};
+
+console.log(user.address.city); // 'Paris'
+console.log(user.hobbies[0]); // 'lecture'
+```
+
+## Propriétés calculées
+
+```javascript
+const key = 'name';
+const value = 'Alice';
+
+const user = {
+  [key]: value,
+  [`${key}Upper`]: value.toUpperCase()
+};
+
+console.log(user);
+// { name: 'Alice', nameUpper: 'ALICE' }
+```
+
+## Méthode raccourcie
+
+```javascript
+const name = 'Alice';
+const age = 25;
+
+// Avant ES6
+const user = { name: name, age: age };
+
+// Avec ES6 ✨
+const user = { name, age };
+
+console.log(user); // { name: 'Alice', age: 25 }
+```
+
+## Méthodes d'objet
+
+```javascript
+const calculator = {
+  value: 0,
+  add(n) {
+    this.value += n;
+    return this;
+  },
+  multiply(n) {
+    this.value *= n;
+    return this;
+  },
+  getValue() {
+    return this.value;
+  }
+};
+
+calculator.add(5).multiply(2).getValue(); // 10
+```
+
+<Callout type="tip">
+En React, vous utiliserez rarement `this` car nous travaillons avec des composants fonctionnels plutôt que des classes.
+</Callout>
+
+## Vérifier l'existence d'une propriété
+
+```javascript
+const user = { name: 'Alice', age: 25 };
+
+// Avec in
+'name' in user; // true
+'email' in user; // false
+
+// Avec hasOwnProperty
+user.hasOwnProperty('name'); // true
+user.hasOwnProperty('email'); // false
+
+// Vérification simple (attention aux valeurs falsy)
+if (user.name) {
+  console.log('Le nom existe');
+}
+```
+
+## Copier un objet (shallow copy)
+
+```javascript
+const user = { name: 'Alice', age: 25 };
+
+// Object.assign
+const copy1 = Object.assign({}, user);
+
+// Spread operator (recommandé, voir page suivante)
+const copy2 = { ...user };
+
+console.log(copy1); // { name: 'Alice', age: 25 }
+console.log(copy2); // { name: 'Alice', age: 25 }
+```
+
+<Callout type="warning">
+Ces méthodes font une **copie superficielle** (shallow copy). Les objets imbriqués sont toujours partagés par référence !
+
+```javascript
+const user = {
+  name: 'Alice',
+  address: { city: 'Paris' }
+};
+
+const copy = { ...user };
+copy.address.city = 'Lyon';
+
+console.log(user.address.city); // 'Lyon' (modifié aussi!)
+```
+</Callout>
+

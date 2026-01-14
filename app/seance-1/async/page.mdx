@@ -1,0 +1,258 @@
+# Asynchrone : Promises
+
+**Aperçu** - Vous verrez cela en détail à la Séance 4 (useEffect et appels API).
+
+JavaScript est **asynchrone** : certaines opérations prennent du temps (appels API, lecture de fichiers, timers) et ne bloquent pas l'exécution du code.
+
+## Qu'est-ce qu'une Promise ?
+
+Une **Promise** représente une opération qui n'est pas encore terminée mais le sera dans le futur.
+
+```javascript
+const promise = new Promise((resolve, reject) => {
+  // Opération asynchrone
+  setTimeout(() => {
+    resolve('Success!');
+    // ou reject('Error!') en cas d'erreur
+  }, 1000);
+});
+```
+
+### États d'une Promise
+
+- **Pending** (en attente) : état initial
+- **Fulfilled** (résolue) : opération réussie
+- **Rejected** (rejetée) : opération échouée
+
+## .then() / .catch()
+
+Méthode classique pour gérer les Promises.
+
+```javascript
+fetch('https://api.example.com/data')
+  .then(response => response.json())
+  .then(data => console.log(data))
+  .catch(error => console.error(error));
+```
+
+### Chaîner les Promises
+
+```javascript
+fetch('https://api.example.com/users/1')
+  .then(response => response.json())
+  .then(user => {
+    console.log(user.name);
+    return fetch(`https://api.example.com/posts?userId=${user.id}`);
+  })
+  .then(response => response.json())
+  .then(posts => console.log(posts))
+  .catch(error => console.error(error));
+```
+
+## async/await (plus lisible) ⭐
+
+Syntaxe moderne qui rend le code asynchrone plus lisible.
+
+### Fonction async
+
+```javascript
+const fetchData = async () => {
+  try {
+    const response = await fetch('https://api.example.com/data');
+    const data = await response.json();
+    console.log(data);
+  } catch (error) {
+    console.error(error);
+  }
+};
+
+fetchData();
+```
+
+### Mot-clé async
+
+```javascript
+// Fonction fléchée async
+const myFunction = async () => {
+  // ...
+};
+
+// Fonction classique async
+async function myFunction() {
+  // ...
+}
+```
+
+### Mot-clé await
+
+`await` met en pause l'exécution jusqu'à ce que la Promise soit résolue.
+
+```javascript
+// ❌ Sans await (retourne une Promise)
+const data = fetch('https://api.example.com/data');
+console.log(data); // Promise { <pending> }
+
+// ✅ Avec await (attend la réponse)
+const response = await fetch('https://api.example.com/data');
+const data = await response.json();
+console.log(data); // { ... } (données réelles)
+```
+
+<Callout type="warning">
+`await` ne peut être utilisé qu'à l'intérieur d'une fonction `async` !
+
+```javascript
+// ❌ Erreur
+const data = await fetch('/api/data');
+
+// ✅ OK
+const fetchData = async () => {
+  const data = await fetch('/api/data');
+};
+```
+</Callout>
+
+## Gestion d'erreurs
+
+### try/catch
+
+```javascript
+const fetchUser = async (id) => {
+  try {
+    const response = await fetch(`/api/users/${id}`);
+
+    if (!response.ok) {
+      throw new Error('User not found');
+    }
+
+    const user = await response.json();
+    return user;
+  } catch (error) {
+    console.error('Error:', error.message);
+    return null;
+  }
+};
+```
+
+### .catch() avec async/await
+
+```javascript
+const fetchData = async () => {
+  const data = await fetch('/api/data')
+    .then(res => res.json())
+    .catch(error => {
+      console.error(error);
+      return null;
+    });
+
+  return data;
+};
+```
+
+<Callout type="info" title="En React - Séance 4">
+Vous utiliserez `async/await` avec `useEffect` pour faire des appels API en React :
+
+```javascript
+import { useState, useEffect } from 'react';
+
+function UserProfile({ userId }) {
+  const [user, setUser] = useState(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchUser = async () => {
+      try {
+        const response = await fetch(\`/api/users/\${userId}\`);
+        const data = await response.json();
+        setUser(data);
+      } catch (error) {
+        console.error(error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchUser();
+  }, [userId]);
+
+  if (loading) return <div>Loading...</div>;
+  return <div>{user?.name}</div>;
+}
+```
+
+**Détails complets à la Séance 4 !**
+</Callout>
+
+## Promise.all()
+
+Attendre plusieurs Promises en parallèle.
+
+```javascript
+const fetchMultiple = async () => {
+  try {
+    const [users, posts, comments] = await Promise.all([
+      fetch('/api/users').then(r => r.json()),
+      fetch('/api/posts').then(r => r.json()),
+      fetch('/api/comments').then(r => r.json())
+    ]);
+
+    console.log(users, posts, comments);
+  } catch (error) {
+    console.error(error);
+  }
+};
+```
+
+<Callout type="tip">
+`Promise.all()` est plus rapide que d'attendre les Promises une par une, car elles s'exécutent en parallèle !
+
+```javascript
+// ❌ Lent (séquentiel) - 3 secondes
+const users = await fetch('/api/users');
+const posts = await fetch('/api/posts');
+const comments = await fetch('/api/comments');
+
+// ✅ Rapide (parallèle) - 1 seconde
+const [users, posts, comments] = await Promise.all([
+  fetch('/api/users'),
+  fetch('/api/posts'),
+  fetch('/api/comments')
+]);
+```
+</Callout>
+
+## setTimeout avec Promises
+
+```javascript
+const delay = (ms) => new Promise(resolve => setTimeout(resolve, ms));
+
+const example = async () => {
+  console.log('Start');
+  await delay(2000); // Attend 2 secondes
+  console.log('2 seconds later');
+};
+
+example();
+```
+
+## Résumé
+
+| Concept | Description |
+|---------|-------------|
+| **Promise** | Objet représentant une opération asynchrone |
+| **async** | Déclare une fonction asynchrone |
+| **await** | Attend qu'une Promise soit résolue |
+| **try/catch** | Gère les erreurs en async/await |
+| **.then()** | Méthode classique pour les Promises |
+| **.catch()** | Gère les erreurs avec .then() |
+| **Promise.all()** | Attend plusieurs Promises en parallèle |
+
+<Callout type="tip" title="Pour la suite">
+Ne vous inquiétez pas si l'asynchrone n'est pas encore clair ! Vous pratiquerez beaucoup à la **Séance 4** avec `useEffect` et les appels API dans React.
+
+Pour l'instant, retenez juste :
+- `async/await` rend le code asynchrone plus lisible
+- Utilisez `try/catch` pour gérer les erreurs
+- Les appels API sont asynchrones
+</Callout>
+

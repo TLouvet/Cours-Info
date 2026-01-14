@@ -1,0 +1,318 @@
+# Strings & Template Literals
+
+Les chaînes de caractères (strings) sont omniprésentes en JavaScript. Voyons comment les manipuler efficacement.
+
+## Strings basiques
+
+### Création de strings
+
+Trois façons de créer des strings :
+
+```javascript
+const simple = 'Hello';        // Guillemets simples
+const double = "World";         // Guillemets doubles
+const template = `Bonjour`;     // Backticks (template literals)
+```
+
+<Callout type="tip">
+- Utilisez **simple** ou **double** pour les strings simples
+- Utilisez **backticks** pour l'interpolation (voir plus bas)
+- Soyez cohérent dans votre code (choisissez un style)
+</Callout>
+
+### Échappement de caractères
+
+```javascript
+const quote = 'L\'important c\'est d\'essayer';
+const path = "C:\\Users\\Documents";
+const multiline = "Ligne 1\nLigne 2";
+```
+
+## Template Literals ⭐
+
+**La syntaxe moderne pour manipuler les strings !**
+
+Les template literals utilisent des **backticks** (`` ` ``) et permettent :
+- L'interpolation de variables
+- Les expressions JavaScript
+- Les strings multi-lignes
+
+### Interpolation de variables
+
+```javascript
+const name = 'Alice';
+const age = 25;
+
+// ❌ Ancien style (concaténation)
+const message1 = 'Hello ' + name + ', you are ' + age + ' years old';
+
+// ✅ Style moderne (template literals)
+const message2 = `Hello ${name}, you are ${age} years old`;
+
+console.log(message2); // "Hello Alice, you are 25 years old"
+```
+
+<Callout type="success" title="Avantages">
+- Plus lisible
+- Moins d'erreurs (pas d'oubli de `+`)
+- Plus facile à maintenir
+</Callout>
+
+### Expressions dans les template literals
+
+Vous pouvez mettre **n'importe quelle expression** JavaScript dans `${}` :
+
+```javascript
+const price = 100;
+const quantity = 3;
+const tax = 0.2;
+
+console.log(`Total: ${price * quantity} EUR`);
+// "Total: 300 EUR"
+
+console.log(`Total TTC: ${price * quantity * (1 + tax)} EUR`);
+// "Total TTC: 360 EUR"
+
+// Opérateur ternaire
+const age = 25;
+console.log(`Statut: ${age >= 18 ? 'Adulte' : 'Mineur'}`);
+// "Statut: Adulte"
+
+// Appel de fonction
+const getName = () => 'Bob';
+console.log(`Utilisateur: ${getName()}`);
+// "Utilisateur: Bob"
+```
+
+### Strings multi-lignes
+
+```javascript
+// ❌ Ancien style (difficile à lire)
+const html1 = '<div>\n' +
+              '  <h1>Titre</h1>\n' +
+              '  <p>Contenu</p>\n' +
+              '</div>';
+
+// ✅ Style moderne (template literals)
+const html2 = `
+  <div>
+    <h1>Titre</h1>
+    <p>Contenu</p>
+  </div>
+`;
+```
+
+### Email avec interpolation
+
+```javascript
+const user = {
+  name: 'Alice',
+  email: 'alice@example.com'
+};
+
+const emailContent = `
+Bonjour ${user.name},
+
+Votre compte a été créé avec succès.
+
+Informations du compte :
+- Nom : ${user.name}
+- Email : ${user.email}
+
+Cordialement,
+L'équipe
+`;
+
+console.log(emailContent);
+```
+
+## Méthodes de strings
+
+JavaScript fournit de nombreuses méthodes pour manipuler les strings.
+
+### Longueur
+
+```javascript
+const text = 'Hello';
+console.log(text.length); // 5
+```
+
+### Majuscules / Minuscules
+
+```javascript
+const text = 'Hello World';
+
+console.log(text.toUpperCase()); // "HELLO WORLD"
+console.log(text.toLowerCase()); // "hello world"
+```
+
+### Recherche
+
+```javascript
+const text = 'Hello World';
+
+console.log(text.includes('World')); // true
+console.log(text.startsWith('Hello')); // true
+console.log(text.endsWith('World')); // true
+console.log(text.indexOf('o')); // 4 (première occurrence)
+```
+
+### Extraction
+
+```javascript
+const text = 'Hello World';
+
+// Caractère à l'index
+console.log(text[0]); // 'H'
+console.log(text.charAt(0)); // 'H'
+
+// Sous-chaîne
+console.log(text.slice(0, 5)); // 'Hello'
+console.log(text.slice(6)); // 'World'
+console.log(text.substring(0, 5)); // 'Hello'
+```
+
+### Remplacement
+
+```javascript
+const text = 'Hello World';
+
+console.log(text.replace('World', 'JavaScript'));
+// "Hello JavaScript"
+
+console.log(text.replaceAll('o', '0'));
+// "Hell0 W0rld"
+```
+
+### Découpage
+
+```javascript
+const text = 'pomme,banane,orange';
+const fruits = text.split(',');
+console.log(fruits); // ['pomme', 'banane', 'orange']
+
+// Fusionner un tableau en string
+const joined = fruits.join(' - ');
+console.log(joined); // "pomme - banane - orange"
+```
+
+### Suppression des espaces
+
+```javascript
+const text = '  Hello World  ';
+
+console.log(text.trim()); // "Hello World"
+console.log(text.trimStart()); // "Hello World  "
+console.log(text.trimEnd()); // "  Hello World"
+```
+
+## Cas d'usage pratiques
+
+### URL dynamique
+
+```javascript
+const userId = 123;
+const endpoint = `https://api.example.com/users/${userId}`;
+
+fetch(endpoint)
+  .then(response => response.json())
+  .then(user => console.log(user));
+```
+
+### Formatage de dates
+
+```javascript
+const day = 14;
+const month = 'Janvier';
+const year = 2026;
+
+const date = `${day} ${month} ${year}`;
+console.log(date); // "14 Janvier 2026"
+```
+
+### Messages dynamiques
+
+```javascript
+const errors = ['Email requis', 'Mot de passe trop court'];
+
+if (errors.length > 0) {
+  const message = `${errors.length} erreur(s) détectée(s) : ${errors.join(', ')}`;
+  console.log(message);
+  // "2 erreur(s) détectée(s) : Email requis, Mot de passe trop court"
+}
+```
+
+<Callout type="info" title="En React">
+Les template literals sont essentiels en React pour :
+
+**1. Classes CSS dynamiques :**
+```javascript
+const Button = ({ variant, isActive }) => (
+  <button className={`btn btn-${variant} ${isActive ? 'active' : ''}`}>
+    Click
+  </button>
+);
+```
+
+**2. URLs dynamiques :**
+```javascript
+const fetchUser = async (id) => {
+  const response = await fetch(`/api/users/${id}`);
+  return response.json();
+};
+```
+
+**3. Messages conditionnels :**
+```javascript
+const Message = ({ count }) => (
+  <p>{`Vous avez ${count} message${count > 1 ? 's' : ''}`}</p>
+);
+```
+</Callout>
+
+## Exercice rapide
+
+<Exercise
+  title="Manipulation de strings"
+  difficulty="easy"
+  solution={
+    <CodeBlock language="javascript">{`const user = {
+  firstName: 'Alice',
+  lastName: 'Martin',
+  age: 25,
+  city: 'Paris'
+};
+
+// 1. Nom complet
+const fullName = \`\${user.firstName} \${user.lastName}\`;
+console.log(fullName); // "Alice Martin"
+
+// 2. Message de bienvenue
+const welcome = \`Bienvenue \${user.firstName}, vous avez \${user.age} ans.\`;
+console.log(welcome); // "Bienvenue Alice, vous avez 25 ans."
+
+// 3. Initiales (majuscules)
+const initials = \`\${user.firstName[0]}\${user.lastName[0]}\`.toUpperCase();
+console.log(initials); // "AM"
+
+// 4. Email
+const email = \`\${user.firstName.toLowerCase()}.\${user.lastName.toLowerCase()}@example.com\`;
+console.log(email); // "alice.martin@example.com"`}</CodeBlock>
+  }
+>
+Avec cet objet utilisateur :
+
+<CodeBlock language="javascript">{`const user = {
+  firstName: 'Alice',
+  lastName: 'Martin',
+  age: 25,
+  city: 'Paris'
+};`}</CodeBlock>
+
+Utilisez les template literals et les méthodes de strings pour créer :
+
+1. Le nom complet : `"Alice Martin"`
+2. Un message de bienvenue : `"Bienvenue Alice, vous avez 25 ans."`
+3. Les initiales en majuscules : `"AM"`
+4. Un email : `"alice.martin@example.com"`
+</Exercise>

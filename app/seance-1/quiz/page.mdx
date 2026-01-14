@@ -1,0 +1,248 @@
+# Quiz de Validation - Séance 1
+
+Testez vos connaissances sur les fondamentaux JavaScript ! Ce quiz couvre tous les concepts vus durant la Séance 1.
+
+<Callout type="info" title="À propos de ce quiz">
+- **15 questions** couvrant tous les sujets de la Séance 1
+- Réponses avec explications détaillées
+- Validez votre compréhension avant de passer à React
+- Aucune note n'est enregistrée, c'est pour votre apprentissage !
+</Callout>
+
+## Variables & Types
+
+<QuickCheck
+  question="1. Quelle est la différence entre let et const ?"
+  options={[
+    "const ne peut pas être réassigné, let peut l'être",
+    "const est pour les constantes mathématiques uniquement",
+    "let est obsolète, utilisez toujours const",
+    "Il n'y a aucune différence"
+  ]}
+  correctAnswer={0}
+  explanation="const empêche la réassignation d'une variable, tandis que let permet de réassigner. Attention : const n'empêche pas la mutation des objets/tableaux !"
+/>
+
+<QuickCheck
+  question="2. Quel est le type de null en JavaScript ?"
+  options={[
+    "object",
+    "null",
+    "undefined",
+    "boolean"
+  ]}
+  correctAnswer={0}
+  explanation="typeof null retourne 'object', ce qui est un bug historique de JavaScript qui n'a jamais été corrigé pour des raisons de compatibilité."
+/>
+
+<QuickCheck
+  question="3. Quelle syntaxe est correcte pour créer une template literal ?"
+  options={[
+    "`Hello ${name}`",
+    "'Hello ${name}'",
+    "\"Hello ${name}\"",
+    "<<Hello ${name}>>"
+  ]}
+  correctAnswer={0}
+  explanation="Les template literals utilisent des backticks (`) et permettent l'interpolation avec ${expression}."
+/>
+
+## Fonctions
+
+<QuickCheck
+  question="4. Quelle est la syntaxe correcte pour une arrow function avec return implicite ?"
+  options={[
+    "const add = (a, b) => a + b",
+    "const add = (a, b) => { a + b }",
+    "const add = (a, b) -> a + b",
+    "const add = function(a, b) => a + b"
+  ]}
+  correctAnswer={0}
+  explanation="Sans accolades, le return est implicite. Avec accolades, il faut un return explicite."
+/>
+
+<QuickCheck
+  question="5. Comment retourner un objet avec une arrow function et return implicite ?"
+  options={[
+    "const makeUser = (name) => ({ name })",
+    "const makeUser = (name) => { name }",
+    "const makeUser = (name) => name",
+    "const makeUser = (name) => [name]"
+  ]}
+  correctAnswer={0}
+  explanation="Pour retourner un objet avec return implicite, il faut l'entourer de parenthèses : () => ({ key: value })"
+/>
+
+## Tableaux
+
+<QuickCheck
+  question="6. Quelle méthode utiliser pour transformer chaque élément d'un tableau ?"
+  options={[
+    ".map()",
+    ".filter()",
+    ".find()",
+    ".forEach()"
+  ]}
+  correctAnswer={0}
+  explanation=".map() transforme chaque élément et retourne un nouveau tableau. C'est la méthode standard pour transformer des données."
+/>
+
+<QuickCheck
+  question="7. Que retourne .filter() ?"
+  options={[
+    "Un nouveau tableau avec les éléments qui passent le test",
+    "Le premier élément qui passe le test",
+    "true ou false",
+    "Le nombre d'éléments qui passent le test"
+  ]}
+  correctAnswer={0}
+  explanation=".filter() retourne un nouveau tableau contenant uniquement les éléments qui passent le test (fonction retourne true)."
+/>
+
+<QuickCheck
+  question="8. Que fait .reduce() ?"
+  options={[
+    "Réduit un tableau à une seule valeur (ex: somme)",
+    "Réduit la taille d'un tableau",
+    "Supprime les doublons",
+    "Filtre les valeurs nulles"
+  ]}
+  correctAnswer={0}
+  explanation=".reduce() accumule les valeurs du tableau pour les réduire à une seule valeur (somme, produit, objet, etc.)."
+/>
+
+## Objets
+
+<QuickCheck
+  question="9. Quelle méthode retourne toutes les clés d'un objet ?"
+  options={[
+    "Object.keys(obj)",
+    "obj.keys()",
+    "Object.getKeys(obj)",
+    "obj.getKeys()"
+  ]}
+  correctAnswer={0}
+  explanation="Object.keys(obj) retourne un tableau contenant toutes les clés de l'objet."
+/>
+
+## Destructuration
+
+<QuickCheck
+  question="10. Que fait ce code : const { name, age } = user ?"
+  options={[
+    "Extrait name et age de l'objet user",
+    "Crée un nouvel objet avec name et age",
+    "Compare name et age dans user",
+    "Fusionne name et age dans user"
+  ]}
+  correctAnswer={0}
+  explanation="C'est la destructuration d'objet : elle extrait les propriétés name et age dans des variables séparées."
+/>
+
+<QuickCheck
+  question="11. Comment renommer une variable lors de la destructuration ?"
+  options={[
+    "const { name: userName } = user",
+    "const { name as userName } = user",
+    "const { name -> userName } = user",
+    "const { userName = name } = user"
+  ]}
+  correctAnswer={0}
+  explanation="La syntaxe est { ancienNom: nouveauNom } pour renommer lors de la destructuration."
+/>
+
+## Spread Operator
+
+<QuickCheck
+  question="12. Que fait le spread operator avec un tableau ?"
+  options={[
+    "Déploie les éléments d'un tableau",
+    "Supprime les doublons",
+    "Inverse l'ordre des éléments",
+    "Trie le tableau"
+  ]}
+  correctAnswer={0}
+  explanation="Le spread operator (...) déploie/étale les éléments d'un tableau. Exemple : [...arr1, ...arr2] fusionne deux tableaux."
+/>
+
+<QuickCheck
+  question="13. Comment copier un objet sans le modifier (immutabilité) ?"
+  options={[
+    "const copy = { ...original }",
+    "const copy = original",
+    "const copy = original.copy()",
+    "const copy = Object(original)"
+  ]}
+  correctAnswer={0}
+  explanation="Le spread operator { ...obj } crée une copie superficielle (shallow copy) de l'objet."
+/>
+
+## Modules
+
+<QuickCheck
+  question="14. Quelle syntaxe pour importer un export nommé ?"
+  options={[
+    "import { add } from './utils'",
+    "import add from './utils'",
+    "import * add from './utils'",
+    "import default add from './utils'"
+  ]}
+  correctAnswer={0}
+  explanation="Les exports nommés s'importent avec des accolades : import { nom } from 'module'"
+/>
+
+## Collaboration avec l'IA
+
+<QuickCheck
+  question="15. Pourquoi est-il important de connaître JavaScript avant d'utiliser l'IA ?"
+  options={[
+    "Pour valider et comprendre le code généré",
+    "L'IA ne peut pas générer de code JavaScript",
+    "C'est obligatoire pour utiliser ChatGPT",
+    "Pour taper plus vite"
+  ]}
+  correctAnswer={0}
+  explanation="Connaître JavaScript vous permet de valider le code de l'IA, déboguer les erreurs, donner des prompts précis et adapter les solutions à vos besoins."
+/>
+
+---
+
+## Résultats
+
+<Callout type="success" title="Félicitations !">
+Si vous avez répondu correctement à la plupart des questions, vous êtes prêt(e) pour la **Séance 2 - Introduction à React** !
+
+**Score cible :** Au moins 12/15 pour passer confortablement à React.
+</Callout>
+
+<Callout type="warning" title="Besoin de réviser ?">
+Si vous avez eu des difficultés avec certaines questions, prenez le temps de réviser les sections correspondantes :
+
+- **Variables & Types** → [Variables & Types](/seance-1/variables)
+- **Fonctions** → [Fonctions](/seance-1/functions)
+- **Tableaux** → [Tableaux](/seance-1/arrays)
+- **Objets** → [Objets](/seance-1/objects)
+- **Destructuration** → [Destructuration](/seance-1/destructuring)
+- **Spread Operator** → [Spread Operator](/seance-1/spread)
+- **Modules** → [Modules ES6](/seance-1/modules)
+- **IA** → [Collaborer avec l'IA](/seance-1/ai-collaboration)
+</Callout>
+
+## Prochaines étapes
+
+<div className="grid grid-cols-1 md:grid-cols-2 gap-4 my-6">
+  <a href="/seance-1/exercises" className="block p-4 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg hover:border-cyan-500 dark:hover:border-cyan-500 transition-colors">
+    <h3 className="font-semibold text-gray-900 dark:text-gray-100 mb-2">📝 Refaire les exercices</h3>
+    <p className="text-sm text-gray-600 dark:text-gray-400">Pratiquez avec les exercices de la Séance 1</p>
+  </a>
+
+  <a href="/seance-2" className="block p-4 bg-cyan-50 dark:bg-cyan-900/20 border border-cyan-200 dark:border-cyan-800 rounded-lg hover:border-cyan-500 dark:hover:border-cyan-500 transition-colors">
+    <h3 className="font-semibold text-gray-900 dark:text-gray-100 mb-2">🚀 Séance 2 - React</h3>
+    <p className="text-sm text-gray-600 dark:text-gray-400">Commencez à apprendre React !</p>
+  </a>
+</div>
+
+<Callout type="tip" title="Conseil">
+N'hésitez pas à refaire ce quiz plusieurs fois jusqu'à obtenir 15/15 sans regarder les explications. C'est le signe que vous maîtrisez vraiment les concepts !
+</Callout>
+

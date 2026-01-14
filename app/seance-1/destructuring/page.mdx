@@ -1,0 +1,181 @@
+# Destructuration
+
+**Essentiel pour React !** Permet d'extraire des valeurs facilement.
+
+## Destructuration d'objet
+
+```javascript
+const user = { name: 'Alice', age: 25, city: 'Paris' };
+
+// Avant
+const name = user.name;
+const age = user.age;
+
+// Avec destructuration ✨
+const { name, age } = user;
+console.log(name); // 'Alice'
+console.log(age); // 25
+```
+
+### Avec renommage
+
+```javascript
+const user = { name: 'Alice', age: 25 };
+
+const { name: userName } = user;
+console.log(userName); // 'Alice'
+```
+
+### Avec valeur par défaut
+
+```javascript
+const user = { name: 'Alice', age: 25 };
+
+const { name, country = 'France' } = user;
+console.log(country); // 'France'
+```
+
+### Objets imbriqués
+
+```javascript
+const user = {
+  name: 'Alice',
+  address: {
+    city: 'Paris',
+    country: 'France'
+  }
+};
+
+const { address: { city, country } } = user;
+console.log(city); // 'Paris'
+console.log(country); // 'France'
+```
+
+<Callout type="info" title="En React - Props">
+La destructuration est **omniprésente** pour accéder aux props :
+
+```javascript
+// Sans destructuration
+const UserCard = (props) => {
+  return <div>{props.name} - {props.age} ans</div>;
+};
+
+// Avec destructuration ✨
+const UserCard = ({ name, age }) => {
+  return <div>{name} - {age} ans</div>;
+};
+```
+</Callout>
+
+## Destructuration de tableau
+
+```javascript
+const colors = ['red', 'green', 'blue'];
+
+// Extraire les premiers éléments
+const [first, second] = colors;
+console.log(first);  // 'red'
+console.log(second); // 'green'
+
+// Ignorer des éléments
+const [, , third] = colors;
+console.log(third); // 'blue'
+```
+
+### Avec valeur par défaut
+
+```javascript
+const colors = ['red'];
+
+const [first, second = 'blue'] = colors;
+console.log(first);  // 'red'
+console.log(second); // 'blue'
+```
+
+### Rest operator
+
+```javascript
+const numbers = [1, 2, 3, 4, 5];
+
+const [first, second, ...rest] = numbers;
+console.log(first); // 1
+console.log(second); // 2
+console.log(rest); // [3, 4, 5]
+```
+
+<Callout type="info" title="En React - useState">
+La destructuration est **omniprésente** avec les hooks React :
+
+```javascript
+import { useState } from 'react';
+
+// useState retourne un tableau [valeur, setter]
+const [count, setCount] = useState(0);
+
+// Équivalent sans destructuration (moins lisible)
+const countState = useState(0);
+const count = countState[0];
+const setCount = countState[1];
+```
+</Callout>
+
+<QuickCheck
+  question="Que fait ce code : const { name, age } = user ?"
+  options={[
+    "Extrait name et age de l'objet user",
+    "Crée un nouvel objet avec name et age",
+    "Copie l'objet user",
+    "Compare name et age"
+  ]}
+  correctAnswer={0}
+  explanation="C'est la destructuration d'objet : elle extrait les propriétés name et age dans des variables séparées."
+/>
+
+## Destructuration dans les paramètres
+
+### Fonctions
+
+```javascript
+// Sans destructuration
+const displayUser = (user) => {
+  console.log(`${user.name} - ${user.age} ans`);
+};
+
+// Avec destructuration ✨
+const displayUser = ({ name, age }) => {
+  console.log(`${name} - ${age} ans`);
+};
+
+displayUser({ name: 'Alice', age: 25 });
+// "Alice - 25 ans"
+```
+
+### Avec valeurs par défaut
+
+```javascript
+const greet = ({ name = 'Anonyme', greeting = 'Bonjour' } = {}) => {
+  return `${greeting} ${name}!`;
+};
+
+console.log(greet()); // "Bonjour Anonyme!"
+console.log(greet({ name: 'Alice' })); // "Bonjour Alice!"
+console.log(greet({ name: 'Bob', greeting: 'Salut' })); // "Salut Bob!"
+```
+
+## Échange de variables
+
+```javascript
+let a = 1;
+let b = 2;
+
+// Échange avec destructuration
+[a, b] = [b, a];
+
+console.log(a); // 2
+console.log(b); // 1
+```
+
+<Callout type="tip">
+La destructuration rend le code plus lisible et concis. C'est une compétence essentielle pour React !
+</Callout>
+

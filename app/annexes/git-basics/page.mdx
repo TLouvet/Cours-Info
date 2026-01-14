@@ -1,0 +1,738 @@
+# Git - Bases & Commandes Essentielles
+
+Git est un système de contrôle de version distribué qui permet de suivre l'historique de votre code et de collaborer avec d'autres développeurs.
+
+<Callout type="info" title="Pourquoi Git ?">
+- **Sauvegarde** : Hébergez votre code sur GitHub/GitLab
+- **Historique complet** : Suivez chaque modification de votre code
+- **Collaboration** : Travaillez à plusieurs sur le même projet
+- **Portfolio** : Montrez vos projets aux recruteurs
+- **Retour arrière** : Annulez des modifications si nécessaire
+</Callout>
+
+## Démarrage rapide - Deux scénarios
+
+<Callout type="success" title="Choisissez votre situation">
+**Scénario A** : Vous avez déjà du code local et voulez le pousser sur GitHub
+
+**Scénario B** : Vous partez d'un dépôt GitHub existant (clone)
+</Callout>
+
+### Scénario A : Pousser un projet existant sur GitHub
+
+**Étape 1 : Créer un dépôt sur GitHub**
+1. Allez sur [github.com](https://github.com) et connectez-vous
+2. Cliquez sur le `+` en haut à droite → "New repository"
+3. Donnez un nom à votre dépôt (ex: `mon-projet-react`)
+4. **N'ajoutez PAS** de README, .gitignore ou LICENSE (le dépôt doit être vide)
+5. Cliquez sur "Create repository"
+
+**Étape 2 : Lier votre projet local**
+
+```bash
+# Dans le dossier de votre projet
+cd mon-projet
+
+# Initialiser Git (si pas déjà fait)
+git init
+
+# Ajouter tous les fichiers
+git add .
+
+# Créer le premier commit
+git commit -m "Initial commit"
+
+# Ajouter le dépôt distant (remplacez par votre URL)
+git remote add origin https://github.com/votre-username/mon-projet-react.git
+
+# Vérifier que le remote est bien ajouté
+git remote -v
+
+# Pousser vers GitHub
+git push -u origin main
+```
+
+<Callout type="warning" title="Branche main vs master">
+Les nouveaux dépôts GitHub utilisent `main` comme branche principale. Si votre dépôt local utilise `master`, renommez-la :
+
+```bash
+git branch -M main
+```
+</Callout>
+
+**C'est fait !** Votre code est maintenant sur GitHub. Rafraîchissez la page GitHub pour voir vos fichiers.
+
+### Scénario B : Cloner un dépôt existant
+
+```bash
+# Cloner le dépôt (remplacez par l'URL du dépôt)
+git clone https://github.com/username/repository.git
+
+# Entrer dans le dossier
+cd repository
+
+# Vous pouvez maintenant travailler !
+```
+
+<Callout type="tip">
+Pour obtenir l'URL d'un dépôt GitHub :
+1. Allez sur la page du dépôt
+2. Cliquez sur le bouton vert "Code"
+3. Copiez l'URL HTTPS
+</Callout>
+
+## Configuration initiale (obligatoire)
+
+### Vérifier l'installation
+
+```bash
+git --version
+```
+
+Si Git n'est pas installé, téléchargez-le depuis [git-scm.com](https://git-scm.com/).
+
+### Configuration initiale
+
+Configurez votre identité (obligatoire pour le premier commit) :
+
+```bash
+git config --global user.name "Votre Nom"
+git config --global user.email "votre.email@example.com"
+```
+
+Vérifier la configuration :
+
+```bash
+git config --list
+```
+
+<Callout type="tip">
+Utilisez la même adresse email que celle de votre compte GitHub/GitLab pour que vos commits soient bien associés à votre profil.
+</Callout>
+
+## Workflow quotidien - Les 5 commandes essentielles
+
+Une fois votre projet lié à GitHub, voici le cycle de travail quotidien :
+
+### 1. Vérifier l'état de vos fichiers
+
+```bash
+git status
+```
+
+Affiche :
+- Les fichiers modifiés (en rouge)
+- Les fichiers prêts à être commités (en vert)
+- La branche actuelle
+
+<Callout type="tip">
+Utilisez `git status` **constamment** ! C'est votre boussole pour savoir où vous en êtes.
+</Callout>
+
+### 2. Récupérer les modifications de vos collaborateurs
+
+**Faites TOUJOURS un `git pull` avant de commencer à travailler !**
+
+```bash
+git pull
+```
+
+Cela récupère et fusionne les modifications de GitHub dans votre code local.
+
+### 3. Ajouter vos modifications au staging
+
+```bash
+# Ajouter tous les fichiers modifiés
+git add .
+
+# Ou ajouter des fichiers spécifiques
+git add src/App.js src/components/Header.js
+```
+
+### 4. Créer un commit (snapshot de vos modifications)
+
+```bash
+git commit -m "Ajoute la page de connexion"
+```
+
+**Bonnes pratiques pour les messages :**
+- Soyez concis mais descriptif (50 caractères max)
+- Utilisez l'impératif : "Ajoute" et non "Ajouté"
+- Décrivez ce que fait le commit, pas comment
+
+```bash
+# ✅ Bons exemples
+git commit -m "Ajoute la validation du formulaire"
+git commit -m "Corrige le bug d'affichage mobile"
+git commit -m "Refactorise le composant Header"
+
+# ❌ Mauvais exemples
+git commit -m "fix"
+git commit -m "update"
+git commit -m "wip"
+```
+
+### 5. Envoyer vos commits sur GitHub
+
+```bash
+git push
+```
+
+**C'est tout !** Vos modifications sont maintenant sur GitHub.
+
+<Callout type="success" title="Cycle quotidien complet">
+```bash
+# Matin : récupérer les dernières modifications
+git pull
+
+# Vous travaillez sur votre code...
+# (modifier des fichiers, ajouter des fonctionnalités)
+
+# Vérifier ce qui a changé
+git status
+
+# Ajouter vos modifications
+git add .
+
+# Créer un commit
+git commit -m "Description de vos modifications"
+
+# Envoyer sur GitHub
+git push
+
+# Répéter ce cycle plusieurs fois par jour !
+```
+
+**Conseil** : Commitez souvent (plusieurs fois par jour), ne faites pas un énorme commit en fin de journée.
+</Callout>
+
+## Commandes Git Remote (dépôts distants)
+
+### Voir les dépôts distants
+
+```bash
+# Lister les dépôts distants
+git remote -v
+
+# Résultat typique :
+# origin  https://github.com/username/repo.git (fetch)
+# origin  https://github.com/username/repo.git (push)
+```
+
+### Ajouter un dépôt distant
+
+```bash
+git remote add origin https://github.com/username/repository.git
+```
+
+`origin` est le nom conventionnel pour le dépôt principal.
+
+### Changer l'URL d'un remote
+
+```bash
+# Si vous avez fait une erreur dans l'URL
+git remote set-url origin https://github.com/username/nouveau-repo.git
+```
+
+### Supprimer un remote
+
+```bash
+git remote remove origin
+```
+
+### Push détaillé
+
+```bash
+# Premier push (crée la branche sur GitHub)
+git push -u origin main
+
+# Push suivants (plus simple)
+git push
+
+# Push d'une branche spécifique
+git push origin feature/login
+
+# Push en forçant (⚠️ ATTENTION : écrase l'historique distant)
+git push --force
+```
+
+<Callout type="error" title="Ne jamais faire git push --force sur main !">
+`git push --force` écrase l'historique distant. **Jamais** sur la branche principale en équipe !
+
+Utilisez-le uniquement sur vos branches personnelles si nécessaire.
+</Callout>
+
+### Pull détaillé
+
+```bash
+# Pull simple (fetch + merge)
+git pull
+
+# Pull depuis une branche spécifique
+git pull origin develop
+
+# Pull équivaut à :
+git fetch origin      # Récupère les modifications
+git merge origin/main # Fusionne dans votre branche
+```
+
+### Fetch (récupérer sans fusionner)
+
+```bash
+# Récupérer les modifications sans les fusionner
+git fetch origin
+
+# Voir les différences avant de fusionner
+git diff origin/main
+
+# Fusionner quand vous êtes prêt
+git merge origin/main
+```
+
+Utile pour voir ce qui a changé avant de fusionner.
+
+## Commandes complémentaires
+
+### Voir l'historique des commits
+
+```bash
+# Historique complet
+git log
+
+# Historique condensé (une ligne par commit)
+git log --oneline
+
+# Historique avec graphe des branches
+git log --oneline --graph --all
+
+# Derniers 5 commits
+git log -5
+```
+
+### Voir les différences
+
+```bash
+# Différences non staged (fichiers modifiés mais pas ajoutés)
+git diff
+
+# Différences staged (fichiers ajoutés avec git add)
+git diff --staged
+
+# Différences pour un fichier spécifique
+git diff fichier.js
+```
+
+## Branches
+
+Les branches permettent de développer des fonctionnalités en parallèle sans affecter le code principal.
+
+### Créer et changer de branche
+
+```bash
+# Créer une nouvelle branche
+git branch feature/login
+
+# Changer de branche
+git checkout feature/login
+
+# Créer ET changer de branche (raccourci)
+git checkout -b feature/login
+```
+
+<Callout type="info">
+Avec Git 2.23+, vous pouvez utiliser `git switch` au lieu de `git checkout` :
+```bash
+git switch feature/login        # Changer de branche
+git switch -c feature/login     # Créer et changer
+```
+</Callout>
+
+### Lister les branches
+
+```bash
+# Branches locales
+git branch
+
+# Toutes les branches (locales + distantes)
+git branch -a
+```
+
+### Fusionner une branche
+
+```bash
+# Se placer sur la branche de destination (ex: main)
+git checkout main
+
+# Fusionner la branche feature/login dans main
+git merge feature/login
+```
+
+### Supprimer une branche
+
+```bash
+# Supprimer une branche locale
+git branch -d feature/login
+
+# Forcer la suppression (si pas fusionnée)
+git branch -D feature/login
+```
+
+## GitFlow - Workflow de branches
+
+GitFlow est une stratégie de gestion de branches pour organiser le développement.
+
+### Structure des branches
+
+<div className="my-6">
+  <div className="p-4 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg">
+    <h4 className="font-semibold text-gray-900 dark:text-gray-100 mb-2">🌳 Branches principales</h4>
+    <ul className="space-y-2 text-sm">
+      <li><code className="text-cyan-600 dark:text-cyan-400">main</code> (ou <code>master</code>) - Code en production, toujours stable</li>
+      <li><code className="text-cyan-600 dark:text-cyan-400">develop</code> - Branche de développement, code en cours d'intégration</li>
+    </ul>
+  </div>
+</div>
+
+<div className="my-6">
+  <div className="p-4 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg">
+    <h4 className="font-semibold text-gray-900 dark:text-gray-100 mb-2">🌿 Branches temporaires</h4>
+    <ul className="space-y-2 text-sm">
+      <li><code className="text-green-600 dark:text-green-400">feature/nom-feature</code> - Nouvelles fonctionnalités</li>
+      <li><code className="text-red-600 dark:text-red-400">bugfix/nom-bug</code> - Corrections de bugs</li>
+      <li><code className="text-red-600 dark:text-red-400">hotfix/nom-hotfix</code> - Corrections urgentes en production</li>
+      <li><code className="text-blue-600 dark:text-blue-400">release/v1.2.0</code> - Préparation d'une release</li>
+    </ul>
+  </div>
+</div>
+
+### Workflow typique
+
+1. **Créer une branche pour une nouvelle fonctionnalité**
+
+```bash
+git checkout develop
+git checkout -b feature/user-authentication
+```
+
+2. **Développer et commiter**
+
+```bash
+git add .
+git commit -m "Ajoute le formulaire de connexion"
+git commit -m "Ajoute la validation JWT"
+```
+
+3. **Pousser la branche sur GitHub**
+
+```bash
+git push -u origin feature/user-authentication
+```
+
+4. **Créer une Pull Request sur GitHub**
+   - Aller sur GitHub
+   - Créer une Pull Request de `feature/user-authentication` vers `develop`
+   - Demander une revue de code
+   - Fusionner après validation
+
+5. **Mettre à jour develop localement**
+
+```bash
+git checkout develop
+git pull
+```
+
+6. **Supprimer la branche feature**
+
+```bash
+git branch -d feature/user-authentication
+git push origin --delete feature/user-authentication
+```
+
+### Schéma GitFlow simplifié
+
+```
+main (production)
+  |
+  |--- release/v1.0 ---> merge vers main + develop
+  |
+develop (intégration)
+  |
+  |--- feature/login ---> merge vers develop
+  |
+  |--- feature/profile ---> merge vers develop
+  |
+  |--- bugfix/navbar ---> merge vers develop
+```
+
+<Callout type="tip" title="GitFlow simplifié pour petits projets">
+Pour des projets personnels ou en petite équipe, vous pouvez simplifier :
+- **main** : Code en production
+- **feature/*** : Branches de fonctionnalités qui fusionnent directement dans main
+
+Pas besoin de `develop` si vous êtes seul ou en très petite équipe.
+</Callout>
+
+## Commandes utiles
+
+### Annuler des modifications
+
+```bash
+# Annuler les modifications d'un fichier (non staged)
+git checkout -- fichier.js
+
+# Retirer un fichier du staging (après git add)
+git reset HEAD fichier.js
+
+# Annuler le dernier commit (garde les modifications)
+git reset --soft HEAD~1
+
+# Annuler le dernier commit (supprime les modifications)
+git reset --hard HEAD~1
+```
+
+<Callout type="error" title="Attention avec reset --hard">
+`git reset --hard` **supprime définitivement** les modifications. À utiliser avec précaution !
+</Callout>
+
+### Ignorer des fichiers
+
+Créez un fichier `.gitignore` à la racine du projet :
+
+```text
+# Dépendances
+node_modules/
+vendor/
+
+# Fichiers de configuration locaux
+.env
+.env.local
+
+# Fichiers de build
+dist/
+build/
+.next/
+
+# Fichiers IDE
+.vscode/
+.idea/
+*.swp
+
+# Fichiers système
+.DS_Store
+Thumbs.db
+```
+
+### Stash (mettre de côté des modifications)
+
+```bash
+# Mettre de côté les modifications en cours
+git stash
+
+# Voir la liste des stash
+git stash list
+
+# Récupérer le dernier stash
+git stash pop
+
+# Récupérer un stash spécifique
+git stash apply stash@{0}
+```
+
+Utile quand vous devez changer de branche rapidement sans commiter.
+
+### Tags (versions)
+
+```bash
+# Créer un tag annoté
+git tag -a v1.0.0 -m "Version 1.0.0"
+
+# Lister les tags
+git tag
+
+# Pousser un tag
+git push origin v1.0.0
+
+# Pousser tous les tags
+git push --tags
+```
+
+## Résolution de conflits
+
+Un conflit survient quand deux personnes modifient la même ligne de code.
+
+### Détecter un conflit
+
+```bash
+git merge feature/login
+# Auto-merging index.html
+# CONFLICT (content): Merge conflict in index.html
+# Automatic merge failed; fix conflicts and then commit the result.
+```
+
+### Fichier en conflit
+
+Git marque les conflits avec des marqueurs :
+
+```javascript
+<<<<<<< HEAD
+const message = "Hello from main";
+=======
+const message = "Hello from feature";
+>>>>>>> feature/login
+```
+
+### Résoudre le conflit
+
+1. Ouvrez le fichier et choisissez quelle version garder
+2. Supprimez les marqueurs `<<<<<<<`, `=======`, `>>>>>>>`
+3. Gardez le code final :
+
+```javascript
+const message = "Hello from feature";
+```
+
+4. Ajoutez et commitez :
+
+```bash
+git add fichier.js
+git commit -m "Résout le conflit dans fichier.js"
+```
+
+<Callout type="tip">
+Utilisez un outil visuel comme VS Code, GitKraken, ou Sourcetree pour résoudre les conflits plus facilement.
+</Callout>
+
+## Workflow avec branches (pour projets en équipe)
+
+```bash
+# 1. Créer une branche pour votre travail
+git checkout -b feature/nouvelle-feature
+
+# 2. Développer et commiter régulièrement
+git add .
+git commit -m "Ajoute la fonctionnalité X"
+
+# 3. Pousser sur GitHub
+git push -u origin feature/nouvelle-feature
+
+# 4. Créer une Pull Request sur GitHub
+
+# 5. Après fusion, mettre à jour main
+git checkout main
+git pull
+git branch -d feature/nouvelle-feature
+```
+
+## Commandes Git - Résumé
+
+<div className="my-6 overflow-x-auto">
+  <table className="min-w-full">
+    <thead>
+      <tr>
+        <th>Commande</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><code>git init</code></td>
+        <td>Initialiser un dépôt Git</td>
+      </tr>
+      <tr>
+        <td><code>git clone URL</code></td>
+        <td>Cloner un dépôt distant</td>
+      </tr>
+      <tr>
+        <td><code>git remote add origin URL</code></td>
+        <td>Lier un dépôt distant</td>
+      </tr>
+      <tr>
+        <td><code>git remote -v</code></td>
+        <td>Voir les dépôts distants</td>
+      </tr>
+      <tr>
+        <td><code>git status</code></td>
+        <td>Voir l'état des fichiers</td>
+      </tr>
+      <tr>
+        <td><code>git pull</code></td>
+        <td>Récupérer les modifications distantes</td>
+      </tr>
+      <tr>
+        <td><code>git add .</code></td>
+        <td>Ajouter tous les fichiers au staging</td>
+      </tr>
+      <tr>
+        <td><code>git commit -m "message"</code></td>
+        <td>Créer un commit</td>
+      </tr>
+      <tr>
+        <td><code>git push</code></td>
+        <td>Envoyer les commits sur GitHub</td>
+      </tr>
+      <tr>
+        <td><code>git push -u origin main</code></td>
+        <td>Premier push (crée la branche)</td>
+      </tr>
+      <tr>
+        <td><code>git checkout -b branche</code></td>
+        <td>Créer et changer de branche</td>
+      </tr>
+      <tr>
+        <td><code>git merge branche</code></td>
+        <td>Fusionner une branche</td>
+      </tr>
+      <tr>
+        <td><code>git log --oneline</code></td>
+        <td>Voir l'historique</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+## Ressources supplémentaires
+
+<Resources resources={[
+  {
+    title: "Pro Git Book",
+    description: "Livre complet et gratuit sur Git (français disponible)",
+    url: "https://git-scm.com/book/fr/v2",
+    type: "doc"
+  },
+  {
+    title: "GitHub Guides",
+    description: "Guides officiels pour débuter avec GitHub",
+    url: "https://guides.github.com",
+    type: "tutorial"
+  },
+  {
+    title: "Visualizing Git",
+    description: "Outil interactif pour comprendre Git visuellement",
+    url: "https://git-school.github.io/visualizing-git/",
+    type: "tutorial"
+  },
+  {
+    title: "GitFlow Cheatsheet",
+    description: "Aide-mémoire sur le workflow GitFlow",
+    url: "https://danielkummer.github.io/git-flow-cheatsheet/",
+    type: "doc"
+  }
+]} />
+
+<Callout type="success" title="En résumé">
+**Pour démarrer avec GitHub :**
+
+1. Créez un dépôt sur GitHub
+2. `git remote add origin URL` - Lier votre projet local
+3. `git push -u origin main` - Premier envoi
+
+**Les 5 commandes quotidiennes :**
+
+1. `git pull` - Récupérer les modifications (TOUJOURS en premier!)
+2. `git status` - Voir l'état actuel
+3. `git add .` - Ajouter les fichiers modifiés
+4. `git commit -m "message"` - Créer un commit
+5. `git push` - Envoyer sur GitHub
+
+Avec ces commandes, vous pouvez travailler efficacement avec Git et GitHub !
+</Callout>

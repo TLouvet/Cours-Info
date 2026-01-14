@@ -71,6 +71,7 @@ export const navigation: NavSession[] = [
     description: 'Compléments non obligatoires',
     href: '/annexes',
     sections: [
+      { id: 'git-basics', title: 'Git - Bases & Commandes', href: '/annexes/git-basics' },
       { id: 'css-selectors', title: 'CSS - Sélecteurs & Propriétés', href: '/annexes/css-selectors' },
     ],
   },

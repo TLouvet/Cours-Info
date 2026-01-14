@@ -1,0 +1,249 @@
+# Spread Operator (...)
+
+**Essentiel pour l'immutabilité !**
+
+Le spread operator `...` permet de "déplier" les éléments d'un tableau ou d'un objet.
+
+## Avec les tableaux
+
+### Fusionner des tableaux
+
+```javascript
+const arr1 = [1, 2];
+const arr2 = [3, 4];
+
+const merged = [...arr1, ...arr2];
+console.log(merged); // [1, 2, 3, 4]
+```
+
+### Copier un tableau
+
+```javascript
+const original = [1, 2, 3];
+const copy = [...original];
+
+console.log(copy); // [1, 2, 3]
+console.log(copy === original); // false (nouvelle référence)
+```
+
+### Ajouter des éléments
+
+```javascript
+const arr1 = [1, 2, 3];
+
+// Au début
+const extended = [0, ...arr1]; // [0, 1, 2, 3]
+
+// À la fin
+const extended = [...arr1, 4, 5]; // [1, 2, 3, 4, 5]
+
+// Au milieu
+const extended = [...arr1.slice(0, 2), 99, ...arr1.slice(2)];
+// [1, 2, 99, 3]
+```
+
+<Callout type="tip" title="Immutabilité">
+Le spread operator permet de créer de nouvelles copies au lieu de modifier les originaux. C'est une pratique essentielle en programmation moderne.
+
+```javascript
+// ❌ Mutation directe
+const numbers = [1, 2, 3];
+numbers.push(4);
+console.log(numbers); // [1, 2, 3, 4] - modifié
+
+// ✅ Immutabilité avec spread
+const numbers = [1, 2, 3];
+const newNumbers = [...numbers, 4];
+console.log(numbers);    // [1, 2, 3] - inchangé ✅
+console.log(newNumbers); // [1, 2, 3, 4]
+```
+</Callout>
+
+## Avec les objets
+
+### Copier un objet
+
+```javascript
+const user = { name: 'Alice', age: 25 };
+
+const copy = { ...user };
+console.log(copy); // { name: 'Alice', age: 25 }
+```
+
+### Modifier une propriété
+
+```javascript
+const user = { name: 'Alice', age: 25 };
+
+const updated = { ...user, age: 26 };
+console.log(updated); // { name: 'Alice', age: 26 }
+console.log(user);    // { name: 'Alice', age: 25 } (inchangé ✅)
+```
+
+### Fusionner des objets
+
+```javascript
+const person = { name: 'Bob', age: 30 };
+const address = { city: 'Paris', country: 'France' };
+
+const complete = { ...person, ...address };
+console.log(complete);
+// { name: 'Bob', age: 30, city: 'Paris', country: 'France' }
+```
+
+### Ordre important
+
+```javascript
+const user = { name: 'Alice', age: 25 };
+
+// Les propriétés après écrasent les précédentes
+const updated1 = { ...user, age: 26 };
+// { name: 'Alice', age: 26 }
+
+const updated2 = { age: 26, ...user };
+// { age: 25, name: 'Alice' } (user.age écrase 26)
+```
+
+## Exemples pratiques
+
+### Ajouter un élément à un tableau
+
+```javascript
+const items = [1, 2, 3];
+
+// Ajouter à la fin
+const withFour = [...items, 4];
+console.log(withFour); // [1, 2, 3, 4]
+
+// Ajouter au début
+const withZero = [0, ...items];
+console.log(withZero); // [0, 1, 2, 3]
+```
+
+### Retirer un élément d'un tableau
+
+```javascript
+const items = [1, 2, 3, 4, 5];
+
+// Retirer par index
+const removeAtIndex = (arr, index) => {
+  return [
+    ...arr.slice(0, index),
+    ...arr.slice(index + 1)
+  ];
+};
+
+console.log(removeAtIndex(items, 2)); // [1, 2, 4, 5]
+
+// Retirer par valeur
+const removeValue = (arr, value) => {
+  return arr.filter(item => item !== value);
+};
+
+console.log(removeValue(items, 3)); // [1, 2, 4, 5]
+```
+
+### Modifier un élément dans un tableau
+
+```javascript
+const todos = [
+  { id: 1, text: 'Apprendre JavaScript', done: false },
+  { id: 2, text: 'Faire les courses', done: false }
+];
+
+// Marquer un todo comme terminé
+const toggleTodo = (todos, id) => {
+  return todos.map(todo =>
+    todo.id === id
+      ? { ...todo, done: !todo.done }
+      : todo
+  );
+};
+
+console.log(toggleTodo(todos, 1));
+// [{ id: 1, text: 'Apprendre JavaScript', done: true }, ...]
+```
+
+### Mettre à jour un objet imbriqué
+
+```javascript
+const user = {
+  name: 'Alice',
+  address: {
+    city: 'Paris',
+    country: 'France'
+  }
+};
+
+// Changer la ville (spread à chaque niveau)
+const updatedUser = {
+  ...user,
+  address: {
+    ...user.address,
+    city: 'Lyon'
+  }
+};
+
+console.log(updatedUser.address.city); // 'Lyon'
+console.log(user.address.city);        // 'Paris' (inchangé ✅)
+```
+
+<Callout type="warning" title="Shallow copy (copie superficielle)">
+Le spread operator fait une **copie superficielle** (shallow copy). Les objets imbriqués sont partagés par référence :
+
+```javascript
+const user = {
+  name: 'Alice',
+  address: { city: 'Paris' }
+};
+
+const copy = { ...user };
+copy.address.city = 'Lyon';
+
+console.log(user.address.city); // 'Lyon' (modifié aussi! 😱)
+```
+
+**Solutions :**
+
+1. **Utiliser le spread à chaque niveau** (manuel)
+```javascript
+const copy = {
+  ...user,
+  address: { ...user.address }
+};
+copy.address.city = 'Lyon';
+console.log(user.address.city); // 'Paris' (inchangé ✅)
+```
+
+2. **Utiliser `structuredClone()`** (moderne, recommandé)
+```javascript
+const copy = structuredClone(user);
+copy.address.city = 'Lyon';
+console.log(user.address.city); // 'Paris' (inchangé ✅)
+```
+
+`structuredClone()` fait une **copie profonde** (deep copy) de tout l'objet, y compris les objets imbriqués. C'est la solution la plus simple et la plus sûre pour copier des objets complexes.
+
+**Limites de `structuredClone()` :**
+- Ne copie pas les fonctions
+- Ne copie pas les symboles
+- Ne copie pas les prototypes
+
+Pour la plupart des cas d'usage (données JSON, objets simples), `structuredClone()` est parfait.
+</Callout>
+
+## Rest vs Spread
+
+Même syntaxe `...` mais usages différents :
+
+```javascript
+// Spread : déplier
+const arr = [1, 2, 3];
+console.log(...arr); // 1 2 3
+
+// Rest : collecter
+const [first, ...rest] = arr;
+console.log(first); // 1
+console.log(rest);  // [2, 3]
+```
+

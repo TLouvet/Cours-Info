@@ -1,0 +1,178 @@
+# HTML, CSS & DOM
+
+Avant de plonger dans React, rappelons les fondamentaux du développement web.
+
+## HTML - Structure
+
+**HTML** (HyperText Markup Language) est un langage de balisage qui définit la structure d'une page web.
+
+### Balises essentielles
+
+```html
+<!DOCTYPE html>
+<html lang="fr">
+  <head>
+    <title>Ma page</title>
+  </head>
+  <body>
+    <h1>Titre principal</h1>
+    <p>Un paragraphe de texte.</p>
+    <ul>
+      <li>Élément de liste</li>
+    </ul>
+    <a href="/page">Lien</a>
+    <button>Bouton</button>
+  </body>
+</html>
+```
+
+<Callout type="info" title="Sémantique HTML">
+Utilisez des balises sémantiques (`<header>`, `<nav>`, `<main>`, `<article>`, `<section>`, `<footer>`) pour structurer votre contenu de manière significative.
+</Callout>
+
+## CSS - Style
+
+**CSS** (Cascading Style Sheets) définit l'apparence visuelle des éléments HTML.
+
+### Sélecteurs CSS
+
+```css
+/* Sélecteur par balise */
+h1 {
+  color: #61DAFB;
+  font-size: 2rem;
+}
+
+/* Sélecteur par classe */
+.ma-classe {
+  background-color: white;
+  padding: 1rem;
+}
+
+/* Sélecteur par ID */
+#mon-id {
+  margin: 0 auto;
+}
+```
+
+<QuickCheck
+  question="Quel sélecteur est le plus spécifique ?"
+  options={[
+    "ID (#mon-id)",
+    "Classe (.ma-classe)",
+    "Balise (h1)",
+    "Tous ont la même spécificité"
+  ]}
+  correctAnswer={0}
+  explanation="Les sélecteurs par ID ont la plus haute spécificité, suivis des classes, puis des balises."
+/>
+
+## JavaScript et le DOM
+
+Le **DOM** (Document Object Model) représente la page web comme un arbre d'objets que JavaScript peut manipuler.
+
+### Sélection d'éléments
+
+```javascript
+// Par ID
+const element = document.getElementById('mon-id');
+
+// Par sélecteur CSS (premier match)
+const premier = document.querySelector('.ma-classe');
+
+// Par sélecteur CSS (tous les matchs)
+const tous = document.querySelectorAll('p');
+```
+
+### Manipulation du DOM
+
+```javascript
+// Modifier le contenu
+element.textContent = 'Nouveau texte';
+element.innerHTML = '<strong>Texte en gras</strong>';
+
+// Modifier les classes
+element.classList.add('nouvelle-classe');
+element.classList.remove('ancienne-classe');
+element.classList.toggle('active');
+
+// Écouter des événements
+element.addEventListener('click', () => {
+  console.log('Cliqué !');
+});
+```
+
+<Callout type="warning" title="Avec React">
+**Important :** Avec React, vous ne manipulerez plus directement le DOM !
+
+React gère le DOM via son **Virtual DOM**. Vous déclarez ce que vous voulez afficher, et React s'occupe des mises à jour du DOM réel de manière optimisée.
+</Callout>
+
+## Console développeur
+
+La console du navigateur est votre meilleure amie pour déboguer.
+
+### Ouvrir la console
+
+- **Windows/Linux :** `F12` ou `Ctrl + Shift + I`
+- **macOS :** `Cmd + Option + I`
+
+### Commandes utiles
+
+```javascript
+// Afficher un message
+console.log('Message');
+
+// Afficher une erreur
+console.error('Erreur !');
+
+// Afficher un tableau
+const data = [1, 2, 3];
+console.table(data);
+
+// Grouper des logs
+console.group('Mon groupe');
+console.log('Message 1');
+console.log('Message 2');
+console.groupEnd();
+```
+
+<Callout type="tip" title="Astuce">
+**Toujours vérifier la console !** Les erreurs JavaScript s'affichent dans la console. Si votre code ne fonctionne pas, c'est le premier endroit où chercher.
+</Callout>
+
+## MDN - Votre ressource
+
+<Resources resources={[
+  {
+    title: "MDN HTML",
+    description: "Guide complet des balises et attributs HTML",
+    url: "https://developer.mozilla.org/docs/Web/HTML",
+    type: "doc"
+  },
+  {
+    title: "MDN CSS",
+    description: "Référence complète des propriétés CSS",
+    url: "https://developer.mozilla.org/docs/Web/CSS",
+    type: "doc"
+  },
+  {
+    title: "MDN JavaScript",
+    description: "Documentation JavaScript avec exemples interactifs",
+    url: "https://developer.mozilla.org/docs/Web/JavaScript",
+    type: "doc"
+  },
+  {
+    title: "MDN DOM",
+    description: "API du Document Object Model",
+    url: "https://developer.mozilla.org/docs/Web/API/Document",
+    type: "doc"
+  }
+]} />
+
+<Callout type="tip" title="Astuce de recherche">
+Tapez **"mdn"** + votre recherche dans Google pour trouver directement la documentation MDN.
+
+Exemple : "mdn array map" vous emmène directement à la page MDN sur `Array.prototype.map()`.
+</Callout>
+

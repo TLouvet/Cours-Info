@@ -1,0 +1,520 @@
+# Exercices - JavaScript Moderne
+
+Mettez en pratique ce que vous avez appris ! Ces exercices couvrent tous les concepts essentiels de JavaScript moderne.
+
+<Callout type="tip" title="Comment travailler">
+- Essayez de résoudre chaque exercice sans regarder la solution
+- Testez votre code dans la console du navigateur (F12)
+- Comparez ensuite avec la solution proposée
+- L'important est de **comprendre**, pas juste de copier !
+</Callout>
+
+## Exercice 1 : Variables et types
+
+<Exercise
+  title="Types et variables"
+  difficulty="easy"
+  solution={
+    <CodeBlock language="javascript">{`// 1. Déclarations
+const name = 'Marie';
+const age = 22;
+const isStudent = true;
+const courses = ['React', 'Node', 'TypeScript'];
+
+// 2. Types
+console.log(typeof name);      // "string"
+console.log(typeof age);       // "number"
+console.log(typeof isStudent); // "boolean"
+console.log(typeof courses);   // "object" (les tableaux sont des objets)
+console.log(Array.isArray(courses)); // true
+
+// 3. Modification
+let score = 0;
+score = 10;
+score = score + 5;
+console.log(score); // 15
+
+// 4. Impossible
+// name = 'Paul'; // ❌ Error: Assignment to constant variable`}</CodeBlock>
+  }
+>
+1. Créez les variables suivantes avec \`const\` :
+   - \`name\` : votre prénom (string)
+   - \`age\` : votre âge (number)
+   - \`isStudent\` : true (boolean)
+   - \`courses\` : un tableau avec 3 cours que vous suivez
+
+2. Utilisez \`typeof\` pour afficher le type de chaque variable
+
+3. Créez une variable \`score\` avec \`let\`, initialisée à 0, puis modifiez-la à 10, puis ajoutez 5
+
+4. Essayez de réassigner \`name\` - que se passe-t-il ?
+</Exercise>
+
+## Exercice 2 : Arrow Functions
+
+<Exercise
+  title="Convertir en arrow functions"
+  difficulty="easy"
+  solution={
+    <CodeBlock language="javascript">{`// 1. Fonction classique → Arrow function
+const greet = (name) => {
+  return \`Bonjour \${name}!\`;
+};
+
+// 2. Return implicite
+const greet = (name) => \`Bonjour \${name}!\`;
+
+// 3. Calculs
+const add = (a, b) => a + b;
+const multiply = (a, b) => a * b;
+const square = (n) => n * n;
+
+// 4. Tests
+console.log(greet('Alice'));    // "Bonjour Alice!"
+console.log(add(3, 5));         // 8
+console.log(multiply(4, 7));    // 28
+console.log(square(5));         // 25`}</CodeBlock>
+  }
+>
+Convertissez ces fonctions classiques en **arrow functions** :
+
+<CodeBlock language="javascript">{`function greet(name) {
+  return \`Bonjour \${name}!\`;
+}
+
+function add(a, b) {
+  return a + b;
+}
+
+function multiply(a, b) {
+  return a * b;
+}
+
+function square(n) {
+  return n * n;
+}`}</CodeBlock>
+
+**Bonus :** Utilisez le return implicite quand c'est possible !
+</Exercise>
+
+## Exercice 3 : Méthodes de tableaux
+
+<Exercise
+  title="Manipulation de tableaux"
+  difficulty="medium"
+  solution={
+    <CodeBlock language="javascript">{`const numbers = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
+
+// 1. Nombres pairs
+const evens = numbers.filter(n => n % 2 === 0);
+console.log(evens); // [2, 4, 6, 8, 10]
+
+// 2. Nombres au carré
+const squares = numbers.map(n => n * n);
+console.log(squares); // [1, 4, 9, 16, 25, 36, 49, 64, 81, 100]
+
+// 3. Somme de tous les nombres
+const sum = numbers.reduce((acc, n) => acc + n, 0);
+console.log(sum); // 55
+
+// 4. Premier nombre > 5
+const firstAboveFive = numbers.find(n => n > 5);
+console.log(firstAboveFive); // 6
+
+// 5. Au moins un nombre > 8 ?
+const hasAboveEight = numbers.some(n => n > 8);
+console.log(hasAboveEight); // true
+
+// 6. Tous les nombres < 20 ?
+const allBelow20 = numbers.every(n => n < 20);
+console.log(allBelow20); // true`}</CodeBlock>
+  }
+>
+Avec ce tableau :
+
+<CodeBlock language="javascript">{`const numbers = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];`}</CodeBlock>
+
+1. Créez un nouveau tableau \`evens\` contenant seulement les **nombres pairs**
+2. Créez un tableau \`squares\` contenant le **carré** de chaque nombre
+3. Calculez la **somme** de tous les nombres (utilisez \`.reduce()\`)
+4. Trouvez le **premier** nombre supérieur à 5
+5. Vérifiez s'il y a **au moins un** nombre supérieur à 8
+6. Vérifiez si **tous** les nombres sont inférieurs à 20
+
+**Méthodes à utiliser :** \`.filter()\`, \`.map()\`, \`.reduce()\`, \`.find()\`, \`.some()\`, \`.every()\`
+</Exercise>
+
+<CodePlayground
+  title="🎯 Testez les méthodes de tableaux"
+  initialCode={`const numbers = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
+
+// 1. Nombres pairs
+const evens = numbers.filter(n => n % 2 === 0);
+console.log('Pairs:', evens);
+
+// 2. Nombres au carré
+const squares = numbers.map(n => n * n);
+console.log('Carrés:', squares);
+
+// 3. Somme
+const sum = numbers.reduce((acc, n) => acc + n, 0);
+console.log('Somme:', sum);
+
+// Essayez d'ajouter vos propres transformations !`}
+/>
+
+## Exercice 4 : Objets et méthodes
+
+<Exercise
+  title="Manipulation d'objets"
+  difficulty="medium"
+  solution={
+    <CodeBlock language="javascript">{`const students = [
+  { id: 1, name: 'Alice', grade: 15 },
+  { id: 2, name: 'Bob', grade: 12 },
+  { id: 3, name: 'Charlie', grade: 18 },
+  { id: 4, name: 'Diana', grade: 9 }
+];
+
+// 1. Tous les noms
+const names = students.map(s => s.name);
+console.log(names); // ['Alice', 'Bob', 'Charlie', 'Diana']
+
+// 2. Étudiants avec note ≥ 12
+const passed = students.filter(s => s.grade >= 12);
+console.log(passed);
+// [{ id: 1, name: 'Alice', ... }, { id: 2, name: 'Bob', ... }, ...]
+
+// 3. Moyenne des notes
+const average = students.reduce((sum, s) => sum + s.grade, 0) / students.length;
+console.log(average); // 13.5
+
+// 4. Étudiant avec ID 3
+const charlie = students.find(s => s.id === 3);
+console.log(charlie); // { id: 3, name: 'Charlie', grade: 18 }
+
+// 5. Au moins un étudiant < 10 ?
+const hasFailure = students.some(s => s.grade < 10);
+console.log(hasFailure); // true (Diana a 9)`}</CodeBlock>
+  }
+>
+Avec ce tableau d'étudiants :
+
+<CodeBlock language="javascript">{`const students = [
+  { id: 1, name: 'Alice', grade: 15 },
+  { id: 2, name: 'Bob', grade: 12 },
+  { id: 3, name: 'Charlie', grade: 18 },
+  { id: 4, name: 'Diana', grade: 9 }
+];`}</CodeBlock>
+
+1. Extraire tous les **noms** dans un tableau
+2. Créer un tableau avec seulement les étudiants ayant une **note ≥ 12**
+3. Calculer la **moyenne** des notes
+4. Trouver l'étudiant avec **l'ID 3**
+5. Vérifier s'il y a au moins un étudiant avec une note **inférieure à 10**
+</Exercise>
+
+## Exercice 5 : Destructuration
+
+<Exercise
+  title="Destructuration d'objets et tableaux"
+  difficulty="medium"
+  solution={
+    <CodeBlock language="javascript">{`// 1. Destructuration d'objet
+const user = {
+  name: 'Thomas',
+  age: 30,
+  city: 'Paris',
+  country: 'France'
+};
+
+const { name, age } = user;
+console.log(name); // "Thomas"
+console.log(age);  // 30
+
+// 2. Destructuration avec renommage
+const { name: userName, city: userCity } = user;
+console.log(userName); // "Thomas"
+console.log(userCity); // "Paris"
+
+// 3. Destructuration de tableau
+const colors = ['red', 'green', 'blue', 'yellow'];
+
+const [first, second] = colors;
+console.log(first);  // "red"
+console.log(second); // "green"
+
+// 4. Ignorer des éléments
+const [, , third] = colors;
+console.log(third); // "blue"
+
+// 5. Destructuration dans une fonction
+const displayUser = ({ name, age }) => {
+  console.log(\`\${name} a \${age} ans\`);
+};
+
+displayUser(user); // "Thomas a 30 ans"`}</CodeBlock>
+  }
+>
+Avec cet objet et ce tableau :
+
+<CodeBlock language="javascript">{`const user = {
+  name: 'Thomas',
+  age: 30,
+  city: 'Paris',
+  country: 'France'
+};
+
+const colors = ['red', 'green', 'blue', 'yellow'];`}</CodeBlock>
+
+1. Utilisez la destructuration pour extraire \`name\` et \`age\` de \`user\`
+2. Extrayez \`name\` en le renommant \`userName\` et \`city\` en \`userCity\`
+3. Extrayez les deux premiers éléments de \`colors\` dans \`first\` et \`second\`
+4. Extrayez le **troisième** élément de \`colors\` (ignorez les deux premiers)
+5. Créez une fonction \`displayUser\` qui prend un objet et utilise la destructuration dans les paramètres pour afficher "Thomas a 30 ans"
+</Exercise>
+
+## Exercice 6 : Spread Operator
+
+<Exercise
+  title="Spread operator et immutabilité"
+  difficulty="medium"
+  solution={
+    <CodeBlock language="javascript">{`// 1. Fusionner deux tableaux
+const arr1 = [1, 2, 3];
+const arr2 = [4, 5, 6];
+const merged = [...arr1, ...arr2];
+console.log(merged); // [1, 2, 3, 4, 5, 6]
+
+// 2. Copier et ajouter
+const numbers = [1, 2, 3];
+const extended = [...numbers, 4, 5];
+console.log(extended); // [1, 2, 3, 4, 5]
+console.log(numbers);  // [1, 2, 3] (inchangé ✅)
+
+// 3. Copier et modifier un objet
+const user = { name: 'Alice', age: 25 };
+const updated = { ...user, age: 26 };
+console.log(updated); // { name: 'Alice', age: 26 }
+console.log(user);    // { name: 'Alice', age: 25 } (inchangé ✅)
+
+// 4. Fusionner deux objets
+const person = { name: 'Bob', age: 30 };
+const address = { city: 'Paris', country: 'France' };
+const complete = { ...person, ...address };
+console.log(complete);
+// { name: 'Bob', age: 30, city: 'Paris', country: 'France' }
+
+// 5. Ajouter une propriété à un objet
+const product = { name: 'Laptop', price: 1000 };
+const withDiscount = { ...product, discount: 10 };
+console.log(withDiscount);
+// { name: 'Laptop', price: 1000, discount: 10 }`}</CodeBlock>
+  }
+>
+1. Fusionnez `[1, 2, 3]` et `[4, 5, 6]` avec le spread operator
+2. Copiez `[1, 2, 3]` et ajoutez 4 et 5 (sans modifier l'original)
+3. Copiez l'objet `{'{ name: "Alice", age: 25 }'}` et changez l'âge à 26
+4. Fusionnez `{'{ name: "Bob", age: 30 }'}` avec `{'{ city: "Paris", country: "France" }'}`
+5. Ajoutez une propriété `discount: 10` à `{'{ name: "Laptop", price: 1000 }'}`
+
+<Callout type="warning">
+**Important :** Vérifiez que les originaux ne sont **pas modifiés** !
+</Callout>
+</Exercise>
+
+## Exercice 7 : Template Literals
+
+<Exercise
+  title="Template literals et interpolation"
+  difficulty="easy"
+  solution={
+    <CodeBlock language="javascript">{`// 1. Interpolation simple
+const name = 'Alice';
+const age = 25;
+const message = \`Bonjour, je m'appelle \${name} et j'ai \${age} ans.\`;
+console.log(message);
+// "Bonjour, je m'appelle Alice et j'ai 25 ans."
+
+// 2. Expressions
+const price = 100;
+const quantity = 3;
+const total = \`Total: \${price * quantity}€\`;
+console.log(total); // "Total: 300€"
+
+// 3. Conditions
+const score = 15;
+const result = \`Résultat: \${score >= 10 ? 'Réussi' : 'Échoué'}\`;
+console.log(result); // "Résultat: Réussi"
+
+// 4. Multi-lignes
+const user = { name: 'Bob', email: 'bob@example.com' };
+const email = \`
+Bonjour \${user.name},
+
+Votre compte a été créé avec succès.
+Email: \${user.email}
+
+Cordialement,
+L'équipe
+\`;
+console.log(email);`}</CodeBlock>
+  }
+>
+Utilisez les **template literals** (backticks \`) pour :
+
+1. Créer un message : "Bonjour, je m'appelle [nom] et j'ai [age] ans."
+2. Calculer et afficher : "Total: [prix × quantité]€"
+3. Afficher "Résultat: Réussi" si score ≥ 10, sinon "Résultat: Échoué"
+4. Créer un email multi-lignes avec interpolation
+
+**Astuce :** Utilisez <code>{'${expression}'}</code> pour l'interpolation
+</Exercise>
+
+## Exercice 8 : Combinaison de concepts
+
+<Exercise
+  title="Projet : Gestion d'une liste de tâches"
+  difficulty="hard"
+  solution={
+    <CodeBlock language="javascript">{`const tasks = [
+  { id: 1, title: 'Apprendre React', completed: false, priority: 'high' },
+  { id: 2, title: 'Faire les courses', completed: true, priority: 'low' },
+  { id: 3, title: 'Réviser JavaScript', completed: false, priority: 'high' },
+  { id: 4, title: 'Appeler maman', completed: false, priority: 'medium' }
+];
+
+// 1. Titres de toutes les tâches
+const titles = tasks.map(t => t.title);
+console.log(titles);
+// ['Apprendre React', 'Faire les courses', 'Réviser JavaScript', 'Appeler maman']
+
+// 2. Tâches non terminées
+const incomplete = tasks.filter(t => !t.completed);
+console.log(incomplete);
+// [{ id: 1, ... }, { id: 3, ... }, { id: 4, ... }]
+
+// 3. Tâches prioritaires non terminées
+const urgentTasks = tasks.filter(t => !t.completed && t.priority === 'high');
+console.log(urgentTasks);
+// [{ id: 1, title: 'Apprendre React', ... }, { id: 3, title: 'Réviser JavaScript', ... }]
+
+// 4. Marquer la tâche ID 1 comme terminée (immutabilité)
+const toggledTasks = tasks.map(t =>
+  t.id === 1 ? { ...t, completed: true } : t
+);
+console.log(toggledTasks);
+console.log(tasks); // Original inchangé ✅
+
+// 5. Ajouter une nouvelle tâche
+const newTask = { id: 5, title: 'Faire du sport', completed: false, priority: 'medium' };
+const updatedTasks = [...tasks, newTask];
+console.log(updatedTasks.length); // 5
+console.log(tasks.length);        // 4 (original inchangé ✅)
+
+// 6. Nombre de tâches terminées
+const completedCount = tasks.filter(t => t.completed).length;
+console.log(completedCount); // 1
+
+// 7. Résumé
+const summary = \`Vous avez \${tasks.length} tâches, dont \${completedCount} terminée(s).\`;
+console.log(summary);
+// "Vous avez 4 tâches, dont 1 terminée(s)."`}</CodeBlock>
+  }
+>
+Avec cette liste de tâches :
+
+<CodeBlock language="javascript">{`const tasks = [
+  { id: 1, title: 'Apprendre React', completed: false, priority: 'high' },
+  { id: 2, title: 'Faire les courses', completed: true, priority: 'low' },
+  { id: 3, title: 'Réviser JavaScript', completed: false, priority: 'high' },
+  { id: 4, title: 'Appeler maman', completed: false, priority: 'medium' }
+];`}</CodeBlock>
+
+1. Extraire tous les **titres** dans un tableau
+2. Filtrer les tâches **non terminées** (`completed: false`)
+3. Filtrer les tâches **prioritaires** (`priority: 'high'`) **ET non terminées**
+4. Marquer la tâche avec `id: 1` comme terminée **sans modifier l'original** (immutabilité)
+5. Ajouter une nouvelle tâche `{'{ id: 5, title: "Faire du sport", completed: false, priority: "medium" }'}` **sans modifier l'original**
+6. Compter le nombre de tâches **terminées**
+7. Créer un message avec template literal : "Vous avez X tâches, dont Y terminée(s)."
+
+<Callout type="tip">
+Cet exercice combine : \`.map()\`, \`.filter()\`, spread operator, et template literals !
+</Callout>
+</Exercise>
+
+<CodePlayground
+  title="🎯 Projet : Gestion de tâches interactive"
+  height={500}
+  initialCode={`const tasks = [
+  { id: 1, title: 'Apprendre React', completed: false, priority: 'high' },
+  { id: 2, title: 'Faire les courses', completed: true, priority: 'low' },
+  { id: 3, title: 'Réviser JavaScript', completed: false, priority: 'high' },
+  { id: 4, title: 'Appeler maman', completed: false, priority: 'medium' }
+];
+
+// 1. Tous les titres
+const titles = tasks.map(t => t.title);
+console.log('Titres:', titles);
+
+// 2. Tâches non terminées
+const incomplete = tasks.filter(t => !t.completed);
+console.log('Non terminées:', incomplete.length);
+
+// 3. Tâches prioritaires non terminées
+const urgent = tasks.filter(t => !t.completed && t.priority === 'high');
+console.log('Urgentes:', urgent.map(t => t.title));
+
+// 4. Marquer tâche 1 comme terminée (immutabilité!)
+const toggledTasks = tasks.map(t =>
+  t.id === 1 ? { ...t, completed: true } : t
+);
+console.log('Après toggle:', toggledTasks.find(t => t.id === 1));
+
+// 5. Ajouter une nouvelle tâche
+const newTask = { id: 5, title: 'Faire du sport', completed: false, priority: 'medium' };
+const updatedTasks = [...tasks, newTask];
+console.log('Nombre de tâches:', updatedTasks.length);
+
+// Essayez d'ajouter vos propres opérations !`}
+/>
+
+## TP à rendre
+
+<Callout type="error" title="Travail à rendre sur Moodle">
+**Date limite :** Fin de la séance
+
+Créez un fichier \`seance1.js\` contenant vos solutions aux exercices 3, 4, 5 et 8.
+
+Testez votre code dans la console du navigateur avant de soumettre !
+</Callout>
+
+<Resources resources={[
+  {
+    title: "MDN - Array Methods",
+    description: "Documentation complète des méthodes de tableaux",
+    url: "https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array",
+    type: "doc"
+  },
+  {
+    title: "MDN - Destructuring",
+    description: "Guide complet de la destructuration",
+    url: "https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/Destructuring_assignment",
+    type: "doc"
+  },
+  {
+    title: "MDN - Spread Syntax",
+    description: "Documentation du spread operator",
+    url: "https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/Spread_syntax",
+    type: "doc"
+  },
+  {
+    title: "MDN - Template Literals",
+    description: "Guide des template literals",
+    url: "https://developer.mozilla.org/docs/Web/JavaScript/Reference/Template_literals",
+    type: "doc"
+  }
+]} />
+

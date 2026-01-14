@@ -1,0 +1,469 @@
+# Collaborer avec l'IA
+
+Maintenant que vous maîtrisez les fondamentaux JavaScript, apprenons à collaborer efficacement avec l'IA.
+
+<Callout type="info" title="Philosophie du cours">
+**Vous pilotez, l'IA exécute !**
+
+L'IA est un outil puissant, mais elle ne remplace pas la compréhension. Votre connaissance des concepts JavaScript vous permet de :
+- Valider le code généré
+- Déboguer les erreurs
+- Donner des prompts précis
+- Adapter les solutions à vos besoins
+</Callout>
+
+## Pourquoi les fondamentaux sont essentiels
+
+### Sans connaissance JavaScript
+
+```
+Vous: "Crée-moi une fonction pour filtrer un tableau"
+
+IA: [génère du code]
+
+Vous: ✅ Copier-coller
+      ❌ Erreur... pourquoi ?
+      ❌ Impossible de déboguer
+      ❌ Impossible d'adapter
+```
+
+### Avec connaissance JavaScript
+
+```
+Vous: "Crée une fonction qui utilise .filter() pour garder
+       seulement les utilisateurs majeurs (age >= 18)"
+
+IA: [génère du code]
+
+Vous: ✅ Comprendre le code
+      ✅ Vérifier la syntaxe
+      ✅ Déboguer si nécessaire
+      ✅ Adapter selon vos besoins
+```
+
+<Callout type="success">
+**La différence ?** Avec les fondamentaux, vous pouvez **superviser** l'IA au lieu de la suivre aveuglément.
+</Callout>
+
+## Écrire de meilleurs prompts
+
+### ❌ Prompt vague
+
+```
+"Crée une fonction pour gérer des utilisateurs"
+```
+
+L'IA ne sait pas :
+- Quelle opération ? (ajouter, filtrer, trier)
+- Quelle structure de données ?
+- Quels critères ?
+
+### ✅ Prompt précis
+
+```
+"Crée une fonction filterAdults qui :
+- Prend un tableau d'objets users avec name et age
+- Utilise .filter() pour garder seulement age >= 18
+- Retourne un nouveau tableau
+- Utilise une arrow function"
+```
+
+**Résultat :** Code exact, prêt à utiliser !
+
+<Callout type="tip">
+Plus vous connaissez les concepts (`.filter()`, arrow functions, destructuration), plus vos prompts sont précis.
+</Callout>
+
+## Valider le code généré
+
+### Checklist de validation
+
+Quand l'IA génère du code, vérifiez :
+
+#### 1. **Syntaxe JavaScript moderne**
+
+```javascript
+// ❌ L'IA a utilisé var ?
+var count = 0;
+
+// ✅ Corrigez en const ou let
+const count = 0;
+```
+
+#### 2. **Immutabilité**
+
+```javascript
+// ❌ Mutation du tableau original
+const addItem = (items, newItem) => {
+  items.push(newItem);
+  return items;
+};
+
+// ✅ Nouveau tableau avec spread
+const addItem = (items, newItem) => {
+  return [...items, newItem];
+};
+```
+
+#### 3. **Destructuration**
+
+```javascript
+// ❌ Code verbeux
+const getFullName = (user) => {
+  return user.firstName + ' ' + user.lastName;
+};
+
+// ✅ Avec destructuration
+const getFullName = ({ firstName, lastName }) => {
+  return `${firstName} ${lastName}`;
+};
+```
+
+#### 4. **Méthodes de tableaux**
+
+```javascript
+// ❌ L'IA utilise une boucle for ?
+const doubled = [];
+for (let i = 0; i < numbers.length; i++) {
+  doubled.push(numbers[i] * 2);
+}
+
+// ✅ Utilisez .map()
+const doubled = numbers.map(n => n * 2);
+```
+
+#### 5. **Arrow functions**
+
+```javascript
+// ❌ Fonction classique
+function add(a, b) {
+  return a + b;
+}
+
+// ✅ Arrow function moderne
+const add = (a, b) => a + b;
+```
+
+#### 6. **Template literals**
+
+```javascript
+// ❌ Concaténation avec +
+const message = 'Hello ' + name + ', you are ' + age + ' years old';
+
+// ✅ Template literals
+const message = `Hello ${name}, you are ${age} years old`;
+```
+
+## Déboguer les suggestions de l'IA
+
+### Erreur courante : Mauvaise méthode de tableau
+
+```javascript
+// ❌ L'IA utilise .forEach() pour transformer
+const doubled = [];
+numbers.forEach(n => {
+  doubled.push(n * 2);
+});
+
+// ✅ Utilisez .map() pour transformer
+const doubled = numbers.map(n => n * 2);
+```
+
+### Erreur courante : Mutation d'objet
+
+```javascript
+// ❌ Modifie l'objet original
+const updateUser = (user, newAge) => {
+  user.age = newAge;
+  return user;
+};
+
+// ✅ Crée un nouvel objet
+const updateUser = (user, newAge) => {
+  return { ...user, age: newAge };
+};
+```
+
+### Erreur courante : Pas de valeur par défaut
+
+```javascript
+// ❌ Erreur si country n'existe pas
+const getCountry = ({ country }) => {
+  return country.toUpperCase();
+};
+
+// ✅ Avec valeur par défaut
+const getCountry = ({ country = 'France' }) => {
+  return country.toUpperCase();
+};
+```
+
+<Callout type="warning">
+**Important :** L'IA fait des erreurs ! Votre rôle est de les détecter grâce à vos connaissances.
+</Callout>
+
+## Exemples pratiques
+
+### Exemple 1 : Filtrer des données
+
+**Votre prompt :**
+```
+"Crée une fonction filterExpensive qui :
+- Prend un tableau de produits (objets avec name et price)
+- Utilise .filter() pour garder seulement les produits > 100€
+- Retourne un nouveau tableau
+- Utilise une arrow function"
+```
+
+**Vérification :**
+- ✅ `.filter()` utilisé (pas de boucle for) ?
+- ✅ Arrow function ?
+- ✅ Pas de mutation du tableau original ?
+- ✅ Return explicite ou implicite ?
+
+### Exemple 2 : Transformer des données
+
+**Votre prompt :**
+```
+"Crée une fonction extractNames qui :
+- Prend un tableau d'utilisateurs (objets avec id, name, email)
+- Utilise .map() pour extraire seulement les noms
+- Retourne un tableau de strings
+- Utilise une arrow function avec return implicite"
+```
+
+**Vérification :**
+- ✅ `.map()` utilisé ?
+- ✅ Return implicite (pas d'accolades) ?
+- ✅ Arrow function ?
+
+### Exemple 3 : Calculer une somme
+
+**Votre prompt :**
+```
+"Crée une fonction calculateTotal qui :
+- Prend un tableau de produits avec price
+- Utilise .reduce() pour calculer le prix total
+- La valeur initiale est 0
+- Utilise une arrow function"
+```
+
+**Vérification :**
+- ✅ `.reduce()` utilisé ?
+- ✅ Valeur initiale fournie (0) ?
+- ✅ Accumulateur correct ?
+
+## Améliorer progressivement
+
+L'IA peut vous aider à améliorer du code existant.
+
+### Itération 1 : Code fonctionnel
+
+```javascript
+function getUserInfo(user) {
+  return user.name + ' (' + user.age + ' ans)';
+}
+```
+
+### Itération 2 : Avec vos connaissances
+
+**Prompt :** "Améliore ce code avec arrow function et template literals"
+
+```javascript
+const getUserInfo = (user) => {
+  return `${user.name} (${user.age} ans)`;
+};
+```
+
+### Itération 3 : Encore mieux
+
+**Prompt :** "Ajoute la destructuration et le return implicite"
+
+```javascript
+const getUserInfo = ({ name, age }) => `${name} (${age} ans)`;
+```
+
+## Questions à vous poser
+
+Avant d'utiliser du code généré par l'IA, demandez-vous :
+
+### 1. **Compréhension**
+- ❓ Est-ce que je comprends ce que fait chaque ligne ?
+- ❓ Si quelqu'un me demande d'expliquer, je peux ?
+
+### 2. **Qualité**
+- ❓ Le code suit-il les bonnes pratiques JavaScript moderne ?
+- ❓ Y a-t-il des mutations directes d'objets/tableaux ?
+- ❓ Les méthodes de tableaux sont-elles appropriées ?
+
+### 3. **Adaptation**
+- ❓ Puis-je adapter ce code à mes besoins ?
+- ❓ Que faire si j'ai un bug ?
+
+### 4. **Performance**
+- ❓ Le code est-il trop complexe pour ce que je veux ?
+- ❓ Y a-t-il une solution plus simple ?
+
+<Callout type="error" title="Signal d'alarme">
+Si vous répondez "non" à la question 1 (compréhension), **STOP** !
+
+Ne copiez jamais du code que vous ne comprenez pas. Demandez à l'IA d'expliquer ou simplifier.
+</Callout>
+
+## Bonnes pratiques
+
+### ✅ À faire
+
+1. **Comprendre avant de copier**
+   - Lisez le code ligne par ligne
+   - Identifiez les concepts JS utilisés
+   - Comprenez la logique
+
+2. **Tester systématiquement**
+   - Vérifiez que ça marche
+   - Testez les cas limites (tableau vide, undefined, etc.)
+   - Utilisez `console.log()` pour déboguer
+
+3. **Adapter à votre style**
+   - Renommez les variables si besoin
+   - Ajustez le formatage
+   - Simplifiez si possible
+
+4. **Demander des explications**
+   - "Pourquoi utilises-tu .filter() ici ?"
+   - "Explique-moi cette ligne"
+   - "Quelle alternative existe ?"
+
+### ❌ À éviter
+
+1. **Copier-coller aveugle**
+   - Ne pas comprendre = problèmes garantis
+
+2. **Ignorer les erreurs**
+   - Lisez les messages d'erreur
+   - Utilisez la console du navigateur
+
+3. **Accepter du code obsolète**
+   - Vérifiez que l'IA utilise les pratiques modernes
+   - Pas de `var`, pas de `function` quand arrow function est possible
+
+4. **Sur-complexifier**
+   - L'IA peut proposer du code trop complexe
+   - Demandez une version plus simple
+
+## Exercice pratique
+
+<Exercise
+  title="Valider du code IA"
+  difficulty="medium"
+  solution={
+    <CodeBlock language="javascript">{`// ✅ Code corrigé
+
+const processUsers = (users = []) => {
+  // Filtrer les adultes
+  const adults = users.filter(user => user.age >= 18);
+
+  // Extraire les noms
+  const names = adults.map(({ name }) => name);
+
+  // Trier alphabétiquement
+  const sorted = [...names].sort();
+
+  return sorted;
+};
+
+// Test
+const users = [
+  { name: 'Alice', age: 25 },
+  { name: 'Bob', age: 17 },
+  { name: 'Charlie', age: 30 }
+];
+
+console.log(processUsers(users)); // ['Alice', 'Charlie']`}</CodeBlock>
+  }
+>
+L'IA vous a généré ce code. Identifiez les problèmes et corrigez-les :
+
+<CodeBlock language="javascript">{`function processUsers(users) {
+  var result = [];
+
+  // Filtrer les adultes
+  for (var i = 0; i < users.length; i++) {
+    if (users[i].age >= 18) {
+      result.push(users[i]);
+    }
+  }
+
+  // Extraire les noms
+  var names = [];
+  for (var j = 0; j < result.length; j++) {
+    names.push(result[j].name);
+  }
+
+  // Trier alphabétiquement
+  names.sort();
+
+  return names;
+}
+
+// Test
+const users = [
+  { name: 'Alice', age: 25 },
+  { name: 'Bob', age: 17 },
+  { name: 'Charlie', age: 30 }
+];
+
+console.log(processUsers(users));`}</CodeBlock>
+
+**Problèmes à trouver :**
+- `var` au lieu de `const`/`let`
+- `function` au lieu d'arrow function
+- Boucles `for` au lieu de `.filter()` et `.map()`
+- `.sort()` mute le tableau (pas de spread)
+- Pas de destructuration
+- Pas de valeur par défaut pour le paramètre
+</Exercise>
+
+## Pour la suite : React
+
+<Callout type="tip" title="Séance 2 - React">
+À la **Séance 2**, vous apprendrez React. Toutes ces compétences JavaScript seront directement utilisées :
+
+- **Arrow functions** → Composants React
+- **Destructuration** → Props et hooks
+- **`.map()`** → Afficher des listes
+- **Spread operator** → Mise à jour d'état
+- **Template literals** → JSX dynamique
+
+Avec vos bases solides en JavaScript, React sera beaucoup plus facile à apprendre !
+</Callout>
+
+## Ressources pour progresser
+
+<Resources resources={[
+  {
+    title: "MDN JavaScript Guide",
+    description: "La référence pour vérifier la syntaxe et les bonnes pratiques",
+    url: "https://developer.mozilla.org/docs/Web/JavaScript/Guide",
+    type: "doc"
+  },
+  {
+    title: "JavaScript.info",
+    description: "Tutoriel moderne complet sur JavaScript",
+    url: "https://javascript.info/",
+    type: "tutorial"
+  },
+  {
+    title: "Console du navigateur",
+    description: "Testez du code rapidement avec F12 → Console",
+    url: "https://developer.mozilla.org/docs/Learn/Common_questions/What_are_browser_developer_tools",
+    type: "doc"
+  }
+]} />
+
+<Callout type="success" title="Vous êtes prêts !">
+Avec vos connaissances JavaScript et ces techniques, vous pouvez maintenant collaborer efficacement avec l'IA.
+
+**Rappelez-vous :** L'IA est un assistant, pas un pilote automatique. C'est **vous** qui décidez si le code est bon !
+</Callout>
+

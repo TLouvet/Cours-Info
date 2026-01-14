@@ -1,0 +1,737 @@
+# CSS - Sélecteurs & Propriétés
+
+<Callout type="info" title="Annexe optionnelle">
+Cette page est un complément non obligatoire pour approfondir vos connaissances en CSS.
+</Callout>
+
+Guide complet sur les sélecteurs CSS et les propriétés les plus courantes pour styliser vos pages web.
+
+## Les Sélecteurs CSS
+
+Les sélecteurs permettent de cibler des éléments HTML pour leur appliquer des styles.
+
+### Sélecteurs de base
+
+#### Sélecteur d'élément
+
+```css
+/* Cible tous les paragraphes */
+p {
+  color: blue;
+}
+
+/* Cible tous les titres h1 */
+h1 {
+  font-size: 2rem;
+}
+```
+
+#### Sélecteur de classe
+
+```css
+/* Cible tous les éléments avec class="button" */
+.button {
+  padding: 10px 20px;
+  background-color: #007bff;
+}
+
+/* Plusieurs classes */
+.button.primary {
+  background-color: #28a745;
+}
+```
+
+```html
+<button class="button">Cliquer</button>
+<button class="button primary">Action principale</button>
+```
+
+#### Sélecteur d'ID
+
+```css
+/* Cible l'élément avec id="header" */
+#header {
+  background-color: #333;
+  color: white;
+}
+```
+
+```html
+<header id="header">Mon site</header>
+```
+
+<Callout type="warning" title="Attention">
+Les IDs doivent être **uniques** sur une page. Préférez les classes pour des styles réutilisables.
+</Callout>
+
+#### Sélecteur universel
+
+```css
+/* Cible TOUS les éléments */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+```
+
+### Sélecteurs combinés
+
+#### Sélecteur descendant (espace)
+
+```css
+/* Cible tous les <a> à l'intérieur de <nav> */
+nav a {
+  text-decoration: none;
+}
+```
+
+```html
+<nav>
+  <a href="#">Lien 1</a> <!-- Ciblé -->
+  <ul>
+    <li><a href="#">Lien 2</a></li> <!-- Ciblé aussi -->
+  </ul>
+</nav>
+```
+
+#### Sélecteur enfant direct (>)
+
+```css
+/* Cible uniquement les <li> enfants directs de <ul> */
+ul > li {
+  list-style: none;
+}
+```
+
+```html
+<ul>
+  <li>Item 1</li> <!-- Ciblé -->
+  <li>
+    Item 2
+    <ul>
+      <li>Sous-item</li> <!-- PAS ciblé (pas enfant direct) -->
+    </ul>
+  </li>
+</ul>
+```
+
+#### Sélecteur frère adjacent (+)
+
+```css
+/* Cible le premier <p> qui suit directement un <h2> */
+h2 + p {
+  font-weight: bold;
+}
+```
+
+```html
+<h2>Titre</h2>
+<p>Premier paragraphe</p> <!-- Ciblé -->
+<p>Deuxième paragraphe</p> <!-- PAS ciblé -->
+```
+
+#### Sélecteur frères suivants (~)
+
+```css
+/* Cible tous les <p> qui suivent un <h2> */
+h2 ~ p {
+  color: gray;
+}
+```
+
+### Sélecteurs d'attribut
+
+```css
+/* Élément avec attribut "type" */
+input[type] {
+  border: 1px solid #ccc;
+}
+
+/* Attribut avec valeur exacte */
+input[type="text"] {
+  background-color: white;
+}
+
+/* Attribut contenant une valeur */
+a[href*="github"] {
+  color: #333;
+}
+
+/* Attribut commençant par */
+a[href^="https"] {
+  color: green;
+}
+
+/* Attribut se terminant par */
+a[href$=".pdf"] {
+  color: red;
+}
+```
+
+### Pseudo-classes
+
+#### États interactifs
+
+```css
+/* Survol */
+a:hover {
+  color: red;
+}
+
+/* Focus (formulaire) */
+input:focus {
+  border-color: blue;
+  outline: 2px solid lightblue;
+}
+
+/* Actif (clic) */
+button:active {
+  transform: scale(0.95);
+}
+
+/* Visité (liens) */
+a:visited {
+  color: purple;
+}
+```
+
+#### Pseudo-classes structurelles
+
+```css
+/* Premier enfant */
+li:first-child {
+  font-weight: bold;
+}
+
+/* Dernier enfant */
+li:last-child {
+  border-bottom: none;
+}
+
+/* N-ième enfant */
+li:nth-child(2) {
+  color: blue;
+}
+
+/* Pairs et impairs */
+tr:nth-child(even) {
+  background-color: #f0f0f0;
+}
+
+tr:nth-child(odd) {
+  background-color: white;
+}
+
+/* Tous les 3 éléments */
+li:nth-child(3n) {
+  color: red;
+}
+```
+
+#### Autres pseudo-classes utiles
+
+```css
+/* Éléments vides */
+p:empty {
+  display: none;
+}
+
+/* Premier du type */
+p:first-of-type {
+  font-size: 1.2rem;
+}
+
+/* Élément sans enfants */
+div:not(.active) {
+  opacity: 0.5;
+}
+```
+
+### Pseudo-éléments
+
+```css
+/* Première lettre */
+p::first-letter {
+  font-size: 2rem;
+  font-weight: bold;
+}
+
+/* Première ligne */
+p::first-line {
+  color: blue;
+}
+
+/* Avant l'élément */
+.note::before {
+  content: "📝 ";
+}
+
+/* Après l'élément */
+.external-link::after {
+  content: " ↗";
+}
+
+/* Sélection de texte */
+::selection {
+  background-color: yellow;
+  color: black;
+}
+```
+
+<Callout type="tip" title="Before vs After">
+`::before` et `::after` sont très utiles pour ajouter du contenu décoratif sans modifier le HTML !
+</Callout>
+
+## Propriétés CSS courantes
+
+### Texte et typographie
+
+```css
+.text-styles {
+  /* Police */
+  font-family: 'Arial', sans-serif;
+  font-size: 16px;
+  font-weight: bold; /* 100-900 ou bold/normal */
+  font-style: italic;
+
+  /* Texte */
+  color: #333;
+  text-align: center; /* left, right, center, justify */
+  text-decoration: underline; /* none, underline, line-through */
+  text-transform: uppercase; /* lowercase, capitalize */
+
+  /* Espacement */
+  line-height: 1.5;
+  letter-spacing: 2px;
+  word-spacing: 5px;
+}
+```
+
+### Couleurs et arrière-plans
+
+```css
+.backgrounds {
+  /* Couleur unie */
+  background-color: #f0f0f0;
+
+  /* Image */
+  background-image: url('image.jpg');
+  background-size: cover; /* contain, 100px, 50% */
+  background-position: center; /* top, bottom, left, right */
+  background-repeat: no-repeat; /* repeat, repeat-x, repeat-y */
+
+  /* Dégradé */
+  background: linear-gradient(to right, #ff0000, #00ff00);
+  background: radial-gradient(circle, #ff0000, #00ff00);
+}
+```
+
+### Box Model
+
+```css
+.box {
+  /* Dimensions */
+  width: 300px;
+  height: 200px;
+  max-width: 100%;
+  min-height: 100px;
+
+  /* Marges extérieures */
+  margin: 20px; /* top right bottom left */
+  margin: 10px 20px; /* vertical horizontal */
+  margin: 10px 15px 20px 25px; /* top right bottom left */
+
+  /* Espacement intérieur */
+  padding: 15px;
+
+  /* Bordures */
+  border: 2px solid #333;
+  border-radius: 8px;
+  border-top: 1px dashed red;
+
+  /* Box sizing */
+  box-sizing: border-box; /* inclut padding et border dans width/height */
+}
+```
+
+### Positionnement
+
+```css
+/* Static (par défaut) */
+.static {
+  position: static;
+}
+
+/* Relative - décalage par rapport à sa position normale */
+.relative {
+  position: relative;
+  top: 10px;
+  left: 20px;
+}
+
+/* Absolute - par rapport au parent positionné le plus proche */
+.absolute {
+  position: absolute;
+  top: 0;
+  right: 0;
+}
+
+/* Fixed - par rapport à la fenêtre */
+.fixed {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+}
+
+/* Sticky - fixe au scroll */
+.sticky {
+  position: sticky;
+  top: 0;
+}
+```
+
+### Flexbox
+
+```css
+.container {
+  display: flex;
+
+  /* Direction */
+  flex-direction: row; /* column, row-reverse, column-reverse */
+
+  /* Alignement horizontal (main axis) */
+  justify-content: center; /* flex-start, flex-end, space-between, space-around */
+
+  /* Alignement vertical (cross axis) */
+  align-items: center; /* flex-start, flex-end, stretch */
+
+  /* Retour à la ligne */
+  flex-wrap: wrap; /* nowrap, wrap-reverse */
+
+  /* Espacement */
+  gap: 20px;
+}
+
+.item {
+  /* Grossir */
+  flex-grow: 1;
+
+  /* Rétrécir */
+  flex-shrink: 0;
+
+  /* Base */
+  flex-basis: 200px;
+
+  /* Raccourci : grow shrink basis */
+  flex: 1 0 auto;
+}
+```
+
+### Grid
+
+```css
+.grid-container {
+  display: grid;
+
+  /* Colonnes */
+  grid-template-columns: 1fr 2fr 1fr; /* ou 200px auto 200px */
+  grid-template-columns: repeat(3, 1fr); /* 3 colonnes égales */
+
+  /* Lignes */
+  grid-template-rows: 100px auto 50px;
+
+  /* Espacement */
+  gap: 20px;
+  column-gap: 10px;
+  row-gap: 15px;
+
+  /* Alignement */
+  justify-items: center;
+  align-items: center;
+}
+
+.grid-item {
+  /* Placement */
+  grid-column: 1 / 3; /* de la colonne 1 à 3 */
+  grid-row: 2 / 4;
+
+  /* Raccourci */
+  grid-area: 2 / 1 / 4 / 3; /* row-start / col-start / row-end / col-end */
+}
+```
+
+### Affichage et visibilité
+
+```css
+/* Display */
+.block { display: block; }
+.inline { display: inline; }
+.inline-block { display: inline-block; }
+.none { display: none; } /* Supprime de la page */
+
+/* Visibilité */
+.hidden { visibility: hidden; } /* Invisible mais prend de la place */
+.visible { visibility: visible; }
+
+/* Opacité */
+.transparent { opacity: 0; }
+.semi-transparent { opacity: 0.5; }
+.opaque { opacity: 1; }
+```
+
+### Transitions et animations
+
+```css
+.button {
+  background-color: blue;
+  /* Propriété, durée, timing, délai */
+  transition: background-color 0.3s ease 0s;
+  /* Ou plusieurs propriétés */
+  transition: all 0.3s ease;
+}
+
+.button:hover {
+  background-color: darkblue;
+}
+
+/* Animation */
+@keyframes slideIn {
+  from {
+    transform: translateX(-100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+.animated {
+  animation: slideIn 0.5s ease-out;
+}
+```
+
+### Transformations
+
+```css
+.transform {
+  /* Translation */
+  transform: translate(50px, 100px);
+  transform: translateX(50px);
+
+  /* Rotation */
+  transform: rotate(45deg);
+
+  /* Échelle */
+  transform: scale(1.5);
+  transform: scale(2, 0.5); /* x, y */
+
+  /* Inclinaison */
+  transform: skew(10deg, 5deg);
+
+  /* Combinaison */
+  transform: translate(50px, 100px) rotate(45deg) scale(1.2);
+
+  /* Origine de transformation */
+  transform-origin: center; /* top left, 50% 50%, etc. */
+}
+```
+
+### Ombres
+
+```css
+.shadows {
+  /* Ombre du texte */
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+
+  /* Ombre de boîte */
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+
+  /* Plusieurs ombres */
+  box-shadow:
+    0 1px 3px rgba(0, 0, 0, 0.12),
+    0 1px 2px rgba(0, 0, 0, 0.24);
+
+  /* Ombre intérieure */
+  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+```
+
+## Spécificité CSS
+
+L'ordre de priorité des sélecteurs (du plus faible au plus fort) :
+
+1. **Sélecteurs d'élément** : `p { }` → Spécificité: 1
+2. **Sélecteurs de classe** : `.button { }` → Spécificité: 10
+3. **Sélecteurs d'ID** : `#header { }` → Spécificité: 100
+4. **Styles inline** : `<div style="...">` → Spécificité: 1000
+5. **!important** : Force la priorité (à éviter)
+
+```css
+/* Spécificité: 1 */
+p { color: blue; }
+
+/* Spécificité: 10 */
+.text { color: red; }
+
+/* Spécificité: 11 */
+p.text { color: green; }
+
+/* Spécificité: 100 */
+#content { color: purple; }
+
+/* Spécificité: 111 */
+#content p.text { color: orange; }
+```
+
+<Callout type="warning" title="Éviter !important">
+Utilisez `!important` uniquement en dernier recours. Préférez augmenter la spécificité de vos sélecteurs.
+</Callout>
+
+## Unités CSS
+
+### Absolues
+
+```css
+.absolute-units {
+  /* Pixels */
+  width: 300px;
+
+  /* Points (print) */
+  font-size: 12pt;
+
+  /* Centimètres */
+  width: 10cm;
+}
+```
+
+### Relatives
+
+```css
+.relative-units {
+  /* Pourcentage (par rapport au parent) */
+  width: 50%;
+
+  /* em (par rapport à la taille de police du parent) */
+  font-size: 1.5em;
+  padding: 2em;
+
+  /* rem (par rapport à la taille de police racine) */
+  font-size: 1.25rem;
+
+  /* Viewport (fenêtre) */
+  width: 100vw; /* 100% de la largeur */
+  height: 100vh; /* 100% de la hauteur */
+  font-size: 5vmin; /* 5% du plus petit côté */
+}
+```
+
+## Media Queries (Responsive)
+
+```css
+/* Mobile first */
+.container {
+  padding: 10px;
+}
+
+/* Tablettes */
+@media (min-width: 768px) {
+  .container {
+    padding: 20px;
+  }
+}
+
+/* Desktop */
+@media (min-width: 1024px) {
+  .container {
+    padding: 40px;
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+}
+
+/* Mode sombre */
+@media (prefers-color-scheme: dark) {
+  body {
+    background-color: #1a1a1a;
+    color: #ffffff;
+  }
+}
+
+/* Orientation */
+@media (orientation: landscape) {
+  .gallery {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+```
+
+<Callout type="tip" title="Mobile First">
+Commencez par le design mobile, puis ajoutez des styles pour les écrans plus grands avec `min-width`.
+</Callout>
+
+## Variables CSS (Custom Properties)
+
+```css
+:root {
+  /* Définir des variables */
+  --primary-color: #007bff;
+  --secondary-color: #6c757d;
+  --spacing-unit: 8px;
+  --border-radius: 4px;
+}
+
+.button {
+  /* Utiliser des variables */
+  background-color: var(--primary-color);
+  padding: calc(var(--spacing-unit) * 2);
+  border-radius: var(--border-radius);
+
+  /* Valeur par défaut */
+  color: var(--text-color, #ffffff);
+}
+
+/* Override dans un contexte */
+.dark-theme {
+  --primary-color: #0056b3;
+}
+```
+
+## Ressources supplémentaires
+
+<Resources resources={[
+  {
+    title: "MDN CSS Reference",
+    description: "Documentation complète de toutes les propriétés CSS",
+    url: "https://developer.mozilla.org/fr/docs/Web/CSS/Reference",
+    type: "doc"
+  },
+  {
+    title: "CSS-Tricks",
+    description: "Guides et astuces CSS",
+    url: "https://css-tricks.com",
+    type: "website"
+  },
+  {
+    title: "Flexbox Froggy",
+    description: "Jeu pour apprendre Flexbox",
+    url: "https://flexboxfroggy.com/#fr",
+    type: "website"
+  },
+  {
+    title: "Grid Garden",
+    description: "Jeu pour apprendre CSS Grid",
+    url: "https://cssgridgarden.com/#fr",
+    type: "website"
+  }
+]} />
+
+---
+
+<div className="flex justify-between items-center mt-8">
+  <a href="/annexes" className="text-cyan-600 dark:text-cyan-400 hover:underline">
+    ← Retour aux Annexes
+  </a>
+</div>

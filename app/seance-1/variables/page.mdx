@@ -1,0 +1,216 @@
+# Variables & Types
+
+En JavaScript moderne, nous utilisons `let` et `const` pour déclarer des variables.
+
+<Callout type="error" title="var - OBSOLÈTE">
+**Ne jamais utiliser `var` !**
+
+Utilisez toujours `let` ou `const`.
+</Callout>
+
+## Pourquoi var est obsolète ?
+
+`var` était la seule façon de déclarer des variables avant ES6 (2015). Mais il a des problèmes majeurs :
+
+### Problème 1 : Portée (scope) bizarre
+
+```javascript
+// var a une portée de fonction, pas de bloc
+if (true) {
+  var x = 10;
+}
+console.log(x); // 10 - accessible en dehors du if ! 😱
+
+// let/const ont une portée de bloc (plus logique)
+if (true) {
+  let y = 10;
+}
+console.log(y); // ❌ ReferenceError: y is not defined
+```
+
+### Problème 2 : Hoisting (remontée)
+
+```javascript
+// var est "remonté" au début de la fonction
+console.log(name); // undefined (pas d'erreur!)
+var name = 'Alice';
+
+// let/const donnent une erreur claire
+console.log(age); // ❌ ReferenceError: Cannot access 'age' before initialization
+let age = 25;
+```
+
+### Problème 3 : Redéclaration possible
+
+```javascript
+// var permet de redéclarer la même variable
+var count = 1;
+var count = 2; // Pas d'erreur 😱
+console.log(count); // 2
+
+// let/const empêchent la redéclaration
+let score = 1;
+let score = 2; // ❌ SyntaxError: Identifier 'score' has already been declared
+```
+
+### Problème 4 : Pollution du scope global
+
+```javascript
+// var dans le scope global devient une propriété de window
+var globalVar = 'danger';
+console.log(window.globalVar); // 'danger' 😱
+
+// let/const restent dans leur scope
+let globalLet = 'safe';
+console.log(window.globalLet); // undefined ✅
+```
+
+<Callout type="success" title="Solution moderne">
+**Toujours utiliser :**
+- `const` par défaut (valeur qui ne change pas)
+- `let` seulement si vous devez réassigner
+
+**Ne jamais utiliser `var`** - c'est du code ancien (pre-2015).
+</Callout>
+
+## Types primitifs
+
+JavaScript a plusieurs types de base.
+
+### number
+
+```javascript
+const age = 25;
+const pi = 3.14;
+const negatif = -7;
+const infini = Infinity;
+const pasUnNombre = NaN; // Not a Number
+```
+
+<Callout type="tip">
+JavaScript n'a qu'un seul type numérique (64 bits). Pas de distinction int/float/double.
+</Callout>
+
+### string
+
+Les chaînes de caractères représentent du texte.
+
+```javascript
+const simple = 'Hello';
+const double = "World";
+const template = `Hello ${simple}`;
+```
+
+<Callout type="info">
+Les strings seront détaillés dans la page suivante avec les template literals !
+</Callout>
+
+### boolean
+
+```javascript
+const vrai = true;
+const faux = false;
+```
+
+### undefined et null
+
+```javascript
+let x; // undefined (déclaré mais non assigné)
+const y = null; // null (absence volontaire de valeur)
+```
+
+<QuickCheck
+  question="Quelle est la différence entre undefined et null ?"
+  options={[
+    "undefined = non initialisé, null = volontairement vide",
+    "undefined = erreur, null = valeur valide",
+    "C'est la même chose",
+    "undefined pour les objets, null pour les primitifs"
+  ]}
+  correctAnswer={0}
+  explanation="undefined signifie qu'une variable n'a pas encore reçu de valeur, tandis que null est une assignation explicite indiquant 'pas de valeur'."
+/>
+
+### typeof
+
+L'opérateur `typeof` permet de vérifier le type d'une valeur.
+
+```javascript
+typeof 42;        // "number"
+typeof "hello";   // "string"
+typeof true;      // "boolean"
+typeof undefined; // "undefined"
+typeof null;      // "object" (bug historique!)
+```
+
+<Callout type="warning" title="Bug historique">
+`typeof null` retourne `"object"` au lieu de `"null"`. C'est un bug qui date de la création de JavaScript et qui n'a jamais été corrigé pour des raisons de compatibilité.
+
+Pour vérifier si une valeur est `null`, utilisez `=== null` directement.
+</Callout>
+
+## Déclaration de variables
+
+### let - Variable
+
+Peut être réassignée.
+
+```javascript
+let count = 0;
+count = 1; // OK
+count = count + 1; // OK
+```
+
+**Utilisez `let` quand :**
+- La valeur va changer (compteur, accumulation)
+- Dans une boucle
+- Pour des valeurs temporaires
+
+### const - Constante
+
+Ne peut **pas** être réassignée.
+
+```javascript
+const PI = 3.14;
+PI = 3; // ❌ Error!
+```
+
+**Utilisez `const` quand :**
+- La référence ne doit pas changer
+- Pour la plupart de vos variables (par défaut)
+- Pour les fonctions, objets, tableaux
+
+<Callout type="warning" title="const avec objets/tableaux">
+**Important :** `const` empêche la **réassignation**, pas la **mutation** !
+
+```javascript
+const user = { name: 'Alice' };
+user.name = 'Bob'; // ✅ OK (mutation)
+user = {}; // ❌ Error (réassignation)
+
+const numbers = [1, 2, 3];
+numbers.push(4); // ✅ OK (mutation)
+numbers = []; // ❌ Error (réassignation)
+```
+
+`const` protège la **référence**, pas le **contenu**.
+</Callout>
+
+## Règle d'or
+
+<Callout type="success" title="Bonne pratique">
+1. **Toujours utiliser `const` par défaut**
+2. Passer à `let` seulement si vous devez réassigner
+3. **Ne jamais utiliser `var`** (code obsolète)
+
+```javascript
+// ✅ Bon
+const name = 'Alice';
+let score = 0;
+score = score + 10;
+
+// ❌ Mauvais
+var name = 'Alice'; // OBSOLÈTE
+var score = 0;
+```
+</Callout>

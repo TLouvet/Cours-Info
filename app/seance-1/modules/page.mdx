@@ -1,0 +1,294 @@
+# Modules ES6
+
+Organisez votre code en fichiers séparés avec les imports et exports.
+
+## Export
+
+### Export nommé
+
+Plusieurs exports par fichier possibles.
+
+```javascript
+// utils.js
+
+export const add = (a, b) => a + b;
+export const subtract = (a, b) => a - b;
+
+export const PI = 3.14159;
+
+export function greet(name) {
+  return `Hello ${name}!`;
+}
+```
+
+### Export par défaut
+
+Un seul export par défaut par fichier.
+
+```javascript
+// Button.js
+
+export default function Button() {
+  return <button>Click me</button>;
+}
+```
+
+### Export après déclaration
+
+```javascript
+// utils.js
+
+const add = (a, b) => a + b;
+const subtract = (a, b) => a - b;
+
+export { add, subtract };
+```
+
+### Export avec renommage
+
+```javascript
+// utils.js
+
+const add = (a, b) => a + b;
+
+export { add as sum };
+```
+
+## Import
+
+### Import nommé
+
+Les noms doivent correspondre exactement.
+
+```javascript
+// app.js
+
+import { add, subtract } from './utils.js';
+
+console.log(add(2, 3));      // 5
+console.log(subtract(5, 2)); // 3
+```
+
+### Import par défaut
+
+Vous pouvez choisir le nom.
+
+```javascript
+// app.js
+
+import Button from './Button.js';
+import MyButton from './Button.js'; // Même chose
+
+// Utilisation
+<Button />
+<MyButton />
+```
+
+### Import avec renommage
+
+```javascript
+// app.js
+
+import { add as sum, subtract as diff } from './utils.js';
+
+console.log(sum(2, 3));  // 5
+console.log(diff(5, 2)); // 3
+```
+
+### Tout importer
+
+```javascript
+// app.js
+
+import * as utils from './utils.js';
+
+console.log(utils.add(2, 3));      // 5
+console.log(utils.subtract(5, 2)); // 3
+```
+
+### Combiner default et nommés
+
+```javascript
+// Button.js
+
+export default function Button() {
+  return <button>Click</button>;
+}
+
+export const ButtonVariant = () => {
+  return <button className="variant">Click</button>;
+};
+```
+
+```javascript
+// app.js
+
+import Button, { ButtonVariant } from './Button.js';
+
+<Button />
+<ButtonVariant />
+```
+
+<Callout type="info" title="En React">
+Les modules sont **essentiels** en React pour organiser vos composants :
+
+```javascript
+// Import des hooks React (exports nommés)
+import { useState, useEffect } from 'react';
+
+// Import d'un composant (export par défaut)
+import Button from './components/Button';
+
+// Import de plusieurs composants
+import { Header, Footer, Sidebar } from './components/Layout';
+```
+</Callout>
+
+## Exemples React
+
+### Composant simple (export default)
+
+```javascript
+// components/Button.jsx
+
+export default function Button({ children, onClick }) {
+  return (
+    <button onClick={onClick} className="btn">
+      {children}
+    </button>
+  );
+}
+```
+
+```javascript
+// App.jsx
+
+import Button from './components/Button';
+
+function App() {
+  return <Button onClick={() => alert('Hi!')}>Click me</Button>;
+}
+```
+
+### Plusieurs composants (exports nommés)
+
+```javascript
+// components/Layout.jsx
+
+export function Header() {
+  return <header>Header</header>;
+}
+
+export function Footer() {
+  return <footer>Footer</footer>;
+}
+
+export function Sidebar() {
+  return <aside>Sidebar</aside>;
+}
+```
+
+```javascript
+// App.jsx
+
+import { Header, Footer, Sidebar } from './components/Layout';
+
+function App() {
+  return (
+    <>
+      <Header />
+      <Sidebar />
+      <main>Content</main>
+      <Footer />
+    </>
+  );
+}
+```
+
+### Utilitaires et constantes
+
+```javascript
+// utils/constants.js
+
+export const API_URL = 'https://api.example.com';
+export const MAX_ITEMS = 100;
+export const COLORS = {
+  primary: '#61DAFB',
+  secondary: '#282c34'
+};
+```
+
+```javascript
+// utils/helpers.js
+
+export const formatDate = (date) => {
+  return new Date(date).toLocaleDateString('fr-FR');
+};
+
+export const truncate = (str, length) => {
+  return str.length > length
+    ? `${str.slice(0, length)}...`
+    : str;
+};
+```
+
+```javascript
+// App.jsx
+
+import { API_URL, MAX_ITEMS } from './utils/constants';
+import { formatDate, truncate } from './utils/helpers';
+```
+
+## Organisation des fichiers
+
+Structure typique d'un projet React :
+
+```
+src/
+├── components/
+│   ├── Button.jsx
+│   ├── Card.jsx
+│   └── Layout.jsx
+├── pages/
+│   ├── Home.jsx
+│   └── About.jsx
+├── utils/
+│   ├── constants.js
+│   └── helpers.js
+├── hooks/
+│   └── useLocalStorage.js
+└── App.jsx
+```
+
+<Callout type="tip" title="Bonnes pratiques">
+- **Un composant = un fichier** (généralement)
+- Utilisez des **exports nommés** pour plusieurs utilitaires
+- Utilisez des **exports par défaut** pour les composants principaux
+- Regroupez les utilitaires liés dans le même fichier
+- Créez des dossiers thématiques (`components/`, `utils/`, etc.)
+</Callout>
+
+## Import CSS et assets
+
+```javascript
+// Import CSS
+import './styles.css';
+import './Button.module.css';
+
+// Import d'images
+import logo from './assets/logo.png';
+
+function App() {
+  return <img src={logo} alt="Logo" />;
+}
+```
+
+<Callout type="warning">
+L'extension `.js` ou `.jsx` est **optionnelle** avec les outils modernes (Vite, Create React App). Vous pouvez écrire :
+
+```javascript
+import Button from './components/Button'; // ✅ OK
+import Button from './components/Button.jsx'; // ✅ OK aussi
+```
+</Callout>
+

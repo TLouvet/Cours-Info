@@ -1,36 +1,79 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# R4A10 - Course Website
+
+Interactive course website for **R4A10 - Compléments Web: Développement Frontend avec React**.
+
+## Tech Stack
+
+- **Framework:** Next.js 14+ (App Router)
+- **Language:** TypeScript
+- **Styling:** TailwindCSS
+- **Content:** MDX (Markdown + React components)
+- **Code Highlighting:** Shiki
+- **Icons:** React Icons
+- **Deployment:** Vercel
 
 ## Getting Started
 
-First, run the development server:
+### Prerequisites
+
+- Node.js 18+
+- npm or pnpm
+
+### Installation
+
+```bash
+npm install
+```
+
+### Development
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open [http://localhost:3000](http://localhost:3000) with your browser.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+### Build
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```bash
+npm run build
+npm start
+```
 
-## Learn More
+## Project Structure
 
-To learn more about Next.js, take a look at the following resources:
+```
+course-website/
+├── app/                    # Next.js App Router
+│   ├── layout.tsx         # Root layout
+│   ├── page.tsx           # Homepage
+│   ├── seance-1/          # Session 1
+│   ├── seance-2/          # Session 2
+│   └── ...
+├── components/
+│   ├── layout/            # Layout components (Sidebar, Header)
+│   ├── mdx/               # MDX custom components
+│   └── ui/                # Reusable UI components
+├── content/
+│   └── lessons/           # MDX lesson content
+├── lib/                   # Utilities
+└── public/                # Static assets
+```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Features
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+- ✅ Interactive course content with MDX
+- ✅ Syntax-highlighted code blocks
+- ✅ Progress tracking (localStorage)
+- ✅ Responsive design (mobile-first)
+- ✅ Dark/light mode
+- ✅ Code sandboxes for practice
+- ✅ Quick knowledge checks
 
-## Deploy on Vercel
+## Contributing
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+This is a course project. Content updates are managed by the instructor.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## License
+
+Educational use only - IUT Paris 8

@@ -20,7 +20,7 @@ Testez vos connaissances sur les fondamentaux JavaScript ! Ce quiz couvre tous l
     "Il n'y a aucune différence"
   ]}
   correctAnswer={0}
-  explanation="const empêche la réassignation d'une variable, tandis que let permet de réassigner. Attention : const n'empêche pas la mutation des objets/tableaux !"
+  explanation="✅ const empêche la réassignation, let permet la réassignation. ❌ const n'est PAS limité aux constantes mathématiques - utilisez-le pour toute valeur non réassignée (objets, tableaux, etc.). ❌ let n'est PAS obsolète - utilisez-le quand vous devez réassigner (compteurs, boucles). ❌ La différence est cruciale pour la lisibilité du code. Note : const n'empêche pas la mutation des objets/tableaux !"
 />
 
 <QuickCheck
@@ -32,7 +32,7 @@ Testez vos connaissances sur les fondamentaux JavaScript ! Ce quiz couvre tous l
     "boolean"
   ]}
   correctAnswer={0}
-  explanation="typeof null retourne 'object', ce qui est un bug historique de JavaScript qui n'a jamais été corrigé pour des raisons de compatibilité."
+  explanation="✅ typeof null retourne 'object' - c'est un bug historique de JavaScript jamais corrigé pour la compatibilité. ❌ 'null' n'est pas un type valide retourné par typeof. ❌ undefined est un type différent (variable non initialisée). ❌ boolean est pour true/false uniquement. Astuce : pour vérifier null, utilisez === null directement."
 />
 
 <QuickCheck
@@ -44,7 +44,7 @@ Testez vos connaissances sur les fondamentaux JavaScript ! Ce quiz couvre tous l
     "<<Hello ${name}>>"
   ]}
   correctAnswer={0}
-  explanation="Les template literals utilisent des backticks (`) et permettent l'interpolation avec ${expression}."
+  explanation="✅ Les backticks (`) permettent l'interpolation avec ${expression}. ❌ Les guillemets simples ('') affichent ${name} littéralement, sans interpolation. ❌ Les guillemets doubles font pareil - pas d'interpolation. ❌ << >> n'est pas une syntaxe JavaScript valide. Seuls les backticks supportent l'interpolation et les chaînes multi-lignes."
 />
 
 ## Fonctions
@@ -58,7 +58,7 @@ Testez vos connaissances sur les fondamentaux JavaScript ! Ce quiz couvre tous l
     "const add = function(a, b) => a + b"
   ]}
   correctAnswer={0}
-  explanation="Sans accolades, le return est implicite. Avec accolades, il faut un return explicite."
+  explanation="✅ Sans accolades, le return est implicite : (a, b) => a + b retourne automatiquement. ❌ Avec accolades { a + b }, il faut return explicite sinon retourne undefined. ❌ La syntaxe -> n'existe pas en JavaScript (c'est du PHP/Kotlin). ❌ On ne peut pas mélanger function et => dans la même déclaration. Règle : pas d'accolades = return implicite."
 />
 
 <QuickCheck
@@ -70,7 +70,7 @@ Testez vos connaissances sur les fondamentaux JavaScript ! Ce quiz couvre tous l
     "const makeUser = (name) => [name]"
   ]}
   correctAnswer={0}
-  explanation="Pour retourner un objet avec return implicite, il faut l'entourer de parenthèses : () => ({ key: value })"
+  explanation="✅ Pour retourner un objet en return implicite, entourez-le de parenthèses : () => ({ name }). ❌ Sans parenthèses { name }, JavaScript interprète les accolades comme un bloc de code, pas un objet. ❌ => name retourne juste la valeur name, pas un objet. ❌ => [name] retourne un tableau, pas un objet. Les parenthèses forcent l'interprétation comme objet."
 />
 
 ## Tableaux
@@ -84,7 +84,7 @@ Testez vos connaissances sur les fondamentaux JavaScript ! Ce quiz couvre tous l
     ".forEach()"
   ]}
   correctAnswer={0}
-  explanation=".map() transforme chaque élément et retourne un nouveau tableau. C'est la méthode standard pour transformer des données."
+  explanation="✅ .map() transforme chaque élément et retourne un nouveau tableau de même longueur. ❌ .filter() sélectionne des éléments (peut avoir moins d'éléments), ne transforme pas. ❌ .find() retourne UN SEUL élément, pas un tableau. ❌ .forEach() exécute du code mais ne retourne rien (undefined). Pour transformer : toujours .map() !"
 />
 
 <QuickCheck
@@ -96,7 +96,7 @@ Testez vos connaissances sur les fondamentaux JavaScript ! Ce quiz couvre tous l
     "Le nombre d'éléments qui passent le test"
   ]}
   correctAnswer={0}
-  explanation=".filter() retourne un nouveau tableau contenant uniquement les éléments qui passent le test (fonction retourne true)."
+  explanation="✅ .filter() retourne un nouveau tableau avec seulement les éléments où la fonction retourne true. ❌ .find() retourne LE PREMIER élément qui passe, pas tous. ❌ .some() retourne true/false (booléen), pas un tableau. ❌ .reduce() pourrait compter les éléments mais ce n'est pas son usage principal. .filter() = garder certains éléments."
 />
 
 <QuickCheck
@@ -108,7 +108,7 @@ Testez vos connaissances sur les fondamentaux JavaScript ! Ce quiz couvre tous l
     "Filtre les valeurs nulles"
   ]}
   correctAnswer={0}
-  explanation=".reduce() accumule les valeurs du tableau pour les réduire à une seule valeur (somme, produit, objet, etc.)."
+  explanation="✅ .reduce() accumule les valeurs pour les réduire à UNE SEULE valeur (somme, produit, objet, etc.). ❌ Il ne réduit pas la taille du tableau (c'est .filter() ou .slice()). ❌ Pour les doublons, utilisez Set ou .filter() avec indexOf. ❌ Pour filtrer les nulls, utilisez .filter(). .reduce() = accumuler vers une valeur unique."
 />
 
 ## Objets
@@ -122,7 +122,7 @@ Testez vos connaissances sur les fondamentaux JavaScript ! Ce quiz couvre tous l
     "obj.getKeys()"
   ]}
   correctAnswer={0}
-  explanation="Object.keys(obj) retourne un tableau contenant toutes les clés de l'objet."
+  explanation="✅ Object.keys(obj) retourne un tableau des clés - c'est une méthode statique de Object. ❌ obj.keys() n'existe pas, les objets n'ont pas cette méthode. ❌ Object.getKeys() n'existe pas en JavaScript. ❌ obj.getKeys() n'existe pas non plus. Autres méthodes utiles : Object.values() et Object.entries()."
 />
 
 ## Destructuration
@@ -136,7 +136,7 @@ Testez vos connaissances sur les fondamentaux JavaScript ! Ce quiz couvre tous l
     "Fusionne name et age dans user"
   ]}
   correctAnswer={0}
-  explanation="C'est la destructuration d'objet : elle extrait les propriétés name et age dans des variables séparées."
+  explanation="✅ C'est la destructuration : elle extrait les propriétés name et age de user dans des variables séparées. ❌ Elle n'écrit pas, elle lit et extrait. ❌ Elle ne crée pas un nouvel objet, elle crée des variables. ❌ Elle n'est pas une comparaison (pas de ==). ❌ Elle ne fusionne rien. Destructuration = extraire des propriétés en variables."
 />
 
 <QuickCheck
@@ -148,7 +148,7 @@ Testez vos connaissances sur les fondamentaux JavaScript ! Ce quiz couvre tous l
     "const { userName = name } = user"
   ]}
   correctAnswer={0}
-  explanation="La syntaxe est { ancienNom: nouveauNom } pour renommer lors de la destructuration."
+  explanation="✅ La syntaxe correcte est { name: userName } - deux-points pour renommer. ❌ 'as' n'est pas utilisé en JavaScript (c'est du TypeScript pour le casting). ❌ La flèche -> n'est pas la syntaxe JavaScript. ❌ { userName = name } crée une valeur par défaut, ne renomme pas. Pensez-y comme 'nom d'origine : nouveau nom'."
 />
 
 ## Spread Operator
@@ -162,7 +162,7 @@ Testez vos connaissances sur les fondamentaux JavaScript ! Ce quiz couvre tous l
     "Trie le tableau"
   ]}
   correctAnswer={0}
-  explanation="Le spread operator (...) déploie/étale les éléments d'un tableau. Exemple : [...arr1, ...arr2] fusionne deux tableaux."
+  explanation="✅ Le spread (...) déploie/étale les éléments : [1, 2, ...arr] ajoute tous les éléments de arr. ❌ Il ne supprime pas les doublons (utilisez new Set([...arr])). ❌ Il ne tri pas et n'inverse pas l'ordre. ❌ Il ne trie pas non plus (utilisez .sort()). Le spread = étaler les éléments individuellement."
 />
 
 <QuickCheck
@@ -174,7 +174,7 @@ Testez vos connaissances sur les fondamentaux JavaScript ! Ce quiz couvre tous l
     "const copy = Object(original)"
   ]}
   correctAnswer={0}
-  explanation="Le spread operator { ...obj } crée une copie superficielle (shallow copy) de l'objet."
+  explanation="✅ { ...original } crée une copie superficielle (shallow copy) - modifications n'affectent pas l'original. ❌ = original fait une référence, pas une copie - modifier l'un modifie l'autre ! ❌ .copy() n'existe pas sur les objets JavaScript. ❌ Object(original) ne copie pas, crée juste un wrapper. Le spread est LA méthode standard pour copier."
 />
 
 ## Modules
@@ -188,7 +188,7 @@ Testez vos connaissances sur les fondamentaux JavaScript ! Ce quiz couvre tous l
     "import default add from './utils'"
   ]}
   correctAnswer={0}
-  explanation="Les exports nommés s'importent avec des accolades : import { nom } from 'module'"
+  explanation="✅ Les exports nommés utilisent les accolades : import { add } from './utils'. ❌ Sans accolades c'est pour l'export par défaut uniquement. ❌ import * add importe TOUT comme un objet (import * as utils). ❌ 'default' est un mot-clé pour exporter, pas importer. Accolades = export nommé, pas d'accolades = export default."
 />
 
 ## TypeScript
@@ -202,7 +202,7 @@ Testez vos connaissances sur les fondamentaux JavaScript ! Ce quiz couvre tous l
     "TypeScript ne fonctionne que dans Node.js"
   ]}
   correctAnswer={0}
-  explanation="TypeScript = JavaScript + types. Il ajoute un système de types statiques qui détecte les erreurs avant l'exécution."
+  explanation="✅ TypeScript = JavaScript + types statiques pour détecter les erreurs avant l'exécution. ❌ TypeScript n'est PAS plus rapide à l'exécution - il est compilé en JavaScript. ❌ Il ne remplace pas JavaScript, il se compile EN JavaScript. ❌ Il fonctionne partout où JavaScript fonctionne (navigateur + Node.js). TypeScript = superset de JavaScript."
 />
 
 <QuickCheck
@@ -214,7 +214,7 @@ Testez vos connaissances sur les fondamentaux JavaScript ! Ce quiz couvre tous l
     "function add(a, b): number, number"
   ]}
   correctAnswer={0}
-  explanation="En TypeScript, on type les paramètres avec parametre: type et le retour avec ): type après les parenthèses."
+  explanation="✅ La syntaxe correcte : function add(a: number, b: number): number - deux-points après chaque paramètre et après les parenthèses. ❌ Sans deux-points, ce n'est pas du TypeScript valide. ❌ <number> est pour les génériques, pas pour typer des paramètres simples. ❌ Les types ne vont pas après le return mais après les parenthèses de la fonction."
 />
 
 <QuickCheck
@@ -226,7 +226,7 @@ Testez vos connaissances sur les fondamentaux JavaScript ! Ce quiz couvre tous l
     "La propriété est en lecture seule"
   ]}
   correctAnswer={0}
-  explanation="Le ? indique qu'une propriété est optionnelle : email?: string signifie que email peut ne pas être fourni."
+  explanation="✅ Le ? signifie optionnel : email?: string peut être absent (undefined). ❌ Ce n'est PAS spécifique aux booléens. ❌ nullable (null) se note | null, pas ?. ❌ readonly se note avec le mot-clé readonly, pas ?. Le ? est uniquement pour rendre une propriété non obligatoire."
 />
 
 ## Collaboration avec l'IA
@@ -240,7 +240,7 @@ Testez vos connaissances sur les fondamentaux JavaScript ! Ce quiz couvre tous l
     "Pour taper plus vite"
   ]}
   correctAnswer={0}
-  explanation="Connaître JavaScript vous permet de valider le code de l'IA, déboguer les erreurs, donner des prompts précis et adapter les solutions à vos besoins."
+  explanation="✅ Connaître JS vous permet de valider le code généré, comprendre les solutions, déboguer, et adapter à vos besoins. ❌ L'IA peut TRÈS BIEN générer du JavaScript, mais fait parfois des erreurs. ❌ Aucune connaissance n'est obligatoire pour utiliser ChatGPT, mais c'est moins efficace. ❌ Ce n'est pas pour taper plus vite, c'est pour comprendre et valider. Connaître JS = utiliser l'IA intelligemment."
 />
 
 ---

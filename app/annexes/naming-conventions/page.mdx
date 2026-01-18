@@ -1,0 +1,538 @@
+# Conventions de nommage - Casing Styles
+
+Les conventions de nommage (ou **casing styles**) sont des règles pour écrire les noms de variables, fonctions, fichiers et dossiers. Elles rendent le code plus lisible et suivent les standards de chaque langage.
+
+<Callout type="info" title="Pourquoi c'est important ?">
+- **Lisibilité** : Code plus facile à lire et comprendre
+- **Cohérence** : Tout le code suit les mêmes règles
+- **Standards** : Respecter les conventions de la communauté
+- **Professionnalisme** : Code qui fait "professionnel"
+</Callout>
+
+## Les 4 conventions principales
+
+### 1. camelCase
+
+**Description** : La première lettre est en minuscule, puis chaque nouveau mot commence par une majuscule. Pas d'espaces, pas de tirets.
+
+**Utilisation en JavaScript/React** :
+- ✅ Variables
+- ✅ Fonctions
+- ✅ Méthodes
+- ✅ Props
+
+**Exemples** :
+```javascript
+// Variables
+let userName = "Marie";
+let isLoggedIn = true;
+let maxUserCount = 100;
+
+// Fonctions
+function getUserName() {
+  return "Marie";
+}
+
+function calculateTotalPrice(items) {
+  return items.reduce((sum, item) => sum + item.price, 0);
+}
+
+// Méthodes
+const user = {
+  firstName: "Thomas",
+  lastName: "Martin",
+  getFullName() {
+    return `${this.firstName} ${this.lastName}`;
+  }
+};
+
+// Props React
+function UserCard({ userName, userEmail, isActive }) {
+  return (
+    <div>
+      <h3>{userName}</h3>
+      <p>{userEmail}</p>
+    </div>
+  );
+}
+```
+
+<Callout type="tip" title="camelCase = Standard JavaScript">
+**camelCase est LA convention standard pour JavaScript.** Utilisez-la par défaut pour tout ce qui n'est pas un composant React ou une classe.
+</Callout>
+
+### 2. PascalCase
+
+**Description** : Comme camelCase, mais la **première lettre est aussi en majuscule**. Chaque mot commence par une majuscule.
+
+**Utilisation en JavaScript/React** :
+- ✅ Composants React
+- ✅ Classes
+- ✅ Interfaces TypeScript
+- ✅ Types TypeScript
+
+**Exemples** :
+```javascript
+// Composants React
+function UserProfile() {
+  return <div>Profile</div>;
+}
+
+function NavigationBar() {
+  return <nav>Menu</nav>;
+}
+
+function ProductCard({ product }) {
+  return <div>{product.name}</div>;
+}
+
+// Classes
+class UserManager {
+  constructor(name) {
+    this.name = name;
+  }
+
+  getUserInfo() {
+    return this.name;
+  }
+}
+
+class DatabaseConnection {
+  connect() {
+    // ...
+  }
+}
+```
+
+**Exemples TypeScript** :
+```typescript
+// Interfaces
+interface UserData {
+  name: string;
+  email: string;
+}
+
+interface ApiResponse {
+  data: any;
+  status: number;
+}
+
+// Types
+type ProductCategory = 'electronics' | 'clothing' | 'food';
+
+type UserRole = 'admin' | 'user' | 'guest';
+```
+
+<Callout type="warning" title="PascalCase obligatoire pour React">
+**React exige PascalCase pour les composants.** Si vous écrivez `<userProfile />`, React pensera que c'est une balise HTML native et ne fonctionnera pas !
+
+✅ `<UserProfile />` - React component
+❌ `<userProfile />` - Balise HTML (n'existe pas)
+</Callout>
+
+### 3. snake_case
+
+**Description** : Tous les mots en minuscules, séparés par des **underscores** (tirets bas `_`).
+
+**Utilisation en JavaScript/React** :
+- ⚠️ **Peu utilisé en JavaScript** (standard Python, Ruby, SQL)
+- ✅ Noms de colonnes en base de données
+- ✅ Clés API parfois
+- ✅ Variables d'environnement (parfois en SCREAMING_SNAKE_CASE)
+
+**Exemples** :
+```javascript
+// Base de données (SQL, MongoDB)
+const query = `
+  SELECT user_id, first_name, last_name, created_at
+  FROM user_accounts
+  WHERE is_active = true
+`;
+
+// Variables d'environnement
+const api_key = process.env.STRIPE_API_KEY;
+const db_host = process.env.DATABASE_HOST;
+
+// Réponses API (parfois)
+const userData = {
+  user_id: 123,
+  first_name: "Marie",
+  last_name: "Dupont",
+  created_at: "2024-01-15"
+};
+```
+
+**Exemples dans d'autres langages** :
+```python
+# Python (standard)
+def calculate_total_price(items):
+    user_name = "Marie"
+    is_logged_in = True
+    return sum(item.price for item in items)
+```
+
+<Callout type="info" title="snake_case en JavaScript ?">
+**Évitez snake_case en JavaScript/React** sauf si vous :
+- Travaillez avec une API qui utilise snake_case (puis convertissez en camelCase)
+- Écrivez des noms de colonnes SQL
+
+La communauté JavaScript préfère **camelCase**.
+</Callout>
+
+### 4. kebab-case
+
+**Description** : Tous les mots en minuscules, séparés par des **tirets** (`-`).
+
+**Utilisation en JavaScript/React** :
+- ✅ Noms de fichiers
+- ✅ Noms de dossiers
+- ✅ URLs
+- ✅ Classes CSS
+- ✅ Attributs HTML
+
+**Exemples de fichiers/dossiers** :
+```
+src/
+├── components/
+│   ├── user-profile.jsx
+│   ├── navigation-bar.jsx
+│   ├── product-card.jsx
+│   └── login-form.jsx
+├── pages/
+│   ├── home-page.jsx
+│   ├── about-us.jsx
+│   └── contact-page.jsx
+├── utils/
+│   ├── date-formatter.js
+│   └── api-client.js
+└── styles/
+    └── global-styles.css
+```
+
+**Exemples CSS** :
+```css
+/* Classes CSS */
+.user-profile-container {
+  padding: 20px;
+}
+
+.navigation-bar {
+  background-color: #333;
+}
+
+.product-card-title {
+  font-size: 18px;
+  font-weight: bold;
+}
+
+.btn-primary {
+  background-color: blue;
+}
+```
+
+**Exemples HTML/URLs** :
+```html
+<!-- Attributs HTML -->
+<div class="user-profile">
+  <img src="avatar.jpg" alt="user-avatar">
+  <button class="btn-submit">Submit</button>
+</div>
+
+<!-- data attributes -->
+<div data-user-id="123" data-is-active="true">
+  Content
+</div>
+```
+
+```
+# URLs
+https://monsite.com/user-profile
+https://monsite.com/about-us
+https://monsite.com/contact-page
+https://api.example.com/api/user-settings
+```
+
+<Callout type="success" title="kebab-case pour les fichiers">
+**kebab-case est la convention recommandée pour les fichiers et dossiers** car :
+- Compatible avec tous les systèmes (Windows, Linux, Mac)
+- Facile à lire dans les URLs
+- Pas de problèmes avec la casse (case-insensitive systems)
+</Callout>
+
+## Tableau récapitulatif
+
+<div className="my-6 overflow-x-auto">
+  <table className="min-w-full">
+    <thead>
+      <tr>
+        <th>Convention</th>
+        <th>Format</th>
+        <th>Utilisation JavaScript/React</th>
+        <th>Exemple</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><strong>camelCase</strong></td>
+        <td>premierMotMinuscule</td>
+        <td>Variables, fonctions, props</td>
+        <td><code>userName</code>, <code>getUserData</code></td>
+      </tr>
+      <tr>
+        <td><strong>PascalCase</strong></td>
+        <td>ChaqueMotMajuscule</td>
+        <td>Composants React, classes</td>
+        <td><code>UserProfile</code>, <code>NavBar</code></td>
+      </tr>
+      <tr>
+        <td><strong>snake_case</strong></td>
+        <td>mots_séparés_underscores</td>
+        <td>BDD, API externes (rare en JS)</td>
+        <td><code>user_name</code>, <code>created_at</code></td>
+      </tr>
+      <tr>
+        <td><strong>kebab-case</strong></td>
+        <td>mots-séparés-tirets</td>
+        <td>Fichiers, dossiers, CSS, URLs</td>
+        <td><code>user-profile.jsx</code>, <code>.btn-primary</code></td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+## Conventions spéciales
+
+### SCREAMING_SNAKE_CASE
+
+**Description** : Tout en **MAJUSCULES**, séparé par des underscores.
+
+**Utilisation** :
+- ✅ Constantes globales
+- ✅ Variables d'environnement
+
+```javascript
+// Constantes
+const MAX_USER_COUNT = 100;
+const API_BASE_URL = "https://api.example.com";
+const DEFAULT_TIMEOUT = 5000;
+
+// Variables d'environnement (.env)
+VITE_API_URL=https://api.example.com
+VITE_APP_NAME=My Application
+DATABASE_HOST=localhost
+DATABASE_PORT=5432
+```
+
+### Constantes vs Variables
+
+```javascript
+// ❌ Ne pas mettre en SCREAMING_SNAKE_CASE
+const user = { name: "Marie" }; // Objet mutable
+const items = [1, 2, 3]; // Tableau mutable
+
+// ✅ SCREAMING_SNAKE_CASE pour vraies constantes
+const MAX_RETRIES = 3;
+const API_VERSION = "v2";
+const DEFAULT_LANGUAGE = "fr";
+```
+
+## Exemples complets par contexte
+
+### Fichier React TypeScript
+
+```typescript
+// user-profile.tsx (kebab-case pour le fichier)
+
+// Interface TypeScript (PascalCase)
+interface UserData {
+  firstName: string;
+  lastName: string;
+  email: string;
+}
+
+// Constante (SCREAMING_SNAKE_CASE)
+const MAX_BIO_LENGTH = 500;
+
+// Composant React (PascalCase)
+function UserProfile({ userId }: { userId: string }) {
+  // Variables (camelCase)
+  const [userData, setUserData] = useState<UserData | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
+
+  // Fonction (camelCase)
+  async function fetchUserData() {
+    setIsLoading(true);
+    const response = await fetch(`/api/users/${userId}`);
+    const data = await response.json();
+    setUserData(data);
+    setIsLoading(false);
+  }
+
+  return (
+    <div className="user-profile-container">
+      {isLoading ? (
+        <p>Chargement...</p>
+      ) : (
+        <div>
+          <h2>{userData?.firstName} {userData?.lastName}</h2>
+          <p>{userData?.email}</p>
+        </div>
+      )}
+    </div>
+  );
+}
+
+export default UserProfile;
+```
+
+### Fichier CSS
+
+```css
+/* global-styles.css (kebab-case pour le fichier) */
+
+/* Classes (kebab-case) */
+.user-profile-container {
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.navigation-bar {
+  display: flex;
+  justify-content: space-between;
+  background-color: var(--color-primary);
+}
+
+.btn-primary {
+  padding: 10px 20px;
+  background-color: blue;
+  color: white;
+}
+
+.product-card-title {
+  font-size: 18px;
+  font-weight: bold;
+}
+```
+
+### Structure de projet
+
+```
+my-react-app/              ← kebab-case (dossier racine)
+├── src/
+│   ├── components/        ← kebab-case
+│   │   ├── user-profile.tsx       ← kebab-case
+│   │   ├── navigation-bar.tsx     ← kebab-case
+│   │   └── product-card.tsx       ← kebab-case
+│   ├── pages/            ← kebab-case
+│   │   ├── home-page.tsx          ← kebab-case
+│   │   └── about-us.tsx           ← kebab-case
+│   ├── utils/            ← kebab-case
+│   │   ├── api-client.ts          ← kebab-case
+│   │   └── date-formatter.ts      ← kebab-case
+│   ├── hooks/            ← kebab-case
+│   │   └── use-user-data.ts       ← kebab-case
+│   └── styles/           ← kebab-case
+│       └── global-styles.css      ← kebab-case
+└── .env                  ← Variables en SCREAMING_SNAKE_CASE
+```
+
+## Règles à retenir
+
+<Callout type="success" title="Les règles d'or">
+**En JavaScript/React** :
+
+1. **camelCase** : Variables, fonctions, props, méthodes
+   ```javascript
+   let userName = "Marie";
+   function getUserData() { }
+   ```
+
+2. **PascalCase** : Composants React, classes, interfaces, types
+   ```javascript
+   function UserProfile() { }
+   class UserManager { }
+   interface UserData { }
+   ```
+
+3. **kebab-case** : Fichiers, dossiers, classes CSS, URLs
+   ```
+   user-profile.tsx
+   navigation-bar.jsx
+   .btn-primary
+   ```
+
+4. **SCREAMING_SNAKE_CASE** : Constantes globales, variables d'environnement
+   ```javascript
+   const MAX_USERS = 100;
+   VITE_API_URL=...
+   ```
+
+5. **snake_case** : Évitez en JavaScript (sauf BDD/API externes)
+</Callout>
+
+## Erreurs courantes
+
+### ❌ Mélanger les conventions
+
+```javascript
+// ❌ Mauvais
+let user_name = "Marie";  // snake_case en JavaScript
+function GetUserData() { } // PascalCase pour une fonction
+const userprofile = {};    // Pas de séparation
+
+// ✅ Bon
+let userName = "Marie";
+function getUserData() { }
+const userProfile = {};
+```
+
+### ❌ Mauvais nommage de composants
+
+```javascript
+// ❌ Mauvais
+function userProfile() { }  // camelCase pour composant
+function user_profile() { } // snake_case pour composant
+function USERPROFILE() { }  // Tout en majuscules
+
+// ✅ Bon
+function UserProfile() { }  // PascalCase obligatoire
+```
+
+## Ressources
+
+<Resources resources={[
+  {
+    title: "Naming Cheatsheet",
+    description: "Guide complet sur comment bien nommer ses variables",
+    url: "https://github.com/kettanaito/naming-cheatsheet",
+    type: "doc"
+  },
+  {
+    title: "JavaScript Style Guide - Airbnb",
+    description: "Guide de style JavaScript le plus populaire (conventions incluses)",
+    url: "https://github.com/airbnb/javascript",
+    type: "doc"
+  },
+  {
+    title: "Google JavaScript Style Guide",
+    description: "Guide de style officiel de Google",
+    url: "https://google.github.io/styleguide/jsguide.html",
+    type: "doc"
+  }
+]} />
+
+## En résumé
+
+<Callout type="tip" title="Mémo rapide">
+Quand vous créez quelque chose, posez-vous la question :
+
+**"Qu'est-ce que je nomme ?"**
+
+- Une **variable, fonction, prop** → `camelCase`
+- Un **composant React, classe** → `PascalCase`
+- Un **fichier, dossier** → `kebab-case`
+- Une **constante globale** → `SCREAMING_SNAKE_CASE`
+- Une **classe CSS** → `kebab-case`
+
+**Respectez toujours les conventions de votre équipe et de votre projet !**
+</Callout>

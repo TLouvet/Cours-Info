@@ -117,11 +117,12 @@ export const navigation: NavSession[] = [
   {
     id: 'annexes',
     title: 'Annexes',
-    description: 'Compléments non obligatoires',
+    description: 'Compléments',
     href: '/annexes',
     sections: [
       { id: 'git-basics', title: 'Git - Bases & Commandes', href: '/annexes/git-basics' },
       { id: 'css-selectors', title: 'CSS - Sélecteurs & Propriétés', href: '/annexes/css-selectors' },
+      { id: 'naming-conventions', title: 'Conventions de nommage', href: '/annexes/naming-conventions' },
       { id: 'gh-pages', title: 'Déployer sur GitHub Pages', href: '/annexes/gh-pages' },
     ],
   },

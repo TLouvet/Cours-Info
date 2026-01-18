@@ -1,0 +1,926 @@
+# Projet Guidé : Ma Liste de Lecture
+
+Construisons ensemble une application complète de A à Z ! Cette application permettra de gérer une liste de livres à lire.
+
+<Callout type="info" title="Objectif du projet">
+Créer une application "Reading List" avec toutes les fonctionnalités d'une vraie app :
+- Ajouter/Supprimer des livres
+- Marquer comme lu/en cours/à lire
+- Rechercher et filtrer
+- Persistance avec localStorage
+- Design responsive
+</Callout>
+
+## Vue d'ensemble du projet
+
+### Fonctionnalités
+
+1. **Page d'accueil** - Liste de tous les livres
+2. **Ajouter un livre** - Formulaire avec validation
+3. **Détails d'un livre** - Page dédiée avec notes
+4. **Recherche** - Filtrer par titre/auteur
+5. **Filtres de statut** - À lire / En cours / Terminé
+6. **Persistance** - localStorage pour sauvegarder les données
+7. **Responsive** - Fonctionne sur mobile et desktop
+
+### Stack technique
+
+- **Vite** - Build tool
+- **React** - Framework
+- **React Router** - Navigation
+- **Custom hooks** - Logique réutilisable
+- **LocalStorage** - Persistance des données
+
+### Structure du projet
+
+```
+reading-list/
+├── src/
+│   ├── components/
+│   │   ├── BookCard.jsx
+│   │   ├── BookForm.jsx
+│   │   ├── SearchBar.jsx
+│   │   └── StatusFilter.jsx
+│   ├── pages/
+│   │   ├── HomePage.jsx
+│   │   ├── BookDetailPage.jsx
+│   │   └── AddBookPage.jsx
+│   ├── hooks/
+│   │   ├── useBooks.js
+│   │   └── useLocalStorage.js
+│   ├── App.jsx
+│   └── main.jsx
+└── package.json
+```
+
+## Étape 1 : Setup du projet (15 min)
+
+### Créer le projet
+
+```bash
+npm create vite@latest reading-list -- --template react
+cd reading-list
+npm install
+```
+
+### Installer React Router
+
+```bash
+npm install react-router-dom
+```
+
+### Lancer le serveur de développement
+
+```bash
+npm run dev
+```
+
+Ouvrez http://localhost:5173
+
+<Callout type="success">
+Le projet de base est prêt ! Passons à l'étape suivante.
+</Callout>
+
+## Étape 2 : Modèle de données (10 min)
+
+### Structure d'un livre
+
+Créez un fichier pour les données exemple :
+
+**src/data/sampleBooks.js**
+```javascript
+export const sampleBooks = [
+  {
+    id: '1',
+    title: 'Le Seigneur des Anneaux',
+    author: 'J.R.R. Tolkien',
+    coverUrl: 'https://images.unsplash.com/photo-1621351183012-e2f9972dd9bf?w=300',
+    status: 'read', // 'toRead' | 'reading' | 'read'
+    rating: 5,
+    notes: 'Chef-d\'œuvre absolu de la fantasy !',
+    dateAdded: new Date().toISOString()
+  },
+  {
+    id: '2',
+    title: 'Harry Potter à l\'école des sorciers',
+    author: 'J.K. Rowling',
+    coverUrl: 'https://images.unsplash.com/photo-1589998059171-988d887df646?w=300',
+    status: 'reading',
+    rating: null,
+    notes: '',
+    dateAdded: new Date().toISOString()
+  },
+  {
+    id: '3',
+    title: '1984',
+    author: 'George Orwell',
+    coverUrl: 'https://images.unsplash.com/photo-1544947950-fa07a98d237f?w=300',
+    status: 'toRead',
+    rating: null,
+    notes: '',
+    dateAdded: new Date().toISOString()
+  }
+];
+```
+
+### Constantes
+
+**src/utils/constants.js**
+```javascript
+export const STATUS = {
+  TO_READ: 'toRead',
+  READING: 'reading',
+  READ: 'read'
+};
+
+export const STATUS_LABELS = {
+  [STATUS.TO_READ]: 'À lire',
+  [STATUS.READING]: 'En cours',
+  [STATUS.READ]: 'Terminé'
+};
+
+export const STATUS_COLORS = {
+  [STATUS.TO_READ]: 'bg-gray-100 text-gray-800',
+  [STATUS.READING]: 'bg-blue-100 text-blue-800',
+  [STATUS.READ]: 'bg-green-100 text-green-800'
+};
+```
+
+## Étape 3 : Custom Hooks (20 min)
+
+### Hook useLocalStorage
+
+**src/hooks/useLocalStorage.js**
+```javascript
+import { useState, useEffect } from 'react';
+
+function useLocalStorage(key, initialValue) {
+  // État initialisé avec localStorage ou valeur par défaut
+  const [value, setValue] = useState(() => {
+    try {
+      const item = window.localStorage.getItem(key);
+      return item ? JSON.parse(item) : initialValue;
+    } catch (error) {
+      console.error('Error loading from localStorage:', error);
+      return initialValue;
+    }
+  });
+
+  // Sauvegarder dans localStorage à chaque changement
+  useEffect(() => {
+    try {
+      window.localStorage.setItem(key, JSON.stringify(value));
+    } catch (error) {
+      console.error('Error saving to localStorage:', error);
+    }
+  }, [key, value]);
+
+  return [value, setValue];
+}
+
+export default useLocalStorage;
+```
+
+### Hook useBooks
+
+**src/hooks/useBooks.js**
+```javascript
+import { useState } from 'react';
+import useLocalStorage from './useLocalStorage';
+import { sampleBooks } from '../data/sampleBooks';
+
+function useBooks() {
+  const [books, setBooks] = useLocalStorage('books', sampleBooks);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [statusFilter, setStatusFilter] = useState('all');
+
+  // Ajouter un livre
+  const addBook = (book) => {
+    const newBook = {
+      ...book,
+      id: Date.now().toString(),
+      dateAdded: new Date().toISOString()
+    };
+    setBooks([...books, newBook]);
+  };
+
+  // Supprimer un livre
+  const deleteBook = (id) => {
+    setBooks(books.filter(book => book.id !== id));
+  };
+
+  // Mettre à jour un livre
+  const updateBook = (id, updates) => {
+    setBooks(books.map(book =>
+      book.id === id ? { ...book, ...updates } : book
+    ));
+  };
+
+  // Obtenir un livre par ID
+  const getBookById = (id) => {
+    return books.find(book => book.id === id);
+  };
+
+  // Filtrer les livres
+  const filteredBooks = books
+    .filter(book => {
+      // Filtre de recherche
+      const matchesSearch =
+        book.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        book.author.toLowerCase().includes(searchQuery.toLowerCase());
+
+      // Filtre de statut
+      const matchesStatus =
+        statusFilter === 'all' || book.status === statusFilter;
+
+      return matchesSearch && matchesStatus;
+    });
+
+  return {
+    books: filteredBooks,
+    allBooks: books,
+    searchQuery,
+    setSearchQuery,
+    statusFilter,
+    setStatusFilter,
+    addBook,
+    deleteBook,
+    updateBook,
+    getBookById
+  };
+}
+
+export default useBooks;
+```
+
+<Callout type="success">
+Les hooks sont prêts ! Toute la logique métier est centralisée et réutilisable.
+</Callout>
+
+## Étape 4 : Composants UI (30 min)
+
+### BookCard Component
+
+**src/components/BookCard.jsx**
+```jsx
+import { Link } from 'react-router-dom';
+import { STATUS_LABELS, STATUS_COLORS } from '../utils/constants';
+
+function BookCard({ book, onDelete }) {
+  return (
+    <div className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow">
+      {/* Image de couverture */}
+      <img
+        src={book.coverUrl}
+        alt={book.title}
+        className="w-full h-48 object-cover"
+      />
+
+      {/* Contenu */}
+      <div className="p-4">
+        {/* Statut */}
+        <span className={`inline-block px-2 py-1 text-xs font-semibold rounded ${STATUS_COLORS[book.status]}`}>
+          {STATUS_LABELS[book.status]}
+        </span>
+
+        {/* Titre et auteur */}
+        <h3 className="mt-2 text-lg font-semibold text-gray-900">
+          {book.title}
+        </h3>
+        <p className="text-sm text-gray-600">{book.author}</p>
+
+        {/* Note (si livre terminé) */}
+        {book.rating && (
+          <div className="mt-2 flex items-center">
+            <span className="text-yellow-500">{'⭐'.repeat(book.rating)}</span>
+            <span className="ml-2 text-sm text-gray-600">({book.rating}/5)</span>
+          </div>
+        )}
+
+        {/* Actions */}
+        <div className="mt-4 flex gap-2">
+          <Link
+            to={`/book/${book.id}`}
+            className="flex-1 bg-blue-600 text-white px-4 py-2 rounded text-center hover:bg-blue-700"
+          >
+            Voir
+          </Link>
+          <button
+            onClick={() => onDelete(book.id)}
+            className="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700"
+          >
+            Supprimer
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+export default BookCard;
+```
+
+### SearchBar Component
+
+**src/components/SearchBar.jsx**
+```jsx
+function SearchBar({ searchQuery, onSearchChange }) {
+  return (
+    <div className="w-full max-w-md">
+      <input
+        type="text"
+        value={searchQuery}
+        onChange={(e) => onSearchChange(e.target.value)}
+        placeholder="Rechercher par titre ou auteur..."
+        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+      />
+    </div>
+  );
+}
+
+export default SearchBar;
+```
+
+### StatusFilter Component
+
+**src/components/StatusFilter.jsx**
+```jsx
+import { STATUS, STATUS_LABELS } from '../utils/constants';
+
+function StatusFilter({ statusFilter, onStatusChange }) {
+  return (
+    <div className="flex gap-2">
+      <button
+        onClick={() => onStatusChange('all')}
+        className={`px-4 py-2 rounded ${
+          statusFilter === 'all'
+            ? 'bg-blue-600 text-white'
+            : 'bg-gray-200 text-gray-800'
+        }`}
+      >
+        Tous
+      </button>
+      {Object.entries(STATUS).map(([key, value]) => (
+        <button
+          key={value}
+          onClick={() => onStatusChange(value)}
+          className={`px-4 py-2 rounded ${
+            statusFilter === value
+              ? 'bg-blue-600 text-white'
+              : 'bg-gray-200 text-gray-800'
+          }`}
+        >
+          {STATUS_LABELS[value]}
+        </button>
+      ))}
+    </div>
+  );
+}
+
+export default StatusFilter;
+```
+
+### BookForm Component
+
+**src/components/BookForm.jsx**
+```jsx
+import { useState } from 'react';
+import { STATUS, STATUS_LABELS } from '../utils/constants';
+
+function BookForm({ onSubmit, initialData = {} }) {
+  const [formData, setFormData] = useState({
+    title: initialData.title || '',
+    author: initialData.author || '',
+    coverUrl: initialData.coverUrl || '',
+    status: initialData.status || STATUS.TO_READ,
+    rating: initialData.rating || '',
+    notes: initialData.notes || ''
+  });
+
+  const [errors, setErrors] = useState({});
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({
+      ...prev,
+      [name]: value
+    }));
+    // Effacer l'erreur quand l'utilisateur modifie le champ
+    if (errors[name]) {
+      setErrors(prev => ({
+        ...prev,
+        [name]: ''
+      }));
+    }
+  };
+
+  const validate = () => {
+    const newErrors = {};
+
+    if (!formData.title.trim()) {
+      newErrors.title = 'Le titre est requis';
+    }
+
+    if (!formData.author.trim()) {
+      newErrors.author = 'L\'auteur est requis';
+    }
+
+    if (formData.rating && (formData.rating < 1 || formData.rating > 5)) {
+      newErrors.rating = 'La note doit être entre 1 et 5';
+    }
+
+    return newErrors;
+  };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+
+    const newErrors = validate();
+    if (Object.keys(newErrors).length > 0) {
+      setErrors(newErrors);
+      return;
+    }
+
+    onSubmit({
+      ...formData,
+      rating: formData.rating ? Number(formData.rating) : null
+    });
+  };
+
+  return (
+    <form onSubmit={handleSubmit} className="space-y-4">
+      {/* Titre */}
+      <div>
+        <label className="block text-sm font-medium text-gray-700">
+          Titre *
+        </label>
+        <input
+          type="text"
+          name="title"
+          value={formData.title}
+          onChange={handleChange}
+          className="mt-1 w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+        />
+        {errors.title && (
+          <p className="mt-1 text-sm text-red-600">{errors.title}</p>
+        )}
+      </div>
+
+      {/* Auteur */}
+      <div>
+        <label className="block text-sm font-medium text-gray-700">
+          Auteur *
+        </label>
+        <input
+          type="text"
+          name="author"
+          value={formData.author}
+          onChange={handleChange}
+          className="mt-1 w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+        />
+        {errors.author && (
+          <p className="mt-1 text-sm text-red-600">{errors.author}</p>
+        )}
+      </div>
+
+      {/* URL de couverture */}
+      <div>
+        <label className="block text-sm font-medium text-gray-700">
+          URL de la couverture
+        </label>
+        <input
+          type="url"
+          name="coverUrl"
+          value={formData.coverUrl}
+          onChange={handleChange}
+          placeholder="https://example.com/image.jpg"
+          className="mt-1 w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+        />
+      </div>
+
+      {/* Statut */}
+      <div>
+        <label className="block text-sm font-medium text-gray-700">
+          Statut
+        </label>
+        <select
+          name="status"
+          value={formData.status}
+          onChange={handleChange}
+          className="mt-1 w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+        >
+          {Object.entries(STATUS).map(([key, value]) => (
+            <option key={value} value={value}>
+              {STATUS_LABELS[value]}
+            </option>
+          ))}
+        </select>
+      </div>
+
+      {/* Note */}
+      <div>
+        <label className="block text-sm font-medium text-gray-700">
+          Note (1-5)
+        </label>
+        <input
+          type="number"
+          name="rating"
+          min="1"
+          max="5"
+          value={formData.rating}
+          onChange={handleChange}
+          className="mt-1 w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+        />
+        {errors.rating && (
+          <p className="mt-1 text-sm text-red-600">{errors.rating}</p>
+        )}
+      </div>
+
+      {/* Notes */}
+      <div>
+        <label className="block text-sm font-medium text-gray-700">
+          Notes
+        </label>
+        <textarea
+          name="notes"
+          value={formData.notes}
+          onChange={handleChange}
+          rows="4"
+          className="mt-1 w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+        />
+      </div>
+
+      {/* Submit */}
+      <button
+        type="submit"
+        className="w-full bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700"
+      >
+        {initialData.id ? 'Mettre à jour' : 'Ajouter'}
+      </button>
+    </form>
+  );
+}
+
+export default BookForm;
+```
+
+## Étape 5 : Pages (30 min)
+
+### HomePage
+
+**src/pages/HomePage.jsx**
+```jsx
+import { Link } from 'react-router-dom';
+import useBooks from '../hooks/useBooks';
+import BookCard from '../components/BookCard';
+import SearchBar from '../components/SearchBar';
+import StatusFilter from '../components/StatusFilter';
+
+function HomePage() {
+  const {
+    books,
+    searchQuery,
+    setSearchQuery,
+    statusFilter,
+    setStatusFilter,
+    deleteBook
+  } = useBooks();
+
+  return (
+    <div className="min-h-screen bg-gray-100 py-8 px-4">
+      <div className="max-w-6xl mx-auto">
+        {/* Header */}
+        <div className="mb-8">
+          <h1 className="text-4xl font-bold text-gray-900 mb-4">
+            Ma Liste de Lecture
+          </h1>
+          <p className="text-gray-600">
+            {books.length} livre{books.length > 1 ? 's' : ''} dans votre liste
+          </p>
+        </div>
+
+        {/* Actions */}
+        <div className="mb-8 flex flex-col md:flex-row gap-4 items-start md:items-center justify-between">
+          <SearchBar
+            searchQuery={searchQuery}
+            onSearchChange={setSearchQuery}
+          />
+          <Link
+            to="/add"
+            className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700"
+          >
+            + Ajouter un livre
+          </Link>
+        </div>
+
+        {/* Filtres */}
+        <div className="mb-8">
+          <StatusFilter
+            statusFilter={statusFilter}
+            onStatusChange={setStatusFilter}
+          />
+        </div>
+
+        {/* Liste des livres */}
+        {books.length === 0 ? (
+          <div className="text-center py-16">
+            <p className="text-gray-600 text-lg">
+              {searchQuery || statusFilter !== 'all'
+                ? 'Aucun livre ne correspond à vos critères'
+                : 'Votre liste est vide. Ajoutez votre premier livre !'}
+            </p>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {books.map(book => (
+              <BookCard
+                key={book.id}
+                book={book}
+                onDelete={deleteBook}
+              />
+            ))}
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
+export default HomePage;
+```
+
+### AddBookPage
+
+**src/pages/AddBookPage.jsx**
+```jsx
+import { useNavigate } from 'react-router-dom';
+import useBooks from '../hooks/useBooks';
+import BookForm from '../components/BookForm';
+
+function AddBookPage() {
+  const navigate = useNavigate();
+  const { addBook } = useBooks();
+
+  const handleSubmit = (bookData) => {
+    addBook(bookData);
+    navigate('/');
+  };
+
+  return (
+    <div className="min-h-screen bg-gray-100 py-8 px-4">
+      <div className="max-w-2xl mx-auto">
+        <div className="bg-white rounded-lg shadow-md p-6">
+          <h1 className="text-3xl font-bold text-gray-900 mb-6">
+            Ajouter un livre
+          </h1>
+          <BookForm onSubmit={handleSubmit} />
+          <button
+            onClick={() => navigate('/')}
+            className="mt-4 text-blue-600 hover:text-blue-800"
+          >
+            ← Retour à la liste
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+export default AddBookPage;
+```
+
+### BookDetailPage
+
+**src/pages/BookDetailPage.jsx**
+```jsx
+import { useParams, useNavigate } from 'react-router-dom';
+import useBooks from '../hooks/useBooks';
+import BookForm from '../components/BookForm';
+import { STATUS_LABELS, STATUS_COLORS } from '../utils/constants';
+
+function BookDetailPage() {
+  const { id } = useParams();
+  const navigate = useNavigate();
+  const { getBookById, updateBook, deleteBook } = useBooks();
+
+  const book = getBookById(id);
+
+  if (!book) {
+    return (
+      <div className="min-h-screen bg-gray-100 py-8 px-4">
+        <div className="max-w-2xl mx-auto text-center">
+          <h1 className="text-2xl font-bold text-gray-900 mb-4">
+            Livre non trouvé
+          </h1>
+          <button
+            onClick={() => navigate('/')}
+            className="text-blue-600 hover:text-blue-800"
+          >
+            ← Retour à la liste
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  const handleUpdate = (updates) => {
+    updateBook(id, updates);
+    navigate('/');
+  };
+
+  const handleDelete = () => {
+    if (confirm('Êtes-vous sûr de vouloir supprimer ce livre ?')) {
+      deleteBook(id);
+      navigate('/');
+    }
+  };
+
+  return (
+    <div className="min-h-screen bg-gray-100 py-8 px-4">
+      <div className="max-w-2xl mx-auto">
+        <div className="bg-white rounded-lg shadow-md p-6 mb-6">
+          <div className="flex items-start gap-6">
+            {/* Image */}
+            <img
+              src={book.coverUrl}
+              alt={book.title}
+              className="w-48 h-64 object-cover rounded-lg shadow-md"
+            />
+
+            {/* Informations */}
+            <div className="flex-1">
+              <span className={`inline-block px-3 py-1 text-sm font-semibold rounded ${STATUS_COLORS[book.status]}`}>
+                {STATUS_LABELS[book.status]}
+              </span>
+
+              <h1 className="mt-4 text-3xl font-bold text-gray-900">
+                {book.title}
+              </h1>
+              <p className="mt-2 text-lg text-gray-600">{book.author}</p>
+
+              {book.rating && (
+                <div className="mt-4">
+                  <span className="text-2xl">{'⭐'.repeat(book.rating)}</span>
+                  <span className="ml-2 text-gray-600">({book.rating}/5)</span>
+                </div>
+              )}
+
+              {book.notes && (
+                <div className="mt-4">
+                  <h3 className="font-semibold text-gray-900">Notes :</h3>
+                  <p className="mt-2 text-gray-700 whitespace-pre-wrap">
+                    {book.notes}
+                  </p>
+                </div>
+              )}
+
+              <div className="mt-6 flex gap-2">
+                <button
+                  onClick={handleDelete}
+                  className="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700"
+                >
+                  Supprimer
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Formulaire de modification */}
+        <div className="bg-white rounded-lg shadow-md p-6">
+          <h2 className="text-2xl font-bold text-gray-900 mb-4">
+            Modifier le livre
+          </h2>
+          <BookForm onSubmit={handleUpdate} initialData={book} />
+        </div>
+
+        <button
+          onClick={() => navigate('/')}
+          className="mt-4 text-blue-600 hover:text-blue-800"
+        >
+          ← Retour à la liste
+        </button>
+      </div>
+    </div>
+  );
+}
+
+export default BookDetailPage;
+```
+
+## Étape 6 : App et Routing (10 min)
+
+**src/App.jsx**
+```jsx
+import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import HomePage from './pages/HomePage';
+import AddBookPage from './pages/AddBookPage';
+import BookDetailPage from './pages/BookDetailPage';
+
+function App() {
+  return (
+    <BrowserRouter>
+      <Routes>
+        <Route path="/" element={<HomePage />} />
+        <Route path="/add" element={<AddBookPage />} />
+        <Route path="/book/:id" element={<BookDetailPage />} />
+      </Routes>
+    </BrowserRouter>
+  );
+}
+
+export default App;
+```
+
+## Étape 7 : Styles (10 min)
+
+Ajoutez Tailwind CSS (optionnel, mais recommandé) :
+
+```bash
+npm install -D tailwindcss postcss autoprefixer
+npx tailwindcss init -p
+```
+
+**tailwind.config.js**
+```javascript
+/** @type {import('tailwindcss').Config} */
+export default {
+  content: [
+    "./index.html",
+    "./src/**/*.{js,ts,jsx,tsx}",
+  ],
+  theme: {
+    extend: {},
+  },
+  plugins: [],
+}
+```
+
+**src/index.css**
+```css
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+```
+
+## Étape 8 : Test et Debug (15 min)
+
+Testez toutes les fonctionnalités :
+
+<Callout type="success" title="Checklist de test">
+- [ ] Ajouter un livre
+- [ ] Voir la liste des livres
+- [ ] Rechercher un livre
+- [ ] Filtrer par statut
+- [ ] Voir les détails d'un livre
+- [ ] Modifier un livre
+- [ ] Supprimer un livre
+- [ ] Vérifier la persistance (rafraîchir la page)
+- [ ] Tester sur mobile (responsive)
+</Callout>
+
+## Étape 9 : Déploiement (15 min)
+
+1. Créez un repository GitHub
+2. Pushez votre code
+3. Déployez sur Vercel (voir la section Déploiement)
+
+```bash
+git init
+git add .
+git commit -m "Initial commit - Reading List App"
+git remote add origin YOUR_GITHUB_URL
+git push -u origin main
+```
+
+## Améliorations possibles
+
+<Callout type="tip" title="Pour aller plus loin">
+**Fonctionnalités supplémentaires :**
+- Tri des livres (par date, titre, auteur)
+- Catégories/genres de livres
+- Statistiques (nombre de livres lus, moyenne des notes)
+- Export/import de la liste (JSON)
+- Mode sombre
+- Images par défaut pour les livres sans couverture
+- Pagination ou infinite scroll
+- Animations (framer-motion)
+</Callout>
+
+## Récapitulatif
+
+Félicitations ! Vous avez construit une application complète avec :
+
+✅ **React** - Composants réutilisables
+✅ **React Router** - Navigation multi-pages
+✅ **Custom Hooks** - Logique métier centralisée
+✅ **LocalStorage** - Persistance des données
+✅ **Formulaires** - Avec validation
+✅ **Recherche et filtres** - UX améliorée
+✅ **Responsive Design** - Mobile-friendly
+
+<Callout type="success">
+Vous maîtrisez maintenant le workflow complet de développement React !
+
+**Prochaine étape :** Créer votre propre projet pour le projet final.
+</Callout>

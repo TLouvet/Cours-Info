@@ -1,0 +1,416 @@
+# Gestion des événements - Séance 3
+
+Les événements permettent à votre application de **réagir** aux actions de l'utilisateur : clics, saisies, soumissions, etc.
+
+## Événements React vs DOM
+
+En JavaScript vanilla, vous utilisez `addEventListener`. En React, vous passez des **gestionnaires d'événements** directement dans le JSX.
+
+### Comparaison
+
+```javascript
+// ❌ JavaScript vanilla (DOM)
+const button = document.getElementById('myButton');
+button.addEventListener('click', function() {
+  alert('Cliqué !');
+});
+```
+
+```jsx
+// ✅ React
+function MyButton() {
+  const handleClick = () => {
+    alert('Cliqué !');
+  };
+
+  return <button onClick={handleClick}>Cliquer</button>;
+}
+```
+
+<Callout type="info" title="Différences clés">
+**React utilise des événements synthétiques (SyntheticEvents)**
+
+- **Nommage** : camelCase (`onClick`, `onChange`) au lieu de lowercase (`onclick`, `onchange`)
+- **Fonction** : vous passez une fonction, pas une string
+- **Cross-browser** : React normalise les événements entre navigateurs
+- **Performance** : React optimise la gestion des événements
+</Callout>
+
+## Les événements courants
+
+### onClick - Détection de clic
+
+L'événement le plus utilisé en React.
+
+```jsx
+function Button() {
+  const handleClick = () => {
+    console.log('Bouton cliqué !');
+  };
+
+  return <button onClick={handleClick}>Cliquer</button>;
+}
+```
+
+<Callout type="warning" title="Erreur fréquente : appel immédiat">
+```jsx
+// ❌ FAUX : la fonction est appelée immédiatement au rendu
+<button onClick={handleClick()}>Cliquer</button>
+
+// ✅ CORRECT : on passe la fonction (sans parenthèses)
+<button onClick={handleClick}>Cliquer</button>
+
+// ✅ CORRECT : ou avec une arrow function
+<button onClick={() => handleClick()}>Cliquer</button>
+```
+
+**Règle** : Si vous avez besoin de passer des arguments, utilisez une arrow function !
+</Callout>
+
+### onChange - Détection de saisie
+
+Pour les inputs, textarea et select.
+
+```jsx
+function Input() {
+  const handleChange = (event) => {
+    console.log('Nouvelle valeur :', event.target.value);
+  };
+
+  return (
+    <input
+      type="text"
+      onChange={handleChange}
+      placeholder="Tapez quelque chose..."
+    />
+  );
+}
+```
+
+<Callout type="tip" title="event.target">
+`event.target` contient l'élément HTML qui a déclenché l'événement.
+
+- `event.target.value` → valeur de l'input
+- `event.target.checked` → état d'une checkbox
+- `event.target.name` → attribut name de l'élément
+</Callout>
+
+### onSubmit - Soumission de formulaire
+
+Pour gérer la soumission d'un formulaire.
+
+```jsx
+function Form() {
+  const handleSubmit = (event) => {
+    event.preventDefault(); // Empêche le rechargement de la page
+    console.log('Formulaire soumis !');
+  };
+
+  return (
+    <form onSubmit={handleSubmit}>
+      <input type="text" />
+      <button type="submit">Envoyer</button>
+    </form>
+  );
+}
+```
+
+<Callout type="warning" title="N'oubliez pas preventDefault !">
+**Par défaut**, soumettre un formulaire **recharge la page**.
+
+En React, on veut éviter ça pour gérer la soumission nous-mêmes.
+
+```jsx
+const handleSubmit = (event) => {
+  event.preventDefault(); // ← IMPORTANT !
+  // Votre logique ici
+};
+```
+</Callout>
+
+### Autres événements utiles
+
+```jsx
+function EventExamples() {
+  return (
+    <div>
+      {/* Double-clic */}
+      <button onDoubleClick={() => console.log('Double-clic')}>
+        Double-cliquez
+      </button>
+
+      {/* Survol */}
+      <div onMouseEnter={() => console.log('Souris entrée')}>
+        Survolez-moi
+      </div>
+
+      {/* Focus */}
+      <input onFocus={() => console.log('Input focus')} />
+
+      {/* Blur (perte de focus) */}
+      <input onBlur={() => console.log('Input blur')} />
+
+      {/* Touche appuyée */}
+      <input onKeyDown={(e) => console.log('Touche :', e.key)} />
+    </div>
+  );
+}
+```
+
+## L'objet Event
+
+Chaque gestionnaire d'événement reçoit un objet `event` avec des informations utiles.
+
+```jsx
+function EventDetails() {
+  const handleEvent = (event) => {
+    console.log('Type :', event.type); // "click", "change", etc.
+    console.log('Target :', event.target); // Élément HTML
+    console.log('Valeur :', event.target.value); // Pour les inputs
+  };
+
+  return <input onChange={handleEvent} />;
+}
+```
+
+### Méthodes importantes
+
+```jsx
+const handleSubmit = (event) => {
+  // Empêcher le comportement par défaut
+  event.preventDefault();
+
+  // Empêcher la propagation aux parents
+  event.stopPropagation();
+};
+```
+
+<Callout type="info" title="event.preventDefault() vs event.stopPropagation()">
+- **preventDefault()** : empêche le comportement par défaut du navigateur
+  - Formulaire : empêche le rechargement
+  - Lien : empêche la navigation
+- **stopPropagation()** : empêche l'événement de remonter aux parents
+  - Utile pour éviter les clics en cascade
+</Callout>
+
+## Passer des arguments aux gestionnaires
+
+Vous devez souvent passer des données au gestionnaire d'événement.
+
+### Méthode 1 : Arrow function (recommandée)
+
+```jsx
+function ItemList() {
+  const items = ['Pomme', 'Banane', 'Orange'];
+
+  const handleClick = (item) => {
+    console.log('Vous avez cliqué sur :', item);
+  };
+
+  return (
+    <ul>
+      {items.map(item => (
+        <li key={item}>
+          <button onClick={() => handleClick(item)}>
+            {item}
+          </button>
+        </li>
+      ))}
+    </ul>
+  );
+}
+```
+
+### Méthode 2 : bind() (moins utilisée)
+
+```jsx
+function ItemList() {
+  const handleClick = (item, event) => {
+    console.log('Item :', item);
+  };
+
+  return (
+    <button onClick={handleClick.bind(null, 'Pomme')}>
+      Pomme
+    </button>
+  );
+}
+```
+
+<Callout type="tip" title="Quelle méthode choisir ?">
+**Arrow function** est la plus claire et la plus utilisée en React moderne.
+
+```jsx
+// ✅ Recommandé
+<button onClick={() => handleClick(item)}>Cliquer</button>
+
+// ⚠️ Fonctionne mais moins lisible
+<button onClick={handleClick.bind(null, item)}>Cliquer</button>
+```
+</Callout>
+
+## Gestionnaires inline vs externes
+
+### Gestionnaire externe (recommandé)
+
+```jsx
+function Button() {
+  const handleClick = () => {
+    console.log('Cliqué !');
+  };
+
+  return <button onClick={handleClick}>Cliquer</button>;
+}
+```
+
+**Avantages** :
+- Plus lisible
+- Réutilisable
+- Facile à tester
+
+### Gestionnaire inline
+
+```jsx
+function Button() {
+  return (
+    <button onClick={() => console.log('Cliqué !')}>
+      Cliquer
+    </button>
+  );
+}
+```
+
+**Avantages** :
+- Plus court pour une logique simple
+- Pratique pour les prototypes
+
+<Callout type="tip" title="Bonnes pratiques">
+**Règle générale** :
+
+- **Logique simple (1 ligne)** → gestionnaire inline
+- **Logique complexe (2+ lignes)** → gestionnaire externe
+- **Réutilisable** → gestionnaire externe
+
+```jsx
+// ✅ OK inline (simple)
+<button onClick={() => setCount(count + 1)}>+1</button>
+
+// ✅ Mieux externe (complexe)
+const handleSubmit = (e) => {
+  e.preventDefault();
+  validateForm();
+  sendData();
+};
+```
+</Callout>
+
+## Exemples pratiques
+
+### Toggle (basculer un état)
+
+```jsx
+function Toggle() {
+  const [isOn, setIsOn] = useState(false);
+
+  const handleToggle = () => {
+    setIsOn(!isOn); // Inverse l'état
+  };
+
+  return (
+    <div>
+      <p>L'interrupteur est {isOn ? 'ON' : 'OFF'}</p>
+      <button onClick={handleToggle}>
+        {isOn ? 'Éteindre' : 'Allumer'}
+      </button>
+    </div>
+  );
+}
+```
+
+### Compteur avec plusieurs boutons
+
+```jsx
+function Counter() {
+  const [count, setCount] = useState(0);
+
+  return (
+    <div>
+      <p>Compteur : {count}</p>
+      <button onClick={() => setCount(count - 1)}>-1</button>
+      <button onClick={() => setCount(0)}>Reset</button>
+      <button onClick={() => setCount(count + 1)}>+1</button>
+    </div>
+  );
+}
+```
+
+### Saisie dans un input
+
+```jsx
+function NameInput() {
+  const [name, setName] = useState('');
+
+  const handleChange = (event) => {
+    setName(event.target.value);
+  };
+
+  return (
+    <div>
+      <input
+        type="text"
+        value={name}
+        onChange={handleChange}
+        placeholder="Votre nom"
+      />
+      <p>Bonjour {name || 'inconnu'} !</p>
+    </div>
+  );
+}
+```
+
+### Gestion de plusieurs inputs
+
+```jsx
+function Form() {
+  const [formData, setFormData] = useState({
+    name: '',
+    email: ''
+  });
+
+  const handleChange = (event) => {
+    const { name, value } = event.target;
+    setFormData({
+      ...formData,
+      [name]: value // Computed property name
+    });
+  };
+
+  return (
+    <form>
+      <input
+        name="name"
+        value={formData.name}
+        onChange={handleChange}
+      />
+      <input
+        name="email"
+        value={formData.email}
+        onChange={handleChange}
+      />
+    </form>
+  );
+}
+```
+
+<Callout type="success" title="Récapitulatif">
+**Ce que vous avez appris** :
+
+- ✅ Les événements React utilisent camelCase (`onClick`, `onChange`)
+- ✅ On passe des fonctions, pas des strings
+- ✅ `event.preventDefault()` empêche le comportement par défaut
+- ✅ `event.target` donne accès à l'élément HTML
+- ✅ Arrow functions pour passer des arguments
+- ✅ Gestionnaires externes pour la logique complexe
+
+**Prochaine étape** : découvrir le hook `useState` pour gérer l'état !
+</Callout>

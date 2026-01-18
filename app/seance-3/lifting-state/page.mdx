@@ -1,0 +1,585 @@
+# Lifting State Up - Séance 3
+
+**Lifting state up** (remonter l'état) est une technique pour **partager des données** entre plusieurs composants en React.
+
+## Le problème : partager l'état
+
+Imaginez deux composants qui doivent accéder à la **même donnée**.
+
+```jsx
+// ❌ Problème : chaque composant a son propre état
+function ProductList() {
+  const [searchTerm, setSearchTerm] = useState('');
+  // Comment SearchBar peut-il accéder à searchTerm ?
+}
+
+function SearchBar() {
+  const [searchTerm, setSearchTerm] = useState('');
+  // Comment ProductList peut-il accéder à searchTerm ?
+}
+```
+
+**Les composants ne peuvent pas partager directement leur état.**
+
+## La solution : remonter l'état
+
+**Principe** : placer l'état dans le **composant parent commun** et le passer aux enfants via les props.
+
+```jsx
+// ✅ Solution : état dans le parent
+function App() {
+  const [searchTerm, setSearchTerm] = useState('');
+
+  return (
+    <div>
+      <SearchBar
+        searchTerm={searchTerm}
+        onSearchChange={setSearchTerm}
+      />
+      <ProductList
+        searchTerm={searchTerm}
+      />
+    </div>
+  );
+}
+
+function SearchBar({ searchTerm, onSearchChange }) {
+  return (
+    <input
+      type="text"
+      value={searchTerm}
+      onChange={e => onSearchChange(e.target.value)}
+      placeholder="Rechercher..."
+    />
+  );
+}
+
+function ProductList({ searchTerm }) {
+  const products = ['Laptop', 'Phone', 'Tablet'];
+
+  const filtered = products.filter(p =>
+    p.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
+  return (
+    <ul>
+      {filtered.map(product => (
+        <li key={product}>{product}</li>
+      ))}
+    </ul>
+  );
+}
+```
+
+<Callout type="info" title="Comment ça marche ?">
+1. **État** vit dans `App` (parent commun)
+2. **Données** descendent vers `SearchBar` et `ProductList` via props
+3. **Événements** remontent de `SearchBar` vers `App` via callback
+4. **App** met à jour l'état
+5. **React** re-rend les enfants avec les nouvelles props
+
+```
+App (state: searchTerm)
+ ├─> SearchBar (props: searchTerm, onSearchChange)
+ │    └─> onChange → onSearchChange → App met à jour
+ └─> ProductList (props: searchTerm)
+      └─> filtre avec searchTerm
+```
+</Callout>
+
+## Flux de données unidirectionnel
+
+React suit un principe fondamental : **les données coulent dans un seul sens**.
+
+```
+Parent (state)
+    ↓ props
+Enfant (affichage)
+    ↑ événement (callback)
+Parent (update state)
+    ↓ props
+Enfant (nouveau rendu)
+```
+
+- **Props** : descendent (parent → enfant)
+- **Callbacks** : remontent (enfant → parent)
+
+<Callout type="warning" title="On ne peut pas modifier les props !">
+```jsx
+// ❌ INTERDIT : modifier les props
+function Child({ value }) {
+  value = 'nouveau'; // ❌ Erreur !
+}
+
+// ✅ CORRECT : demander au parent de modifier via callback
+function Child({ value, onChange }) {
+  return (
+    <button onClick={() => onChange('nouveau')}>
+      Changer
+    </button>
+  );
+}
+```
+</Callout>
+
+## Exemple complet : Compteur partagé
+
+Deux boutons qui contrôlent le même compteur.
+
+```jsx
+function App() {
+  const [count, setCount] = useState(0);
+
+  return (
+    <div>
+      <Display count={count} />
+      <IncrementButton onIncrement={() => setCount(count + 1)} />
+      <DecrementButton onDecrement={() => setCount(count - 1)} />
+    </div>
+  );
+}
+
+function Display({ count }) {
+  return <h1>Compteur : {count}</h1>;
+}
+
+function IncrementButton({ onIncrement }) {
+  return <button onClick={onIncrement}>+1</button>;
+}
+
+function DecrementButton({ onDecrement }) {
+  return <button onClick={onDecrement}>-1</button>;
+}
+```
+
+**Avantages** :
+- ✅ Un seul état (single source of truth)
+- ✅ Tous les composants sont synchronisés
+- ✅ Facile à déboguer (l'état est centralisé)
+
+## Exemple : Filtrage de liste
+
+Un champ de recherche qui filtre une liste de produits.
+
+```jsx
+function App() {
+  const [searchTerm, setSearchTerm] = useState('');
+
+  const products = [
+    { id: 1, name: 'Laptop', price: 1000 },
+    { id: 2, name: 'Phone', price: 500 },
+    { id: 3, name: 'Tablet', price: 300 },
+    { id: 4, name: 'Monitor', price: 200 }
+  ];
+
+  return (
+    <div>
+      <SearchBar
+        searchTerm={searchTerm}
+        onSearchChange={setSearchTerm}
+      />
+      <ProductList
+        products={products}
+        searchTerm={searchTerm}
+      />
+    </div>
+  );
+}
+
+function SearchBar({ searchTerm, onSearchChange }) {
+  return (
+    <div>
+      <input
+        type="text"
+        value={searchTerm}
+        onChange={e => onSearchChange(e.target.value)}
+        placeholder="Rechercher un produit..."
+      />
+      <button onClick={() => onSearchChange('')}>
+        Effacer
+      </button>
+    </div>
+  );
+}
+
+function ProductList({ products, searchTerm }) {
+  const filteredProducts = products.filter(product =>
+    product.name.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
+  return (
+    <div>
+      <p>{filteredProducts.length} produit(s) trouvé(s)</p>
+      <ul>
+        {filteredProducts.map(product => (
+          <li key={product.id}>
+            {product.name} - {product.price}€
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
+}
+```
+
+## Exemple : Formulaire multi-étapes
+
+Un formulaire en plusieurs étapes avec navigation.
+
+```jsx
+function MultiStepForm() {
+  const [step, setStep] = useState(1);
+  const [formData, setFormData] = useState({
+    name: '',
+    email: '',
+    address: ''
+  });
+
+  const updateFormData = (field, value) => {
+    setFormData({ ...formData, [field]: value });
+  };
+
+  const nextStep = () => setStep(step + 1);
+  const prevStep = () => setStep(step - 1);
+
+  return (
+    <div>
+      <h2>Étape {step} sur 3</h2>
+
+      {step === 1 && (
+        <Step1
+          data={formData}
+          onUpdate={updateFormData}
+          onNext={nextStep}
+        />
+      )}
+
+      {step === 2 && (
+        <Step2
+          data={formData}
+          onUpdate={updateFormData}
+          onNext={nextStep}
+          onPrev={prevStep}
+        />
+      )}
+
+      {step === 3 && (
+        <Step3
+          data={formData}
+          onPrev={prevStep}
+          onSubmit={() => console.log('Envoi :', formData)}
+        />
+      )}
+    </div>
+  );
+}
+
+function Step1({ data, onUpdate, onNext }) {
+  return (
+    <div>
+      <input
+        value={data.name}
+        onChange={e => onUpdate('name', e.target.value)}
+        placeholder="Nom"
+      />
+      <button onClick={onNext} disabled={!data.name}>
+        Suivant
+      </button>
+    </div>
+  );
+}
+
+function Step2({ data, onUpdate, onNext, onPrev }) {
+  return (
+    <div>
+      <input
+        type="email"
+        value={data.email}
+        onChange={e => onUpdate('email', e.target.value)}
+        placeholder="Email"
+      />
+      <button onClick={onPrev}>Précédent</button>
+      <button onClick={onNext} disabled={!data.email}>
+        Suivant
+      </button>
+    </div>
+  );
+}
+
+function Step3({ data, onPrev, onSubmit }) {
+  return (
+    <div>
+      <h3>Récapitulatif</h3>
+      <p>Nom : {data.name}</p>
+      <p>Email : {data.email}</p>
+      <button onClick={onPrev}>Précédent</button>
+      <button onClick={onSubmit}>Envoyer</button>
+    </div>
+  );
+}
+```
+
+## Où placer l'état ?
+
+**Règle d'or** : placez l'état au **niveau le plus bas possible** où il est partagé.
+
+### Scénario 1 : État local
+
+Si un seul composant utilise l'état, gardez-le local.
+
+```jsx
+// ✅ Bon : état local
+function Counter() {
+  const [count, setCount] = useState(0);
+  return <button onClick={() => setCount(count + 1)}>{count}</button>;
+}
+```
+
+### Scénario 2 : État partagé entre frères
+
+Si des composants frères (siblings) partagent l'état, remontez au parent.
+
+```jsx
+// ✅ Bon : état dans le parent commun
+function Parent() {
+  const [value, setValue] = useState('');
+  return (
+    <div>
+      <ChildA value={value} onChange={setValue} />
+      <ChildB value={value} />
+    </div>
+  );
+}
+```
+
+### Scénario 3 : État partagé profondément
+
+Si l'état doit traverser plusieurs niveaux, envisagez Context API (Séance 5).
+
+```jsx
+// ⚠️ Props drilling (à éviter si trop profond)
+function App() {
+  const [user, setUser] = useState(null);
+  return <Level1 user={user} />;
+}
+
+function Level1({ user }) {
+  return <Level2 user={user} />;
+}
+
+function Level2({ user }) {
+  return <Level3 user={user} />;
+}
+
+function Level3({ user }) {
+  return <p>{user?.name}</p>;
+}
+```
+
+<Callout type="tip" title="Éviter le props drilling">
+**Props drilling** = passer des props à travers plusieurs niveaux de composants qui ne les utilisent pas.
+
+**Solutions** :
+- **Composition** : restructurer les composants
+- **Context API** : partager globalement (Séance 5)
+- **State management** : Redux, Zustand (hors programme)
+</Callout>
+
+## Pattern : Controlled vs Uncontrolled
+
+### Composant contrôlé
+
+Le parent contrôle l'état du composant enfant.
+
+```jsx
+function Parent() {
+  const [value, setValue] = useState('');
+
+  return (
+    <ControlledInput
+      value={value}
+      onChange={setValue}
+    />
+  );
+}
+
+function ControlledInput({ value, onChange }) {
+  return (
+    <input
+      value={value}
+      onChange={e => onChange(e.target.value)}
+    />
+  );
+}
+```
+
+**Avantages** :
+- ✅ Le parent a le contrôle total
+- ✅ Facile de synchroniser avec d'autres composants
+- ✅ Facile de réinitialiser
+
+### Composant non-contrôlé
+
+Le composant gère son propre état.
+
+```jsx
+function UncontrolledInput() {
+  const [value, setValue] = useState('');
+
+  return (
+    <input
+      value={value}
+      onChange={e => setValue(e.target.value)}
+    />
+  );
+}
+```
+
+**Avantages** :
+- ✅ Plus simple si pas besoin de partager
+- ✅ Moins de code dans le parent
+
+<Callout type="tip" title="Quand utiliser quel pattern ?">
+- **Contrôlé** : quand vous devez partager ou synchroniser l'état
+- **Non-contrôlé** : quand l'état est purement local au composant
+</Callout>
+
+## Callbacks : passer des fonctions
+
+Pour permettre aux enfants de modifier l'état du parent, passez des **fonctions callback**.
+
+### Pattern basique
+
+```jsx
+function Parent() {
+  const [count, setCount] = useState(0);
+
+  return <Child onIncrement={() => setCount(count + 1)} />;
+}
+
+function Child({ onIncrement }) {
+  return <button onClick={onIncrement}>+1</button>;
+}
+```
+
+### Pattern avec paramètres
+
+```jsx
+function Parent() {
+  const [todos, setTodos] = useState([]);
+
+  const addTodo = (text) => {
+    setTodos([...todos, { id: Date.now(), text }]);
+  };
+
+  const removeTodo = (id) => {
+    setTodos(todos.filter(todo => todo.id !== id));
+  };
+
+  return (
+    <div>
+      <AddTodoForm onAdd={addTodo} />
+      <TodoList todos={todos} onRemove={removeTodo} />
+    </div>
+  );
+}
+
+function AddTodoForm({ onAdd }) {
+  const [input, setInput] = useState('');
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    if (input.trim()) {
+      onAdd(input);
+      setInput('');
+    }
+  };
+
+  return (
+    <form onSubmit={handleSubmit}>
+      <input
+        value={input}
+        onChange={e => setInput(e.target.value)}
+      />
+      <button type="submit">Ajouter</button>
+    </form>
+  );
+}
+
+function TodoList({ todos, onRemove }) {
+  return (
+    <ul>
+      {todos.map(todo => (
+        <li key={todo.id}>
+          {todo.text}
+          <button onClick={() => onRemove(todo.id)}>
+            Supprimer
+          </button>
+        </li>
+      ))}
+    </ul>
+  );
+}
+```
+
+## Convention de nommage
+
+### Props de données
+
+```jsx
+// Convention : nom simple
+<Child value={value} />
+<Child user={user} />
+<Child products={products} />
+```
+
+### Props de callbacks
+
+```jsx
+// Convention : onAction
+<Child onUpdate={handleUpdate} />
+<Child onChange={handleChange} />
+<Child onSubmit={handleSubmit} />
+<Child onDelete={handleDelete} />
+```
+
+<Callout type="tip" title="Nommer les callbacks">
+**Dans le parent** : `handleAction`
+```jsx
+const handleClick = () => { ... };
+```
+
+**Dans la prop** : `onAction`
+```jsx
+<Child onClick={handleClick} />
+```
+
+**Dans l'enfant** : `onAction` (reçu via props)
+```jsx
+function Child({ onClick }) {
+  return <button onClick={onClick}>Click</button>;
+}
+```
+</Callout>
+
+## Récapitulatif
+
+<Callout type="success" title="Ce que vous avez appris">
+**Lifting State Up** :
+
+1. **Problème** : les composants ne peuvent pas partager directement leur état
+2. **Solution** : remonter l'état dans le parent commun
+3. **Flux** : données descendent (props) → événements remontent (callbacks)
+4. **Placement** : mettre l'état au niveau le plus bas où il est partagé
+5. **Contrôlé** : le parent contrôle l'état de l'enfant
+6. **Callbacks** : fonctions passées en props pour modifier l'état du parent
+7. **Convention** : `onAction` pour les callbacks, `handleAction` dans le parent
+
+**Principes clés** :
+- ✅ Une seule source de vérité (single source of truth)
+- ✅ Les données coulent vers le bas (props)
+- ✅ Les événements remontent (callbacks)
+- ✅ Les props sont immutables
+
+**Prochaine étape** : mettre en pratique avec les exercices !
+</Callout>

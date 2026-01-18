@@ -1,0 +1,650 @@
+# Custom Hooks
+
+Les custom hooks sont l'un des concepts les plus puissants de React. Ils vous permettent de réutiliser la logique stateful entre différents composants.
+
+<Callout type="info">
+**Un custom hook, c'est quoi ?**
+
+C'est une fonction JavaScript qui utilise des hooks React (useState, useEffect, etc.) et qui peut être réutilisée dans plusieurs composants.
+</Callout>
+
+## Pourquoi créer des custom hooks ?
+
+### Problème : Code dupliqué
+
+Sans custom hooks, vous dupliquez la logique :
+
+```jsx
+// ❌ Composant 1 : Fetch users
+function UsersList() {
+  const [users, setUsers] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    fetch('/api/users')
+      .then(res => res.json())
+      .then(data => {
+        setUsers(data);
+        setLoading(false);
+      })
+      .catch(err => {
+        setError(err.message);
+        setLoading(false);
+      });
+  }, []);
+
+  if (loading) return <p>Loading...</p>;
+  if (error) return <p>Error: {error}</p>;
+  return <ul>{users.map(u => <li key={u.id}>{u.name}</li>)}</ul>;
+}
+
+// ❌ Composant 2 : Fetch products (même logique !)
+function ProductsList() {
+  const [products, setProducts] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    fetch('/api/products') // Seule différence
+      .then(res => res.json())
+      .then(data => {
+        setProducts(data);
+        setLoading(false);
+      })
+      .catch(err => {
+        setError(err.message);
+        setLoading(false);
+      });
+  }, []);
+
+  if (loading) return <p>Loading...</p>;
+  if (error) return <p>Error: {error}</p>;
+  return <ul>{products.map(p => <li key={p.id}>{p.name}</li>)}</ul>;
+}
+```
+
+### Solution : Custom Hook
+
+Extrayez la logique commune dans un custom hook :
+
+```javascript
+// ✅ hooks/useFetch.js
+function useFetch(url) {
+  const [data, setData] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    setLoading(true);
+    fetch(url)
+      .then(res => res.json())
+      .then(data => {
+        setData(data);
+        setLoading(false);
+      })
+      .catch(err => {
+        setError(err.message);
+        setLoading(false);
+      });
+  }, [url]);
+
+  return { data, loading, error };
+}
+
+export default useFetch;
+```
+
+**Utilisation**
+
+```jsx
+// ✅ Composant 1 : Beaucoup plus simple !
+function UsersList() {
+  const { data: users, loading, error } = useFetch('/api/users');
+
+  if (loading) return <p>Loading...</p>;
+  if (error) return <p>Error: {error}</p>;
+  return <ul>{users?.map(u => <li key={u.id}>{u.name}</li>)}</ul>;
+}
+
+// ✅ Composant 2 : Même simplicité !
+function ProductsList() {
+  const { data: products, loading, error } = useFetch('/api/products');
+
+  if (loading) return <p>Loading...</p>;
+  if (error) return <p>Error: {error}</p>;
+  return <ul>{products?.map(p => <li key={p.id}>{p.name}</li>)}</ul>;
+}
+```
+
+<Callout type="success">
+**Avantages :**
+- Code DRY (Don't Repeat Yourself)
+- Logique centralisée et testable
+- Composants plus simples et lisibles
+- Facilite les modifications (un seul endroit à changer)
+</Callout>
+
+## Règles des custom hooks
+
+Les custom hooks doivent suivre les mêmes règles que les hooks React :
+
+<Callout type="warning" title="Règles importantes">
+1. **Nom doit commencer par "use"** (convention obligatoire)
+2. **Appelés au top level** (pas dans des conditions/boucles)
+3. **Appelés uniquement dans les composants ou autres hooks**
+4. **Peuvent utiliser d'autres hooks** (useState, useEffect, etc.)
+</Callout>
+
+## Exemples de custom hooks utiles
+
+### 1. useLocalStorage
+
+Persiste l'état dans le localStorage automatiquement.
+
+```javascript
+// hooks/useLocalStorage.js
+function useLocalStorage(key, initialValue) {
+  // État initialisé avec la valeur du localStorage (si elle existe)
+  const [value, setValue] = useState(() => {
+    try {
+      const item = window.localStorage.getItem(key);
+      return item ? JSON.parse(item) : initialValue;
+    } catch (error) {
+      console.error(error);
+      return initialValue;
+    }
+  });
+
+  // Sauvegarde dans localStorage à chaque changement
+  useEffect(() => {
+    try {
+      window.localStorage.setItem(key, JSON.stringify(value));
+    } catch (error) {
+      console.error(error);
+    }
+  }, [key, value]);
+
+  return [value, setValue];
+}
+
+export default useLocalStorage;
+```
+
+**Utilisation**
+
+```jsx
+function TodoApp() {
+  // ✅ Les todos sont automatiquement sauvegardés et chargés !
+  const [todos, setTodos] = useLocalStorage('todos', []);
+
+  const addTodo = (text) => {
+    setTodos([...todos, { id: Date.now(), text, completed: false }]);
+  };
+
+  return (
+    <div>
+      <h1>Mes Todos ({todos.length})</h1>
+      {/* ... */}
+    </div>
+  );
+}
+```
+
+### 2. useToggle
+
+Simplifie la gestion d'un booléen (show/hide, on/off, etc.).
+
+```javascript
+// hooks/useToggle.js
+function useToggle(initialValue = false) {
+  const [value, setValue] = useState(initialValue);
+
+  const toggle = () => setValue(prev => !prev);
+  const setTrue = () => setValue(true);
+  const setFalse = () => setValue(false);
+
+  return [value, toggle, setTrue, setFalse];
+}
+
+export default useToggle;
+```
+
+**Utilisation**
+
+```jsx
+function Modal() {
+  const [isOpen, toggle, open, close] = useToggle(false);
+
+  return (
+    <>
+      <button onClick={open}>Ouvrir</button>
+      {isOpen && (
+        <div className="modal">
+          <p>Contenu du modal</p>
+          <button onClick={close}>Fermer</button>
+        </div>
+      )}
+    </>
+  );
+}
+```
+
+### 3. useDebounce
+
+Retarde la mise à jour d'une valeur (utile pour les recherches).
+
+```javascript
+// hooks/useDebounce.js
+function useDebounce(value, delay = 500) {
+  const [debouncedValue, setDebouncedValue] = useState(value);
+
+  useEffect(() => {
+    // Créer un timer
+    const handler = setTimeout(() => {
+      setDebouncedValue(value);
+    }, delay);
+
+    // Nettoyer le timer si value change avant la fin du délai
+    return () => {
+      clearTimeout(handler);
+    };
+  }, [value, delay]);
+
+  return debouncedValue;
+}
+
+export default useDebounce;
+```
+
+**Utilisation**
+
+```jsx
+function SearchProducts() {
+  const [searchTerm, setSearchTerm] = useState('');
+  const debouncedSearchTerm = useDebounce(searchTerm, 500);
+
+  const { data: products } = useFetch(`/api/products?search=${debouncedSearchTerm}`);
+
+  return (
+    <div>
+      <input
+        value={searchTerm}
+        onChange={(e) => setSearchTerm(e.target.value)}
+        placeholder="Rechercher..."
+      />
+      {/* L'API est appelée seulement 500ms après l'arrêt de la saisie */}
+      <ProductList products={products} />
+    </div>
+  );
+}
+```
+
+<Callout type="tip">
+Le debounce évite d'appeler l'API à chaque frappe. Économise des ressources et améliore les performances !
+</Callout>
+
+### 4. useForm
+
+Simplifie la gestion de formulaires.
+
+```javascript
+// hooks/useForm.js
+function useForm(initialValues) {
+  const [values, setValues] = useState(initialValues);
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setValues(prev => ({
+      ...prev,
+      [name]: value
+    }));
+  };
+
+  const reset = () => {
+    setValues(initialValues);
+  };
+
+  return { values, handleChange, reset };
+}
+
+export default useForm;
+```
+
+**Utilisation**
+
+```jsx
+function ContactForm() {
+  const { values, handleChange, reset } = useForm({
+    name: '',
+    email: '',
+    message: ''
+  });
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    console.log('Form data:', values);
+    reset();
+  };
+
+  return (
+    <form onSubmit={handleSubmit}>
+      <input
+        name="name"
+        value={values.name}
+        onChange={handleChange}
+        placeholder="Nom"
+      />
+      <input
+        name="email"
+        value={values.email}
+        onChange={handleChange}
+        placeholder="Email"
+      />
+      <textarea
+        name="message"
+        value={values.message}
+        onChange={handleChange}
+        placeholder="Message"
+      />
+      <button type="submit">Envoyer</button>
+    </form>
+  );
+}
+```
+
+### 5. useWindowSize
+
+Détecte la taille de la fenêtre (utile pour le responsive).
+
+```javascript
+// hooks/useWindowSize.js
+function useWindowSize() {
+  const [windowSize, setWindowSize] = useState({
+    width: window.innerWidth,
+    height: window.innerHeight
+  });
+
+  useEffect(() => {
+    function handleResize() {
+      setWindowSize({
+        width: window.innerWidth,
+        height: window.innerHeight
+      });
+    }
+
+    window.addEventListener('resize', handleResize);
+
+    // Cleanup
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
+  return windowSize;
+}
+
+export default useWindowSize;
+```
+
+**Utilisation**
+
+```jsx
+function ResponsiveComponent() {
+  const { width } = useWindowSize();
+
+  return (
+    <div>
+      {width < 768 ? (
+        <MobileMenu />
+      ) : (
+        <DesktopMenu />
+      )}
+      <p>Largeur de l'écran : {width}px</p>
+    </div>
+  );
+}
+```
+
+## Améliorer useFetch
+
+Notre premier hook useFetch était simple. Améliorons-le !
+
+### Version avancée
+
+```javascript
+// hooks/useFetch.js
+function useFetch(url, options = {}) {
+  const [data, setData] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    // Éviter la mise à jour si le composant est démonté
+    let isCancelled = false;
+
+    const fetchData = async () => {
+      setLoading(true);
+      setError(null);
+
+      try {
+        const response = await fetch(url, options);
+
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+
+        const json = await response.json();
+
+        if (!isCancelled) {
+          setData(json);
+          setLoading(false);
+        }
+      } catch (err) {
+        if (!isCancelled) {
+          setError(err.message);
+          setLoading(false);
+        }
+      }
+    };
+
+    fetchData();
+
+    // Cleanup function
+    return () => {
+      isCancelled = true;
+    };
+  }, [url]); // Re-fetch si l'URL change
+
+  return { data, loading, error };
+}
+
+export default useFetch;
+```
+
+<Callout type="info">
+**Améliorations :**
+- Utilise async/await (plus lisible)
+- Vérifie le status HTTP
+- Évite les mises à jour après unmount (pas de memory leak)
+- Re-fetch automatiquement si l'URL change
+</Callout>
+
+## Composer des hooks
+
+Les custom hooks peuvent utiliser d'autres custom hooks !
+
+```javascript
+// hooks/useProducts.js
+function useProducts() {
+  const [searchTerm, setSearchTerm] = useState('');
+  const debouncedSearch = useDebounce(searchTerm, 300);
+
+  const { data, loading, error } = useFetch(
+    `/api/products?search=${debouncedSearch}`
+  );
+
+  return {
+    products: data,
+    loading,
+    error,
+    searchTerm,
+    setSearchTerm
+  };
+}
+
+export default useProducts;
+```
+
+**Utilisation**
+
+```jsx
+function ProductsPage() {
+  const { products, loading, error, searchTerm, setSearchTerm } = useProducts();
+
+  return (
+    <div>
+      <input
+        value={searchTerm}
+        onChange={(e) => setSearchTerm(e.target.value)}
+        placeholder="Rechercher des produits..."
+      />
+      {loading && <p>Chargement...</p>}
+      {error && <p>Erreur : {error}</p>}
+      {products && <ProductList products={products} />}
+    </div>
+  );
+}
+```
+
+<Callout type="success">
+Le composant est ultra-simple ! Toute la logique complexe est dans les hooks.
+</Callout>
+
+## Bonnes pratiques
+
+### 1. Un hook = une responsabilité
+
+```javascript
+// ✅ Bon - Chaque hook a un rôle précis
+useFetch('/api/users')
+useLocalStorage('theme', 'light')
+useDebounce(searchTerm, 500)
+
+// ❌ Mauvais - Hook qui fait trop de choses
+useEverything() // Fetch, storage, debounce, etc.
+```
+
+### 2. Retourner des objets pour la flexibilité
+
+```javascript
+// ✅ Bon - Destructuration nommée
+const { data, loading, error } = useFetch(url);
+
+// ✅ Bon aussi - Renommage facile
+const { data: users, loading: usersLoading } = useFetch('/api/users');
+
+// ❌ Moins flexible - Ordre imposé
+const [data, loading, error] = useFetch(url);
+```
+
+### 3. Gérer les cas limites
+
+```javascript
+function useFetch(url) {
+  const [data, setData] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    // ✅ Vérifier que l'URL existe
+    if (!url) {
+      setLoading(false);
+      return;
+    }
+
+    // ... fetch logic
+  }, [url]);
+
+  return { data, loading, error };
+}
+```
+
+### 4. Documenter vos hooks
+
+```javascript
+/**
+ * Hook pour fetch des données depuis une API
+ *
+ * @param {string} url - L'URL à fetch
+ * @param {object} options - Options fetch (optionnel)
+ * @returns {object} { data, loading, error }
+ *
+ * @example
+ * const { data: users, loading } = useFetch('/api/users');
+ */
+function useFetch(url, options = {}) {
+  // ...
+}
+```
+
+## Exercice pratique
+
+<Callout type="tip" title="Créez votre propre hook">
+Créez un hook `useCounter` qui :
+- Gère un compteur (valeur numérique)
+- Fournit des fonctions increment, decrement, reset
+- Accepte une valeur initiale et optionnellement un pas (step)
+
+**Signature :**
+```javascript
+const { count, increment, decrement, reset } = useCounter(initialValue, step);
+```
+
+**Exemple d'utilisation :**
+```jsx
+function Counter() {
+  const { count, increment, decrement, reset } = useCounter(0, 1);
+
+  return (
+    <div>
+      <p>Count: {count}</p>
+      <button onClick={increment}>+</button>
+      <button onClick={decrement}>-</button>
+      <button onClick={reset}>Reset</button>
+    </div>
+  );
+}
+```
+</Callout>
+
+## Récapitulatif
+
+<Callout type="success" title="Points clés">
+✅ **Les custom hooks permettent de :**
+- Réutiliser la logique stateful
+- Simplifier les composants
+- Organiser le code de manière modulaire
+- Composer des comportements complexes
+
+✅ **Règles :**
+- Nom commence par "use"
+- Utilisent des hooks React
+- Appelés au top level seulement
+
+✅ **Exemples courants :**
+- useFetch - API calls
+- useLocalStorage - Persistence
+- useDebounce - Optimisation
+- useForm - Formulaires
+- useToggle - États booléens
+</Callout>
+
+## Pour aller plus loin
+
+**Bibliothèques de custom hooks :**
+- [use-hooks](https://usehooks.com/) - Collection de hooks
+- [react-use](https://github.com/streamich/react-use) - Large bibliothèque
+- [ahooks](https://ahooks.js.org/) - Hooks pour React
+
+**Ressources :**
+- [React Docs - Reusing Logic](https://react.dev/learn/reusing-logic-with-custom-hooks)
+- [Custom Hooks Examples](https://react.dev/reference/react)

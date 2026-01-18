@@ -1,0 +1,559 @@
+# Exercices pratiques - Séance 3
+
+Mettez en pratique ce que vous avez appris sur l'interactivité, useState et les formulaires !
+
+<Callout type="info" title="Avant de commencer">
+Ces exercices sont progressifs :
+- **Facile** : pour maîtriser les bases
+- **Moyen** : pour combiner plusieurs concepts
+- **Difficile** : pour vous challenger
+
+Prenez le temps de bien comprendre chaque exercice avant de passer au suivant.
+</Callout>
+
+## Exercice 1 : Compteur interactif
+
+**Difficulté** : 🟢 Facile
+
+### Objectif
+
+Créer un compteur avec plusieurs contrôles.
+
+### Fonctionnalités requises
+
+- Afficher la valeur actuelle du compteur
+- Bouton **+1** pour incrémenter
+- Bouton **-1** pour décrémenter
+- Bouton **Reset** pour remettre à 0
+- Boutons **+5** et **-5**
+- **Bonus** : désactiver le bouton -1 quand le compteur est à 0
+
+### Exemple de résultat
+
+```
+Compteur : 5
+
+[-5]  [-1]  [Reset]  [+1]  [+5]
+```
+
+### Code de départ
+
+```jsx
+function Counter() {
+  // Votre code ici
+
+  return (
+    <div>
+      <h2>Compteur : {/* valeur */}</h2>
+      <button>-5</button>
+      <button>-1</button>
+      <button>Reset</button>
+      <button>+1</button>
+      <button>+5</button>
+    </div>
+  );
+}
+```
+
+<Callout type="tip" title="Indice">
+Utilisez `useState` pour stocker la valeur du compteur. Créez des fonctions pour chaque action.
+</Callout>
+
+---
+
+## Exercice 2 : Todo List
+
+**Difficulté** : 🟡 Moyen
+
+### Objectif
+
+Créer une application de gestion de tâches classique.
+
+### Fonctionnalités requises
+
+- Input pour saisir une nouvelle tâche
+- Bouton **Ajouter** pour créer une tâche
+- Afficher la liste des tâches
+- Checkbox pour marquer une tâche comme terminée
+- Bouton **Supprimer** pour chaque tâche
+- Afficher le nombre de tâches complétées / total
+- **Bonus** : filtres "Toutes", "Actives", "Terminées"
+
+### Exemple de résultat
+
+```
+[_____________] [Ajouter]
+
+☐ Apprendre React        [Supprimer]
+☑ Faire le TP            [Supprimer]
+☐ Réviser pour le quiz   [Supprimer]
+
+2 / 3 tâches complétées
+
+[Toutes] [Actives] [Terminées]
+```
+
+### Code de départ
+
+```jsx
+function TodoList() {
+  const [todos, setTodos] = useState([]);
+  const [input, setInput] = useState('');
+
+  const addTodo = () => {
+    // Votre code
+  };
+
+  const toggleTodo = (id) => {
+    // Votre code
+  };
+
+  const removeTodo = (id) => {
+    // Votre code
+  };
+
+  return (
+    <div>
+      <div>
+        <input
+          value={input}
+          onChange={e => setInput(e.target.value)}
+          placeholder="Nouvelle tâche..."
+        />
+        <button onClick={addTodo}>Ajouter</button>
+      </div>
+
+      <ul>
+        {todos.map(todo => (
+          <li key={todo.id}>
+            {/* Afficher la tâche */}
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
+}
+```
+
+<Callout type="tip" title="Indice">
+Structure d'un todo :
+```javascript
+{
+  id: Date.now(),
+  text: 'Apprendre React',
+  completed: false
+}
+```
+
+Pour basculer le statut :
+```javascript
+setTodos(todos.map(todo =>
+  todo.id === id
+    ? { ...todo, completed: !todo.completed }
+    : todo
+));
+```
+</Callout>
+
+---
+
+## Exercice 3 : Formulaire de contact validé
+
+**Difficulté** : 🟡 Moyen
+
+### Objectif
+
+Créer un formulaire de contact avec validation complète.
+
+### Fonctionnalités requises
+
+**Champs** :
+- Nom complet (requis, min 2 caractères)
+- Email (requis, format valide)
+- Téléphone (requis, 10 chiffres)
+- Message (requis, min 10 caractères)
+
+**Validation** :
+- Afficher les erreurs sous chaque champ
+- Valider onBlur (quand l'utilisateur quitte le champ)
+- Désactiver le bouton si le formulaire est invalide
+- Message de succès après soumission
+- Réinitialiser le formulaire après envoi
+
+### Exemple de résultat
+
+```
+Nom : [Alice Dupont    ]
+Email : [alice@test.com ]
+Téléphone : [0612345678]
+Message : [Bonjour...   ]
+          [             ]
+
+[Envoyer]
+
+✅ Message envoyé avec succès !
+```
+
+### Code de départ
+
+```jsx
+function ContactForm() {
+  const [formData, setFormData] = useState({
+    name: '',
+    email: '',
+    phone: '',
+    message: ''
+  });
+
+  const [errors, setErrors] = useState({});
+  const [submitSuccess, setSubmitSuccess] = useState(false);
+
+  const handleChange = (e) => {
+    // Votre code
+  };
+
+  const validateField = (fieldName, value) => {
+    // Votre code
+  };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    // Votre code
+  };
+
+  return (
+    <form onSubmit={handleSubmit}>
+      {/* Vos champs ici */}
+    </form>
+  );
+}
+```
+
+<Callout type="tip" title="Regex utiles">
+```javascript
+// Email
+/^[^\s@]+@[^\s@]+\.[^\s@]+$/
+
+// Téléphone (10 chiffres)
+/^0[1-9]\d{8}$/
+```
+</Callout>
+
+---
+
+## Exercice 4 : Formulaire multi-étapes
+
+**Difficulté** : 🔴 Difficile
+
+### Objectif
+
+Créer un formulaire d'inscription en plusieurs étapes avec validation et navigation.
+
+### Fonctionnalités requises
+
+**Étape 1 : Informations personnelles**
+- Nom (requis)
+- Email (requis, format valide)
+- Bouton **Suivant** (désactivé si invalide)
+
+**Étape 2 : Compte**
+- Nom d'utilisateur (requis, min 3 caractères)
+- Mot de passe (requis, min 8 caractères)
+- Confirmation mot de passe (doit correspondre)
+- Boutons **Précédent** et **Suivant**
+
+**Étape 3 : Préférences**
+- Newsletter (checkbox)
+- Rôle (select : Utilisateur / Admin)
+- Boutons **Précédent** et **Terminer**
+
+**Étape 4 : Récapitulatif**
+- Afficher toutes les informations
+- Boutons **Précédent** et **Soumettre**
+
+**Bonus** :
+- Indicateur de progression (1/4, 2/4, etc.)
+- Valider chaque étape avant de passer à la suivante
+- Sauvegarder les données entre les étapes
+
+### Exemple de résultat
+
+```
+Étape 2 / 4
+
+Nom d'utilisateur : [alice_d]
+Mot de passe : [********]
+Confirmer : [********]
+
+[← Précédent]  [Suivant →]
+```
+
+### Code de départ
+
+```jsx
+function MultiStepForm() {
+  const [step, setStep] = useState(1);
+  const [formData, setFormData] = useState({
+    name: '',
+    email: '',
+    username: '',
+    password: '',
+    confirmPassword: '',
+    newsletter: false,
+    role: 'user'
+  });
+
+  const nextStep = () => setStep(step + 1);
+  const prevStep = () => setStep(step - 1);
+
+  const updateFormData = (field, value) => {
+    setFormData({ ...formData, [field]: value });
+  };
+
+  return (
+    <div>
+      <h2>Étape {step} / 4</h2>
+
+      {step === 1 && (
+        <Step1
+          data={formData}
+          onUpdate={updateFormData}
+          onNext={nextStep}
+        />
+      )}
+
+      {step === 2 && (
+        <Step2
+          data={formData}
+          onUpdate={updateFormData}
+          onNext={nextStep}
+          onPrev={prevStep}
+        />
+      )}
+
+      {/* Étapes 3 et 4 à créer */}
+    </div>
+  );
+}
+
+function Step1({ data, onUpdate, onNext }) {
+  // Votre code
+  return <div>Étape 1</div>;
+}
+
+function Step2({ data, onUpdate, onNext, onPrev }) {
+  // Votre code
+  return <div>Étape 2</div>;
+}
+```
+
+<Callout type="tip" title="Indice">
+Pour valider avant de passer à l'étape suivante :
+
+```javascript
+const handleNext = () => {
+  if (isStepValid()) {
+    onNext();
+  } else {
+    // Afficher erreurs
+  }
+};
+```
+</Callout>
+
+---
+
+## Exercice 5 : Recherche et filtrage
+
+**Difficulté** : 🟡 Moyen
+
+### Objectif
+
+Créer une interface de recherche de produits avec filtres multiples.
+
+### Fonctionnalités requises
+
+- Barre de recherche (filtre par nom)
+- Filtre par catégorie (select)
+- Filtre par prix max (range slider)
+- Afficher le nombre de résultats
+- Afficher les produits filtrés
+- Bouton **Réinitialiser** les filtres
+
+### Données de test
+
+```javascript
+const products = [
+  { id: 1, name: 'Laptop', category: 'Electronics', price: 1000 },
+  { id: 2, name: 'Phone', category: 'Electronics', price: 500 },
+  { id: 3, name: 'Desk', category: 'Furniture', price: 300 },
+  { id: 4, name: 'Chair', category: 'Furniture', price: 150 },
+  { id: 5, name: 'Lamp', category: 'Furniture', price: 50 }
+];
+```
+
+### Exemple de résultat
+
+```
+Recherche : [lap___________]
+Catégorie : [Toutes ▼]
+Prix max : [1000] ◉─────────
+
+5 produits trouvés
+
+Laptop - Electronics - 1000€
+Phone - Electronics - 500€
+Desk - Furniture - 300€
+...
+
+[Réinitialiser]
+```
+
+### Code de départ
+
+```jsx
+function ProductFilter() {
+  const [searchTerm, setSearchTerm] = useState('');
+  const [category, setCategory] = useState('all');
+  const [maxPrice, setMaxPrice] = useState(1000);
+
+  const products = [
+    // Vos données
+  ];
+
+  const filteredProducts = products.filter(product => {
+    // Votre logique de filtrage
+  });
+
+  return (
+    <div>
+      {/* Vos filtres */}
+      {/* Liste des produits */}
+    </div>
+  );
+}
+```
+
+<Callout type="tip" title="Indice">
+Combinez les filtres avec `&&` :
+
+```javascript
+const filtered = products.filter(product => {
+  const matchesSearch = product.name
+    .toLowerCase()
+    .includes(searchTerm.toLowerCase());
+
+  const matchesCategory = category === 'all' ||
+    product.category === category;
+
+  const matchesPrice = product.price <= maxPrice;
+
+  return matchesSearch && matchesCategory && matchesPrice;
+});
+```
+</Callout>
+
+---
+
+## Exercice Bonus : Gestionnaire de contacts
+
+**Difficulté** : 🔴 Difficile
+
+### Objectif
+
+Créer une application complète de gestion de contacts.
+
+### Fonctionnalités requises
+
+**Formulaire d'ajout** :
+- Nom, email, téléphone, catégorie
+- Validation de tous les champs
+- Ajouter à la liste après validation
+
+**Liste de contacts** :
+- Afficher tous les contacts
+- Recherche par nom
+- Filtre par catégorie
+- Bouton **Modifier** (ouvre le formulaire avec les données)
+- Bouton **Supprimer** (avec confirmation)
+
+**Édition** :
+- Pré-remplir le formulaire avec les données existantes
+- Mettre à jour le contact
+- Bouton **Annuler** pour revenir à l'ajout
+
+**Bonus** :
+- Trier par nom / email
+- Sauvegarder dans localStorage
+- Export en CSV
+
+### Structure suggérée
+
+```javascript
+{
+  id: Date.now(),
+  name: 'Alice Dupont',
+  email: 'alice@example.com',
+  phone: '0612345678',
+  category: 'Travail'
+}
+```
+
+---
+
+## Conseils généraux
+
+<Callout type="tip" title="Pour réussir les exercices">
+**1. Planifiez avant de coder**
+- Listez les états nécessaires
+- Dessinez la structure des composants
+- Identifiez les événements à gérer
+
+**2. Avancez étape par étape**
+- Commencez par l'affichage
+- Ajoutez l'interactivité
+- Puis la validation
+- Enfin les fonctionnalités bonus
+
+**3. Testez régulièrement**
+- Vérifiez chaque fonctionnalité avant de passer à la suivante
+- Utilisez `console.log()` pour déboguer
+- Testez les cas limites (champs vides, etc.)
+
+**4. Utilisez l'IA intelligemment**
+- Pour comprendre les erreurs
+- Pour des suggestions de code
+- Mais comprenez TOUJOURS ce qu'elle génère !
+
+**5. Collaborez**
+- Comparez vos solutions avec vos camarades
+- Discutez des différentes approches
+- Partagez vos astuces
+</Callout>
+
+## Soumission
+
+<Callout type="success" title="Rendu sur Moodle">
+**Format** : Lien CodeSandbox ou GitHub
+
+**Contenu attendu** :
+- Au minimum les exercices 1, 2 et 3
+- Code propre et commenté
+- Application fonctionnelle (pas d'erreurs console)
+
+**Critères d'évaluation** :
+- Fonctionnalités demandées (50%)
+- Qualité du code (25%)
+- Validation et gestion d'erreurs (15%)
+- Bonus et créativité (10%)
+
+**Date limite** : voir Moodle
+</Callout>
+
+## Ressources
+
+- [React Docs - useState](https://react.dev/reference/react/useState)
+- [React Docs - Responding to Events](https://react.dev/learn/responding-to-events)
+- [MDN - Form Validation](https://developer.mozilla.org/en-US/docs/Learn/Forms/Form_validation)
+
+Bon courage ! 🚀

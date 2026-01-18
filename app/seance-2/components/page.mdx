@@ -1,0 +1,563 @@
+# Composants Fonctionnels
+
+Les composants sont les **blocs de construction** fondamentaux de toute application React. Apprenons à les créer et les utiliser !
+
+## Qu'est-ce qu'un composant ?
+
+Un composant est une **fonction JavaScript** qui retourne du **JSX**.
+
+```jsx
+function Welcome() {
+  return <h1>Bienvenue sur React !</h1>;
+}
+```
+
+C'est tout ! Un composant React est simplement une fonction qui retourne ce qu'on veut afficher.
+
+<Callout type="info" title="Composants = Pièces de LEGO">
+Pensez aux composants comme des **briques LEGO** :
+
+- Chaque brique est un composant
+- Vous les assemblez pour construire quelque chose de plus grand
+- Vous pouvez réutiliser les mêmes briques plusieurs fois
+- Plus les briques sont petites et simples, plus elles sont réutilisables
+</Callout>
+
+## Votre premier composant
+
+### Structure de base
+
+```jsx
+// 1. Définir le composant
+function Greeting() {
+  return <h1>Bonjour !</h1>;
+}
+
+// 2. L'exporter
+export default Greeting;
+```
+
+### Utiliser le composant
+
+```jsx
+// Dans un autre fichier
+import Greeting from './Greeting';
+
+function App() {
+  return (
+    <div>
+      <Greeting />
+      <Greeting />
+      <Greeting />
+    </div>
+  );
+}
+```
+
+**Résultat :**
+```
+Bonjour !
+Bonjour !
+Bonjour !
+```
+
+## Règles de nommage
+
+<Callout type="warning" title="Convention obligatoire">
+Les noms de composants **doivent commencer par une majuscule**.
+
+```jsx
+// ❌ Incorrect (minuscule)
+function greeting() {
+  return <h1>Bonjour</h1>;
+}
+
+// ✅ Correct (PascalCase)
+function Greeting() {
+  return <h1>Bonjour</h1>;
+}
+```
+
+**Pourquoi ?** React utilise cette convention pour distinguer les composants des balises HTML.
+
+```jsx
+// Balise HTML (minuscule)
+<div>Contenu</div>
+
+// Composant React (majuscule)
+<Greeting />
+```
+</Callout>
+
+### Conventions de nommage
+
+**PascalCase pour les composants :**
+```jsx
+function UserProfile() { /* ... */ }
+function ShoppingCart() { /* ... */ }
+function ProductCard() { /* ... */ }
+```
+
+**Nom du fichier = Nom du composant :**
+```
+UserProfile.jsx   → function UserProfile()
+ShoppingCart.jsx  → function ShoppingCart()
+ProductCard.jsx   → function ProductCard()
+```
+
+## Composants fonctionnels vs composants de classe
+
+React propose deux façons de créer des composants. **Utilisez toujours les fonctions.**
+
+```jsx
+// ✅ Composant fonctionnel (moderne, recommandé)
+function Welcome() {
+  return <h1>Bonjour !</h1>;
+}
+
+// ❌ Composant de classe (ancien, déprécié)
+class Welcome extends React.Component {
+  render() {
+    return <h1>Bonjour !</h1>;
+  }
+}
+```
+
+<Callout type="tip" title="Pourquoi les fonctions ?">
+**Les composants fonctionnels sont meilleurs :**
+
+- Plus simple et concis
+- Moins de code à écrire
+- Compatible avec les Hooks (useState, useEffect, etc.)
+- Meilleures performances
+- C'est la **norme** depuis React 16.8 (2019)
+
+**En 2024, vous ne devriez utiliser que des composants fonctionnels.**
+</Callout>
+
+## Export et Import
+
+### Export par défaut
+
+**Un seul export par fichier :**
+
+```jsx
+// UserCard.jsx
+function UserCard() {
+  return <div>Carte utilisateur</div>;
+}
+
+export default UserCard;
+
+// Ou en une ligne
+export default function UserCard() {
+  return <div>Carte utilisateur</div>;
+}
+```
+
+**Import :**
+```jsx
+import UserCard from './UserCard';
+```
+
+### Export nommé
+
+**Plusieurs exports par fichier :**
+
+```jsx
+// components.jsx
+export function Header() {
+  return <header>En-tête</header>;
+}
+
+export function Footer() {
+  return <footer>Pied de page</footer>;
+}
+```
+
+**Import :**
+```jsx
+import { Header, Footer } from './components';
+```
+
+<Callout type="tip" title="Quelle approche choisir ?">
+**Export par défaut :**
+- Un composant principal par fichier
+- Plus simple pour les gros composants
+- Convention la plus courante
+
+**Export nommé :**
+- Plusieurs petits composants dans un fichier
+- Utile pour les composants liés (Button, IconButton, etc.)
+- Facilite l'auto-complétion
+</Callout>
+
+## Composition de composants
+
+Le vrai pouvoir de React vient de la **composition** : assembler des petits composants pour en créer de plus grands.
+
+### Exemple simple
+
+```jsx
+// Header.jsx
+function Header() {
+  return (
+    <header>
+      <h1>Mon Application</h1>
+      <nav>
+        <a href="/">Accueil</a>
+        <a href="/about">À propos</a>
+      </nav>
+    </header>
+  );
+}
+
+// Content.jsx
+function Content() {
+  return (
+    <main>
+      <h2>Contenu principal</h2>
+      <p>Bienvenue sur mon site !</p>
+    </main>
+  );
+}
+
+// Footer.jsx
+function Footer() {
+  return (
+    <footer>
+      <p>© 2024 Mon App</p>
+    </footer>
+  );
+}
+
+// App.jsx
+import Header from './Header';
+import Content from './Content';
+import Footer from './Footer';
+
+function App() {
+  return (
+    <div className="app">
+      <Header />
+      <Content />
+      <Footer />
+    </div>
+  );
+}
+```
+
+### Exemple avancé : Profil utilisateur
+
+```jsx
+// Avatar.jsx
+function Avatar({ url, size = 50 }) {
+  return (
+    <img
+      src={url}
+      alt="Avatar"
+      style={{ width: size, height: size, borderRadius: '50%' }}
+    />
+  );
+}
+
+// UserInfo.jsx
+function UserInfo({ name, bio }) {
+  return (
+    <div>
+      <h3>{name}</h3>
+      <p>{bio}</p>
+    </div>
+  );
+}
+
+// UserCard.jsx
+function UserCard() {
+  return (
+    <div className="user-card">
+      <Avatar url="https://i.pravatar.cc/150?img=1" size={80} />
+      <UserInfo
+        name="Alice Dupont"
+        bio="Développeuse frontend passionnée"
+      />
+    </div>
+  );
+}
+```
+
+<Callout type="success" title="Avantages de la composition">
+**Réutilisabilité :**
+- `Avatar` peut être utilisé partout (profil, commentaires, navbar, etc.)
+- `UserInfo` peut afficher n'importe quel utilisateur
+
+**Maintenabilité :**
+- Chaque composant a une seule responsabilité
+- Facile à tester et déboguer
+
+**Lisibilité :**
+- Le code est auto-documenté
+- La structure est claire
+</Callout>
+
+## La prop `children`
+
+`children` est une prop **spéciale** qui représente tout ce qui est placé entre les balises ouvrante et fermante d'un composant.
+
+### Exemple de base
+
+```jsx
+function Card({ children }) {
+  return (
+    <div className="card">
+      {children}
+    </div>
+  );
+}
+
+// Utilisation
+function App() {
+  return (
+    <Card>
+      <h2>Titre de la carte</h2>
+      <p>Contenu de la carte</p>
+    </Card>
+  );
+}
+```
+
+### Exemple : Layout avec children
+
+```jsx
+function Layout({ children }) {
+  return (
+    <div className="layout">
+      <Header />
+      <main className="content">
+        {children}
+      </main>
+      <Footer />
+    </div>
+  );
+}
+
+// Utilisation
+function HomePage() {
+  return (
+    <Layout>
+      <h1>Page d'accueil</h1>
+      <p>Bienvenue sur notre site !</p>
+    </Layout>
+  );
+}
+
+function AboutPage() {
+  return (
+    <Layout>
+      <h1>À propos</h1>
+      <p>Nous sommes une équipe de passionnés.</p>
+    </Layout>
+  );
+}
+```
+
+<Callout type="tip" title="Quand utiliser children ?">
+`children` est parfait pour :
+
+- **Layouts** : Header, Footer, Sidebar
+- **Wrappers** : Card, Modal, Container
+- **UI components** : Button, Alert, Badge
+
+**Exemple :**
+```jsx
+function Button({ children }) {
+  return <button className="btn">{children}</button>;
+}
+
+// Utilisation flexible
+<Button>Cliquez-moi</Button>
+<Button>Envoyer</Button>
+<Button><Icon /> Avec icône</Button>
+```
+</Callout>
+
+## Organisation des fichiers
+
+### Structure recommandée
+
+```
+src/
+├── components/           # Composants réutilisables
+│   ├── Button.jsx
+│   ├── Card.jsx
+│   └── Avatar.jsx
+├── pages/               # Pages/vues
+│   ├── HomePage.jsx
+│   └── AboutPage.jsx
+├── layouts/             # Layouts
+│   └── MainLayout.jsx
+├── App.jsx              # Composant racine
+└── main.jsx            # Point d'entrée
+```
+
+### Un composant par fichier
+
+```jsx
+// ✅ Bon : Un fichier = Un composant principal
+// UserCard.jsx
+function UserCard() {
+  return <div>Carte utilisateur</div>;
+}
+export default UserCard;
+
+// ⚠️ Acceptable : Plusieurs petits composants liés
+// Button.jsx
+export function Button() { /* ... */ }
+export function IconButton() { /* ... */ }
+export function LinkButton() { /* ... */ }
+```
+
+## Exemples complets
+
+### Exemple 1 : Carte de produit
+
+```jsx
+// ProductCard.jsx
+function ProductCard({ name, price, image, inStock }) {
+  return (
+    <div className="product-card">
+      <img src={image} alt={name} />
+      <h3>{name}</h3>
+      <p className="price">{price}€</p>
+      {inStock ? (
+        <span className="badge in-stock">En stock</span>
+      ) : (
+        <span className="badge out-of-stock">Rupture</span>
+      )}
+      <button>Ajouter au panier</button>
+    </div>
+  );
+}
+
+export default ProductCard;
+```
+
+### Exemple 2 : Liste de commentaires
+
+```jsx
+// Comment.jsx
+function Comment({ author, text, date }) {
+  return (
+    <div className="comment">
+      <div className="comment-header">
+        <strong>{author}</strong>
+        <span className="date">{date}</span>
+      </div>
+      <p className="comment-text">{text}</p>
+    </div>
+  );
+}
+
+// CommentList.jsx
+function CommentList({ comments }) {
+  return (
+    <div className="comment-list">
+      <h2>Commentaires ({comments.length})</h2>
+      {comments.map(comment => (
+        <Comment
+          key={comment.id}
+          author={comment.author}
+          text={comment.text}
+          date={comment.date}
+        />
+      ))}
+    </div>
+  );
+}
+
+export default CommentList;
+```
+
+### Exemple 3 : Dashboard avec composition
+
+```jsx
+// Widget.jsx
+function Widget({ title, children }) {
+  return (
+    <div className="widget">
+      <h3 className="widget-title">{title}</h3>
+      <div className="widget-content">
+        {children}
+      </div>
+    </div>
+  );
+}
+
+// Dashboard.jsx
+function Dashboard() {
+  return (
+    <div className="dashboard">
+      <h1>Tableau de bord</h1>
+
+      <div className="widgets">
+        <Widget title="Statistiques">
+          <p>Visiteurs aujourd'hui : 1,234</p>
+          <p>Ventes : 56</p>
+        </Widget>
+
+        <Widget title="Activité récente">
+          <ul>
+            <li>Nouvelle commande #1234</li>
+            <li>Nouvel utilisateur inscrit</li>
+          </ul>
+        </Widget>
+
+        <Widget title="Graphique">
+          <p>📊 Graphique à venir</p>
+        </Widget>
+      </div>
+    </div>
+  );
+}
+```
+
+## Bonnes pratiques
+
+<Callout type="tip" title="Conseils pour créer de bons composants">
+**1. Un composant = Une responsabilité**
+- Chaque composant doit faire **une seule chose**
+- Si un composant devient trop complexe, divisez-le
+
+**2. Commencez simple, puis affinez**
+- Créez d'abord un gros composant
+- Identifiez les parties réutilisables
+- Extrayez-les en composants séparés
+
+**3. Nommez clairement**
+- `UserProfileCard` plutôt que `Card1`
+- `PrimaryButton` plutôt que `BlueButton`
+- Le nom doit décrire ce que fait le composant
+
+**4. Gardez-les petits**
+- Idéalement < 200 lignes de code
+- Si c'est plus long, décomposez
+
+**5. Pensez réutilisabilité**
+- Évitez le code spécifique à un usage
+- Utilisez des props pour la flexibilité
+</Callout>
+
+## Récapitulatif
+
+<Callout type="success" title="Ce que vous avez appris">
+Vous savez maintenant :
+
+- ✅ Créer des composants fonctionnels
+- ✅ Respecter les conventions de nommage (PascalCase)
+- ✅ Exporter et importer des composants
+- ✅ Composer des composants ensemble
+- ✅ Utiliser la prop `children`
+- ✅ Organiser vos fichiers efficacement
+- ✅ Appliquer les bonnes pratiques
+
+**Prochaine étape :** Passer des données aux composants avec les **props** !
+</Callout>

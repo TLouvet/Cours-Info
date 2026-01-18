@@ -1,0 +1,651 @@
+# Formulaires contrôlés - Séance 3
+
+Les formulaires sont au cœur de nombreuses applications web. En React, nous utilisons des **composants contrôlés** pour gérer les formulaires.
+
+## Contrôlé vs Non-contrôlé
+
+### Composant non-contrôlé (DOM)
+
+En HTML classique, le **DOM** garde la valeur de l'input :
+
+```html
+<!-- Le DOM contrôle la valeur -->
+<input type="text" />
+```
+
+```javascript
+// On lit la valeur depuis le DOM
+const value = document.querySelector('input').value;
+```
+
+### Composant contrôlé (React) ✅
+
+En React, c'est **React** qui contrôle la valeur via le state :
+
+```jsx
+function ControlledInput() {
+  const [value, setValue] = useState('');
+
+  return (
+    <input
+      type="text"
+      value={value} // ← React contrôle la valeur
+      onChange={e => setValue(e.target.value)}
+    />
+  );
+}
+```
+
+<Callout type="info" title="Pourquoi préférer les composants contrôlés ?">
+**Avantages** :
+
+- ✅ **Source unique de vérité** : la valeur vit dans le state React
+- ✅ **Validation en temps réel** : vous pouvez valider à chaque saisie
+- ✅ **Transformation** : vous pouvez modifier la valeur (majuscules, format, etc.)
+- ✅ **Désactivation conditionnelle** : facile à gérer
+- ✅ **Soumission** : les données sont déjà dans le state
+
+**La philosophie React** : React contrôle tout !
+</Callout>
+
+## Input texte contrôlé
+
+Le pattern de base pour tous les inputs texte :
+
+```jsx
+function TextInput() {
+  const [value, setValue] = useState('');
+
+  return (
+    <div>
+      <input
+        type="text"
+        value={value}
+        onChange={e => setValue(e.target.value)}
+        placeholder="Tapez quelque chose..."
+      />
+      <p>Vous avez tapé : {value}</p>
+    </div>
+  );
+}
+```
+
+### Avec transformation en temps réel
+
+```jsx
+function UppercaseInput() {
+  const [value, setValue] = useState('');
+
+  const handleChange = (e) => {
+    // Tout mettre en majuscules
+    setValue(e.target.value.toUpperCase());
+  };
+
+  return (
+    <input
+      type="text"
+      value={value}
+      onChange={handleChange}
+      placeholder="Tapez en minuscules..."
+    />
+  );
+}
+```
+
+### Avec limite de caractères
+
+```jsx
+function LimitedInput() {
+  const [value, setValue] = useState('');
+  const maxLength = 10;
+
+  const handleChange = (e) => {
+    const newValue = e.target.value;
+    if (newValue.length <= maxLength) {
+      setValue(newValue);
+    }
+  };
+
+  return (
+    <div>
+      <input
+        type="text"
+        value={value}
+        onChange={handleChange}
+      />
+      <p>{value.length} / {maxLength} caractères</p>
+    </div>
+  );
+}
+```
+
+## Différents types d'inputs
+
+### Email, password, number
+
+Les autres types d'inputs texte fonctionnent pareil :
+
+```jsx
+function LoginForm() {
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+
+  return (
+    <form>
+      <input
+        type="email"
+        value={email}
+        onChange={e => setEmail(e.target.value)}
+        placeholder="Email"
+      />
+
+      <input
+        type="password"
+        value={password}
+        onChange={e => setPassword(e.target.value)}
+        placeholder="Mot de passe"
+      />
+
+      <input
+        type="number"
+        value={age}
+        onChange={e => setAge(e.target.value)}
+        placeholder="Âge"
+      />
+    </form>
+  );
+}
+```
+
+### Checkbox
+
+Pour les checkboxes, utilisez `checked` au lieu de `value` :
+
+```jsx
+function CheckboxExample() {
+  const [isChecked, setIsChecked] = useState(false);
+
+  return (
+    <label>
+      <input
+        type="checkbox"
+        checked={isChecked} // ← checked, pas value
+        onChange={e => setIsChecked(e.target.checked)} // ← .checked
+      />
+      J'accepte les conditions
+    </label>
+  );
+}
+```
+
+<Callout type="tip" title="Checkbox : checked vs value">
+```jsx
+// ❌ FAUX
+<input type="checkbox" value={isChecked} />
+
+// ✅ CORRECT
+<input type="checkbox" checked={isChecked} />
+```
+</Callout>
+
+### Radio buttons
+
+Pour les boutons radio, le state contient la **valeur sélectionnée** :
+
+```jsx
+function RadioExample() {
+  const [role, setRole] = useState('user');
+
+  return (
+    <div>
+      <label>
+        <input
+          type="radio"
+          value="user"
+          checked={role === 'user'}
+          onChange={e => setRole(e.target.value)}
+        />
+        Utilisateur
+      </label>
+
+      <label>
+        <input
+          type="radio"
+          value="admin"
+          checked={role === 'admin'}
+          onChange={e => setRole(e.target.value)}
+        />
+        Administrateur
+      </label>
+
+      <p>Rôle sélectionné : {role}</p>
+    </div>
+  );
+}
+```
+
+### Select (dropdown)
+
+```jsx
+function SelectExample() {
+  const [country, setCountry] = useState('fr');
+
+  return (
+    <select
+      value={country}
+      onChange={e => setCountry(e.target.value)}
+    >
+      <option value="fr">France</option>
+      <option value="us">États-Unis</option>
+      <option value="uk">Royaume-Uni</option>
+    </select>
+  );
+}
+```
+
+### Textarea
+
+Le textarea fonctionne comme un input texte :
+
+```jsx
+function TextareaExample() {
+  const [message, setMessage] = useState('');
+
+  return (
+    <textarea
+      value={message}
+      onChange={e => setMessage(e.target.value)}
+      placeholder="Votre message..."
+      rows={5}
+    />
+  );
+}
+```
+
+<Callout type="warning" title="Différence avec HTML">
+En HTML, le contenu du textarea est entre les balises :
+
+```html
+<!-- HTML classique -->
+<textarea>Contenu ici</textarea>
+```
+
+En React, utilisez l'attribut `value` :
+
+```jsx
+// React
+<textarea value={message} onChange={...} />
+```
+</Callout>
+
+## Formulaire complet avec plusieurs inputs
+
+### Pattern : un objet pour tout le formulaire
+
+```jsx
+function RegistrationForm() {
+  const [formData, setFormData] = useState({
+    username: '',
+    email: '',
+    password: '',
+    age: '',
+    terms: false,
+    role: 'user'
+  });
+
+  const handleChange = (e) => {
+    const { name, value, type, checked } = e.target;
+
+    setFormData({
+      ...formData,
+      [name]: type === 'checkbox' ? checked : value
+    });
+  };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    console.log('Données du formulaire :', formData);
+  };
+
+  return (
+    <form onSubmit={handleSubmit}>
+      {/* Text input */}
+      <input
+        type="text"
+        name="username"
+        value={formData.username}
+        onChange={handleChange}
+        placeholder="Nom d'utilisateur"
+      />
+
+      {/* Email input */}
+      <input
+        type="email"
+        name="email"
+        value={formData.email}
+        onChange={handleChange}
+        placeholder="Email"
+      />
+
+      {/* Password input */}
+      <input
+        type="password"
+        name="password"
+        value={formData.password}
+        onChange={handleChange}
+        placeholder="Mot de passe"
+      />
+
+      {/* Number input */}
+      <input
+        type="number"
+        name="age"
+        value={formData.age}
+        onChange={handleChange}
+        placeholder="Âge"
+      />
+
+      {/* Checkbox */}
+      <label>
+        <input
+          type="checkbox"
+          name="terms"
+          checked={formData.terms}
+          onChange={handleChange}
+        />
+        J'accepte les conditions
+      </label>
+
+      {/* Select */}
+      <select
+        name="role"
+        value={formData.role}
+        onChange={handleChange}
+      >
+        <option value="user">Utilisateur</option>
+        <option value="admin">Admin</option>
+      </select>
+
+      <button type="submit">S'inscrire</button>
+    </form>
+  );
+}
+```
+
+<Callout type="tip" title="Attribut name important !">
+Le pattern ci-dessus utilise l'attribut `name` pour identifier chaque champ :
+
+```jsx
+const handleChange = (e) => {
+  const { name, value } = e.target;
+  setFormData({
+    ...formData,
+    [name]: value // ← [name] = computed property name
+  });
+};
+```
+
+**Avantage** : un seul gestionnaire pour tous les inputs !
+</Callout>
+
+## Gestion de la soumission
+
+### Pattern complet
+
+```jsx
+function ContactForm() {
+  const [formData, setFormData] = useState({
+    name: '',
+    email: '',
+    message: ''
+  });
+
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitMessage, setSubmitMessage] = useState('');
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData({ ...formData, [name]: value });
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setIsSubmitting(true);
+    setSubmitMessage('');
+
+    try {
+      // Simuler un appel API
+      await new Promise(resolve => setTimeout(resolve, 1000));
+
+      setSubmitMessage('Message envoyé avec succès !');
+
+      // Réinitialiser le formulaire
+      setFormData({
+        name: '',
+        email: '',
+        message: ''
+      });
+    } catch (error) {
+      setSubmitMessage('Erreur lors de l\'envoi.');
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  return (
+    <form onSubmit={handleSubmit}>
+      <input
+        name="name"
+        value={formData.name}
+        onChange={handleChange}
+        required
+      />
+
+      <input
+        name="email"
+        type="email"
+        value={formData.email}
+        onChange={handleChange}
+        required
+      />
+
+      <textarea
+        name="message"
+        value={formData.message}
+        onChange={handleChange}
+        required
+      />
+
+      <button type="submit" disabled={isSubmitting}>
+        {isSubmitting ? 'Envoi...' : 'Envoyer'}
+      </button>
+
+      {submitMessage && <p>{submitMessage}</p>}
+    </form>
+  );
+}
+```
+
+## Réinitialiser un formulaire
+
+### Méthode 1 : État initial
+
+```jsx
+function Form() {
+  const initialState = {
+    name: '',
+    email: ''
+  };
+
+  const [formData, setFormData] = useState(initialState);
+
+  const handleReset = () => {
+    setFormData(initialState);
+  };
+
+  return (
+    <form>
+      {/* inputs */}
+      <button type="button" onClick={handleReset}>
+        Réinitialiser
+      </button>
+    </form>
+  );
+}
+```
+
+### Méthode 2 : Après soumission
+
+```jsx
+const handleSubmit = (e) => {
+  e.preventDefault();
+
+  // Traiter les données
+  console.log(formData);
+
+  // Réinitialiser
+  setFormData({ name: '', email: '' });
+};
+```
+
+## Patterns avancés
+
+### Désactiver le bouton si formulaire invalide
+
+```jsx
+function Form() {
+  const [name, setName] = useState('');
+  const [email, setEmail] = useState('');
+
+  const isValid = name.length > 0 && email.includes('@');
+
+  return (
+    <form>
+      <input
+        value={name}
+        onChange={e => setName(e.target.value)}
+      />
+      <input
+        type="email"
+        value={email}
+        onChange={e => setEmail(e.target.value)}
+      />
+      <button type="submit" disabled={!isValid}>
+        Envoyer
+      </button>
+    </form>
+  );
+}
+```
+
+### Afficher un compteur de caractères
+
+```jsx
+function MessageInput() {
+  const [message, setMessage] = useState('');
+  const maxLength = 200;
+
+  return (
+    <div>
+      <textarea
+        value={message}
+        onChange={e => setMessage(e.target.value)}
+        maxLength={maxLength}
+      />
+      <p>
+        {message.length} / {maxLength} caractères
+      </p>
+    </div>
+  );
+}
+```
+
+### Transformation automatique
+
+```jsx
+function UsernameInput() {
+  const [username, setUsername] = useState('');
+
+  const handleChange = (e) => {
+    // Minuscules uniquement, sans espaces
+    const cleaned = e.target.value
+      .toLowerCase()
+      .replace(/\s/g, '');
+    setUsername(cleaned);
+  };
+
+  return (
+    <input
+      value={username}
+      onChange={handleChange}
+      placeholder="nom_utilisateur"
+    />
+  );
+}
+```
+
+## Erreurs courantes
+
+<Callout type="error" title="Oublier onChange">
+```jsx
+// ❌ ERREUR : input en lecture seule
+<input type="text" value={name} />
+// Warning: You provided a `value` prop without an `onChange` handler
+
+// ✅ CORRECT
+<input
+  type="text"
+  value={name}
+  onChange={e => setName(e.target.value)}
+/>
+```
+</Callout>
+
+<Callout type="error" title="Utiliser value sur une checkbox">
+```jsx
+// ❌ ERREUR
+<input
+  type="checkbox"
+  value={isChecked}
+  onChange={e => setIsChecked(e.target.value)}
+/>
+
+// ✅ CORRECT
+<input
+  type="checkbox"
+  checked={isChecked}
+  onChange={e => setIsChecked(e.target.checked)}
+/>
+```
+</Callout>
+
+<Callout type="error" title="Oublier preventDefault">
+```jsx
+// ❌ La page recharge !
+const handleSubmit = (e) => {
+  console.log('Submit');
+};
+
+// ✅ CORRECT
+const handleSubmit = (e) => {
+  e.preventDefault(); // ← Important !
+  console.log('Submit');
+};
+```
+</Callout>
+
+## Récapitulatif
+
+<Callout type="success" title="Ce que vous avez appris">
+**Formulaires contrôlés en React** :
+
+1. **Input texte** : `value` + `onChange` avec `e.target.value`
+2. **Checkbox** : `checked` + `onChange` avec `e.target.checked`
+3. **Select** : `value` + `onChange` comme un input
+4. **Textarea** : `value` + `onChange` (pas de children)
+5. **Pattern objet** : un seul state pour tout le formulaire
+6. **Soumission** : `onSubmit` + `e.preventDefault()`
+7. **Validation** : désactiver le bouton si invalide
+
+**Prochaine étape** : apprendre à valider les formulaires !
+</Callout>

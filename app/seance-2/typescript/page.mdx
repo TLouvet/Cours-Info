@@ -1,0 +1,759 @@
+# React avec TypeScript
+
+Maintenant que vous connaissez les bases de TypeScript (vues en [Séance 1](/seance-1/typescript-intro)), voyons comment l'utiliser avec React.
+
+<Callout type="warning" title="TypeScript est obligatoire pour ce cours">
+**Dans ce cours, vous utiliserez TypeScript avec React.**
+
+Pourquoi ? Parce que **90% des projets professionnels React utilisent TypeScript**. En apprenant React directement avec TypeScript, vous serez prêts pour le monde du travail et vos futurs stages/alternances.
+
+Même si React fonctionne très bien en JavaScript, TypeScript est devenu le **standard de l'industrie**.
+</Callout>
+
+---
+
+## Créer un projet React + TypeScript
+
+### Avec Vite (recommandé)
+
+```bash
+# Template React avec TypeScript
+npm create vite@latest mon-app -- --template react-ts
+
+cd mon-app
+npm install
+npm run dev
+```
+
+Le template `react-ts` configure automatiquement :
+- TypeScript
+- Les types pour React (`@types/react`, `@types/react-dom`)
+- `tsconfig.json` pré-configuré
+
+### Structure du projet
+
+**Différence principale : Extensions de fichiers**
+
+```
+JavaScript (React)       TypeScript (React)
+──────────────────       ──────────────────
+src/
+├── App.jsx          →   ├── App.tsx
+├── main.jsx         →   ├── main.tsx
+└── Button.jsx       →   └── Button.tsx
+```
+
+**`.tsx`** = TypeScript + JSX (au lieu de `.jsx`)
+
+<Callout type="tip" title="Fichier de config">
+Le fichier `tsconfig.json` est créé automatiquement par Vite. Vous n'avez généralement pas besoin d'y toucher !
+</Callout>
+
+---
+
+## Typer les props d'un composant
+
+### Composant simple
+
+**JavaScript :**
+```jsx
+function Welcome({ name }) {
+  return <h1>Bonjour, {name} !</h1>;
+}
+```
+
+**TypeScript - Méthode 1 (type inline) :**
+```tsx
+function Welcome({ name }: { name: string }) {
+  return <h1>Bonjour, {name} !</h1>;
+}
+```
+
+**TypeScript - Méthode 2 (interface, recommandé) :**
+```tsx
+interface WelcomeProps {
+  name: string;
+}
+
+function Welcome({ name }: WelcomeProps) {
+  return <h1>Bonjour, {name} !</h1>;
+}
+```
+
+<Callout type="tip" title="Quelle méthode choisir ?">
+**Utilisez `interface` pour les props !**
+
+C'est plus lisible et réutilisable. Les types inline conviennent pour les composants très simples.
+</Callout>
+
+### Props avec plusieurs types
+
+```tsx
+interface UserCardProps {
+  name: string;
+  age: number;
+  email: string;
+  isActive: boolean;
+  avatar?: string;  // ? = optionnel
+}
+
+function UserCard({ name, age, email, isActive, avatar }: UserCardProps) {
+  return (
+    <div className="user-card">
+      <h2>{name}</h2>
+      <p>Âge : {age} ans</p>
+      <p>Email : {email}</p>
+      <p>Statut : {isActive ? '🟢 Actif' : '🔴 Inactif'}</p>
+      {avatar && <img src={avatar} alt={name} />}
+    </div>
+  );
+}
+
+// Utilisation
+<UserCard
+  name="Alice"
+  age={25}
+  email="alice@example.com"
+  isActive={true}
+  // avatar est optionnel, on peut l'omettre
+/>
+```
+
+### Props avec union types
+
+```tsx
+interface ButtonProps {
+  label: string;
+  variant: 'primary' | 'secondary' | 'danger';  // Seulement ces 3 valeurs
+  size: 'small' | 'medium' | 'large';
+}
+
+function Button({ label, variant, size }: ButtonProps) {
+  return (
+    <button className={`btn-${variant} btn-${size}`}>
+      {label}
+    </button>
+  );
+}
+
+// Utilisation
+<Button label="Cliquer" variant="primary" size="medium" />
+// <Button label="Test" variant="warning" /> // ❌ Erreur: 'warning' n'est pas valide
+```
+
+### Props avec valeurs par défaut
+
+```tsx
+interface ButtonProps {
+  label: string;
+  variant?: 'primary' | 'secondary';
+  disabled?: boolean;
+}
+
+function Button({
+  label,
+  variant = 'primary',  // Valeur par défaut
+  disabled = false
+}: ButtonProps) {
+  return (
+    <button className={`btn-${variant}`} disabled={disabled}>
+      {label}
+    </button>
+  );
+}
+```
+
+---
+
+## Typer les fonctions (callbacks)
+
+### Fonction simple (pas de paramètre)
+
+```tsx
+interface ButtonProps {
+  label: string;
+  onClick: () => void;  // Fonction sans paramètre, sans retour
+}
+
+function Button({ label, onClick }: ButtonProps) {
+  return <button onClick={onClick}>{label}</button>;
+}
+
+// Utilisation
+<Button
+  label="Cliquer"
+  onClick={() => console.log('Cliqué !')}
+/>
+```
+
+### Fonction avec paramètre
+
+```tsx
+interface SearchBarProps {
+  onSearch: (query: string) => void;
+}
+
+function SearchBar({ onSearch }: SearchBarProps) {
+  const [value, setValue] = useState('');
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    onSearch(value);
+  };
+
+  return (
+    <form onSubmit={handleSubmit}>
+      <input
+        value={value}
+        onChange={(e) => setValue(e.target.value)}
+      />
+      <button type="submit">🔍</button>
+    </form>
+  );
+}
+
+// Utilisation
+<SearchBar onSearch={(query) => console.log('Recherche:', query)} />
+```
+
+### Fonction avec retour
+
+```tsx
+interface Product {
+  id: number;
+  name: string;
+  price: number;
+}
+
+interface ProductListProps {
+  products: Product[];
+  renderItem: (product: Product) => React.ReactNode;  // Retourne du JSX
+}
+
+function ProductList({ products, renderItem }: ProductListProps) {
+  return (
+    <ul>
+      {products.map((product) => (
+        <li key={product.id}>{renderItem(product)}</li>
+      ))}
+    </ul>
+  );
+}
+
+// Utilisation
+<ProductList
+  products={[
+    { id: 1, name: 'Laptop', price: 999 },
+    { id: 2, name: 'Phone', price: 599 }
+  ]}
+  renderItem={(product) => (
+    <div>
+      <strong>{product.name}</strong> - {product.price}€
+    </div>
+  )}
+/>
+```
+
+---
+
+## Typer `children`
+
+Le type pour le contenu JSX enfant est **`React.ReactNode`** :
+
+```tsx
+interface CardProps {
+  title: string;
+  children: React.ReactNode;
+}
+
+function Card({ title, children }: CardProps) {
+  return (
+    <div className="card">
+      <h2>{title}</h2>
+      <div className="content">
+        {children}
+      </div>
+    </div>
+  );
+}
+
+// Utilisation
+<Card title="Mon titre">
+  <p>Contenu de la carte</p>
+  <button>Action</button>
+</Card>
+```
+
+<Callout type="info" title="React.ReactNode">
+`React.ReactNode` accepte :
+- Chaînes de caractères
+- Nombres
+- JSX (éléments React)
+- Tableaux
+- `null` ou `undefined`
+- Fragments
+
+C'est le type le plus permissif pour `children`.
+</Callout>
+
+---
+
+## Typer les événements
+
+### Événements courants
+
+```tsx
+function EventExamples() {
+  // Clic sur un bouton
+  const handleClick = (e: React.MouseEvent<HTMLButtonElement>) => {
+    console.log('Bouton cliqué', e.currentTarget);
+  };
+
+  // Changement d'input
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    console.log('Valeur:', e.target.value);
+  };
+
+  // Soumission de formulaire
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    console.log('Formulaire soumis');
+  };
+
+  return (
+    <form onSubmit={handleSubmit}>
+      <input onChange={handleChange} />
+      <button onClick={handleClick}>Envoyer</button>
+    </form>
+  );
+}
+```
+
+### Types d'événements React
+
+| Événement | Type TypeScript |
+|-----------|----------------|
+| `onClick` (button) | `React.MouseEvent<HTMLButtonElement>` |
+| `onClick` (div) | `React.MouseEvent<HTMLDivElement>` |
+| `onChange` (input) | `React.ChangeEvent<HTMLInputElement>` |
+| `onChange` (select) | `React.ChangeEvent<HTMLSelectElement>` |
+| `onChange` (textarea) | `React.ChangeEvent<HTMLTextAreaElement>` |
+| `onSubmit` (form) | `React.FormEvent<HTMLFormElement>` |
+| `onKeyDown` | `React.KeyboardEvent` |
+| `onFocus` | `React.FocusEvent` |
+
+<Callout type="tip" title="Laisser TypeScript inférer">
+Pour les gestionnaires inline, TypeScript peut deviner le type :
+
+```tsx
+// Pas besoin de typer e !
+<input onChange={(e) => console.log(e.target.value)} />
+<button onClick={(e) => e.currentTarget.blur()}>Cliquer</button>
+```
+</Callout>
+
+---
+
+## Typer `useState`
+
+### Inférence automatique
+
+```tsx
+import { useState } from 'react';
+
+function Counter() {
+  // TypeScript devine que count est un number
+  const [count, setCount] = useState(0);
+
+  return (
+    <div>
+      <p>Count: {count}</p>
+      <button onClick={() => setCount(count + 1)}>+1</button>
+    </div>
+  );
+}
+```
+
+### Type explicite (quand nécessaire)
+
+```tsx
+interface User {
+  id: number;
+  name: string;
+  email: string;
+}
+
+function UserProfile() {
+  // State qui peut être User ou null
+  const [user, setUser] = useState<User | null>(null);
+
+  // Tableau vide au départ
+  const [users, setUsers] = useState<User[]>([]);
+
+  return (
+    <div>
+      {user ? (
+        <p>{user.name} - {user.email}</p>
+      ) : (
+        <p>Aucun utilisateur</p>
+      )}
+    </div>
+  );
+}
+```
+
+### État avec objet complexe
+
+```tsx
+interface FormData {
+  name: string;
+  email: string;
+  age: number;
+  subscribe: boolean;
+}
+
+function Form() {
+  const [formData, setFormData] = useState<FormData>({
+    name: '',
+    email: '',
+    age: 0,
+    subscribe: false
+  });
+
+  const handleChange = (field: keyof FormData, value: string | number | boolean) => {
+    setFormData({
+      ...formData,
+      [field]: value
+    });
+  };
+
+  return (
+    <form>
+      <input
+        value={formData.name}
+        onChange={(e) => handleChange('name', e.target.value)}
+      />
+      {/* ... */}
+    </form>
+  );
+}
+```
+
+---
+
+## Patterns courants
+
+### Spread props avec types HTML
+
+Accepter tous les attributs HTML standards :
+
+```tsx
+interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
+  variant?: 'primary' | 'secondary';
+}
+
+function Button({ variant = 'primary', children, ...props }: ButtonProps) {
+  return (
+    <button className={`btn-${variant}`} {...props}>
+      {children}
+    </button>
+  );
+}
+
+// Accepte disabled, type, onClick, etc.
+<Button variant="primary" disabled onClick={() => {}}>
+  Cliquer
+</Button>
+```
+
+### Props optionnelles avec défaut
+
+```tsx
+interface CardProps {
+  title: string;
+  subtitle?: string;
+  footer?: React.ReactNode;
+  variant?: 'default' | 'highlighted';
+}
+
+function Card({
+  title,
+  subtitle,
+  footer,
+  variant = 'default'
+}: CardProps) {
+  return (
+    <div className={`card card-${variant}`}>
+      <h2>{title}</h2>
+      {subtitle && <p>{subtitle}</p>}
+      {footer && <div className="footer">{footer}</div>}
+    </div>
+  );
+}
+```
+
+### Typer un tableau de données
+
+```tsx
+interface Product {
+  id: number;
+  name: string;
+  price: number;
+  category: string;
+}
+
+interface ProductListProps {
+  products: Product[];
+  onSelect: (product: Product) => void;
+}
+
+function ProductList({ products, onSelect }: ProductListProps) {
+  return (
+    <ul>
+      {products.map((product) => (
+        <li key={product.id} onClick={() => onSelect(product)}>
+          {product.name} - {product.price}€
+        </li>
+      ))}
+    </ul>
+  );
+}
+```
+
+---
+
+## Erreurs courantes et solutions
+
+### ❌ Erreur : Property 'X' is missing
+
+```tsx
+interface ButtonProps {
+  label: string;
+  onClick: () => void;
+}
+
+// ❌ Erreur : onClick est requis
+<Button label="Cliquer" />
+
+// ✅ Solution 1 : Fournir la prop
+<Button label="Cliquer" onClick={() => {}} />
+
+// ✅ Solution 2 : Rendre optionnelle
+interface ButtonProps {
+  label: string;
+  onClick?: () => void;
+}
+```
+
+### ❌ Erreur : Type 'X' is not assignable to type 'Y'
+
+```tsx
+interface UserProps {
+  age: number;
+}
+
+// ❌ Erreur : "25" est un string, pas un number
+<User age="25" />
+
+// ✅ Solution : Convertir en number
+<User age={25} />
+```
+
+### ❌ Erreur : Object is possibly 'null'
+
+```tsx
+const [user, setUser] = useState<User | null>(null);
+
+// ❌ Erreur : user peut être null
+const name: string = user.name;
+
+// ✅ Solution 1 : Optional chaining
+const name = user?.name;
+
+// ✅ Solution 2 : Vérifier null
+if (user) {
+  const name: string = user.name;  // OK ici
+}
+```
+
+---
+
+## Type vs Interface (rappel)
+
+Pour les props React, `interface` est recommandé :
+
+```tsx
+// ✅ Recommandé : interface
+interface ButtonProps {
+  label: string;
+  onClick: () => void;
+}
+
+// ✅ Aussi valide : type
+type ButtonProps = {
+  label: string;
+  onClick: () => void;
+};
+```
+
+**Différence principale :** Les interfaces peuvent être étendues plus facilement.
+
+```tsx
+interface BaseProps {
+  id: string;
+  className?: string;
+}
+
+// Étendre une interface
+interface ButtonProps extends BaseProps {
+  label: string;
+  onClick: () => void;
+}
+
+// Intersection avec type
+type ButtonProps = BaseProps & {
+  label: string;
+  onClick: () => void;
+};
+```
+
+<Callout type="info" title="Convention">
+Dans le code React :
+- **`interface`** pour les props et objets
+- **`type`** pour les unions et types complexes
+
+```tsx
+interface UserProps { ... }           // Props
+type Status = 'loading' | 'success';  // Union
+```
+</Callout>
+
+---
+
+## Résumé
+
+<Callout type="success" title="Ce qu'il faut retenir">
+**Créer un projet React + TS :**
+```bash
+npm create vite@latest mon-app -- --template react-ts
+```
+
+**Typer les props :**
+```tsx
+interface ComponentProps {
+  name: string;
+  age: number;
+  onAction: () => void;
+}
+
+function Component({ name, age, onAction }: ComponentProps) {
+  return <div>...</div>;
+}
+```
+
+**Types React importants :**
+- `React.ReactNode` - Contenu JSX (children)
+- `React.MouseEvent` - Événement de clic
+- `React.ChangeEvent` - Événement d'input
+- `React.FormEvent` - Événement de formulaire
+
+**useState avec types :**
+```tsx
+const [user, setUser] = useState<User | null>(null);
+const [items, setItems] = useState<Item[]>([]);
+```
+
+**Extension des props HTML :**
+```tsx
+interface Props extends React.ButtonHTMLAttributes<HTMLButtonElement> {
+  variant: 'primary' | 'secondary';
+}
+```
+</Callout>
+
+---
+
+## Exercice pratique
+
+Convertir ce composant JavaScript en TypeScript :
+
+```jsx
+function ProductCard({ product, onAddToCart, onRemove, showActions }) {
+  return (
+    <div className="product-card">
+      <h3>{product.name}</h3>
+      <p>{product.price}€</p>
+      {product.description && <p>{product.description}</p>}
+      {showActions && (
+        <div>
+          <button onClick={() => onAddToCart(product)}>
+            Ajouter
+          </button>
+          {onRemove && (
+            <button onClick={() => onRemove(product.id)}>
+              Retirer
+            </button>
+          )}
+        </div>
+      )}
+    </div>
+  );
+}
+```
+
+**À faire :**
+1. Créer l'interface `Product` (id, name, price, description optionnelle)
+2. Créer l'interface `ProductCardProps`
+3. Typer toutes les props correctement
+4. Identifier les props optionnelles
+
+<details>
+<summary>Voir la solution</summary>
+
+```tsx
+interface Product {
+  id: number;
+  name: string;
+  price: number;
+  description?: string;
+}
+
+interface ProductCardProps {
+  product: Product;
+  onAddToCart: (product: Product) => void;
+  onRemove?: (productId: number) => void;
+  showActions?: boolean;
+}
+
+function ProductCard({
+  product,
+  onAddToCart,
+  onRemove,
+  showActions = true
+}: ProductCardProps) {
+  return (
+    <div className="product-card">
+      <h3>{product.name}</h3>
+      <p>{product.price}€</p>
+      {product.description && <p>{product.description}</p>}
+      {showActions && (
+        <div>
+          <button onClick={() => onAddToCart(product)}>
+            Ajouter
+          </button>
+          {onRemove && (
+            <button onClick={() => onRemove(product.id)}>
+              Retirer
+            </button>
+          )}
+        </div>
+      )}
+    </div>
+  );
+}
+```
+</details>
+
+---
+
+**Prochaine étape :** Passez aux exercices pour mettre en pratique tous les concepts React ! 🚀

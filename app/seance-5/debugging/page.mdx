@@ -1,0 +1,614 @@
+# Débogage React
+
+Déboguer efficacement est une compétence essentielle. Apprenons à identifier et résoudre les erreurs courantes en React.
+
+<Callout type="info">
+**Le débogage est un art :**
+- Lire attentivement les messages d'erreur
+- Isoler le problème
+- Tester des hypothèses
+- Utiliser les bons outils
+</Callout>
+
+## React DevTools
+
+L'outil indispensable pour déboguer React.
+
+### Installation
+
+**Extension navigateur :**
+- [Chrome](https://chrome.google.com/webstore/detail/react-developer-tools/fmkadmapgofadopljbjfkapdkoienihi)
+- [Firefox](https://addons.mozilla.org/firefox/addon/react-devtools/)
+
+### Fonctionnalités principales
+
+**1. Inspecter les composants**
+- Voir la hiérarchie des composants
+- Voir les props de chaque composant
+- Voir le state de chaque composant
+- Modifier les props/state en live
+
+**2. Profiler**
+- Mesurer les performances
+- Identifier les re-renders inutiles
+- Optimiser les composants lents
+
+**3. Console**
+- Logs avec le contexte du composant
+- Warnings React spécifiques
+
+<Callout type="tip">
+Ouvrez DevTools avec **F12**, puis allez dans l'onglet "Components" ou "Profiler"
+</Callout>
+
+## Erreurs courantes et solutions
+
+### 1. "Cannot read property X of undefined"
+
+**Erreur :**
+```
+Cannot read property 'name' of undefined
+```
+
+**Cause :** Vous essayez d'accéder à une propriété d'un objet qui n'existe pas (encore).
+
+**Exemple problématique :**
+
+```jsx
+function UserProfile() {
+  const [user, setUser] = useState(null);
+
+  useEffect(() => {
+    fetch('/api/user')
+      .then(res => res.json())
+      .then(data => setUser(data));
+  }, []);
+
+  // ❌ Erreur ! user est null au premier render
+  return <h1>Welcome {user.name}</h1>;
+}
+```
+
+**Solutions :**
+
+```jsx
+// ✅ Solution 1 : Vérification conditionnelle
+function UserProfile() {
+  const [user, setUser] = useState(null);
+
+  useEffect(() => {
+    fetch('/api/user')
+      .then(res => res.json())
+      .then(data => setUser(data));
+  }, []);
+
+  if (!user) return <p>Loading...</p>;
+
+  return <h1>Welcome {user.name}</h1>;
+}
+
+// ✅ Solution 2 : Optional chaining
+function UserProfile() {
+  const [user, setUser] = useState(null);
+
+  useEffect(() => {
+    fetch('/api/user')
+      .then(res => res.json())
+      .then(data => setUser(data));
+  }, []);
+
+  return <h1>Welcome {user?.name || 'Guest'}</h1>;
+}
+
+// ✅ Solution 3 : Valeur par défaut
+function UserProfile() {
+  const [user, setUser] = useState({ name: 'Loading...' });
+
+  useEffect(() => {
+    fetch('/api/user')
+      .then(res => res.json())
+      .then(data => setUser(data));
+  }, []);
+
+  return <h1>Welcome {user.name}</h1>;
+}
+```
+
+### 2. "Too many re-renders"
+
+**Erreur :**
+```
+Error: Too many re-renders. React limits the number of renders to prevent an infinite loop.
+```
+
+**Cause :** Vous appelez `setState` directement dans le render, créant une boucle infinie.
+
+**Exemples problématiques :**
+
+```jsx
+// ❌ setState dans le render !
+function Counter() {
+  const [count, setCount] = useState(0);
+
+  setCount(count + 1); // ❌ Boucle infinie !
+
+  return <p>Count: {count}</p>;
+}
+
+// ❌ onClick mal utilisé
+function Button() {
+  const [clicked, setClicked] = useState(false);
+
+  return (
+    <button onClick={setClicked(true)}> {/* ❌ Appelé immédiatement ! */}
+      Click me
+    </button>
+  );
+}
+```
+
+**Solutions :**
+
+```jsx
+// ✅ setState dans un event handler
+function Counter() {
+  const [count, setCount] = useState(0);
+
+  const increment = () => {
+    setCount(count + 1);
+  };
+
+  return (
+    <div>
+      <p>Count: {count}</p>
+      <button onClick={increment}>Increment</button>
+    </div>
+  );
+}
+
+// ✅ Fonction anonyme dans onClick
+function Button() {
+  const [clicked, setClicked] = useState(false);
+
+  return (
+    <button onClick={() => setClicked(true)}> {/* ✅ Fonction, pas appel ! */}
+      Click me
+    </button>
+  );
+}
+```
+
+### 3. "Each child in a list should have a unique key"
+
+**Erreur :**
+```
+Warning: Each child in a list should have a unique "key" prop.
+```
+
+**Cause :** Pas de `key` prop (ou key non-unique) lors du mapping de listes.
+
+**Exemple problématique :**
+
+```jsx
+// ❌ Pas de key
+function UserList({ users }) {
+  return (
+    <ul>
+      {users.map(user => (
+        <li>{user.name}</li> {/* ❌ Pas de key ! */}
+      ))}
+    </ul>
+  );
+}
+
+// ❌ Index comme key (peut causer des bugs)
+function UserList({ users }) {
+  return (
+    <ul>
+      {users.map((user, index) => (
+        <li key={index}>{user.name}</li> {/* ⚠️ Évitez l'index */}
+      ))}
+    </ul>
+  );
+}
+```
+
+**Solution :**
+
+```jsx
+// ✅ Key unique basée sur l'ID
+function UserList({ users }) {
+  return (
+    <ul>
+      {users.map(user => (
+        <li key={user.id}>{user.name}</li>
+      ))}
+    </ul>
+  );
+}
+
+// ✅ Si pas d'ID, combinez des valeurs uniques
+function UserList({ users }) {
+  return (
+    <ul>
+      {users.map(user => (
+        <li key={`${user.email}-${user.name}`}>{user.name}</li>
+      ))}
+    </ul>
+  );
+}
+```
+
+### 4. "Cannot update a component while rendering another"
+
+**Erreur :**
+```
+Warning: Cannot update a component while rendering a different component.
+```
+
+**Cause :** Vous modifiez le state d'un composant parent depuis le render d'un composant enfant.
+
+**Exemple problématique :**
+
+```jsx
+// ❌ Parent
+function Parent() {
+  const [count, setCount] = useState(0);
+
+  return <Child setCount={setCount} />;
+}
+
+// ❌ Child appelle setState dans le render
+function Child({ setCount }) {
+  setCount(prev => prev + 1); // ❌ setState dans le render !
+  return <p>Child</p>;
+}
+```
+
+**Solution :**
+
+```jsx
+// ✅ Parent
+function Parent() {
+  const [count, setCount] = useState(0);
+
+  return <Child setCount={setCount} />;
+}
+
+// ✅ Child utilise useEffect ou un event handler
+function Child({ setCount }) {
+  useEffect(() => {
+    setCount(prev => prev + 1); // ✅ Dans useEffect
+  }, [setCount]);
+
+  return <p>Child</p>;
+}
+
+// ✅ Ou avec un event handler
+function Child({ setCount }) {
+  const handleClick = () => {
+    setCount(prev => prev + 1); // ✅ Dans un handler
+  };
+
+  return <button onClick={handleClick}>Increment</button>;
+}
+```
+
+### 5. "Maximum update depth exceeded"
+
+**Erreur :**
+```
+Error: Maximum update depth exceeded. This can happen when a component repeatedly calls setState inside useEffect.
+```
+
+**Cause :** useEffect déclenche un setState qui déclenche useEffect, créant une boucle.
+
+**Exemple problématique :**
+
+```jsx
+// ❌ Boucle infinie dans useEffect
+function Component() {
+  const [count, setCount] = useState(0);
+
+  useEffect(() => {
+    setCount(count + 1); // ❌ Pas de dépendances = boucle infinie !
+  });
+
+  return <p>{count}</p>;
+}
+
+// ❌ Dépendance qui change à chaque render
+function Component() {
+  const [data, setData] = useState([]);
+
+  useEffect(() => {
+    setData([...data, 'new']); // ❌ data change, donc re-run, donc boucle !
+  }, [data]);
+
+  return <p>{data.length}</p>;
+}
+```
+
+**Solutions :**
+
+```jsx
+// ✅ Dépendances correctes
+function Component() {
+  const [count, setCount] = useState(0);
+
+  useEffect(() => {
+    // S'exécute une seule fois au mount
+    setCount(1);
+  }, []); // ✅ Tableau vide = une seule fois
+
+  return <p>{count}</p>;
+}
+
+// ✅ Fonction de mise à jour
+function Component() {
+  const [data, setData] = useState([]);
+
+  useEffect(() => {
+    // Utilise la fonction de mise à jour au lieu de la valeur
+    setData(prevData => [...prevData, 'new']);
+  }, []); // ✅ Pas besoin de data dans les dépendances
+
+  return <p>{data.length}</p>;
+}
+```
+
+### 6. "Hook called conditionally"
+
+**Erreur :**
+```
+Error: Rendered more hooks than during the previous render.
+```
+
+**Cause :** Hooks appelés dans des conditions, boucles, ou après un return.
+
+**Exemple problématique :**
+
+```jsx
+// ❌ Hook dans une condition
+function Component({ isLoggedIn }) {
+  if (isLoggedIn) {
+    const [user, setUser] = useState(null); // ❌ Hook conditionnel !
+  }
+
+  return <p>Hello</p>;
+}
+
+// ❌ Hook après un return
+function Component() {
+  if (someCondition) {
+    return <p>Early return</p>;
+  }
+
+  const [state, setState] = useState(0); // ❌ Hook après return conditionnel !
+}
+```
+
+**Solution :**
+
+```jsx
+// ✅ Hooks toujours au top level
+function Component({ isLoggedIn }) {
+  const [user, setUser] = useState(null); // ✅ Au top level
+
+  if (!isLoggedIn) {
+    return <p>Please login</p>;
+  }
+
+  return <p>Hello {user?.name}</p>;
+}
+```
+
+## Stratégies de débogage
+
+### 1. Console.log stratégique
+
+```jsx
+function Component({ data }) {
+  console.log('Component rendered with data:', data);
+
+  useEffect(() => {
+    console.log('Effect running, data:', data);
+    // ...
+  }, [data]);
+
+  const handleClick = () => {
+    console.log('Button clicked');
+    // ...
+  };
+
+  return <button onClick={handleClick}>Click</button>;
+}
+```
+
+<Callout type="tip">
+Ajoutez des labels clairs à vos console.log pour identifier d'où ils viennent !
+</Callout>
+
+### 2. Debugger statement
+
+```jsx
+function Component() {
+  const [data, setData] = useState([]);
+
+  useEffect(() => {
+    debugger; // ⏸️ Le code s'arrête ici dans DevTools
+    fetch('/api/data')
+      .then(res => res.json())
+      .then(data => setData(data));
+  }, []);
+
+  return <div>{/* ... */}</div>;
+}
+```
+
+### 3. Isoler le problème
+
+**Méthode :** Commentez du code jusqu'à ce que l'erreur disparaisse.
+
+```jsx
+function ComplexComponent() {
+  return (
+    <div>
+      <Header />
+      {/* <Sidebar /> Commenté pour tester */}
+      <MainContent />
+      {/* <Footer /> Commenté pour tester */}
+    </div>
+  );
+}
+```
+
+### 4. Reproduire dans un environnement minimal
+
+Créez un composant simple qui reproduit le bug :
+
+```jsx
+// Minimal reproduction
+function BugReproduction() {
+  const [count, setCount] = useState(0);
+
+  useEffect(() => {
+    // Le bug se produit ici
+  }, [count]);
+
+  return <button onClick={() => setCount(count + 1)}>Test</button>;
+}
+```
+
+### 5. Lire les stack traces
+
+Quand une erreur apparaît, lisez la stack trace de bas en haut :
+
+```
+Error: Cannot read property 'name' of undefined
+    at UserProfile (UserProfile.jsx:15)    ← Votre code
+    at div
+    at App (App.jsx:23)                     ← Origine de l'appel
+```
+
+## Erreurs réseau
+
+### Fetch qui échoue
+
+```jsx
+function Users() {
+  const [users, setUsers] = useState([]);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    fetch('/api/users')
+      .then(res => {
+        // ✅ Vérifier le status HTTP
+        if (!res.ok) {
+          throw new Error(`HTTP error! status: ${res.status}`);
+        }
+        return res.json();
+      })
+      .then(data => setUsers(data))
+      .catch(err => {
+        console.error('Fetch error:', err);
+        setError(err.message);
+      });
+  }, []);
+
+  if (error) return <p>Error: {error}</p>;
+  return <ul>{users.map(u => <li key={u.id}>{u.name}</li>)}</ul>;
+}
+```
+
+### CORS errors
+
+**Erreur :**
+```
+Access to fetch at 'https://api.example.com' from origin 'http://localhost:3000'
+has been blocked by CORS policy
+```
+
+**Solutions :**
+1. Configurer le serveur pour accepter les requêtes CORS
+2. Utiliser un proxy Vite (voir exemple ci-dessous)
+3. Développement : utiliser une extension "CORS Unblock" (temporaire)
+
+**Vite proxy config :**
+
+```javascript
+// vite.config.js
+export default defineConfig({
+  server: {
+    proxy: {
+      '/api': {
+        target: 'https://api.example.com',
+        changeOrigin: true,
+        rewrite: (path) => path.replace(/^\/api/, '')
+      }
+    }
+  }
+});
+```
+
+## Checklist de débogage
+
+<Callout type="success" title="Quand vous avez un bug">
+1. **Lire l'erreur attentivement**
+   - Que dit exactement le message ?
+   - Quelle ligne de code ?
+   - Quel composant ?
+
+2. **Reproduire le bug**
+   - Quelles étapes mènent au bug ?
+   - Est-ce reproductible ?
+
+3. **Isoler le problème**
+   - Commentez du code
+   - Testez dans un composant minimal
+   - Vérifiez les données
+
+4. **Vérifier les suspects habituels**
+   - Props undefined ?
+   - État initial incorrect ?
+   - Dépendances useEffect manquantes ?
+   - Key manquante sur les listes ?
+
+5. **Utiliser les outils**
+   - React DevTools
+   - Console du navigateur
+   - Debugger statements
+
+6. **Chercher de l'aide**
+   - Documentation React
+   - Google l'erreur exacte
+   - Stack Overflow
+   - IA (ChatGPT, Claude)
+</Callout>
+
+## Outils utiles
+
+### Extensions navigateur
+- React DevTools
+- Redux DevTools (si vous utilisez Redux)
+- Network inspector (onglet Network de DevTools)
+
+### VS Code Extensions
+- ES7+ React snippets
+- Error Lens (affiche les erreurs inline)
+- ESLint (détecte les problèmes avant l'exécution)
+
+### Online Tools
+- [CodeSandbox](https://codesandbox.io/) - Tester rapidement du code
+- [StackBlitz](https://stackblitz.com/) - IDE en ligne
+- [React DevTools Standalone](https://github.com/facebook/react/tree/main/packages/react-devtools) - Version standalone
+
+## Ressources
+
+- [React Error Decoder](https://react.dev/errors) - Explications détaillées des erreurs
+- [React DevTools Guide](https://react.dev/learn/react-developer-tools)
+- [MDN DevTools Guide](https://developer.mozilla.org/docs/Tools)
+
+<Callout type="tip">
+Le débogage devient plus facile avec l'expérience. N'ayez pas peur des erreurs : elles font partie du processus d'apprentissage !
+</Callout>

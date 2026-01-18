@@ -1,0 +1,541 @@
+# Routes Dynamiques
+
+Les routes dynamiques permettent de créer des URLs avec des paramètres variables.
+
+## Qu'est-ce qu'une Route Dynamique ?
+
+Au lieu de créer une route pour chaque ID :
+
+```javascript
+// ❌ Impossible : des milliers de produits !
+<Route path="/products/1" element={<Product id={1} />} />
+<Route path="/products/2" element={<Product id={2} />} />
+<Route path="/products/3" element={<Product id={3} />} />
+// ...
+```
+
+Utilisez une route dynamique avec un **paramètre** :
+
+```javascript
+// ✅ Une seule route pour tous les produits
+<Route path="/products/:id" element={<ProductDetail />} />
+```
+
+**Exemples d'URLs matchées :**
+```
+/products/1       → ProductDetail (id = "1")
+/products/42      → ProductDetail (id = "42")
+/products/abc123  → ProductDetail (id = "abc123")
+```
+
+<Callout type="info" title="Syntaxe :parametre">
+`:` devant un segment d'URL le rend **dynamique**.
+
+```javascript
+<Route path="/users/:userId" element={<User />} />
+<Route path="/posts/:postId" element={<Post />} />
+<Route path="/products/:productId" element={<Product />} />
+```
+
+Le nom après `:` est le nom de la variable que vous utiliserez dans le composant.
+</Callout>
+
+## useParams : Lire les Paramètres
+
+Pour accéder aux paramètres d'URL dans votre composant, utilisez le hook `useParams`.
+
+### Exemple Simple
+
+```javascript
+import { useParams } from 'react-router-dom';
+
+// Route définie : /products/:id
+function ProductDetail() {
+  const { id } = useParams();
+
+  return (
+    <div>
+      <h1>Produit #{id}</h1>
+    </div>
+  );
+}
+```
+
+**Résultat :**
+```
+URL: /products/42
+→ Affiche : "Produit #42"
+
+URL: /products/abc
+→ Affiche : "Produit #abc"
+```
+
+### Exemple avec Fetch
+
+```javascript
+import { useParams } from 'react-router-dom';
+import { useState, useEffect } from 'react';
+
+function UserProfile() {
+  const { userId } = useParams();
+  const [user, setUser] = useState(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    async function fetchUser() {
+      setLoading(true);
+
+      const response = await fetch(
+        `https://jsonplaceholder.typicode.com/users/${userId}`
+      );
+      const data = await response.json();
+
+      setUser(data);
+      setLoading(false);
+    }
+
+    fetchUser();
+  }, [userId]); // Re-fetch si userId change
+
+  if (loading) return <div>Chargement...</div>;
+  if (!user) return <div>Utilisateur non trouvé</div>;
+
+  return (
+    <div>
+      <h1>{user.name}</h1>
+      <p>Email : {user.email}</p>
+      <p>Téléphone : {user.phone}</p>
+    </div>
+  );
+}
+
+// Route
+<Route path="/users/:userId" element={<UserProfile />} />
+```
+
+**URLs :**
+```
+/users/1 → Fetch user 1 → Affiche "Leanne Graham"
+/users/2 → Fetch user 2 → Affiche "Ervin Howell"
+```
+
+<Callout type="tip" title="useParams retourne un objet">
+```javascript
+const params = useParams();
+console.log(params); // { userId: "1" }
+
+// Destructuration directe
+const { userId } = useParams();
+console.log(userId); // "1"
+```
+
+**Important :** Les paramètres sont toujours des **strings** !
+
+```javascript
+const { id } = useParams();
+console.log(typeof id); // "string"
+
+// Pour utiliser comme nombre :
+const numericId = Number(id);
+// ou
+const numericId = parseInt(id, 10);
+```
+</Callout>
+
+## Plusieurs Paramètres
+
+Vous pouvez avoir plusieurs paramètres dans une même URL.
+
+```javascript
+// Route
+<Route path="/posts/:postId/comments/:commentId" element={<Comment />} />
+
+// Composant
+function Comment() {
+  const { postId, commentId } = useParams();
+
+  return (
+    <div>
+      <h1>Post {postId}, Comment {commentId}</h1>
+    </div>
+  );
+}
+```
+
+**Exemples d'URLs :**
+```
+/posts/5/comments/12
+→ postId = "5", commentId = "12"
+
+/posts/99/comments/1
+→ postId = "99", commentId = "1"
+```
+
+## Liens Dynamiques
+
+Pour créer des liens vers des routes dynamiques, utilisez template literals.
+
+```javascript
+import { Link } from 'react-router-dom';
+
+function ProductList() {
+  const products = [
+    { id: 1, name: 'Laptop' },
+    { id: 2, name: 'Mouse' },
+    { id: 3, name: 'Keyboard' }
+  ];
+
+  return (
+    <ul>
+      {products.map(product => (
+        <li key={product.id}>
+          <Link to={`/products/${product.id}`}>
+            {product.name}
+          </Link>
+        </li>
+      ))}
+    </ul>
+  );
+}
+
+// Résultat HTML :
+// <a href="/products/1">Laptop</a>
+// <a href="/products/2">Mouse</a>
+// <a href="/products/3">Keyboard</a>
+```
+
+<Callout type="info" title="Template Literals">
+Utilisez les backticks `` ` `` pour créer des URLs dynamiques :
+
+```javascript
+// ✅ Bon
+<Link to={`/products/${product.id}`}>
+
+// ❌ Mauvais (concaténation)
+<Link to={'/products/' + product.id}>
+```
+</Callout>
+
+## Exemple Complet : Blog
+
+```javascript
+import { Routes, Route, Link, useParams } from 'react-router-dom';
+import { useState, useEffect } from 'react';
+
+// Liste des articles
+function BlogList() {
+  const [posts, setPosts] = useState([]);
+
+  useEffect(() => {
+    fetch('https://jsonplaceholder.typicode.com/posts')
+      .then(res => res.json())
+      .then(data => setPosts(data.slice(0, 10))); // Premiers 10
+  }, []);
+
+  return (
+    <div>
+      <h1>Blog</h1>
+      <ul>
+        {posts.map(post => (
+          <li key={post.id}>
+            <Link to={`/blog/${post.id}`}>
+              {post.title}
+            </Link>
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
+}
+
+// Détail d'un article
+function BlogPost() {
+  const { postId } = useParams();
+  const [post, setPost] = useState(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    async function fetchPost() {
+      setLoading(true);
+
+      const response = await fetch(
+        `https://jsonplaceholder.typicode.com/posts/${postId}`
+      );
+      const data = await response.json();
+
+      setPost(data);
+      setLoading(false);
+    }
+
+    fetchPost();
+  }, [postId]);
+
+  if (loading) return <div>Chargement...</div>;
+  if (!post) return <div>Article non trouvé</div>;
+
+  return (
+    <article>
+      <Link to="/blog">← Retour au blog</Link>
+      <h1>{post.title}</h1>
+      <p>{post.body}</p>
+    </article>
+  );
+}
+
+// App
+function App() {
+  return (
+    <Routes>
+      <Route path="/blog" element={<BlogList />} />
+      <Route path="/blog/:postId" element={<BlogPost />} />
+    </Routes>
+  );
+}
+```
+
+**Workflow :**
+```
+1. User visite /blog
+   → Affiche BlogList (liste de 10 posts)
+
+2. User clique sur un post
+   → Navigate vers /blog/5
+   → Affiche BlogPost avec postId = "5"
+   → Fetch post 5 depuis l'API
+   → Affiche le contenu
+
+3. User clique "Retour au blog"
+   → Navigate vers /blog
+   → Affiche BlogList
+```
+
+## Search Params (Query Strings)
+
+Pour les paramètres optionnels dans l'URL (après `?`).
+
+```
+URL: /products?category=electronics&sort=price
+→ category = "electronics"
+→ sort = "price"
+```
+
+### useSearchParams Hook
+
+```javascript
+import { useSearchParams } from 'react-router-dom';
+
+function ProductList() {
+  const [searchParams, setSearchParams] = useSearchParams();
+
+  const category = searchParams.get('category'); // "electronics"
+  const sort = searchParams.get('sort'); // "price"
+
+  return (
+    <div>
+      <h1>Catégorie : {category || 'Toutes'}</h1>
+      <p>Tri : {sort || 'défaut'}</p>
+
+      {/* Modifier les search params */}
+      <button onClick={() => setSearchParams({ category: 'books' })}>
+        Livres
+      </button>
+
+      <button onClick={() => setSearchParams({ category: 'electronics', sort: 'name' })}>
+        Électronique (par nom)
+      </button>
+    </div>
+  );
+}
+```
+
+**Créer des liens avec search params :**
+
+```javascript
+<Link to="/products?category=books">Livres</Link>
+<Link to="/products?category=electronics&sort=price">Électronique</Link>
+```
+
+<Callout type="info" title="URL Params vs Search Params">
+**URL Params (`:id`)** → Partie de l'URL, requis
+```
+/users/:userId → /users/123
+```
+Utilisez pour : identifiants, routes obligatoires
+
+**Search Params (`?key=value`)** → Query string, optionnel
+```
+/products?category=books&sort=price
+```
+Utilisez pour : filtres, tri, pagination, recherche
+</Callout>
+
+## Paramètres Optionnels
+
+Pour rendre un segment d'URL optionnel, utilisez `?` :
+
+```javascript
+// Cette route match /blog ET /blog/123
+<Route path="/blog/:postId?" element={<Blog />} />
+
+function Blog() {
+  const { postId } = useParams();
+
+  if (postId) {
+    return <BlogPost id={postId} />;
+  }
+
+  return <BlogList />;
+}
+```
+
+**Match :**
+```
+/blog → postId = undefined → Affiche BlogList
+/blog/5 → postId = "5" → Affiche BlogPost
+```
+
+## Navigation Programmatique avec Params
+
+```javascript
+import { useNavigate } from 'react-router-dom';
+
+function ProductCard({ product }) {
+  const navigate = useNavigate();
+
+  function handleClick() {
+    navigate(`/products/${product.id}`);
+  }
+
+  return (
+    <div onClick={handleClick} style={{ cursor: 'pointer' }}>
+      <h3>{product.name}</h3>
+      <p>Cliquez pour voir les détails</p>
+    </div>
+  );
+}
+```
+
+## Validation de Paramètres
+
+Vérifiez toujours que les paramètres sont valides.
+
+```javascript
+function UserProfile() {
+  const { userId } = useParams();
+  const [user, setUser] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    // Valider que userId est un nombre
+    const id = parseInt(userId, 10);
+
+    if (isNaN(id) || id <= 0) {
+      setError('ID utilisateur invalide');
+      setLoading(false);
+      return;
+    }
+
+    async function fetchUser() {
+      try {
+        const response = await fetch(
+          `https://jsonplaceholder.typicode.com/users/${id}`
+        );
+
+        if (!response.ok) {
+          throw new Error('Utilisateur non trouvé');
+        }
+
+        const data = await response.json();
+        setUser(data);
+
+      } catch (err) {
+        setError(err.message);
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    fetchUser();
+  }, [userId]);
+
+  if (loading) return <div>Chargement...</div>;
+  if (error) return <div>Erreur : {error}</div>;
+
+  return <div>{user.name}</div>;
+}
+```
+
+## Breadcrumbs (Fil d'Ariane)
+
+Afficher le chemin de navigation avec les paramètres.
+
+```javascript
+import { useParams, Link } from 'react-router-dom';
+
+function ProductDetail() {
+  const { categoryId, productId } = useParams();
+
+  return (
+    <div>
+      {/* Breadcrumbs */}
+      <nav>
+        <Link to="/">Accueil</Link> /
+        <Link to="/categories">Catégories</Link> /
+        <Link to={`/categories/${categoryId}`}>Catégorie {categoryId}</Link> /
+        <span>Produit {productId}</span>
+      </nav>
+
+      <h1>Produit {productId}</h1>
+    </div>
+  );
+}
+
+// Route
+<Route path="/categories/:categoryId/products/:productId" element={<ProductDetail />} />
+```
+
+## Récapitulatif
+
+<Callout type="success" title="Ce qu'il faut retenir">
+**Route Dynamique :**
+```javascript
+<Route path="/users/:userId" element={<User />} />
+```
+
+**Lire les Paramètres :**
+```javascript
+const { userId } = useParams();
+```
+
+**Liens Dynamiques :**
+```javascript
+<Link to={`/users/${user.id}`}>{user.name}</Link>
+```
+
+**Fetch avec Params :**
+```javascript
+useEffect(() => {
+  fetch(`/api/users/${userId}`);
+}, [userId]); // Re-fetch si userId change
+```
+
+**Plusieurs Paramètres :**
+```javascript
+const { postId, commentId } = useParams();
+```
+
+**Search Params :**
+```javascript
+const [searchParams] = useSearchParams();
+const category = searchParams.get('category');
+```
+
+**Types :**
+- `:param` → Toujours une **string**
+- Convertir avec `Number(param)` ou `parseInt(param)`
+</Callout>
+
+## Prochaine Étape
+
+Maintenant que vous maîtrisez les routes dynamiques, découvrons comment **combiner useEffect et routing** pour créer des applications complètes !

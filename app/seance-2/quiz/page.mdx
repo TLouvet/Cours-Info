@@ -1,0 +1,312 @@
+# Quiz de Validation - Séance 2
+
+Testez vos connaissances sur les fondamentaux de React ! Ce quiz couvre tous les concepts vus durant la Séance 2.
+
+<Callout type="info" title="À propos de ce quiz">
+- **20 questions** couvrant tous les sujets de la Séance 2
+- Réponses avec explications détaillées
+- Validez votre compréhension avant de passer aux hooks
+- Aucune note n'est enregistrée, c'est pour votre apprentissage !
+</Callout>
+
+## Introduction à React
+
+<QuickCheck
+  question="1. Quelle est la différence entre une bibliothèque et un framework ?"
+  options={[
+    "Une bibliothèque se concentre sur une tâche spécifique, un framework est une solution complète",
+    "Une bibliothèque est plus lourde qu'un framework",
+    "Un framework ne peut pas être utilisé avec d'autres outils",
+    "Il n'y a aucune différence"
+  ]}
+  correctAnswer={0}
+  explanation="✅ Une bibliothèque (comme React) se concentre sur UNE tâche (l'UI), tandis qu'un framework (comme Angular) fournit une solution complète avec routage, HTTP, etc. ❌ Les bibliothèques sont souvent plus légères que les frameworks. ❌ Les frameworks peuvent être combinés avec d'autres outils. React fait une chose mais la fait très bien : gérer l'interface utilisateur."
+/>
+
+<QuickCheck
+  question="2. Qu'est-ce que le Virtual DOM ?"
+  options={[
+    "Une copie virtuelle du DOM en mémoire pour optimiser les mises à jour",
+    "Une nouvelle version du DOM standard",
+    "Un DOM qui n'existe que virtuellement, jamais réellement affiché",
+    "Un DOM pour les machines virtuelles uniquement"
+  ]}
+  correctAnswer={0}
+  explanation="✅ Le Virtual DOM est une copie du DOM en mémoire. React compare l'ancien et le nouveau Virtual DOM (diffing), puis met à jour uniquement ce qui a changé dans le vrai DOM. ❌ Ce n'est pas une nouvelle version du standard DOM. ❌ Il est bien affiché réellement après la comparaison. ❌ Rien à voir avec les machines virtuelles. Résultat : des applications ultra-rapides !"
+/>
+
+<QuickCheck
+  question="3. Quel outil est recommandé pour créer un nouveau projet React en 2024 ?"
+  options={[
+    "Vite",
+    "Create React App (CRA)",
+    "Webpack",
+    "Parcel"
+  ]}
+  correctAnswer={0}
+  explanation="✅ Vite est l'outil moderne le plus rapide pour créer un projet React - démarrage instantané, HMR en millisecondes. ❌ Create React App est obsolète et n'est plus maintenu depuis 2023. ❌ Webpack est un bundler bas niveau, pas un outil de création de projet. ❌ Parcel est un bundler mais moins optimisé que Vite pour React. Commande : npm create vite@latest mon-app -- --template react-ts"
+/>
+
+## Node.js & npm
+
+<QuickCheck
+  question="4. Qu'est-ce que npm ?"
+  options={[
+    "Un gestionnaire de paquets pour JavaScript",
+    "Un langage de programmation",
+    "Un framework frontend",
+    "Un éditeur de code"
+  ]}
+  correctAnswer={0}
+  explanation="✅ npm (Node Package Manager) est le gestionnaire de paquets par défaut de Node.js. Il permet d'installer des bibliothèques (react, vite, etc.) et de gérer les dépendances. ❌ npm n'est pas un langage mais un outil. ❌ Ce n'est pas un framework mais un gestionnaire de paquets. ❌ Ce n'est pas un éditeur de code. Alternatives : yarn, pnpm, bun."
+/>
+
+## SPA vs MPA
+
+<QuickCheck
+  question="5. Quelle est la différence principale entre SPA et MPA ?"
+  options={[
+    "SPA charge une seule page HTML et change le contenu dynamiquement, MPA charge une nouvelle page à chaque navigation",
+    "SPA est plus lent que MPA",
+    "MPA est plus moderne que SPA",
+    "SPA ne peut avoir qu'une seule route"
+  ]}
+  correctAnswer={0}
+  explanation="✅ SPA (Single Page Application) charge une fois le HTML, puis JavaScript change le contenu. MPA (Multi-Page Application) recharge complètement la page à chaque navigation. ❌ SPA est généralement plus rapide après le premier chargement. ❌ SPA est l'approche moderne (React, Vue, Angular). ❌ SPA peut avoir plusieurs routes grâce au routage côté client. Exemple SPA : Gmail, Facebook."
+/>
+
+## JSX Syntax
+
+<QuickCheck
+  question="6. Pourquoi utilise-t-on className au lieu de class en JSX ?"
+  options={[
+    "Parce que class est un mot réservé en JavaScript",
+    "C'est une convention de React",
+    "Pour différencier les classes CSS des classes JavaScript",
+    "Il n'y a aucune raison particulière"
+  ]}
+  correctAnswer={0}
+  explanation="✅ En JavaScript, class est un mot réservé pour les classes ES6 (class MyClass {}). React utilise donc className pour éviter les conflits. ❌ Ce n'est pas juste une convention, c'est une nécessité technique. ❌ La différenciation n'est pas la raison principale. Même logique pour htmlFor au lieu de for (boucles for)."
+/>
+
+<QuickCheck
+  question="7. Que fait ce code JSX : <>{content}</> ?"
+  options={[
+    "Crée un Fragment React qui groupe des éléments sans ajouter de nœud DOM",
+    "Crée une div vide",
+    "C'est une erreur de syntaxe",
+    "Crée un span invisible"
+  ]}
+  correctAnswer={0}
+  explanation="✅ <></> est un raccourci pour <React.Fragment></React.Fragment>. Les fragments permettent de grouper plusieurs éléments sans ajouter de div ou autre balise dans le DOM. ❌ Contrairement à une div, le fragment n'ajoute AUCUN nœud. ❌ C'est une syntaxe valide et courante. ❌ Ce n'est pas un span. Utilisez les fragments pour éviter les div inutiles !"
+/>
+
+<QuickCheck
+  question="8. Comment insérer une expression JavaScript dans du JSX ?"
+  options={[
+    "Avec des accolades : {expression}",
+    "Avec des parenthèses : (expression)",
+    "Avec des crochets : [expression]",
+    "Directement sans délimiteurs"
+  ]}
+  correctAnswer={0}
+  explanation="✅ Les accolades {} permettent d'insérer des expressions JavaScript : {name}, {2 + 2}, {user.age}. ❌ Les parenthèses () sont pour grouper du JSX multi-lignes. ❌ Les crochets [] sont pour les tableaux. ❌ Sans délimiteurs, c'est du texte littéral. Attention : {if(x){}} ne fonctionne pas (pas une expression), utilisez le ternaire {x ? 'oui' : 'non'}."
+/>
+
+## Composants
+
+<QuickCheck
+  question="9. Quelle est la convention de nommage pour les composants React ?"
+  options={[
+    "PascalCase (première lettre en majuscule)",
+    "camelCase (première lettre en minuscule)",
+    "snake_case (underscores)",
+    "kebab-case (tirets)"
+  ]}
+  correctAnswer={0}
+  explanation="✅ Les composants doivent commencer par une MAJUSCULE : UserCard, ProductList, Header. ❌ camelCase est pour les variables et fonctions normales. ❌ snake_case n'est pas utilisé en JavaScript. ❌ kebab-case ne fonctionne pas en JavaScript. Pourquoi ? React utilise cette convention pour distinguer les composants (<UserCard />) des balises HTML (<div />)."
+/>
+
+<QuickCheck
+  question="10. Qu'est-ce que la prop children ?"
+  options={[
+    "Une prop spéciale qui représente le contenu entre les balises ouvrante et fermante",
+    "Une prop pour passer des composants enfants",
+    "Une prop obligatoire pour tous les composants",
+    "Une prop qui contient le nombre d'enfants"
+  ]}
+  correctAnswer={0}
+  explanation="✅ children représente tout ce qui est placé ENTRE <Card>...</Card>. Exemple : <Card><h1>Titre</h1></Card> → children est <h1>Titre</h1>. ❌ Ce n'est pas spécifique aux composants mais à tout contenu (texte, éléments). ❌ children est optionnel, pas obligatoire. ❌ Ce n'est pas un nombre mais le contenu lui-même. Parfait pour les layouts et wrappers !"
+/>
+
+## Props
+
+<QuickCheck
+  question="11. Quelle est la meilleure façon de recevoir les props dans un composant ?"
+  options={[
+    "Avec la destructuration : function User({ name, age })",
+    "Avec l'objet props : function User(props)",
+    "Avec des arguments séparés : function User(name, age)",
+    "Les trois sont équivalentes"
+  ]}
+  correctAnswer={0}
+  explanation="✅ La destructuration est recommandée : plus court, plus clair, vous voyez immédiatement quelles props sont utilisées. ❌ props.name, props.age est plus répétitif. ❌ Les props sont TOUJOURS passées dans UN SEUL objet, pas en arguments séparés. ❌ Seules les deux premières fonctionnent, mais la destructuration est préférée. Auto-complétion bonus dans VS Code !"
+/>
+
+<QuickCheck
+  question="12. Comment définir une valeur par défaut pour une prop ?"
+  options={[
+    "Avec la destructuration : function Button({ size = 'medium' })",
+    "Avec une condition : if (!size) size = 'medium'",
+    "Dans un fichier de configuration séparé",
+    "Ce n'est pas possible en React"
+  ]}
+  correctAnswer={0}
+  explanation="✅ La syntaxe de destructuration avec valeur par défaut : { size = 'medium' }. Si size n'est pas passé, il vaut 'medium'. ❌ Une condition fonctionne mais c'est plus verbeux. ❌ Pas de fichier de config pour les valeurs par défaut. ❌ C'est tout à fait possible et courant. Syntaxe ES6 standard, identique aux fonctions JavaScript normales."
+/>
+
+## Listes et Keys
+
+<QuickCheck
+  question="13. Pourquoi la prop key est-elle obligatoire dans les listes ?"
+  options={[
+    "Pour que React identifie quels éléments ont changé et optimise le rendu",
+    "Pour éviter les erreurs de compilation",
+    "C'est une exigence TypeScript",
+    "Pour trier automatiquement la liste"
+  ]}
+  correctAnswer={0}
+  explanation="✅ Les keys permettent à React d'identifier les éléments par identité (key='user-1') au lieu de position (élément 0, 1, 2). React sait ainsi quels éléments ont changé, été ajoutés ou supprimés → meilleures performances et moins de bugs. ❌ Ça compile sans key, mais génère un warning. ❌ Rien à voir avec TypeScript. ❌ Les keys n'affectent pas le tri. Toujours utiliser un ID unique !"
+/>
+
+<QuickCheck
+  question="14. Quelle est la MAUVAISE pratique pour les keys ?"
+  options={[
+    "Utiliser l'index du tableau comme key si la liste peut changer",
+    "Utiliser un ID unique de la base de données",
+    "Utiliser une propriété unique et stable (email, slug)",
+    "Générer un UUID pour chaque élément"
+  ]}
+  correctAnswer={0}
+  explanation="✅ NE JAMAIS utiliser l'index comme key si la liste peut changer (ajout, suppression, tri) ! L'index change → React perd la trace des éléments. ✅ ID de BDD = excellent (toujours unique et stable). ✅ Propriété unique = bon si vraiment unique. ✅ UUID = acceptable mais overkill. Exemple problème : supprimer 'Bob' (index 1) fait que Charlie prend l'index 1 → confusion pour React."
+/>
+
+## Rendu Conditionnel
+
+<QuickCheck
+  question="15. Quelle syntaxe utiliser pour un rendu conditionnel simple dans le JSX ?"
+  options={[
+    "L'opérateur ternaire : {condition ? <A /> : <B />}",
+    "if/else directement dans le JSX : {if (x) <A />}",
+    "switch/case : {switch(x) { case 1: <A /> }}",
+    "while : {while(x) <A />}"
+  ]}
+  correctAnswer={0}
+  explanation="✅ Le ternaire est parfait pour choisir entre deux options dans le JSX : {isLoggedIn ? <Dashboard /> : <Login />}. ❌ if/else sont des DÉCLARATIONS, pas des EXPRESSIONS → impossible dans {}. ❌ switch/case pareil, pas une expression. ❌ while est une boucle, pas pour le rendu conditionnel. Alternative : early return avec if/else AVANT le return du composant."
+/>
+
+<QuickCheck
+  question="16. Que fait l'opérateur && dans ce code : {isLoggedIn && <Dashboard />} ?"
+  options={[
+    "Affiche <Dashboard /> si isLoggedIn est true, sinon n'affiche rien",
+    "Affiche <Dashboard /> si isLoggedIn est false",
+    "C'est une erreur de syntaxe",
+    "Affiche toujours <Dashboard />"
+  ]}
+  correctAnswer={0}
+  explanation="✅ L'opérateur && (ET logique) affiche le deuxième élément si le premier est truthy. Si isLoggedIn = true, affiche <Dashboard />. Si false, n'affiche rien (null). ❌ Ce n'est pas une négation. ❌ C'est une syntaxe valide et très courante. ❌ Il faut que la condition soit vraie. Attention au piège : {count && <Text />} affiche '0' si count = 0 (0 est falsy mais affiché) !"
+/>
+
+## React avec TypeScript
+
+<QuickCheck
+  question="17. Comment typer les props d'un composant en TypeScript ?"
+  options={[
+    "Avec une interface : interface Props { name: string; age: number; }",
+    "Avec des commentaires JSDoc",
+    "TypeScript détecte automatiquement les types",
+    "Ce n'est pas possible de typer les props"
+  ]}
+  correctAnswer={0}
+  explanation="✅ Créez une interface pour les props : interface UserCardProps { name: string; age: number; }, puis function UserCard({ name, age }: UserCardProps). ❌ JSDoc fonctionne mais TypeScript c'est mieux. ❌ TypeScript n'infère PAS automatiquement les props (contrairement aux variables). ❌ C'est tout l'intérêt de TypeScript avec React ! Alternative : type Props = { name: string }."
+/>
+
+<QuickCheck
+  question="18. Quelle est la différence entre type et interface en TypeScript ?"
+  options={[
+    "interface peut être étendue et fusionnée, type est plus flexible pour les unions",
+    "type est obsolète, utilisez toujours interface",
+    "interface est plus rapide à l'exécution",
+    "Il n'y a aucune différence"
+  ]}
+  correctAnswer={0}
+  explanation="✅ interface peut être étendue (extends) et déclarée plusieurs fois (fusion). type peut créer des unions (type Status = 'loading' | 'success') et des alias complexes. ❌ type n'est PAS obsolète, chacun a son usage. ❌ TypeScript est supprimé à la compilation, pas de différence d'exécution. ❌ Différences subtiles mais importantes. Pour les props React : les deux fonctionnent, interface est conventionnel."
+/>
+
+## Concepts généraux
+
+<QuickCheck
+  question="19. Qu'est-ce que la composition de composants ?"
+  options={[
+    "Assembler des petits composants pour créer des composants plus grands",
+    "Composer de la musique avec React",
+    "Créer des composants avec plusieurs fichiers",
+    "Utiliser plusieurs frameworks ensemble"
+  ]}
+  correctAnswer={0}
+  explanation="✅ La composition = assembler des briques LEGO : Avatar + UserInfo + Badge = UserCard. Philosophie React : petits composants réutilisables composés ensemble. ❌ Rien à voir avec la musique. ❌ Pas spécifique aux fichiers multiples. ❌ Pas de relation avec d'autres frameworks. Avantages : réutilisabilité, maintenabilité, testabilité, clarté du code."
+/>
+
+<QuickCheck
+  question="20. Pourquoi est-il important de connaître React avant d'utiliser l'IA pour générer du code React ?"
+  options={[
+    "Pour valider le code généré, comprendre les solutions, et adapter à vos besoins",
+    "L'IA ne peut pas générer de code React correct",
+    "C'est obligatoire pour utiliser ChatGPT",
+    "Pour taper plus vite"
+  ]}
+  correctAnswer={0}
+  explanation="✅ Connaître React vous permet de : valider que le code généré est correct, comprendre pourquoi cette solution, détecter les bugs (keys manquantes, props mal typées), adapter le code, et donner des prompts précis. ❌ L'IA génère très bien du React mais fait parfois des erreurs. ❌ Aucune connaissance n'est obligatoire pour ChatGPT. ❌ Pas pour taper vite mais pour COMPRENDRE et VALIDER. Vous collaborez avec l'IA, pas vous faites confiance aveuglément."
+/>
+
+---
+
+## Résultats
+
+<Callout type="success" title="Félicitations !">
+Si vous avez répondu correctement à la plupart des questions, vous êtes prêt(e) pour la **Séance 3 - Interactivité et Formulaires** !
+
+**Score cible :** Au moins 17/20 pour passer confortablement aux hooks et à l'état.
+</Callout>
+
+<Callout type="warning" title="Besoin de réviser ?">
+Si vous avez eu des difficultés avec certaines questions, prenez le temps de réviser les sections correspondantes :
+
+- **Introduction à React** → [Introduction](/seance-2/introduction)
+- **Node.js & npm** → [Node.js & npm](/seance-2/environment)
+- **SPA vs MPA** → [SPA vs MPA](/seance-2/spa-vs-mpa)
+- **JSX** → [JSX Syntax](/seance-2/jsx)
+- **Composants** → [Composants Fonctionnels](/seance-2/components)
+- **Props** → [Props](/seance-2/props)
+- **Listes** → [Listes et Keys](/seance-2/lists)
+- **Conditionnel** → [Rendu Conditionnel](/seance-2/conditional)
+- **TypeScript** → [React avec TypeScript](/seance-2/typescript)
+</Callout>
+
+## Prochaines étapes
+
+<div className="grid grid-cols-1 md:grid-cols-2 gap-4 my-6">
+  <a href="/seance-2/exercises" className="block p-4 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg hover:border-cyan-500 dark:hover:border-cyan-500 transition-colors">
+    <h3 className="font-semibold text-gray-900 dark:text-gray-100 mb-2">📝 Refaire les exercices</h3>
+    <p className="text-sm text-gray-600 dark:text-gray-400">Pratiquez avec les exercices de la Séance 2</p>
+  </a>
+
+  <a href="/seance-3" className="block p-4 bg-cyan-50 dark:bg-cyan-900/20 border border-cyan-200 dark:border-cyan-800 rounded-lg hover:border-cyan-500 dark:hover:border-cyan-500 transition-colors">
+    <h3 className="font-semibold text-gray-900 dark:text-gray-100 mb-2">🚀 Séance 3 - Interactivité</h3>
+    <p className="text-sm text-gray-600 dark:text-gray-400">Apprenez useState, les événements et les formulaires !</p>
+  </a>
+</div>
+
+<Callout type="tip" title="Conseil">
+N'hésitez pas à refaire ce quiz plusieurs fois jusqu'à obtenir 18/20 ou plus sans regarder les explications. C'est le signe que vous maîtrisez vraiment les concepts React !
+</Callout>

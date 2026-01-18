@@ -1,0 +1,414 @@
+# Introduction au Routing
+
+Jusqu'à présent, nos applications React étaient des **Single Page Apps** (SPA) avec une seule "page". Il est temps de créer des applications multi-pages !
+
+## Qu'est-ce que le Routing ?
+
+Le **routing** permet de mapper des URLs à des composants React.
+
+```
+URL                      →    Composant affiché
+/                        →    <Home />
+/about                   →    <About />
+/products                →    <ProductList />
+/products/123            →    <ProductDetail id={123} />
+/contact                 →    <Contact />
+```
+
+<Callout type="info" title="Single Page App (SPA)">
+Même si on parle de "pages", une SPA React ne recharge **jamais** le navigateur.
+
+Le routing JavaScript change le contenu affiché **sans rechargement** !
+
+**Avantages :**
+- Navigation instantanée
+- Pas de perte d'état
+- Meilleure expérience utilisateur
+</Callout>
+
+## Pourquoi Utiliser le Routing ?
+
+### 1. Navigation Intuitive
+
+Les utilisateurs s'attendent à avoir une URL par page.
+
+```javascript
+// ❌ Sans routing : tout sur une seule page
+function App() {
+  const [page, setPage] = useState('home');
+
+  return (
+    <div>
+      <button onClick={() => setPage('home')}>Home</button>
+      <button onClick={() => setPage('about')}>About</button>
+
+      {page === 'home' && <Home />}
+      {page === 'about' && <About />}
+    </div>
+  );
+}
+
+// ✅ Avec routing : chaque page a une URL
+// / → Home
+// /about → About
+```
+
+**Problèmes sans routing :**
+- Pas de bouton "Retour" du navigateur
+- Impossible de bookmarker une page
+- Impossible de partager un lien direct
+- Pas d'historique de navigation
+
+### 2. URLs Bookmarkables
+
+```javascript
+// ✅ Avec routing
+https://monsite.com/products/123
+
+// L'utilisateur peut :
+// - Bookmarker cette page
+// - Partager le lien
+// - Revenir directement à ce produit
+```
+
+### 3. Historique du Navigateur
+
+Le routing s'intègre avec l'historique du navigateur :
+
+```
+User visite :
+  / → Ajoute à l'historique
+  /about → Ajoute à l'historique
+  /contact → Ajoute à l'historique
+
+User clique "Retour" :
+  /contact → /about → / ✅ Fonctionne !
+```
+
+### 4. SEO (Référencement)
+
+Chaque page a sa propre URL → meilleur référencement Google.
+
+```javascript
+// ✅ Bon pour le SEO
+https://blog.com/articles/apprendre-react
+https://blog.com/articles/hooks-useeffect
+https://blog.com/contact
+
+// ❌ Mauvais pour le SEO
+https://blog.com/ (tout sur une page)
+```
+
+## React Router : La Solution
+
+**React Router** est la librairie standard pour le routing en React.
+
+<Callout type="info" title="React Router DOM">
+Il existe plusieurs versions de React Router :
+
+- **react-router-dom** → Pour le web (navigateur)
+- **react-router-native** → Pour React Native (mobile)
+
+Nous utilisons **react-router-dom** !
+</Callout>
+
+### Installation
+
+```bash
+npm install react-router-dom
+```
+
+<Callout type="tip" title="Version">
+Ce cours utilise **React Router v6** (la version moderne).
+
+Si vous lisez des tutoriels plus anciens avec `<Switch>` ou `component=`, ils utilisent v5 (obsolète).
+</Callout>
+
+## Concepts Clés
+
+### 1. Router
+
+Le composant racine qui active le routing.
+
+```javascript
+import { BrowserRouter } from 'react-router-dom';
+
+function App() {
+  return (
+    <BrowserRouter>
+      {/* Votre app ici */}
+    </BrowserRouter>
+  );
+}
+```
+
+<Callout type="info" title="BrowserRouter vs HashRouter">
+**BrowserRouter** (recommandé)
+- URLs propres : `/about`, `/products/123`
+- Nécessite configuration serveur en production
+
+**HashRouter**
+- URLs avec # : `/#/about`, `/#/products/123`
+- Fonctionne sans config serveur
+- Moins propre visuellement
+
+**Utilisez BrowserRouter** sauf contrainte spécifique !
+</Callout>
+
+### 2. Routes & Route
+
+Définir quelles URLs affichent quels composants.
+
+```javascript
+import { Routes, Route } from 'react-router-dom';
+
+function App() {
+  return (
+    <BrowserRouter>
+      <Routes>
+        <Route path="/" element={<Home />} />
+        <Route path="/about" element={<About />} />
+        <Route path="/contact" element={<Contact />} />
+      </Routes>
+    </BrowserRouter>
+  );
+}
+```
+
+### 3. Link
+
+Pour naviguer entre les pages (remplace `<a>`).
+
+```javascript
+import { Link } from 'react-router-dom';
+
+function Navigation() {
+  return (
+    <nav>
+      <Link to="/">Home</Link>
+      <Link to="/about">About</Link>
+      <Link to="/contact">Contact</Link>
+    </nav>
+  );
+}
+```
+
+<Callout type="warning" title="Link vs <a>">
+**❌ N'utilisez PAS `<a href="...">` :**
+```javascript
+<a href="/about">About</a>
+// → Recharge toute la page !
+```
+
+**✅ Utilisez `<Link to="...">` :**
+```javascript
+<Link to="/about">About</Link>
+// → Navigation instantanée sans rechargement !
+```
+
+`<Link>` est compilé en `<a>` mais avec des event listeners pour intercepter le clic.
+</Callout>
+
+## Premier Exemple Complet
+
+```javascript
+// App.js
+import { BrowserRouter, Routes, Route, Link } from 'react-router-dom';
+
+function Home() {
+  return <h1>Page d'accueil</h1>;
+}
+
+function About() {
+  return <h1>À propos</h1>;
+}
+
+function Contact() {
+  return <h1>Contact</h1>;
+}
+
+function App() {
+  return (
+    <BrowserRouter>
+      {/* Navigation commune à toutes les pages */}
+      <nav>
+        <Link to="/">Home</Link>
+        <Link to="/about">About</Link>
+        <Link to="/contact">Contact</Link>
+      </nav>
+
+      {/* Routes : quelle URL affiche quel composant */}
+      <Routes>
+        <Route path="/" element={<Home />} />
+        <Route path="/about" element={<About />} />
+        <Route path="/contact" element={<Contact />} />
+      </Routes>
+    </BrowserRouter>
+  );
+}
+
+export default App;
+```
+
+**Rendu :**
+```
+/ → Affiche Navigation + Home
+/about → Affiche Navigation + About
+/contact → Affiche Navigation + Contact
+```
+
+<Callout type="success" title="Ça marche !">
+- Cliquer sur les liens change l'URL
+- Le composant correspondant s'affiche
+- Pas de rechargement de page
+- Les boutons Retour/Avancer du navigateur fonctionnent
+</Callout>
+
+## Structure Typique d'une App avec Routing
+
+```javascript
+function App() {
+  return (
+    <BrowserRouter>
+      <div className="app">
+        {/* Header : commun à toutes les pages */}
+        <Header>
+          <Navigation />
+        </Header>
+
+        {/* Main : contenu qui change selon l'URL */}
+        <main>
+          <Routes>
+            <Route path="/" element={<Home />} />
+            <Route path="/about" element={<About />} />
+            <Route path="/blog" element={<BlogList />} />
+            <Route path="/blog/:id" element={<BlogPost />} />
+            <Route path="/contact" element={<Contact />} />
+            <Route path="*" element={<NotFound />} />
+          </Routes>
+        </main>
+
+        {/* Footer : commun à toutes les pages */}
+        <Footer />
+      </div>
+    </BrowserRouter>
+  );
+}
+```
+
+<Callout type="info" title="Layout Pattern">
+Tout ce qui est **à l'extérieur** de `<Routes>` est affiché sur **toutes les pages**.
+
+Tout ce qui est **à l'intérieur** d'un `<Route>` est affiché uniquement sur **cette page**.
+
+```javascript
+<BrowserRouter>
+  <Header /> {/* Partout */}
+
+  <Routes>
+    <Route path="/" element={<Home />} /> {/* Seulement sur / */}
+    <Route path="/about" element={<About />} /> {/* Seulement sur /about */}
+  </Routes>
+
+  <Footer /> {/* Partout */}
+</BrowserRouter>
+```
+</Callout>
+
+## Comparaison : Avant vs Après
+
+### Sans Routing
+
+```javascript
+function App() {
+  const [page, setPage] = useState('home');
+
+  return (
+    <div>
+      <button onClick={() => setPage('home')}>Home</button>
+      <button onClick={() => setPage('about')}>About</button>
+
+      {page === 'home' && <Home />}
+      {page === 'about' && <About />}
+    </div>
+  );
+}
+
+// ❌ Problèmes :
+// - Toujours la même URL (/)
+// - Pas de bouton retour
+// - Impossible de bookmarker
+// - Pas de partage de lien
+```
+
+### Avec Routing
+
+```javascript
+import { BrowserRouter, Routes, Route, Link } from 'react-router-dom';
+
+function App() {
+  return (
+    <BrowserRouter>
+      <Link to="/">Home</Link>
+      <Link to="/about">About</Link>
+
+      <Routes>
+        <Route path="/" element={<Home />} />
+        <Route path="/about" element={<About />} />
+      </Routes>
+    </BrowserRouter>
+  );
+}
+
+// ✅ Avantages :
+// - URLs propres : /, /about
+// - Bouton retour fonctionne
+// - Bookmarks possibles
+// - Partage de liens ✅
+```
+
+## Cas d'Usage du Routing
+
+<div className="overflow-x-auto my-6">
+
+| Type d'App | Exemple de Routes | Use Case |
+|------------|-------------------|----------|
+| **Blog** | `/`, `/posts`, `/posts/123` | Articles, détails |
+| **E-commerce** | `/`, `/products`, `/products/abc`, `/cart` | Catalogue, produit, panier |
+| **Dashboard** | `/dashboard`, `/profile`, `/settings` | Sections admin |
+| **Documentation** | `/docs/intro`, `/docs/api`, `/docs/faq` | Guide utilisateur |
+| **Portfolio** | `/`, `/projects`, `/projects/xyz`, `/contact` | Projets, détail |
+
+</div>
+
+## Récapitulatif
+
+<Callout type="success" title="Ce qu'il faut retenir">
+**Pourquoi le routing ?**
+- URLs propres et bookmarkables
+- Navigation avec historique du navigateur
+- Meilleur SEO
+- Partage de liens directs
+
+**React Router DOM :**
+- `<BrowserRouter>` : Active le routing
+- `<Routes>` + `<Route>` : Définir les routes
+- `<Link>` : Naviguer entre pages
+- Pas de rechargement de page
+
+**Structure :**
+```javascript
+<BrowserRouter>
+  <Nav /> {/* Partout */}
+  <Routes>
+    <Route path="/" element={<Home />} />
+    <Route path="/about" element={<About />} />
+  </Routes>
+  <Footer /> {/* Partout */}
+</BrowserRouter>
+```
+</Callout>
+
+## Prochaine Étape
+
+Maintenant que vous comprenez **pourquoi** utiliser le routing, passons à la **pratique** : créer des routes, naviguer, et gérer les layouts !

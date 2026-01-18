@@ -1,0 +1,525 @@
+# Exercices Pratiques - Séance 4
+
+Mettez en pratique vos connaissances sur `useEffect` et React Router avec ces exercices progressifs.
+
+## Exercice 1 : Simple Data Fetch
+
+<Callout type="info" title="Difficulté : Facile">
+**Durée estimée :** 15-20 minutes
+
+**Objectif :** Récupérer et afficher une liste d'utilisateurs depuis une API.
+</Callout>
+
+### Consignes
+
+Créez un composant `UserList` qui :
+
+1. **Récupère** les utilisateurs depuis : `https://jsonplaceholder.typicode.com/users`
+2. **Affiche** un état de chargement (spinner ou texte "Chargement...")
+3. **Affiche** la liste des utilisateurs avec :
+   - Nom
+   - Email
+   - Téléphone
+4. **Gère** les erreurs avec un message d'erreur
+5. **Ajoute** un bouton "Rafraîchir" pour re-fetch les données
+
+### Structure HTML Suggérée
+
+```javascript
+<div>
+  <h1>Liste des Utilisateurs</h1>
+
+  <button onClick={handleRefresh}>Rafraîchir</button>
+
+  {loading && <p>Chargement...</p>}
+
+  {error && <p style={{color: 'red'}}>Erreur : {error}</p>}
+
+  {!loading && !error && (
+    <ul>
+      {users.map(user => (
+        <li key={user.id}>
+          <h3>{user.name}</h3>
+          <p>Email : {user.email}</p>
+          <p>Tél : {user.phone}</p>
+        </li>
+      ))}
+    </ul>
+  )}
+</div>
+```
+
+### Points Clés
+
+- Utiliser `useState` pour `users`, `loading`, et `error`
+- Utiliser `useEffect` avec tableau vide `[]` pour fetch au mount
+- Pattern `try/catch/finally` pour gérer les erreurs
+- Bouton refresh : changer une dépendance pour re-trigger l'effect
+
+<Callout type="tip" title="Astuce">
+Pour le bouton "Rafraîchir", vous pouvez utiliser un compteur :
+
+```javascript
+const [refreshKey, setRefreshKey] = useState(0);
+
+useEffect(() => {
+  // fetch...
+}, [refreshKey]);
+
+function handleRefresh() {
+  setRefreshKey(k => k + 1);
+}
+```
+</Callout>
+
+---
+
+## Exercice 2 : Blog Multi-Pages
+
+<Callout type="info" title="Difficulté : Moyenne">
+**Durée estimée :** 45-60 minutes
+
+**Objectif :** Créer une application blog avec plusieurs pages et routing.
+</Callout>
+
+### Consignes
+
+Créez une application avec **4 pages** :
+
+#### Page 1 : Accueil (`/`)
+- Titre de bienvenue
+- Lien vers la liste des posts
+- Lien vers la page "À propos"
+
+#### Page 2 : Liste des Posts (`/posts`)
+- Fetch des posts depuis : `https://jsonplaceholder.typicode.com/posts`
+- Afficher les 10 premiers posts
+- Chaque post est cliquable et mène vers `/posts/:id`
+- Lien "Retour à l'accueil"
+
+#### Page 3 : Détail d'un Post (`/posts/:id`)
+- Fetch du post spécifique : `https://jsonplaceholder.typicode.com/posts/:id`
+- Afficher le titre et le contenu
+- Lien "Retour à la liste des posts"
+- État de chargement pendant le fetch
+
+#### Page 4 : À Propos (`/about`)
+- Contenu statique (texte de présentation)
+- Lien "Retour à l'accueil"
+
+#### Page 404 : Non Trouvée (`*`)
+- Message "Page non trouvée"
+- Lien vers l'accueil
+
+### Structure des Routes
+
+```javascript
+<Routes>
+  <Route path="/" element={<Home />} />
+  <Route path="/posts" element={<PostList />} />
+  <Route path="/posts/:id" element={<PostDetail />} />
+  <Route path="/about" element={<About />} />
+  <Route path="*" element={<NotFound />} />
+</Routes>
+```
+
+### Points Clés
+
+- Utiliser `<Link>` pour la navigation
+- `useParams()` pour récupérer l'ID du post
+- `useEffect` avec `[postId]` en dépendance
+- Gérer les états de chargement
+- Navigation commune (Header) en dehors de `<Routes>`
+
+<Callout type="tip" title="Bonus">
+**Améliorations possibles :**
+- Ajouter une barre de navigation commune à toutes les pages
+- Utiliser `<NavLink>` avec un style actif
+- Limiter la longueur du contenu affiché dans la liste
+- Ajouter un compteur de posts
+</Callout>
+
+---
+
+## Exercice 3 : Annuaire Utilisateurs
+
+<Callout type="info" title="Difficulté : Moyenne">
+**Durée estimée :** 60-75 minutes
+
+**Objectif :** Créer un annuaire avec recherche et pages de profil.
+</Callout>
+
+### Consignes
+
+Créez une application avec les fonctionnalités suivantes :
+
+#### Page : Liste des Utilisateurs (`/`)
+- Fetch tous les utilisateurs : `https://jsonplaceholder.typicode.com/users`
+- **Barre de recherche** pour filtrer par nom (recherche locale, pas API)
+- Afficher les utilisateurs filtrés
+- Chaque utilisateur est cliquable → mène vers `/users/:id`
+
+#### Page : Profil Utilisateur (`/users/:id`)
+- Fetch l'utilisateur : `https://jsonplaceholder.typicode.com/users/:id`
+- Fetch ses posts : `https://jsonplaceholder.typicode.com/posts?userId=:id`
+- **Afficher :**
+  - Nom, email, téléphone, site web
+  - Liste de ses posts (titre cliquable)
+- **Navigation :**
+  - Lien "Retour à l'annuaire"
+  - Cliquer sur un post mène vers `/posts/:postId`
+
+#### Page : Détail d'un Post (`/posts/:id`)
+- Fetch le post : `https://jsonplaceholder.typicode.com/posts/:id`
+- Afficher titre et contenu
+- Fil d'Ariane (Breadcrumbs) :
+  - Accueil / Utilisateur X / Post Y
+- Lien retour vers le profil de l'auteur
+
+### Fonctionnalités Avancées
+
+1. **Recherche en Temps Réel**
+   ```javascript
+   const [search, setSearch] = useState('');
+
+   const filteredUsers = users.filter(user =>
+     user.name.toLowerCase().includes(search.toLowerCase())
+   );
+   ```
+
+2. **Fetch Parallèle** (sur la page utilisateur)
+   ```javascript
+   const [userRes, postsRes] = await Promise.all([
+     fetch(`/users/${userId}`),
+     fetch(`/posts?userId=${userId}`)
+   ]);
+   ```
+
+3. **Compteurs**
+   - Nombre total d'utilisateurs
+   - Nombre de posts par utilisateur
+
+### Points Clés
+
+- useState pour `search`, `users`, `loading`
+- useEffect pour fetch au mount et quand userId change
+- `.filter()` pour la recherche
+- `Promise.all()` pour performance
+- Gérer les cas où l'utilisateur n'existe pas (404)
+
+<Callout type="warning" title="Attention">
+**JSONPlaceholder** limite les résultats. Si un userId n'existe pas (ex: 999), l'API peut retourner un objet vide `{}` au lieu d'une erreur 404.
+
+Vérifiez toujours `if (data.id)` après le fetch !
+
+```javascript
+const data = await response.json();
+
+if (!data.id) {
+  setNotFound(true);
+  return;
+}
+```
+</Callout>
+
+---
+
+## Exercice 4 : Application Météo
+
+<Callout type="info" title="Difficulté : Difficile">
+**Durée estimée :** 90+ minutes
+
+**Objectif :** Créer une application météo avec routing et recherche.
+</Callout>
+
+### Consignes
+
+Créez une application météo avec les pages suivantes :
+
+#### Page : Recherche (`/`)
+- Input pour chercher une ville
+- Bouton "Rechercher"
+- Au submit : naviguer vers `/weather/:cityName`
+- Afficher les dernières recherches (max 5)
+
+#### Page : Météo d'une Ville (`/weather/:city`)
+- Fetch la météo depuis une API (voir APIs suggérées)
+- Afficher :
+  - Nom de la ville
+  - Température actuelle
+  - Description (ensoleillé, nuageux, etc.)
+  - Icône météo
+  - Humidité, vent, etc.
+- Bouton "Nouvelle recherche" → retour vers `/`
+- Gérer les villes inexistantes (404)
+
+### APIs Météo Suggérées
+
+#### Option 1 : OpenWeatherMap (Gratuit, inscription requise)
+
+```javascript
+// Inscription : https://openweathermap.org/api
+// API Key gratuite
+
+const API_KEY = 'YOUR_API_KEY';
+const city = 'Paris';
+
+fetch(`https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${API_KEY}&units=metric&lang=fr`)
+  .then(res => res.json())
+  .then(data => {
+    console.log(data.name); // "Paris"
+    console.log(data.main.temp); // 15.5
+    console.log(data.weather[0].description); // "ciel dégagé"
+  });
+```
+
+#### Option 2 : wttr.in (Pas d'API key)
+
+```javascript
+// Pas d'inscription nécessaire
+
+fetch(`https://wttr.in/${city}?format=j1`)
+  .then(res => res.json())
+  .then(data => {
+    console.log(data.current_condition[0].temp_C); // Température
+    console.log(data.current_condition[0].weatherDesc[0].value); // Description
+  });
+```
+
+### Fonctionnalités Avancées
+
+1. **Historique de Recherche**
+   ```javascript
+   const [history, setHistory] = useState([]);
+
+   // Ajouter à l'historique
+   useEffect(() => {
+     if (city && !history.includes(city)) {
+       setHistory(prev => [city, ...prev].slice(0, 5));
+     }
+   }, [city]);
+   ```
+
+2. **Persistence avec localStorage**
+   ```javascript
+   // Sauvegarder l'historique
+   useEffect(() => {
+     localStorage.setItem('searchHistory', JSON.stringify(history));
+   }, [history]);
+
+   // Charger au mount
+   useEffect(() => {
+     const saved = localStorage.getItem('searchHistory');
+     if (saved) {
+       setHistory(JSON.parse(saved));
+     }
+   }, []);
+   ```
+
+3. **Loading State Visuel**
+   - Afficher un spinner ou un skeleton pendant le fetch
+   - Désactiver le bouton de recherche pendant le chargement
+
+4. **Gestion d'Erreurs**
+   - Ville non trouvée → Message clair
+   - Erreur réseau → Message de retry
+   - Afficher un composant `<ErrorPage />`
+
+### Points Clés
+
+- Navigation programmatique avec `useNavigate()`
+- useEffect avec `[city]` pour re-fetch si on change de ville
+- Gérer les erreurs API (ville invalide)
+- AbortController pour cleanup
+- Search params pour des filtres (unités : °C / °F)
+
+<Callout type="tip" title="Bonus">
+**Améliorations possibles :**
+- Prévisions sur 5 jours
+- Géolocalisation pour la ville actuelle
+- Toggle °C / °F
+- Mode sombre
+- Animations de transition
+- Autocomplete pour les villes
+</Callout>
+
+---
+
+## Exercice 5 : Dashboard avec Tabs
+
+<Callout type="info" title="Difficulté : Moyenne">
+**Durée estimée :** 45 minutes
+
+**Objectif :** Créer un dashboard avec navigation par onglets via l'URL.
+</Callout>
+
+### Consignes
+
+Créez un dashboard avec **3 onglets** gérés par l'URL :
+
+#### Onglets
+- `/dashboard` (ou `/dashboard/overview`) → Vue d'ensemble
+- `/dashboard/users` → Liste d'utilisateurs
+- `/dashboard/posts` → Liste de posts
+
+#### Fonctionnalités
+- Navigation par onglets (Tabs)
+- L'onglet actif est mis en surbrillance
+- Chaque onglet fetch ses propres données
+- URL reflète l'onglet actif (bookmarkable)
+
+### Structure
+
+```javascript
+<Routes>
+  <Route path="/dashboard" element={<Dashboard />}>
+    <Route index element={<Overview />} />
+    <Route path="users" element={<UserTab />} />
+    <Route path="posts" element={<PostTab />} />
+  </Route>
+</Routes>
+
+// Dashboard.jsx
+function Dashboard() {
+  return (
+    <div>
+      <h1>Dashboard</h1>
+
+      <nav className="tabs">
+        <NavLink to="/dashboard">Overview</NavLink>
+        <NavLink to="/dashboard/users">Users</NavLink>
+        <NavLink to="/dashboard/posts">Posts</NavLink>
+      </nav>
+
+      <div className="tab-content">
+        <Outlet />
+      </div>
+    </div>
+  );
+}
+```
+
+### CSS pour les Tabs
+
+```css
+.tabs {
+  display: flex;
+  gap: 1rem;
+  border-bottom: 2px solid #ddd;
+}
+
+.tabs a {
+  padding: 0.5rem 1rem;
+  text-decoration: none;
+  color: #666;
+}
+
+.tabs a.active {
+  color: #0066cc;
+  border-bottom: 2px solid #0066cc;
+  margin-bottom: -2px;
+}
+```
+
+---
+
+## APIs Publiques pour Pratiquer
+
+<Callout type="tip" title="APIs Gratuites">
+**JSONPlaceholder** (pas d'auth)
+```
+Users:  https://jsonplaceholder.typicode.com/users
+Posts:  https://jsonplaceholder.typicode.com/posts
+Photos: https://jsonplaceholder.typicode.com/photos
+Todos:  https://jsonplaceholder.typicode.com/todos
+```
+
+**Random User API**
+```
+https://randomuser.me/api/?results=10
+```
+
+**REST Countries**
+```
+https://restcountries.com/v3.1/all
+https://restcountries.com/v3.1/name/france
+```
+
+**Cat Facts API**
+```
+https://catfact.ninja/fact
+https://catfact.ninja/facts?limit=10
+```
+
+**PokéAPI**
+```
+https://pokeapi.co/api/v2/pokemon?limit=20
+https://pokeapi.co/api/v2/pokemon/pikachu
+```
+</Callout>
+
+---
+
+## Checklist de Validation
+
+Avant de considérer un exercice terminé, vérifiez :
+
+<div className="my-6">
+
+- [ ] **Routing** : Les URLs correspondent aux pages affichées
+- [ ] **Navigation** : Les liens `<Link>` fonctionnent correctement
+- [ ] **useEffect** : Fetch au bon moment (mount, changement de params)
+- [ ] **Loading** : État de chargement visible pendant le fetch
+- [ ] **Erreurs** : Messages d'erreur clairs si problème
+- [ ] **useParams** : Paramètres d'URL correctement extraits
+- [ ] **Cleanup** : Pas de warnings "Can't perform state update on unmounted component"
+- [ ] **Dépendances** : Toutes les dépendances dans le tableau de `useEffect`
+- [ ] **404** : Page "Non trouvée" pour les URLs invalides
+- [ ] **UX** : Navigation intuitive, breadcrumbs si pertinent
+
+</div>
+
+---
+
+## Ressources Additionnelles
+
+<Callout type="success" title="Pour Aller Plus Loin">
+**React Router Documentation**
+- [Tutorial officiel](https://reactrouter.com/en/main/start/tutorial)
+- [useParams](https://reactrouter.com/en/main/hooks/use-params)
+- [useNavigate](https://reactrouter.com/en/main/hooks/use-navigate)
+
+**React Documentation**
+- [useEffect](https://react.dev/reference/react/useEffect)
+- [Synchronizing with Effects](https://react.dev/learn/synchronizing-with-effects)
+- [You Might Not Need an Effect](https://react.dev/learn/you-might-not-need-an-effect)
+
+**Fetch API**
+- [MDN - Using Fetch](https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API/Using_Fetch)
+- [MDN - AbortController](https://developer.mozilla.org/en-US/docs/Web/API/AbortController)
+</Callout>
+
+---
+
+## Soumission
+
+<Callout type="warning" title="À Rendre sur Moodle">
+**Format :** Lien vers CodeSandbox, StackBlitz, ou repository GitHub
+
+**Contenu minimum :**
+- Au moins 2 exercices complétés
+- Code commenté
+- README avec instructions
+
+**Bonus :**
+- Styling CSS propre
+- Responsive design
+- Fonctionnalités supplémentaires
+
+**Critères d'évaluation :**
+- Fonctionnalité (50%) - L'app fonctionne sans bugs
+- Code qualité (30%) - Propre, lisible, bonnes pratiques
+- UX (20%) - Navigation intuitive, états de chargement
+</Callout>
+
+Bon courage ! N'hésitez pas à demander de l'aide si vous bloquez.

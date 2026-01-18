@@ -1,0 +1,535 @@
+# Le hook useState - Séance 3
+
+Le hook `useState` est le **hook le plus important** de React. Il permet d'ajouter de la **mémoire** à vos composants fonctionnels.
+
+## Qu'est-ce que le state ?
+
+Le state (état) est la **mémoire** d'un composant : des données qui peuvent **changer** au fil du temps et qui **déclenchent un nouveau rendu** quand elles changent.
+
+```jsx
+import { useState } from 'react';
+
+function Counter() {
+  // Déclaration d'une variable d'état
+  const [count, setCount] = useState(0);
+
+  return (
+    <div>
+      <p>Compteur : {count}</p>
+      <button onClick={() => setCount(count + 1)}>
+        Incrémenter
+      </button>
+    </div>
+  );
+}
+```
+
+<Callout type="info" title="Comment ça marche ?">
+1. **Initialisation** : `useState(0)` crée une variable d'état initialisée à `0`
+2. **Lecture** : `count` contient la valeur actuelle
+3. **Modification** : `setCount(newValue)` met à jour la valeur
+4. **Rendu** : React ré-affiche le composant avec la nouvelle valeur
+</Callout>
+
+## Syntaxe de useState
+
+### Déstructuration de tableau
+
+```jsx
+const [state, setState] = useState(initialValue);
+```
+
+- **`state`** : variable contenant la valeur actuelle
+- **`setState`** : fonction pour modifier la valeur
+- **`initialValue`** : valeur de départ
+
+<Callout type="tip" title="Pourquoi des crochets [ ] ?">
+`useState` retourne un **tableau** avec 2 éléments :
+
+```javascript
+const stateArray = useState(0);
+// stateArray = [0, function]
+
+// On utilise la déstructuration pour extraire :
+const [count, setCount] = useState(0);
+// count = 0
+// setCount = function
+```
+
+C'est juste du JavaScript ! Vous pouvez nommer les variables comme vous voulez.
+</Callout>
+
+### Conventions de nommage
+
+```jsx
+// ✅ Convention : [chose, setChose]
+const [count, setCount] = useState(0);
+const [name, setName] = useState('');
+const [isOpen, setIsOpen] = useState(false);
+const [user, setUser] = useState(null);
+
+// ❌ Évitez des noms incohérents
+const [count, updateCount] = useState(0); // Pas terrible
+const [x, y] = useState(0); // Pas clair
+```
+
+## Valeur initiale
+
+La valeur initiale peut être de **n'importe quel type** JavaScript.
+
+```jsx
+// Nombre
+const [count, setCount] = useState(0);
+
+// String
+const [name, setName] = useState('');
+
+// Boolean
+const [isVisible, setIsVisible] = useState(false);
+
+// Tableau
+const [items, setItems] = useState([]);
+
+// Objet
+const [user, setUser] = useState({ name: '', age: 0 });
+
+// Null
+const [data, setData] = useState(null);
+```
+
+<Callout type="warning" title="La valeur initiale n'est utilisée qu'une fois">
+React utilise la valeur initiale **uniquement au premier rendu**.
+
+```jsx
+function Counter({ startValue }) {
+  const [count, setCount] = useState(startValue);
+  // Si startValue change après, count ne change PAS !
+
+  return <p>{count}</p>;
+}
+```
+
+Si vous voulez réinitialiser quand une prop change, vous devrez utiliser `useEffect` (Séance 4).
+</Callout>
+
+## Mettre à jour l'état
+
+### Mise à jour simple
+
+```jsx
+function Counter() {
+  const [count, setCount] = useState(0);
+
+  const increment = () => {
+    setCount(count + 1); // Nouvelle valeur
+  };
+
+  return <button onClick={increment}>Count: {count}</button>;
+}
+```
+
+### Mise à jour basée sur l'état précédent
+
+Si la nouvelle valeur **dépend de l'ancienne**, utilisez une fonction :
+
+```jsx
+function Counter() {
+  const [count, setCount] = useState(0);
+
+  const increment = () => {
+    // ✅ Recommandé : fonction callback
+    setCount(prevCount => prevCount + 1);
+  };
+
+  return <button onClick={increment}>Count: {count}</button>;
+}
+```
+
+<Callout type="warning" title="Pourquoi utiliser une fonction ?">
+**Problème avec les mises à jour multiples** :
+
+```jsx
+// ❌ N'incrémente que de 1 (pas de 3 !)
+const handleClick = () => {
+  setCount(count + 1);
+  setCount(count + 1);
+  setCount(count + 1);
+};
+
+// ✅ Incrémente bien de 3
+const handleClick = () => {
+  setCount(prev => prev + 1);
+  setCount(prev => prev + 1);
+  setCount(prev => prev + 1);
+};
+```
+
+**Règle** : Si vous utilisez l'état précédent, passez une fonction !
+</Callout>
+
+## État avec des objets
+
+Pour mettre à jour un objet, vous devez créer un **nouvel objet** (immutabilité).
+
+```jsx
+function UserProfile() {
+  const [user, setUser] = useState({
+    name: 'Alice',
+    age: 25,
+    email: 'alice@example.com'
+  });
+
+  const updateName = (newName) => {
+    // ❌ FAUX : mutation directe
+    user.name = newName;
+    setUser(user);
+
+    // ✅ CORRECT : nouveau objet avec spread
+    setUser({
+      ...user, // Copie toutes les propriétés
+      name: newName // Remplace name
+    });
+  };
+
+  return (
+    <div>
+      <p>{user.name}</p>
+      <button onClick={() => updateName('Bob')}>
+        Changer le nom
+      </button>
+    </div>
+  );
+}
+```
+
+<Callout type="tip" title="Spread operator pour les objets">
+Le spread (`...`) copie toutes les propriétés d'un objet :
+
+```javascript
+const user = { name: 'Alice', age: 25 };
+
+const updatedUser = {
+  ...user, // { name: 'Alice', age: 25 }
+  age: 26  // Remplace age
+};
+
+// updatedUser = { name: 'Alice', age: 26 }
+```
+</Callout>
+
+## État avec des tableaux
+
+Pour mettre à jour un tableau, créez un **nouveau tableau**.
+
+### Ajouter un élément
+
+```jsx
+function TodoList() {
+  const [todos, setTodos] = useState([]);
+
+  const addTodo = (text) => {
+    const newTodo = {
+      id: Date.now(),
+      text: text,
+      completed: false
+    };
+
+    // ✅ Nouveau tableau avec spread
+    setTodos([...todos, newTodo]);
+  };
+
+  return (
+    <div>
+      {todos.map(todo => (
+        <div key={todo.id}>{todo.text}</div>
+      ))}
+      <button onClick={() => addTodo('Nouvelle tâche')}>
+        Ajouter
+      </button>
+    </div>
+  );
+}
+```
+
+### Supprimer un élément
+
+```jsx
+function TodoList() {
+  const [todos, setTodos] = useState([
+    { id: 1, text: 'Apprendre React' },
+    { id: 2, text: 'Faire du café' }
+  ]);
+
+  const removeTodo = (id) => {
+    // ✅ filter crée un nouveau tableau
+    setTodos(todos.filter(todo => todo.id !== id));
+  };
+
+  return (
+    <div>
+      {todos.map(todo => (
+        <div key={todo.id}>
+          {todo.text}
+          <button onClick={() => removeTodo(todo.id)}>
+            Supprimer
+          </button>
+        </div>
+      ))}
+    </div>
+  );
+}
+```
+
+### Modifier un élément
+
+```jsx
+function TodoList() {
+  const [todos, setTodos] = useState([
+    { id: 1, text: 'Apprendre React', completed: false }
+  ]);
+
+  const toggleTodo = (id) => {
+    // ✅ map crée un nouveau tableau
+    setTodos(todos.map(todo =>
+      todo.id === id
+        ? { ...todo, completed: !todo.completed }
+        : todo
+    ));
+  };
+
+  return (
+    <div>
+      {todos.map(todo => (
+        <div key={todo.id}>
+          <input
+            type="checkbox"
+            checked={todo.completed}
+            onChange={() => toggleTodo(todo.id)}
+          />
+          {todo.text}
+        </div>
+      ))}
+    </div>
+  );
+}
+```
+
+<Callout type="warning" title="N'utilisez PAS les méthodes mutantes">
+**Méthodes à éviter** (modifient le tableau original) :
+
+```jsx
+// ❌ INTERDIT
+todos.push(newTodo);       // Mutation
+todos.pop();               // Mutation
+todos.splice(index, 1);    // Mutation
+todos[0] = newValue;       // Mutation
+
+// ✅ UTILISEZ
+[...todos, newTodo]        // Ajout
+todos.filter(...)          // Suppression
+todos.map(...)             // Modification
+```
+</Callout>
+
+## Plusieurs variables d'état
+
+Vous pouvez appeler `useState` plusieurs fois dans un même composant :
+
+```jsx
+function RegistrationForm() {
+  const [name, setName] = useState('');
+  const [email, setEmail] = useState('');
+  const [age, setAge] = useState('');
+  const [isStudent, setIsStudent] = useState(false);
+
+  return (
+    <form>
+      <input
+        value={name}
+        onChange={e => setName(e.target.value)}
+      />
+      <input
+        value={email}
+        onChange={e => setEmail(e.target.value)}
+      />
+      <input
+        type="number"
+        value={age}
+        onChange={e => setAge(e.target.value)}
+      />
+      <input
+        type="checkbox"
+        checked={isStudent}
+        onChange={e => setIsStudent(e.target.checked)}
+      />
+    </form>
+  );
+}
+```
+
+<Callout type="tip" title="Un state ou plusieurs ?">
+**Regroupez** si les données sont **liées** :
+
+```jsx
+// ✅ Bon : données liées
+const [user, setUser] = useState({
+  name: '',
+  email: '',
+  age: 0
+});
+
+// ⚠️ Moins bon : données liées mais séparées
+const [name, setName] = useState('');
+const [email, setEmail] = useState('');
+const [age, setAge] = useState(0);
+
+// ✅ Bon : données indépendantes
+const [user, setUser] = useState({ name: '', email: '' });
+const [isMenuOpen, setIsMenuOpen] = useState(false);
+```
+</Callout>
+
+## Patterns courants
+
+### Toggle (basculer)
+
+```jsx
+function Toggle() {
+  const [isOn, setIsOn] = useState(false);
+
+  const toggle = () => setIsOn(!isOn);
+
+  return (
+    <button onClick={toggle}>
+      {isOn ? 'ON' : 'OFF'}
+    </button>
+  );
+}
+```
+
+### Compteur
+
+```jsx
+function Counter() {
+  const [count, setCount] = useState(0);
+
+  const increment = () => setCount(prev => prev + 1);
+  const decrement = () => setCount(prev => prev - 1);
+  const reset = () => setCount(0);
+
+  return (
+    <div>
+      <p>{count}</p>
+      <button onClick={decrement}>-</button>
+      <button onClick={reset}>Reset</button>
+      <button onClick={increment}>+</button>
+    </div>
+  );
+}
+```
+
+### Input contrôlé
+
+```jsx
+function NameInput() {
+  const [name, setName] = useState('');
+
+  return (
+    <input
+      type="text"
+      value={name}
+      onChange={e => setName(e.target.value)}
+      placeholder="Votre nom"
+    />
+  );
+}
+```
+
+### Liste dynamique
+
+```jsx
+function TodoList() {
+  const [todos, setTodos] = useState([]);
+  const [input, setInput] = useState('');
+
+  const addTodo = () => {
+    if (input.trim()) {
+      setTodos([...todos, { id: Date.now(), text: input }]);
+      setInput(''); // Réinitialiser l'input
+    }
+  };
+
+  return (
+    <div>
+      <input
+        value={input}
+        onChange={e => setInput(e.target.value)}
+        onKeyPress={e => e.key === 'Enter' && addTodo()}
+      />
+      <button onClick={addTodo}>Ajouter</button>
+      <ul>
+        {todos.map(todo => (
+          <li key={todo.id}>{todo.text}</li>
+        ))}
+      </ul>
+    </div>
+  );
+}
+```
+
+## Règles importantes
+
+<Callout type="error" title="Règles des Hooks">
+**1. Appelez les Hooks au niveau supérieur**
+
+```jsx
+// ❌ INTERDIT dans une condition
+if (condition) {
+  const [state, setState] = useState(0);
+}
+
+// ❌ INTERDIT dans une boucle
+for (let i = 0; i < 5; i++) {
+  const [state, setState] = useState(0);
+}
+
+// ✅ CORRECT au niveau supérieur
+function Component() {
+  const [state, setState] = useState(0);
+  // ...
+}
+```
+
+**2. Appelez les Hooks uniquement dans les composants React**
+
+```jsx
+// ❌ INTERDIT dans une fonction normale
+function normalFunction() {
+  const [state, setState] = useState(0);
+}
+
+// ✅ CORRECT dans un composant
+function MyComponent() {
+  const [state, setState] = useState(0);
+}
+
+// ✅ CORRECT dans un custom hook
+function useCustomHook() {
+  const [state, setState] = useState(0);
+}
+```
+</Callout>
+
+## Résumé
+
+<Callout type="success" title="Ce que vous avez appris">
+**useState en 5 points** :
+
+1. **Déclaration** : `const [state, setState] = useState(initialValue)`
+2. **Lecture** : utilisez `state` directement
+3. **Mise à jour** : appelez `setState(newValue)`
+4. **Immutabilité** : créez de nouveaux objets/tableaux avec spread
+5. **Fonction callback** : utilisez `setState(prev => ...)` si vous dépendez de l'ancien état
+
+**Prochaine étape** : utiliser useState pour créer des formulaires contrôlés !
+</Callout>

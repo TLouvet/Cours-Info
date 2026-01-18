@@ -1,0 +1,573 @@
+# Structure de Projet React
+
+Une bonne organisation de projet est essentielle pour la maintenabilité et la scalabilité de votre application.
+
+<Callout type="info">
+**Un projet bien organisé :**
+- Facilite la navigation dans le code
+- Améliore la collaboration en équipe
+- Simplifie l'ajout de nouvelles fonctionnalités
+- Rend le code plus maintenable
+</Callout>
+
+## Structure de base (petit projet)
+
+Pour un petit projet ou une application simple :
+
+```
+my-react-app/
+├── public/
+│   ├── favicon.ico
+│   └── images/
+├── src/
+│   ├── components/
+│   │   ├── Button.jsx
+│   │   ├── Card.jsx
+│   │   └── Input.jsx
+│   ├── pages/
+│   │   ├── Home.jsx
+│   │   ├── About.jsx
+│   │   └── Contact.jsx
+│   ├── styles/
+│   │   └── globals.css
+│   ├── App.jsx
+│   └── main.jsx
+├── package.json
+└── vite.config.js
+```
+
+### Explication
+
+- **public/** - Fichiers statiques (images, favicon, etc.)
+- **src/components/** - Composants réutilisables
+- **src/pages/** - Composants de pages (si routing)
+- **src/styles/** - Fichiers CSS globaux
+- **App.jsx** - Composant racine
+- **main.jsx** - Point d'entrée de l'application
+
+## Structure avancée (projet moyen/grand)
+
+Pour un projet plus complexe avec plus de fonctionnalités :
+
+```
+my-react-app/
+├── public/
+│   └── assets/
+│       └── images/
+├── src/
+│   ├── components/
+│   │   ├── ui/              # Composants UI réutilisables
+│   │   │   ├── Button/
+│   │   │   │   ├── Button.jsx
+│   │   │   │   ├── Button.css
+│   │   │   │   └── index.js
+│   │   │   ├── Card/
+│   │   │   ├── Input/
+│   │   │   └── Modal/
+│   │   ├── layout/          # Composants de layout
+│   │   │   ├── Header.jsx
+│   │   │   ├── Footer.jsx
+│   │   │   ├── Sidebar.jsx
+│   │   │   └── Navigation.jsx
+│   │   └── features/        # Composants spécifiques
+│   │       ├── UserProfile/
+│   │       │   ├── UserProfile.jsx
+│   │       │   ├── UserAvatar.jsx
+│   │       │   └── UserStats.jsx
+│   │       └── ProductList/
+│   ├── pages/               # Pages de l'application
+│   │   ├── HomePage.jsx
+│   │   ├── ProductsPage.jsx
+│   │   ├── UserPage.jsx
+│   │   └── NotFoundPage.jsx
+│   ├── hooks/               # Custom hooks
+│   │   ├── useFetch.js
+│   │   ├── useLocalStorage.js
+│   │   └── useAuth.js
+│   ├── utils/               # Fonctions utilitaires
+│   │   ├── api.js
+│   │   ├── formatters.js
+│   │   ├── validators.js
+│   │   └── constants.js
+│   ├── styles/              # Styles globaux
+│   │   ├── globals.css
+│   │   ├── variables.css
+│   │   └── reset.css
+│   ├── App.jsx
+│   └── main.jsx
+├── .env                     # Variables d'environnement
+├── .gitignore
+├── package.json
+├── README.md
+└── vite.config.js
+```
+
+## Organisation par fonctionnalité
+
+Pour les très grands projets, organisez par feature plutôt que par type :
+
+```
+src/
+├── features/
+│   ├── auth/
+│   │   ├── components/
+│   │   │   ├── LoginForm.jsx
+│   │   │   └── RegisterForm.jsx
+│   │   ├── hooks/
+│   │   │   └── useAuth.js
+│   │   ├── utils/
+│   │   │   └── authHelpers.js
+│   │   └── AuthPage.jsx
+│   ├── products/
+│   │   ├── components/
+│   │   │   ├── ProductCard.jsx
+│   │   │   └── ProductFilters.jsx
+│   │   ├── hooks/
+│   │   │   └── useProducts.js
+│   │   └── ProductsPage.jsx
+│   └── cart/
+│       ├── components/
+│       ├── hooks/
+│       └── CartPage.jsx
+├── shared/
+│   ├── components/
+│   ├── hooks/
+│   └── utils/
+└── App.jsx
+```
+
+<Callout type="tip">
+**Avantage :** Tout ce qui concerne une fonctionnalité est regroupé au même endroit. Facile à trouver et à maintenir.
+</Callout>
+
+## Le fichier index.js
+
+Utilisez `index.js` pour simplifier les imports.
+
+### Sans index.js
+
+```javascript
+// ❌ Imports longs et répétitifs
+import Button from './components/ui/Button/Button';
+import Card from './components/ui/Card/Card';
+import Input from './components/ui/Input/Input';
+```
+
+### Avec index.js
+
+**components/ui/index.js**
+```javascript
+export { default as Button } from './Button/Button';
+export { default as Card } from './Card/Card';
+export { default as Input } from './Input/Input';
+```
+
+**Utilisation**
+```javascript
+// ✅ Import propre et concis
+import { Button, Card, Input } from './components/ui';
+```
+
+## Conventions de nommage de fichiers
+
+### Composants
+
+```
+✅ PascalCase avec extension .jsx
+components/
+├── UserCard.jsx
+├── ProductList.jsx
+└── NavigationBar.jsx
+
+❌ À éviter
+components/
+├── userCard.jsx
+├── product-list.jsx
+└── navigation_bar.jsx
+```
+
+### Hooks
+
+```
+✅ camelCase avec préfixe "use"
+hooks/
+├── useFetch.js
+├── useLocalStorage.js
+└── useAuth.js
+```
+
+### Utilitaires
+
+```
+✅ camelCase descriptif
+utils/
+├── api.js
+├── formatters.js
+├── validators.js
+└── constants.js
+```
+
+### Pages
+
+```
+✅ PascalCase avec suffixe "Page"
+pages/
+├── HomePage.jsx
+├── AboutPage.jsx
+└── ProductsPage.jsx
+```
+
+## Organisation d'un composant
+
+Pour un composant complexe, créez un dossier :
+
+```
+Button/
+├── Button.jsx       # Le composant
+├── Button.css       # Styles spécifiques
+├── Button.test.js   # Tests (optionnel)
+└── index.js         # Export
+```
+
+**Button/Button.jsx**
+```jsx
+import './Button.css';
+
+export default function Button({ children, variant = 'primary', onClick }) {
+  return (
+    <button className={`btn btn-${variant}`} onClick={onClick}>
+      {children}
+    </button>
+  );
+}
+```
+
+**Button/index.js**
+```javascript
+export { default } from './Button';
+```
+
+**Utilisation**
+```javascript
+// Import simplifié
+import Button from './components/Button';
+```
+
+## Le dossier utils/
+
+Organisez vos fonctions utilitaires par domaine.
+
+**utils/api.js**
+```javascript
+const API_URL = import.meta.env.VITE_API_URL;
+
+export async function fetchData(endpoint) {
+  const response = await fetch(`${API_URL}${endpoint}`);
+  if (!response.ok) {
+    throw new Error('Network response was not ok');
+  }
+  return response.json();
+}
+
+export async function postData(endpoint, data) {
+  const response = await fetch(`${API_URL}${endpoint}`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(data)
+  });
+  return response.json();
+}
+```
+
+**utils/formatters.js**
+```javascript
+export function formatDate(date) {
+  return new Date(date).toLocaleDateString('fr-FR');
+}
+
+export function formatPrice(price) {
+  return new Intl.NumberFormat('fr-FR', {
+    style: 'currency',
+    currency: 'EUR'
+  }).format(price);
+}
+
+export function truncate(text, maxLength = 100) {
+  if (text.length <= maxLength) return text;
+  return text.slice(0, maxLength) + '...';
+}
+```
+
+**utils/validators.js**
+```javascript
+export function isValidEmail(email) {
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  return emailRegex.test(email);
+}
+
+export function isValidPassword(password) {
+  return password.length >= 8;
+}
+
+export function isValidURL(url) {
+  try {
+    new URL(url);
+    return true;
+  } catch {
+    return false;
+  }
+}
+```
+
+**utils/constants.js**
+```javascript
+export const STATUS = {
+  IDLE: 'idle',
+  LOADING: 'loading',
+  SUCCESS: 'success',
+  ERROR: 'error'
+};
+
+export const ROLE = {
+  USER: 'user',
+  ADMIN: 'admin',
+  MODERATOR: 'moderator'
+};
+
+export const ROUTES = {
+  HOME: '/',
+  ABOUT: '/about',
+  PRODUCTS: '/products',
+  PRODUCT_DETAIL: '/products/:id'
+};
+```
+
+## Variables d'environnement
+
+Utilisez un fichier `.env` pour les configurations.
+
+**.env**
+```
+VITE_API_URL=https://api.example.com
+VITE_API_KEY=your-api-key-here
+VITE_ENABLE_ANALYTICS=true
+```
+
+<Callout type="warning" title="Important">
+- Les variables doivent commencer par `VITE_` pour être accessibles
+- **Ne commitez JAMAIS le fichier .env** (ajoutez-le à .gitignore)
+- Utilisez `.env.example` pour documenter les variables nécessaires
+</Callout>
+
+**.env.example** (à commiter)
+```
+VITE_API_URL=
+VITE_API_KEY=
+VITE_ENABLE_ANALYTICS=false
+```
+
+**Utilisation**
+```javascript
+const apiUrl = import.meta.env.VITE_API_URL;
+const apiKey = import.meta.env.VITE_API_KEY;
+const analyticsEnabled = import.meta.env.VITE_ENABLE_ANALYTICS === 'true';
+```
+
+## Bonnes pratiques
+
+### 1. Co-location
+
+Gardez les fichiers liés proches les uns des autres.
+
+```
+✅ Bon
+ProductCard/
+├── ProductCard.jsx
+├── ProductCard.css
+├── ProductCard.test.js
+└── index.js
+
+❌ Mauvais
+components/ProductCard.jsx
+styles/ProductCard.css
+tests/ProductCard.test.js
+```
+
+### 2. Nommage cohérent
+
+Utilisez toujours la même convention dans tout le projet.
+
+```
+✅ Cohérent
+pages/HomePage.jsx
+pages/AboutPage.jsx
+pages/ProductsPage.jsx
+
+❌ Incohérent
+pages/Home.jsx
+pages/about-page.jsx
+pages/products_page.jsx
+```
+
+### 3. Profondeur raisonnable
+
+Évitez les structures trop profondes (max 3-4 niveaux).
+
+```
+❌ Trop profond
+src/components/features/products/list/items/card/ProductCard.jsx
+
+✅ Raisonnable
+src/components/features/ProductCard.jsx
+```
+
+### 4. Imports absolus
+
+Configurez les imports absolus pour éviter les `../../..`.
+
+**vite.config.js**
+```javascript
+import { defineConfig } from 'vite';
+import react from '@vitejs/plugin-react';
+import path from 'path';
+
+export default defineConfig({
+  plugins: [react()],
+  resolve: {
+    alias: {
+      '@': path.resolve(__dirname, './src'),
+      '@components': path.resolve(__dirname, './src/components'),
+      '@hooks': path.resolve(__dirname, './src/hooks'),
+      '@utils': path.resolve(__dirname, './src/utils')
+    }
+  }
+});
+```
+
+**Utilisation**
+```javascript
+// ❌ Imports relatifs compliqués
+import Button from '../../../components/ui/Button';
+import useFetch from '../../../hooks/useFetch';
+
+// ✅ Imports absolus propres
+import Button from '@components/ui/Button';
+import useFetch from '@hooks/useFetch';
+```
+
+## Exemple complet : Todo App
+
+Voici comment structurer une Todo App complète :
+
+```
+todo-app/
+├── public/
+│   └── favicon.ico
+├── src/
+│   ├── components/
+│   │   ├── ui/
+│   │   │   ├── Button/
+│   │   │   │   ├── Button.jsx
+│   │   │   │   └── index.js
+│   │   │   └── Input/
+│   │   │       ├── Input.jsx
+│   │   │       └── index.js
+│   │   ├── layout/
+│   │   │   ├── Header.jsx
+│   │   │   └── Footer.jsx
+│   │   └── features/
+│   │       └── todos/
+│   │           ├── TodoList.jsx
+│   │           ├── TodoItem.jsx
+│   │           ├── TodoForm.jsx
+│   │           └── TodoFilters.jsx
+│   ├── hooks/
+│   │   ├── useTodos.js
+│   │   └── useLocalStorage.js
+│   ├── utils/
+│   │   ├── constants.js
+│   │   └── todoHelpers.js
+│   ├── styles/
+│   │   └── globals.css
+│   ├── App.jsx
+│   └── main.jsx
+├── .env.example
+├── .gitignore
+├── package.json
+├── README.md
+└── vite.config.js
+```
+
+## Checklist de structure
+
+<Callout type="success" title="Vérifiez votre structure">
+✅ **Organisation**
+- [ ] Les composants sont dans des dossiers appropriés
+- [ ] Les fichiers sont nommés de manière cohérente
+- [ ] Les imports sont propres (pas de ../../../..)
+- [ ] Les constantes sont extraites dans utils/constants.js
+
+✅ **Réutilisabilité**
+- [ ] Les composants UI sont dans components/ui/
+- [ ] Les hooks custom sont dans hooks/
+- [ ] Les utilitaires sont dans utils/
+
+✅ **Maintenabilité**
+- [ ] Chaque fichier a une responsabilité claire
+- [ ] Les fichiers ne sont pas trop longs (< 300 lignes)
+- [ ] La profondeur des dossiers est raisonnable (< 4 niveaux)
+
+✅ **Documentation**
+- [ ] README.md avec instructions de setup
+- [ ] .env.example avec les variables nécessaires
+- [ ] Commentaires pour le code complexe
+</Callout>
+
+## Évolution de la structure
+
+Commencez simple et évoluez selon les besoins.
+
+### Phase 1 : Début du projet
+```
+src/
+├── components/
+├── pages/
+├── App.jsx
+└── main.jsx
+```
+
+### Phase 2 : Projet qui grandit
+```
+src/
+├── components/
+│   ├── ui/
+│   └── features/
+├── pages/
+├── hooks/
+├── utils/
+└── App.jsx
+```
+
+### Phase 3 : Projet mature
+```
+src/
+├── features/
+│   ├── auth/
+│   ├── products/
+│   └── cart/
+├── shared/
+│   ├── components/
+│   ├── hooks/
+│   └── utils/
+└── App.jsx
+```
+
+<Callout type="tip">
+Ne sur-architecturez pas dès le début. Commencez simple et refactorisez quand vous en avez besoin.
+</Callout>
+
+## Ressources
+
+- [React File Structure Best Practices](https://react.dev/learn/thinking-in-react)
+- [Vite Config Reference](https://vitejs.dev/config/)
+- [Project Structure Examples](https://github.com/alan2207/bulletproof-react)

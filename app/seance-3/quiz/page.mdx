@@ -1,0 +1,301 @@
+# Quiz de Validation - Séance 3
+
+Testez vos connaissances sur l'interactivité et les formulaires en React ! Ce quiz couvre tous les concepts vus durant la Séance 3.
+
+<Callout type="info" title="À propos de ce quiz">
+- **20 questions** couvrant tous les sujets de la Séance 3
+- Réponses avec explications détaillées
+- Validez votre compréhension avant de passer à useEffect et Routing
+- Aucune note n'est enregistrée, c'est pour votre apprentissage !
+</Callout>
+
+## Événements React
+
+<QuickCheck
+  question="1. Quelle est la syntaxe correcte pour gérer un événement de clic ?"
+  options={[
+    "<button onClick={handleClick}>Cliquer</button>",
+    "<button onclick={handleClick}>Cliquer</button>",
+    "<button onClick=\"handleClick()\">Cliquer</button>",
+    "<button on-click={handleClick}>Cliquer</button>"
+  ]}
+  correctAnswer={0}
+  explanation="✅ En React, les événements utilisent camelCase : onClick (pas onclick). On passe une fonction, pas une string. ❌ onclick est la syntaxe HTML/DOM, pas React. ❌ On ne passe pas une string en JSX pour les événements. ❌ on-click n'existe pas, c'est la syntaxe Vue.js. React = camelCase + fonction."
+/>
+
+<QuickCheck
+  question="2. Que se passe-t-il avec cette syntaxe : <button onClick={handleClick()}>?"
+  options={[
+    "La fonction est appelée immédiatement au rendu",
+    "La fonction est appelée au clic",
+    "Cela génère une erreur de syntaxe",
+    "C'est la syntaxe correcte pour passer des arguments"
+  ]}
+  correctAnswer={0}
+  explanation="✅ Avec les parenthèses (), la fonction est exécutée immédiatement lors du rendu, pas au clic. ❌ Pour appeler au clic, ne mettez PAS de parenthèses : onClick={handleClick}. ❌ Ce n'est pas une erreur de syntaxe, mais un bug logique. ❌ Pour passer des arguments, utilisez une arrow function : onClick={() => handleClick(arg)}. Règle : pas de parenthèses sauf dans une arrow function !"
+/>
+
+<QuickCheck
+  question="3. Comment accéder à la valeur d'un input dans un événement onChange ?"
+  options={[
+    "event.target.value",
+    "event.value",
+    "event.input.value",
+    "this.value"
+  ]}
+  correctAnswer={0}
+  explanation="✅ event.target.value contient la valeur de l'élément qui a déclenché l'événement. ❌ event.value n'existe pas, il faut passer par .target. ❌ event.input.value n'existe pas non plus. ❌ this.value est pour JavaScript vanilla ou class components, pas les fonctionnels. event.target = l'élément HTML concerné."
+/>
+
+<QuickCheck
+  question="4. Comment empêcher le comportement par défaut d'un formulaire ?"
+  options={[
+    "event.preventDefault()",
+    "event.stopPropagation()",
+    "return false",
+    "event.cancel()"
+  ]}
+  correctAnswer={0}
+  explanation="✅ event.preventDefault() empêche le comportement par défaut (ex: rechargement de page sur submit). ❌ event.stopPropagation() empêche la propagation de l'événement aux parents, c'est différent. ❌ return false fonctionne en jQuery mais pas en React (utilisez preventDefault). ❌ event.cancel() n'existe pas en JavaScript. preventDefault = annuler le comportement par défaut."
+/>
+
+## useState Hook
+
+<QuickCheck
+  question="5. Quelle est la syntaxe correcte pour utiliser useState ?"
+  options={[
+    "const [count, setCount] = useState(0)",
+    "const count = useState(0)",
+    "const [count] = useState(0)",
+    "useState(count, setCount, 0)"
+  ]}
+  correctAnswer={0}
+  explanation="✅ useState retourne un tableau avec [valeur, setter], qu'on déstructure. ❌ useState retourne un TABLEAU, pas une valeur unique. ❌ Sans le setter, vous ne pourrez pas mettre à jour l'état. ❌ useState prend la valeur initiale en paramètre, pas count et setCount. La déstructuration [value, setValue] est essentielle."
+/>
+
+<QuickCheck
+  question="6. Que se passe-t-il quand on appelle setCount(count + 1) ?"
+  options={[
+    "React planifie un nouveau rendu du composant",
+    "La valeur change immédiatement",
+    "Le composant se recharge complètement",
+    "Rien, il faut appeler render() manuellement"
+  ]}
+  correctAnswer={0}
+  explanation="✅ setState planifie un nouveau rendu - la mise à jour n'est PAS immédiate. ❌ La valeur ne change pas immédiatement, c'est asynchrone. ❌ React ré-exécute le composant, il ne recharge pas la page. ❌ render() est automatique en React, pas besoin de l'appeler. setState = planifier un re-rendu asynchrone."
+/>
+
+<QuickCheck
+  question="7. Quelle est la différence entre state et props ?"
+  options={[
+    "State = mémoire du composant, Props = arguments reçus",
+    "State = données du parent, Props = données locales",
+    "State = immuable, Props = muable",
+    "Il n'y a aucune différence"
+  ]}
+  correctAnswer={0}
+  explanation="✅ State = mémoire interne (modifiable via setState), Props = données reçues du parent (immuables). ❌ C'est l'inverse : state est local, props viennent du parent. ❌ State est muable (via setter), props sont immuables. ❌ La différence est fondamentale en React. State = données locales modifiables, Props = données reçues en lecture seule."
+/>
+
+<QuickCheck
+  question="8. Peut-on modifier directement les props ?"
+  options={[
+    "Non, les props sont immuables",
+    "Oui, avec props.setValue()",
+    "Oui, mais seulement dans les class components",
+    "Oui, en utilisant this.props ="
+  ]}
+  correctAnswer={0}
+  explanation="✅ Les props sont TOUJOURS immuables - on ne peut jamais les modifier. ❌ props.setValue() n'existe pas. ❌ Même en class components, on ne peut pas modifier les props. ❌ this.props est en lecture seule. Si vous devez modifier une valeur, utilisez useState dans le composant enfant ou lifting state up."
+/>
+
+## Formulaires Contrôlés
+
+<QuickCheck
+  question="9. Qu'est-ce qu'un composant contrôlé ?"
+  options={[
+    "Un input dont la valeur est contrôlée par React via state",
+    "Un input avec l'attribut controlled={true}",
+    "Un input qui ne peut pas être modifié",
+    "Un input géré par le DOM"
+  ]}
+  correctAnswer={0}
+  explanation="✅ Composant contrôlé = input avec value={state} et onChange={setState} - React contrôle tout. ❌ L'attribut controlled n'existe pas en React. ❌ Un input contrôlé PEUT être modifié via onChange. ❌ C'est le CONTRAIRE : un composant contrôlé échappe au contrôle du DOM, React le gère. Pattern : value + onChange = contrôlé."
+/>
+
+<QuickCheck
+  question="10. Comment créer un input contrôlé ?"
+  options={[
+    "<input value={state} onChange={e => setState(e.target.value)} />",
+    "<input onChange={e => setState(e.target.value)} />",
+    "<input value={state} />",
+    "<input controlled value={state} />"
+  ]}
+  correctAnswer={0}
+  explanation="✅ Input contrôlé = OBLIGATOIREMENT value + onChange ensemble. ❌ Sans value, l'input n'est pas contrôlé par React. ❌ Sans onChange, l'input sera en lecture seule (impossible de taper). ❌ L'attribut controlled n'existe pas. Les deux attributs value et onChange sont INDISPENSABLES."
+/>
+
+<QuickCheck
+  question="11. Comment gérer une checkbox contrôlée ?"
+  options={[
+    "<input type=\"checkbox\" checked={state} onChange={e => setState(e.target.checked)} />",
+    "<input type=\"checkbox\" value={state} onChange={e => setState(e.target.value)} />",
+    "<input type=\"checkbox\" selected={state} onChange={e => setState(e.target.selected)} />",
+    "<input type=\"checkbox\" checked={state} />"
+  ]}
+  correctAnswer={0}
+  explanation="✅ Checkbox utilise checked (pas value) et e.target.checked (pas e.target.value). ❌ value est pour les inputs texte, pas les checkboxes. ❌ selected est pour <option>, pas <input>. ❌ Sans onChange, la checkbox sera en lecture seule. Checkbox : checked + e.target.checked."
+/>
+
+<QuickCheck
+  question="12. Comment gérer plusieurs inputs avec un seul état ?"
+  options={[
+    "Utiliser un objet dans le state avec un name sur chaque input",
+    "Créer un state séparé pour chaque input",
+    "Utiliser plusieurs onChange différents",
+    "Ce n'est pas possible"
+  ]}
+  correctAnswer={0}
+  explanation="✅ Pattern multi-inputs : state = objet, chaque input a name, onChange générique utilise [e.target.name]. ❌ Créer 10 states pour 10 inputs n'est pas pratique. ❌ Plusieurs onChange fonctionnent mais c'est redondant. ❌ C'est possible et très courant ! Pattern : const [form, setForm] = useState({}) + name + [e.target.name]: e.target.value."
+/>
+
+## Validation
+
+<QuickCheck
+  question="13. Pourquoi valider côté client ET côté serveur ?"
+  options={[
+    "Client = UX (feedback immédiat), Serveur = sécurité (protection)",
+    "Client = sécurité, Serveur = UX",
+    "Client suffit pour la sécurité",
+    "Serveur suffit, client est inutile"
+  ]}
+  correctAnswer={0}
+  explanation="✅ Validation client = meilleure UX (erreurs instantanées), validation serveur = sécurité (on ne peut pas contourner). ❌ C'est l'inverse : client = UX, serveur = sécurité. ❌ La validation client peut TOUJOURS être contournée (désactiver JS, modifier le code). ❌ La validation serveur est obligatoire, mais sans client l'UX est mauvaise. Les deux sont nécessaires mais pour des raisons différentes."
+/>
+
+<QuickCheck
+  question="14. Comment vérifier qu'un email est valide avec regex ?"
+  options={[
+    "/^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$/.test(email)",
+    "email.includes('@')",
+    "email.match('@')",
+    "typeof email === 'email'"
+  ]}
+  correctAnswer={0}
+  explanation="✅ Une regex email vérifie : caractères + @ + domaine + . + extension. ❌ Juste vérifier @ est insuffisant (ex: 'test@' ou '@test' passerait). ❌ .match() fonctionne mais .test() est plus approprié pour un booléen. ❌ 'email' n'est pas un type JavaScript. Pour une vraie validation, utilisez une vraie regex ou Zod."
+/>
+
+## Zod
+
+<QuickCheck
+  question="15. Quelle est la méthode Zod recommandée pour valider des données ?"
+  options={[
+    "schema.safeParse(data)",
+    "schema.parse(data)",
+    "schema.validate(data)",
+    "schema.check(data)"
+  ]}
+  correctAnswer={0}
+  explanation="✅ safeParse() retourne { success, data, error } et ne lance pas d'exception. ❌ parse() lance une exception si la validation échoue - moins pratique en React. ❌ .validate() n'existe pas en Zod. ❌ .check() n'existe pas non plus. safeParse() est plus sûr et plus facile à gérer dans les composants React."
+/>
+
+<QuickCheck
+  question="16. Comment définir un champ optionnel avec Zod ?"
+  options={[
+    "z.string().optional()",
+    "z.string().nullable()",
+    "z.string().required(false)",
+    "z.optional(z.string())"
+  ]}
+  correctAnswer={0}
+  explanation="✅ .optional() permet à un champ d'être undefined. ❌ .nullable() permet null, pas undefined (c'est différent !). ❌ .required() n'existe pas, par défaut les champs sont requis. ❌ z.optional() n'existe pas, utilisez .optional(). optional = peut être undefined, nullable = peut être null."
+/>
+
+<QuickCheck
+  question="17. Comment inférer un type TypeScript depuis un schéma Zod ?"
+  options={[
+    "type User = z.infer<typeof userSchema>",
+    "type User = userSchema.type",
+    "type User = typeof userSchema",
+    "const User = z.type(userSchema)"
+  ]}
+  correctAnswer={0}
+  explanation="✅ z.infer<typeof schema> crée automatiquement le type TypeScript à partir du schéma. ❌ .type n'existe pas sur les schémas Zod. ❌ typeof schema donne le type du schéma, pas des données validées. ❌ z.type() n'existe pas. L'inférence automatique est une feature killer de Zod !"
+/>
+
+<QuickCheck
+  question="18. Comment ajouter un message d'erreur personnalisé avec Zod ?"
+  options={[
+    "z.string().min(3, { message: 'Au moins 3 caractères' })",
+    "z.string().min(3, 'Au moins 3 caractères')",
+    "z.string({ message: 'Au moins 3 caractères' }).min(3)",
+    "z.string().min(3).message('Au moins 3 caractères')"
+  ]}
+  correctAnswer={0}
+  explanation="✅ Les validateurs Zod acceptent un objet { message: '...' } en second paramètre. ❌ On ne peut pas passer juste une string, il faut un objet. ❌ Le message se met sur la validation, pas sur le type de base. ❌ .message() n'existe pas, utilisez l'objet { message }. Format : .validation(params, { message })."
+/>
+
+## Lifting State Up
+
+<QuickCheck
+  question="19. Qu'est-ce que le lifting state up ?"
+  options={[
+    "Remonter l'état dans le composant parent commun pour le partager",
+    "Mettre tout l'état au niveau racine de l'application",
+    "Déplacer l'état d'un parent vers un enfant",
+    "Créer un state global avec Redux"
+  ]}
+  correctAnswer={0}
+  explanation="✅ Lifting state up = placer l'état au niveau du parent commun le plus proche des composants qui en ont besoin. ❌ On ne met pas TOUT au niveau racine, seulement ce qui doit être partagé. ❌ C'est l'inverse : on REMONTE (up), on ne descend pas. ❌ Redux est une solution, mais lifting state up est un pattern React natif. Règle : placer l'état aussi bas que possible, mais aussi haut que nécessaire."
+/>
+
+<QuickCheck
+  question="20. Comment un composant enfant peut-il modifier le state du parent ?"
+  options={[
+    "Via une fonction callback passée en props",
+    "En modifiant directement les props",
+    "En utilisant this.parent.setState()",
+    "Ce n'est pas possible"
+  ]}
+  correctAnswer={0}
+  explanation="✅ Pattern : le parent passe une fonction (souvent le setter) en props, l'enfant l'appelle. ❌ Les props sont immuables, on ne peut JAMAIS les modifier. ❌ this.parent n'existe pas en React. ❌ C'est possible et très courant ! Exemple : <Child onChange={setValue} /> puis dans Child : onChange(newValue)."
+/>
+
+---
+
+## Résultats
+
+<Callout type="success" title="Félicitations !">
+Si vous avez répondu correctement à la plupart des questions, vous êtes prêt(e) pour la **Séance 4 - useEffect et React Router** !
+
+**Score cible :** Au moins 17/20 pour passer confortablement aux effets et au routing.
+</Callout>
+
+<Callout type="warning" title="Besoin de réviser ?">
+Si vous avez eu des difficultés avec certaines questions, prenez le temps de réviser les sections correspondantes :
+
+- **Événements** → [Gestion des événements](/seance-3/events)
+- **useState** → [Le hook useState](/seance-3/useState)
+- **Formulaires** → [Formulaires contrôlés](/seance-3/forms)
+- **Validation** → [Validation de formulaires](/seance-3/validation)
+- **Zod** → [Validation avec Zod](/seance-3/zod)
+- **Lifting State** → [Lifting State Up](/seance-3/lifting-state)
+</Callout>
+
+## Prochaines étapes
+
+<div className="grid grid-cols-1 md:grid-cols-2 gap-4 my-6">
+  <a href="/seance-3/exercises" className="block p-4 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg hover:border-cyan-500 dark:hover:border-cyan-500 transition-colors">
+    <h3 className="font-semibold text-gray-900 dark:text-gray-100 mb-2">📝 Refaire les exercices</h3>
+    <p className="text-sm text-gray-600 dark:text-gray-400">Pratiquez avec les exercices de la Séance 3</p>
+  </a>
+
+  <a href="/seance-4" className="block p-4 bg-cyan-50 dark:bg-cyan-900/20 border border-cyan-200 dark:border-cyan-800 rounded-lg hover:border-cyan-500 dark:hover:border-cyan-500 transition-colors">
+    <h3 className="font-semibold text-gray-900 dark:text-gray-100 mb-2">🚀 Séance 4 - useEffect & Routing</h3>
+    <p className="text-sm text-gray-600 dark:text-gray-400">Apprenez les effets et le routing !</p>
+  </a>
+</div>
+
+<Callout type="tip" title="Conseil">
+N'hésitez pas à refaire ce quiz plusieurs fois jusqu'à obtenir 18/20 ou plus sans regarder les explications. C'est le signe que vous maîtrisez vraiment les concepts !
+</Callout>

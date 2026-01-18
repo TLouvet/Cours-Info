@@ -1,0 +1,616 @@
+# Listes et Keys
+
+Afficher des listes est une tâche quotidienne en React. Apprenons à le faire correctement avec `.map()` et les **keys**.
+
+## Afficher des listes avec `.map()`
+
+En React, on utilise la méthode `.map()` pour transformer un tableau en éléments JSX.
+
+### Exemple simple
+
+```jsx
+function UserList() {
+  const users = ['Alice', 'Bob', 'Charlie'];
+
+  return (
+    <ul>
+      {users.map(user => (
+        <li>{user}</li>
+      ))}
+    </ul>
+  );
+}
+```
+
+**Résultat :**
+```
+• Alice
+• Bob
+• Charlie
+```
+
+<Callout type="warning" title="Warning dans la console">
+Le code ci-dessus fonctionne mais génère un **warning** :
+
+```
+Warning: Each child in a list should have a unique "key" prop.
+```
+
+Pour résoudre cela, ajoutez une prop `key` unique à chaque élément.
+</Callout>
+
+## La prop `key` - Pourquoi est-elle obligatoire ?
+
+Les **keys** aident React à identifier quels éléments ont changé, été ajoutés ou supprimés.
+
+### Analogie : Liste de courses
+
+Imaginez une liste de courses :
+
+```
+1. Pommes
+2. Bananes
+3. Oranges
+```
+
+Si vous ajoutez "Fraises" au milieu :
+
+```
+1. Pommes
+2. Fraises    ← Nouvel élément
+3. Bananes    ← A changé de position
+4. Oranges    ← A changé de position
+```
+
+**Sans keys :** React pense que les éléments 2, 3 et 4 ont tous changé.
+
+**Avec keys :** React sait qu'un seul élément a été ajouté, et réutilise les autres.
+
+<Callout type="info" title="Comment React utilise les keys">
+**Sans key :**
+```jsx
+<li>Alice</li>
+<li>Bob</li>
+```
+
+React compare par **position** : "élément 1", "élément 2"
+
+**Avec key :**
+```jsx
+<li key="user-1">Alice</li>
+<li key="user-2">Bob</li>
+```
+
+React compare par **identité** : "user-1", "user-2"
+
+**Résultat :** Meilleures performances et moins de bugs !
+</Callout>
+
+## Utiliser des keys correctement
+
+### ✅ Bon : Utiliser un ID unique
+
+```jsx
+function UserList() {
+  const users = [
+    { id: 1, name: 'Alice' },
+    { id: 2, name: 'Bob' },
+    { id: 3, name: 'Charlie' }
+  ];
+
+  return (
+    <ul>
+      {users.map(user => (
+        <li key={user.id}>{user.name}</li>
+      ))}
+    </ul>
+  );
+}
+```
+
+### ⚠️ Acceptable : Utiliser une propriété unique
+
+Si vos données n'ont pas d'ID, utilisez une autre propriété **unique et stable**.
+
+```jsx
+const emails = [
+  { email: 'alice@example.com', name: 'Alice' },
+  { email: 'bob@example.com', name: 'Bob' }
+];
+
+return (
+  <ul>
+    {emails.map(item => (
+      <li key={item.email}>{item.name}</li>
+    ))}
+  </ul>
+);
+```
+
+### ❌ Mauvais : Utiliser l'index
+
+**Ne jamais utiliser l'index comme key** si la liste peut changer (ajout, suppression, tri).
+
+```jsx
+// ❌ Évitez ceci
+users.map((user, index) => (
+  <li key={index}>{user.name}</li>
+))
+```
+
+<Callout type="error" title="Pourquoi éviter l'index ?">
+**Problème 1 : Performance**
+
+Si vous supprimez "Bob" (index 1) :
+```jsx
+// Avant
+<li key={0}>Alice</li>
+<li key={1}>Bob</li>
+<li key={2}>Charlie</li>
+
+// Après suppression
+<li key={0}>Alice</li>   {/* Même key, même contenu ✅ */}
+<li key={1}>Charlie</li> {/* Même key, mais contenu différent ❌ */}
+```
+
+React pense que "Charlie" a remplacé "Bob", et re-rend l'élément inutilement.
+
+**Problème 2 : Bugs avec l'état local**
+
+Si vos éléments ont un état (input, checkbox), l'état peut se retrouver sur le mauvais élément après un tri ou une suppression.
+
+**Exception :** Si la liste est **statique** (ne change jamais), l'index est acceptable.
+</Callout>
+
+## Générer des IDs uniques
+
+Si vos données n'ont pas d'ID, vous pouvez en générer.
+
+### Option 1 : crypto.randomUUID()
+
+```jsx
+const users = [
+  { id: crypto.randomUUID(), name: 'Alice' },
+  { id: crypto.randomUUID(), name: 'Bob' }
+];
+```
+
+### Option 2 : Bibliothèque `uuid`
+
+```bash
+npm install uuid
+```
+
+```jsx
+import { v4 as uuidv4 } from 'uuid';
+
+const users = [
+  { id: uuidv4(), name: 'Alice' },
+  { id: uuidv4(), name: 'Bob' }
+];
+```
+
+### Option 3 : ID basé sur les données
+
+```jsx
+// Combine plusieurs propriétés pour créer un ID unique
+const id = `${user.firstName}-${user.lastName}-${user.email}`;
+```
+
+## Exemples pratiques
+
+### Exemple 1 : Liste de produits
+
+```jsx
+function ProductList({ products }) {
+  return (
+    <div className="product-grid">
+      {products.map(product => (
+        <div key={product.id} className="product-card">
+          <img src={product.image} alt={product.name} />
+          <h3>{product.name}</h3>
+          <p className="price">{product.price}€</p>
+          <button>Ajouter au panier</button>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+// Utilisation
+const products = [
+  { id: 1, name: 'Laptop', price: 999, image: 'laptop.jpg' },
+  { id: 2, name: 'Souris', price: 25, image: 'mouse.jpg' },
+  { id: 3, name: 'Clavier', price: 75, image: 'keyboard.jpg' }
+];
+
+<ProductList products={products} />
+```
+
+### Exemple 2 : Commentaires
+
+```jsx
+function CommentList({ comments }) {
+  return (
+    <div className="comments">
+      <h2>Commentaires ({comments.length})</h2>
+      {comments.map(comment => (
+        <div key={comment.id} className="comment">
+          <div className="comment-header">
+            <img src={comment.avatar} alt={comment.author} />
+            <span className="author">{comment.author}</span>
+            <span className="date">{comment.date}</span>
+          </div>
+          <p className="comment-text">{comment.text}</p>
+        </div>
+      ))}
+    </div>
+  );
+}
+```
+
+### Exemple 3 : Tableau de données
+
+```jsx
+function UserTable({ users }) {
+  return (
+    <table>
+      <thead>
+        <tr>
+          <th>Nom</th>
+          <th>Email</th>
+          <th>Rôle</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        {users.map(user => (
+          <tr key={user.id}>
+            <td>{user.name}</td>
+            <td>{user.email}</td>
+            <td>{user.role}</td>
+            <td>
+              <button>Éditer</button>
+              <button>Supprimer</button>
+            </td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  );
+}
+```
+
+## Filtrer avant d'afficher
+
+Combinez `.filter()` et `.map()` pour afficher des listes filtrées.
+
+### Exemple : Filtrer par catégorie
+
+```jsx
+function ProductList({ products, category }) {
+  return (
+    <div>
+      {products
+        .filter(product => product.category === category)
+        .map(product => (
+          <div key={product.id} className="product">
+            <h3>{product.name}</h3>
+            <p>{product.price}€</p>
+          </div>
+        ))}
+    </div>
+  );
+}
+
+// Utilisation
+const products = [
+  { id: 1, name: 'Laptop', price: 999, category: 'electronics' },
+  { id: 2, name: 'Shirt', price: 29, category: 'clothing' },
+  { id: 3, name: 'Phone', price: 699, category: 'electronics' }
+];
+
+<ProductList products={products} category="electronics" />
+// Affiche : Laptop, Phone
+```
+
+### Exemple : Recherche
+
+```jsx
+function SearchableList({ items, searchTerm }) {
+  const filteredItems = items.filter(item =>
+    item.name.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
+  return (
+    <ul>
+      {filteredItems.map(item => (
+        <li key={item.id}>{item.name}</li>
+      ))}
+    </ul>
+  );
+}
+```
+
+## Trier avant d'afficher
+
+Utilisez `.sort()` pour trier les données.
+
+```jsx
+function ProductList({ products, sortBy = 'name' }) {
+  // Créer une copie pour ne pas modifier l'original
+  const sortedProducts = [...products].sort((a, b) => {
+    if (sortBy === 'price') {
+      return a.price - b.price;
+    }
+    return a.name.localeCompare(b.name);
+  });
+
+  return (
+    <div>
+      {sortedProducts.map(product => (
+        <div key={product.id}>
+          <h3>{product.name}</h3>
+          <p>{product.price}€</p>
+        </div>
+      ))}
+    </div>
+  );
+}
+```
+
+<Callout type="warning" title="Attention avec .sort()">
+`.sort()` **modifie** le tableau original. Créez une copie avant de trier :
+
+```jsx
+// ❌ Modifie l'original
+products.sort((a, b) => a.price - b.price)
+
+// ✅ Crée une copie
+[...products].sort((a, b) => a.price - b.price)
+```
+</Callout>
+
+## Gérer les listes vides
+
+Affichez un message si la liste est vide.
+
+### Méthode 1 : Conditionnel avant le map
+
+```jsx
+function UserList({ users }) {
+  if (users.length === 0) {
+    return <p>Aucun utilisateur trouvé.</p>;
+  }
+
+  return (
+    <ul>
+      {users.map(user => (
+        <li key={user.id}>{user.name}</li>
+      ))}
+    </ul>
+  );
+}
+```
+
+### Méthode 2 : Opérateur ternaire
+
+```jsx
+function UserList({ users }) {
+  return (
+    <div>
+      {users.length === 0 ? (
+        <p>Aucun utilisateur trouvé.</p>
+      ) : (
+        <ul>
+          {users.map(user => (
+            <li key={user.id}>{user.name}</li>
+          ))}
+        </ul>
+      )}
+    </div>
+  );
+}
+```
+
+### Méthode 3 : Opérateur &&
+
+```jsx
+function UserList({ users }) {
+  return (
+    <div>
+      {users.length === 0 && <p>Aucun utilisateur trouvé.</p>}
+
+      {users.length > 0 && (
+        <ul>
+          {users.map(user => (
+            <li key={user.id}>{user.name}</li>
+          ))}
+        </ul>
+      )}
+    </div>
+  );
+}
+```
+
+## Listes imbriquées
+
+Vous pouvez avoir des `.map()` à l'intérieur d'autres `.map()`.
+
+```jsx
+function CategoryList({ categories }) {
+  return (
+    <div>
+      {categories.map(category => (
+        <div key={category.id} className="category">
+          <h2>{category.name}</h2>
+          <ul>
+            {category.items.map(item => (
+              <li key={item.id}>{item.name}</li>
+            ))}
+          </ul>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+// Données
+const categories = [
+  {
+    id: 1,
+    name: 'Électronique',
+    items: [
+      { id: 101, name: 'Laptop' },
+      { id: 102, name: 'Phone' }
+    ]
+  },
+  {
+    id: 2,
+    name: 'Vêtements',
+    items: [
+      { id: 201, name: 'T-shirt' },
+      { id: 202, name: 'Pantalon' }
+    ]
+  }
+];
+```
+
+<Callout type="tip" title="Keys dans les listes imbriquées">
+Chaque niveau de `.map()` doit avoir ses propres keys :
+
+```jsx
+{categories.map(category => (
+  <div key={category.id}>       {/* Key du parent */}
+    {category.items.map(item => (
+      <div key={item.id}>       {/* Key de l'enfant */}
+        {item.name}
+      </div>
+    ))}
+  </div>
+))}
+```
+
+Les keys doivent être uniques **parmi les frères et sœurs**, pas globalement.
+</Callout>
+
+## Extraire en composant
+
+Pour plus de lisibilité, extrayez les éléments de liste en composants.
+
+### Avant : Tout dans un composant
+
+```jsx
+function ProductList({ products }) {
+  return (
+    <div>
+      {products.map(product => (
+        <div key={product.id} className="product">
+          <img src={product.image} alt={product.name} />
+          <h3>{product.name}</h3>
+          <p>{product.price}€</p>
+          <button>Ajouter</button>
+        </div>
+      ))}
+    </div>
+  );
+}
+```
+
+### Après : Composant séparé
+
+```jsx
+function ProductCard({ product }) {
+  return (
+    <div className="product">
+      <img src={product.image} alt={product.name} />
+      <h3>{product.name}</h3>
+      <p>{product.price}€</p>
+      <button>Ajouter</button>
+    </div>
+  );
+}
+
+function ProductList({ products }) {
+  return (
+    <div>
+      {products.map(product => (
+        <ProductCard key={product.id} product={product} />
+      ))}
+    </div>
+  );
+}
+```
+
+<Callout type="success" title="Avantages">
+**Lisibilité :** Le code est plus clair et organisé
+
+**Réutilisabilité :** `ProductCard` peut être utilisé ailleurs
+
+**Maintenabilité :** Plus facile de modifier un composant isolé
+
+**Important :** La `key` reste sur le composant dans le `.map()`, pas à l'intérieur !
+</Callout>
+
+## Performance : React.memo
+
+Pour les grandes listes, utilisez `React.memo` pour éviter les re-renders inutiles.
+
+```jsx
+import { memo } from 'react';
+
+const ProductCard = memo(function ProductCard({ product }) {
+  return (
+    <div className="product">
+      <h3>{product.name}</h3>
+      <p>{product.price}€</p>
+    </div>
+  );
+});
+
+function ProductList({ products }) {
+  return (
+    <div>
+      {products.map(product => (
+        <ProductCard key={product.id} product={product} />
+      ))}
+    </div>
+  );
+}
+```
+
+<Callout type="info" title="Qu'est-ce que React.memo ?">
+`React.memo` mémorise le résultat d'un composant.
+
+**Sans memo :** Si le parent re-render, tous les enfants re-render aussi.
+
+**Avec memo :** Les enfants ne re-render que si leurs props changent.
+
+**Quand l'utiliser ?**
+- Listes avec beaucoup d'éléments (&gt;100)
+- Composants avec des calculs coûteux
+- Optimisations de performance
+
+**Quand ne PAS l'utiliser ?**
+- Par défaut (optimisation prématurée)
+- Petites listes (&lt;50 éléments)
+- Si les props changent souvent de toute façon
+</Callout>
+
+## Récapitulatif
+
+<Callout type="success" title="Ce que vous avez appris">
+Vous savez maintenant :
+
+- ✅ Utiliser `.map()` pour afficher des listes
+- ✅ Comprendre pourquoi les keys sont essentielles
+- ✅ Choisir de bonnes keys (ID unique > propriété unique > index)
+- ✅ Générer des IDs si nécessaire
+- ✅ Filtrer et trier des listes
+- ✅ Gérer les listes vides
+- ✅ Créer des listes imbriquées
+- ✅ Extraire des éléments en composants
+- ✅ Optimiser les performances avec React.memo
+
+**Prochaine étape :** Afficher du contenu **conditionnel** !
+</Callout>

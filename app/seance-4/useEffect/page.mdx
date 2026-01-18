@@ -1,0 +1,500 @@
+# Le Hook useEffect
+
+Le hook `useEffect` est votre outil pour gérer les side effects dans les composants fonctionnels React.
+
+## Syntaxe de Base
+
+```javascript
+import { useEffect } from 'react';
+
+function Component() {
+  useEffect(() => {
+    // Code de l'effet
+    console.log('Effect exécuté !');
+  });
+
+  return <div>Hello</div>;
+}
+```
+
+<Callout type="info" title="Anatomie de useEffect">
+```javascript
+useEffect(callback, dependencies);
+```
+
+- **callback** : La fonction contenant votre effet
+- **dependencies** : Tableau de dépendances (optionnel mais important !)
+</Callout>
+
+## Les Trois Patterns de Dépendances
+
+Le tableau de dépendances contrôle **quand** l'effet s'exécute.
+
+### 1. Sans Tableau : À Chaque Rendu
+
+```javascript
+function Component() {
+  const [count, setCount] = useState(0);
+
+  // ❌ S'exécute après CHAQUE rendu
+  useEffect(() => {
+    console.log('Rendu !');
+  });
+
+  return <button onClick={() => setCount(count + 1)}>Count: {count}</button>;
+}
+```
+
+<Callout type="warning">
+**Rarement utilisé !** Peut causer des problèmes de performance.
+</Callout>
+
+### 2. Tableau Vide : Une Seule Fois (Mount)
+
+```javascript
+function Component() {
+  // ✅ S'exécute UNE FOIS au montage
+  useEffect(() => {
+    console.log('Composant monté !');
+  }, []); // 👈 Tableau vide
+
+  return <div>Hello</div>;
+}
+```
+
+**Cas d'usage :**
+- Fetch initial de données
+- Initialisation de librairies externes
+- Abonnement à des events globaux
+
+```javascript
+function DataLoader() {
+  const [data, setData] = useState(null);
+
+  useEffect(() => {
+    // Fetch une seule fois au chargement
+    fetch('https://api.example.com/data')
+      .then(res => res.json())
+      .then(data => setData(data));
+  }, []); // Fetch uniquement au mount
+
+  return <div>{data ? JSON.stringify(data) : 'Loading...'}</div>;
+}
+```
+
+### 3. Avec Dépendances : Quand les Dépendances Changent
+
+```javascript
+function SearchResults() {
+  const [searchTerm, setSearchTerm] = useState('');
+  const [results, setResults] = useState([]);
+
+  // ✅ S'exécute quand searchTerm change
+  useEffect(() => {
+    console.log(`Recherche pour : ${searchTerm}`);
+    // Faire le fetch...
+  }, [searchTerm]); // 👈 Re-exécute si searchTerm change
+
+  return (
+    <div>
+      <input
+        value={searchTerm}
+        onChange={(e) => setSearchTerm(e.target.value)}
+      />
+      {/* Afficher results */}
+    </div>
+  );
+}
+```
+
+<Callout type="tip" title="Règle d'Or">
+**Mettez TOUTES les valeurs utilisées dans l'effet dans le tableau de dépendances.**
+
+```javascript
+// ❌ Mauvais : count manquant dans les dépendances
+useEffect(() => {
+  console.log(count);
+}, []);
+
+// ✅ Bon : count est dans les dépendances
+useEffect(() => {
+  console.log(count);
+}, [count]);
+```
+
+React vous avertira dans la console si vous oubliez des dépendances !
+</Callout>
+
+## Fonction de Cleanup
+
+Certains effets ont besoin d'être "nettoyés" avant le prochain effet ou quand le composant disparaît.
+
+### Syntaxe
+
+```javascript
+useEffect(() => {
+  // Setup de l'effet
+
+  return () => {
+    // Cleanup (nettoyage)
+  };
+}, [dependencies]);
+```
+
+### Exemple : Timer
+
+```javascript
+function Timer() {
+  const [seconds, setSeconds] = useState(0);
+
+  useEffect(() => {
+    // Setup : démarrer le timer
+    const id = setInterval(() => {
+      setSeconds(s => s + 1);
+    }, 1000);
+
+    // Cleanup : arrêter le timer
+    return () => {
+      clearInterval(id);
+      console.log('Timer nettoyé !');
+    };
+  }, []); // Une seule fois
+
+  return <div>Secondes : {seconds}</div>;
+}
+```
+
+<Callout type="warning" title="Sans Cleanup">
+Si vous oubliez le cleanup, le timer continue même après la disparition du composant !
+
+```javascript
+// ❌ Fuite mémoire : le timer continue indéfiniment
+useEffect(() => {
+  setInterval(() => {
+    setSeconds(s => s + 1);
+  }, 1000);
+  // Pas de cleanup !
+}, []);
+```
+</Callout>
+
+### Exemple : Event Listener
+
+```javascript
+function WindowSize() {
+  const [width, setWidth] = useState(window.innerWidth);
+
+  useEffect(() => {
+    // Setup : ajouter le listener
+    const handleResize = () => {
+      setWidth(window.innerWidth);
+    };
+
+    window.addEventListener('resize', handleResize);
+
+    // Cleanup : retirer le listener
+    return () => {
+      window.removeEventListener('resize', handleResize);
+    };
+  }, []); // Une seule fois
+
+  return <div>Largeur : {width}px</div>;
+}
+```
+
+### Exemple : Abonnement
+
+```javascript
+function ChatRoom({ roomId }) {
+  useEffect(() => {
+    // Setup : se connecter au chat
+    const connection = createConnection(roomId);
+    connection.connect();
+
+    // Cleanup : se déconnecter
+    return () => {
+      connection.disconnect();
+    };
+  }, [roomId]); // Re-connecter si roomId change
+
+  return <div>Chat actif</div>;
+}
+```
+
+## Quand le Cleanup S'exécute ?
+
+```javascript
+function Example({ userId }) {
+  useEffect(() => {
+    console.log('Effect : fetch user', userId);
+
+    return () => {
+      console.log('Cleanup : annuler fetch', userId);
+    };
+  }, [userId]);
+
+  return <div>User {userId}</div>;
+}
+
+// Timeline :
+// 1. userId = 1
+//    → Effect : fetch user 1
+
+// 2. userId = 2 (changement)
+//    → Cleanup : annuler fetch 1
+//    → Effect : fetch user 2
+
+// 3. Composant unmount
+//    → Cleanup : annuler fetch 2
+```
+
+<Callout type="info" title="Timeline du Cleanup">
+Le cleanup s'exécute :
+1. **Avant le prochain effet** (si les dépendances changent)
+2. **Au unmount** du composant
+
+Jamais au premier mount !
+</Callout>
+
+## Patterns Courants
+
+### Pattern 1 : Mettre à Jour le Titre
+
+```javascript
+function PageTitle({ title }) {
+  useEffect(() => {
+    document.title = title;
+  }, [title]);
+
+  return <h1>{title}</h1>;
+}
+```
+
+### Pattern 2 : Logger les Changements
+
+```javascript
+function DebugComponent({ value }) {
+  useEffect(() => {
+    console.log('Value changed:', value);
+  }, [value]);
+
+  return <div>{value}</div>;
+}
+```
+
+### Pattern 3 : Local Storage Sync
+
+```javascript
+function FormWithPersistence() {
+  const [name, setName] = useState('');
+
+  // Charger depuis localStorage au mount
+  useEffect(() => {
+    const saved = localStorage.getItem('name');
+    if (saved) {
+      setName(saved);
+    }
+  }, []);
+
+  // Sauvegarder à chaque changement
+  useEffect(() => {
+    localStorage.setItem('name', name);
+  }, [name]);
+
+  return (
+    <input
+      value={name}
+      onChange={(e) => setName(e.target.value)}
+    />
+  );
+}
+```
+
+### Pattern 4 : Debounce
+
+```javascript
+function SearchInput() {
+  const [searchTerm, setSearchTerm] = useState('');
+  const [debouncedTerm, setDebouncedTerm] = useState('');
+
+  // Debounce : attendre 500ms après le dernier changement
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setDebouncedTerm(searchTerm);
+    }, 500);
+
+    // Cleanup : annuler le timer si searchTerm change
+    return () => clearTimeout(timer);
+  }, [searchTerm]);
+
+  // Fetch avec le terme debounced
+  useEffect(() => {
+    if (debouncedTerm) {
+      console.log('Recherche pour :', debouncedTerm);
+      // Faire le fetch...
+    }
+  }, [debouncedTerm]);
+
+  return (
+    <input
+      value={searchTerm}
+      onChange={(e) => setSearchTerm(e.target.value)}
+      placeholder="Rechercher..."
+    />
+  );
+}
+```
+
+## Erreurs Courantes
+
+### Erreur 1 : Dépendances Manquantes
+
+```javascript
+// ❌ Mauvais
+function Bad() {
+  const [count, setCount] = useState(0);
+
+  useEffect(() => {
+    console.log(count); // count utilisé mais pas dans les dépendances !
+  }, []);
+
+  return <div>{count}</div>;
+}
+
+// ✅ Bon
+function Good() {
+  const [count, setCount] = useState(0);
+
+  useEffect(() => {
+    console.log(count);
+  }, [count]); // count dans les dépendances
+
+  return <div>{count}</div>;
+}
+```
+
+### Erreur 2 : Boucle Infinie
+
+```javascript
+// ❌ Boucle infinie !
+function InfiniteLoop() {
+  const [count, setCount] = useState(0);
+
+  useEffect(() => {
+    setCount(count + 1); // setCount → re-render → useEffect → setCount → ...
+  }, [count]);
+
+  return <div>{count}</div>;
+}
+
+// ✅ Solution : pas de dépendance si vous voulez un seul increment
+function Fixed() {
+  const [count, setCount] = useState(0);
+
+  useEffect(() => {
+    setCount(c => c + 1); // Une seule fois
+  }, []);
+
+  return <div>{count}</div>;
+}
+```
+
+### Erreur 3 : Oublier le Cleanup
+
+```javascript
+// ❌ Fuite mémoire
+function LeakyTimer() {
+  useEffect(() => {
+    setInterval(() => {
+      console.log('Tick');
+    }, 1000);
+    // Pas de cleanup → le timer continue après unmount
+  }, []);
+
+  return <div>Timer</div>;
+}
+
+// ✅ Avec cleanup
+function CleanTimer() {
+  useEffect(() => {
+    const id = setInterval(() => {
+      console.log('Tick');
+    }, 1000);
+
+    return () => clearInterval(id); // Cleanup
+  }, []);
+
+  return <div>Timer</div>;
+}
+```
+
+### Erreur 4 : async/await Direct
+
+```javascript
+// ❌ useEffect ne peut pas être async
+useEffect(async () => {
+  const data = await fetch('/api/data');
+}, []);
+
+// ✅ Créer une fonction async interne
+useEffect(() => {
+  async function fetchData() {
+    const data = await fetch('/api/data');
+  }
+
+  fetchData();
+}, []);
+
+// ✅ Ou avec .then()
+useEffect(() => {
+  fetch('/api/data')
+    .then(res => res.json())
+    .then(data => console.log(data));
+}, []);
+```
+
+<Callout type="warning" title="Pourquoi pas async direct ?">
+`useEffect` doit retourner une fonction de cleanup (ou rien).
+
+Si vous le rendez `async`, il retourne une Promise, ce qui n'est pas valide !
+
+```javascript
+// ❌ Retourne une Promise
+useEffect(async () => { ... });
+
+// ✅ Retourne undefined ou une fonction
+useEffect(() => {
+  // ...
+  return () => cleanup();
+});
+```
+</Callout>
+
+## Quand Utiliser useEffect ?
+
+<div className="overflow-x-auto my-6">
+
+| Cas d'Usage | Exemple | Dépendances |
+|-------------|---------|-------------|
+| **Mount uniquement** | Fetch initial, init | `[]` |
+| **Sur changement** | Fetch quand ID change | `[id]` |
+| **Sync avec props/state** | Update document.title | `[title]` |
+| **Timer/Interval** | Horloge, countdown | `[]` avec cleanup |
+| **Event listener** | Resize, scroll | `[]` avec cleanup |
+| **Abonnement** | WebSocket, chat | `[roomId]` avec cleanup |
+
+</div>
+
+<Callout type="success" title="Récapitulatif">
+- **useEffect** = pour les side effects
+- **Dépendances** = contrôlent quand l'effet s'exécute
+- **`[]`** = une fois au mount
+- **`[value]`** = quand value change
+- **Cleanup** = retour d'une fonction pour nettoyer
+- **Pas async direct** = créer une fonction async interne
+- **Toutes les dépendances** = règle d'or pour éviter les bugs
+</Callout>
+
+## Prochaine Étape
+
+Maintenant que vous maîtrisez `useEffect`, découvrons son usage le plus courant : **récupérer des données depuis des APIs** !

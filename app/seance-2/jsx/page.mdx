@@ -1,0 +1,504 @@
+# JSX - JavaScript XML
+
+JSX est la syntaxe qui rend React si agréable à utiliser. C'est un mélange de JavaScript et d'HTML.
+
+## Qu'est-ce que JSX ?
+
+**JSX** = **J**ava**S**cript + **X**ML
+
+C'est une extension syntaxique de JavaScript qui permet d'écrire du code ressemblant à du HTML directement dans JavaScript.
+
+```jsx
+// Du JSX
+const element = <h1>Bonjour, monde !</h1>;
+```
+
+<Callout type="info" title="Transpilation">
+Le navigateur ne comprend **pas** JSX nativement. Vite utilise **Babel** ou **SWC** pour transformer le JSX en JavaScript standard.
+
+```jsx
+// JSX que vous écrivez
+const element = <h1>Bonjour, monde !</h1>;
+
+// JavaScript généré
+const element = React.createElement('h1', null, 'Bonjour, monde !');
+```
+
+Heureusement, cette transformation est **automatique** !
+</Callout>
+
+## JSX vs HTML : Les différences
+
+JSX ressemble à HTML, mais avec quelques différences importantes.
+
+### 1. `className` au lieu de `class`
+
+En JavaScript, `class` est un mot réservé, donc React utilise `className`.
+
+```jsx
+// ❌ HTML (ne fonctionne pas en JSX)
+<div class="container">Contenu</div>
+
+// ✅ JSX
+<div className="container">Contenu</div>
+```
+
+### 2. `htmlFor` au lieu de `for`
+
+Même logique pour les labels de formulaire.
+
+```jsx
+// ❌ HTML
+<label for="email">Email</label>
+
+// ✅ JSX
+<label htmlFor="email">Email</label>
+```
+
+### 3. Balises auto-fermantes obligatoires
+
+En JSX, **toutes** les balises doivent être fermées.
+
+```jsx
+// ❌ Ne fonctionne pas
+<img src="photo.jpg">
+<input type="text">
+<br>
+
+// ✅ Correct
+<img src="photo.jpg" />
+<input type="text" />
+<br />
+```
+
+### 4. camelCase pour les attributs
+
+Les attributs utilisent la notation camelCase.
+
+```jsx
+// ❌ HTML
+<button onclick="handleClick()">Cliquez</button>
+
+// ✅ JSX
+<button onClick={handleClick}>Cliquez</button>
+```
+
+**Exemples courants :**
+- `onclick` → `onClick`
+- `onchange` → `onChange`
+- `tabindex` → `tabIndex`
+- `maxlength` → `maxLength`
+
+## Les règles essentielles du JSX
+
+### Règle 1 : Un seul élément parent
+
+Un composant ne peut retourner **qu'un seul élément** racine.
+
+```jsx
+// ❌ Erreur : Plusieurs éléments racines
+function App() {
+  return (
+    <h1>Titre</h1>
+    <p>Paragraphe</p>
+  );
+}
+
+// ✅ Solution 1 : Envelopper dans une div
+function App() {
+  return (
+    <div>
+      <h1>Titre</h1>
+      <p>Paragraphe</p>
+    </div>
+  );
+}
+
+// ✅ Solution 2 : Utiliser un Fragment
+function App() {
+  return (
+    <>
+      <h1>Titre</h1>
+      <p>Paragraphe</p>
+    </>
+  );
+}
+```
+
+<Callout type="tip" title="Fragments">
+`<>...</>` est un raccourci pour `<React.Fragment>...</React.Fragment>`.
+
+Les fragments permettent de grouper des éléments **sans ajouter de nœud supplémentaire** dans le DOM.
+
+```jsx
+// ✅ Sans Fragment (ajoute une div dans le DOM)
+<div>
+  <h1>Titre</h1>
+  <p>Texte</p>
+</div>
+
+// ✅ Avec Fragment (pas de nœud supplémentaire)
+<>
+  <h1>Titre</h1>
+  <p>Texte</p>
+</>
+```
+</Callout>
+
+### Règle 2 : Expressions JavaScript avec `{}`
+
+Utilisez `{}` pour insérer des **expressions** JavaScript dans le JSX.
+
+```jsx
+function Greeting() {
+  const name = 'Alice';
+  const age = 25;
+
+  return (
+    <div>
+      <h1>Bonjour {name} !</h1>
+      <p>Tu as {age} ans</p>
+      <p>Dans 5 ans, tu auras {age + 5} ans</p>
+    </div>
+  );
+}
+```
+
+**Ce qui fonctionne dans `{}` :**
+
+```jsx
+// ✅ Variables
+<p>{name}</p>
+
+// ✅ Expressions
+<p>{2 + 2}</p>
+<p>{user.firstName + ' ' + user.lastName}</p>
+
+// ✅ Appels de fonction
+<p>{calculateTotal()}</p>
+
+// ✅ Opérateurs ternaires
+<p>{isLoggedIn ? 'Connecté' : 'Déconnecté'}</p>
+
+// ✅ Méthodes de tableaux
+<ul>{users.map(user => <li key={user.id}>{user.name}</li>)}</ul>
+```
+
+**Ce qui ne fonctionne PAS :**
+
+```jsx
+// ❌ Déclarations (if, for, while, etc.)
+<p>{if (isLoggedIn) { 'Connecté' }}</p>
+
+// ❌ Objets directement (sauf React elements)
+<p>{{name: 'Alice'}}</p>
+```
+
+<Callout type="warning" title="Erreur courante">
+Vous ne pouvez pas afficher des **objets** directement en JSX.
+
+```jsx
+const user = { name: 'Alice', age: 25 };
+
+// ❌ Erreur : Objects are not valid as a React child
+<p>{user}</p>
+
+// ✅ Correct : Afficher une propriété
+<p>{user.name}</p>
+
+// ✅ Correct : Convertir en string
+<p>{JSON.stringify(user)}</p>
+```
+</Callout>
+
+### Règle 3 : Style inline avec objet JavaScript
+
+Le style inline utilise un **objet JavaScript**, pas une chaîne.
+
+```jsx
+// ❌ HTML (ne fonctionne pas en JSX)
+<div style="color: red; font-size: 20px">Texte</div>
+
+// ✅ JSX
+<div style={{ color: 'red', fontSize: '20px' }}>Texte</div>
+```
+
+**Points importants :**
+- Double accolades : `{{}}` (une pour JSX, une pour l'objet)
+- Propriétés en camelCase : `font-size` → `fontSize`
+- Valeurs en chaînes : `'20px'` ou nombres : `20`
+
+```jsx
+const buttonStyle = {
+  backgroundColor: 'blue',
+  color: 'white',
+  padding: '10px 20px',
+  border: 'none',
+  borderRadius: '5px',
+  cursor: 'pointer'
+};
+
+function Button() {
+  return <button style={buttonStyle}>Cliquez-moi</button>;
+}
+```
+
+<Callout type="tip" title="Préférez les classes CSS">
+Pour des raisons de performance et de maintenabilité, privilégiez les classes CSS au style inline.
+
+```jsx
+// ⚠️ OK mais pas idéal
+<div style={{ color: 'red' }}>Texte</div>
+
+// ✅ Mieux
+<div className="text-red">Texte</div>
+```
+</Callout>
+
+## Commentaires en JSX
+
+Les commentaires dans JSX utilisent `{/* */}`.
+
+```jsx
+function App() {
+  return (
+    <div>
+      {/* Ceci est un commentaire JSX */}
+      <h1>Titre</h1>
+
+      {/*
+        Commentaire
+        sur plusieurs
+        lignes
+      */}
+      <p>Paragraphe</p>
+    </div>
+  );
+}
+```
+
+<Callout type="warning" title="Attention">
+```jsx
+// ❌ Ne fonctionne pas
+<div>
+  // Ceci n'est pas un commentaire
+  <h1>Titre</h1>
+</div>
+
+// ✅ Correct
+<div>
+  {/* Ceci est un commentaire */}
+  <h1>Titre</h1>
+</div>
+```
+</Callout>
+
+## Attributs dynamiques
+
+Vous pouvez calculer les valeurs des attributs avec `{}`.
+
+```jsx
+function UserCard({ user }) {
+  const imageUrl = `/images/${user.id}.jpg`;
+  const altText = `Photo de ${user.name}`;
+
+  return (
+    <div>
+      <img
+        src={imageUrl}
+        alt={altText}
+        className={user.isPremium ? 'premium' : 'standard'}
+      />
+      <h2>{user.name}</h2>
+    </div>
+  );
+}
+```
+
+### Spread des attributs
+
+Vous pouvez passer plusieurs attributs d'un coup avec le spread operator.
+
+```jsx
+function Input(props) {
+  const inputProps = {
+    type: 'text',
+    placeholder: 'Entrez votre nom',
+    className: 'input-field'
+  };
+
+  return <input {...inputProps} />;
+}
+
+// Équivalent à :
+// <input type="text" placeholder="Entrez votre nom" className="input-field" />
+```
+
+## JSX et les listes
+
+Pour afficher des listes, utilisez `.map()`.
+
+```jsx
+function UserList() {
+  const users = ['Alice', 'Bob', 'Charlie'];
+
+  return (
+    <ul>
+      {users.map(user => (
+        <li key={user}>{user}</li>
+      ))}
+    </ul>
+  );
+}
+```
+
+<Callout type="warning" title="La prop key est obligatoire">
+Chaque élément d'une liste **doit** avoir une prop `key` unique.
+
+```jsx
+// ❌ Warning : Each child should have a unique "key" prop
+<ul>
+  {users.map(user => <li>{user}</li>)}
+</ul>
+
+// ✅ Correct
+<ul>
+  {users.map(user => <li key={user.id}>{user.name}</li>)}
+</ul>
+```
+
+**Pourquoi ?** React utilise les keys pour identifier quels éléments ont changé, afin d'optimiser le rendu.
+</Callout>
+
+## Exemples pratiques
+
+### Exemple 1 : Carte de profil
+
+```jsx
+function ProfileCard() {
+  const user = {
+    name: 'Alice Dupont',
+    bio: 'Développeuse frontend',
+    avatar: 'https://i.pravatar.cc/150?img=1',
+    isOnline: true
+  };
+
+  return (
+    <div className="profile-card">
+      <img src={user.avatar} alt={user.name} />
+      <h2>{user.name}</h2>
+      <p>{user.bio}</p>
+      <span className={user.isOnline ? 'online' : 'offline'}>
+        {user.isOnline ? '🟢 En ligne' : '⚫ Hors ligne'}
+      </span>
+    </div>
+  );
+}
+```
+
+### Exemple 2 : Liste de produits
+
+```jsx
+function ProductList() {
+  const products = [
+    { id: 1, name: 'Laptop', price: 999 },
+    { id: 2, name: 'Souris', price: 25 },
+    { id: 3, name: 'Clavier', price: 75 }
+  ];
+
+  return (
+    <div>
+      <h2>Nos produits</h2>
+      <ul>
+        {products.map(product => (
+          <li key={product.id}>
+            {product.name} - {product.price}€
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
+}
+```
+
+### Exemple 3 : Conditionnel avec ternaire
+
+```jsx
+function WelcomeMessage({ isLoggedIn, username }) {
+  return (
+    <div>
+      {isLoggedIn ? (
+        <h1>Bienvenue, {username} !</h1>
+      ) : (
+        <h1>Veuillez vous connecter</h1>
+      )}
+    </div>
+  );
+}
+```
+
+## Pièges courants
+
+<Callout type="error" title="Erreurs fréquentes">
+**1. Oublier de fermer les balises**
+```jsx
+// ❌ Erreur
+<img src="photo.jpg">
+
+// ✅ Correct
+<img src="photo.jpg" />
+```
+
+**2. Utiliser `class` au lieu de `className`**
+```jsx
+// ❌ Erreur
+<div class="container">
+
+// ✅ Correct
+<div className="container">
+```
+
+**3. Oublier les accolades pour les expressions**
+```jsx
+// ❌ Affiche littéralement "name"
+<p>name</p>
+
+// ✅ Affiche la valeur de name
+<p>{name}</p>
+```
+
+**4. Retourner plusieurs éléments sans parent**
+```jsx
+// ❌ Erreur
+return (
+  <h1>Titre</h1>
+  <p>Texte</p>
+);
+
+// ✅ Correct
+return (
+  <>
+    <h1>Titre</h1>
+    <p>Texte</p>
+  </>
+);
+```
+</Callout>
+
+## Récapitulatif
+
+<Callout type="success" title="Ce que vous avez appris">
+Vous maîtrisez maintenant :
+
+- ✅ Ce qu'est JSX et comment il fonctionne
+- ✅ Les différences entre JSX et HTML
+- ✅ Les règles essentielles du JSX
+- ✅ Comment insérer des expressions avec `{}`
+- ✅ Les fragments pour éviter les div inutiles
+- ✅ Le style inline avec des objets JavaScript
+- ✅ Les commentaires en JSX
+- ✅ Les attributs dynamiques
+- ✅ Afficher des listes avec `.map()`
+
+**Prochaine étape :** Créer vos propres composants React !
+</Callout>

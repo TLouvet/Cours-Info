@@ -1,0 +1,201 @@
+# Introduction à l'interactivité - Séance 3
+
+Bienvenue dans la séance 3 ! Vous allez apprendre à créer des applications React **interactives** qui répondent aux actions de l'utilisateur.
+
+## Qu'est-ce que l'interactivité ?
+
+Jusqu'à présent, vous avez créé des composants React **statiques** : ils affichent des données, mais ne changent pas. L'interactivité, c'est la capacité d'un composant à **réagir** aux actions de l'utilisateur et **modifier son apparence** en conséquence.
+
+```jsx
+// Composant statique (Séance 2)
+function Welcome() {
+  return <h1>Bonjour !</h1>;
+}
+
+// Composant interactif (Séance 3)
+function Counter() {
+  const [count, setCount] = useState(0);
+
+  return (
+    <div>
+      <p>Compteur : {count}</p>
+      <button onClick={() => setCount(count + 1)}>
+        Incrémenter
+      </button>
+    </div>
+  );
+}
+```
+
+<Callout type="info" title="Ce que vous allez apprendre">
+À la fin de cette séance, vous serez capable de :
+
+- Gérer les événements utilisateur (clics, saisies, soumissions)
+- Utiliser le hook `useState` pour ajouter de la mémoire aux composants
+- Créer des formulaires contrôlés
+- Valider les données saisies
+- Partager l'état entre composants
+- Construire des interfaces utilisateur réactives
+</Callout>
+
+## Les deux piliers de l'interactivité
+
+### 1. Les événements
+
+Les événements permettent de **détecter** les actions de l'utilisateur :
+
+```jsx
+// Clic sur un bouton
+<button onClick={handleClick}>Cliquer</button>
+
+// Saisie dans un input
+<input onChange={handleChange} />
+
+// Soumission d'un formulaire
+<form onSubmit={handleSubmit}>...</form>
+```
+
+### 2. L'état (state)
+
+L'état permet de **mémoriser** des informations et de **déclencher un nouveau rendu** quand elles changent :
+
+```jsx
+import { useState } from 'react';
+
+function Example() {
+  // Déclaration d'une variable d'état
+  const [value, setValue] = useState(0);
+
+  return (
+    <div>
+      <p>Valeur : {value}</p>
+      <button onClick={() => setValue(value + 1)}>
+        +1
+      </button>
+    </div>
+  );
+}
+```
+
+<Callout type="tip" title="Analogie">
+**Événement** = détecteur de mouvement
+**État (state)** = interrupteur avec mémoire
+
+Quand le détecteur capte un mouvement (clic), l'interrupteur change de position (état) et la lumière s'allume (nouveau rendu).
+</Callout>
+
+## State vs Props : quelle différence ?
+
+C'est une source de confusion fréquente pour les débutants. Voici la distinction :
+
+| | **Props** | **State** |
+|---|---|---|
+| **C'est quoi ?** | Arguments passés au composant | Mémoire interne du composant |
+| **Peut changer ?** | ❌ Non (immutable) | ✅ Oui (via setter) |
+| **Qui le contrôle ?** | Le composant parent | Le composant lui-même |
+| **Analogie** | Paramètres d'une fonction | Variables locales d'une fonction |
+
+```jsx
+// Props = données reçues du parent
+function Greeting({ name }) {
+  return <h1>Bonjour {name} !</h1>;
+}
+
+// State = données gérées par le composant
+function Counter() {
+  const [count, setCount] = useState(0);
+
+  return <p>Compteur : {count}</p>;
+}
+```
+
+<Callout type="warning" title="Erreur fréquente">
+**On ne peut pas modifier les props !**
+
+```jsx
+// ❌ INTERDIT
+function Greeting({ name }) {
+  name = "Alice"; // Erreur !
+  return <h1>Bonjour {name}</h1>;
+}
+
+// ✅ Utilisez le state pour les données modifiables
+function Greeting({ initialName }) {
+  const [name, setName] = useState(initialName);
+
+  return (
+    <div>
+      <h1>Bonjour {name}</h1>
+      <button onClick={() => setName("Alice")}>
+        Changer le nom
+      </button>
+    </div>
+  );
+}
+```
+</Callout>
+
+## Quand utiliser l'état ?
+
+Utilisez le state quand vous devez **mémoriser** une information qui peut **changer** suite à une action utilisateur :
+
+### ✅ Utilisez le state pour :
+
+- **Formulaires** : valeur d'un input, case cochée, option sélectionnée
+- **Affichage conditionnel** : menu ouvert/fermé, modal visible/cachée
+- **Données dynamiques** : liste de todos, panier d'achat
+- **Compteurs** : nombre de likes, score d'un jeu
+
+### ❌ N'utilisez PAS le state pour :
+
+- **Données dérivées** : calculez-les directement
+- **Props** : elles viennent déjà du parent
+- **Constantes** : utilisez des variables normales
+
+```jsx
+// ❌ Mauvais : utiliser le state pour une donnée dérivée
+function ProductList({ products }) {
+  const [count, setCount] = useState(products.length);
+  // count sera incorrect si products change !
+}
+
+// ✅ Bon : calculer directement
+function ProductList({ products }) {
+  const count = products.length; // Toujours à jour !
+}
+```
+
+## Le flux de données en React
+
+React suit un principe fondamental : **le flux de données unidirectionnel** (one-way data flow).
+
+```
+Parent (state)
+    ↓ props
+Enfant (affichage)
+    ↓ événement
+Parent (mise à jour state)
+    ↓ props
+Enfant (nouveau rendu)
+```
+
+<Callout type="info" title="Principe clé">
+- Les **props** descendent (parent → enfant)
+- Les **événements** remontent (enfant → parent)
+- L'**état** vit au niveau le plus haut nécessaire
+</Callout>
+
+## À venir dans cette séance
+
+Maintenant que vous comprenez les concepts de base, voici ce que nous allons voir :
+
+1. **Événements** : comment détecter les actions utilisateur
+2. **useState** : comment ajouter de la mémoire aux composants
+3. **Formulaires** : comment gérer des inputs contrôlés
+4. **Validation** : comment vérifier les données saisies
+5. **Lifting state up** : comment partager l'état entre composants
+6. **Exercices** : Todo List, formulaire de contact et plus !
+
+<Callout type="success" title="Prêt ?">
+Passez à la section suivante pour découvrir la gestion des événements en React !
+</Callout>

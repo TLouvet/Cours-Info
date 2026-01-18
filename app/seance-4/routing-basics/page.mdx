@@ -1,0 +1,592 @@
+# Bases du Routing
+
+Maintenant que vous comprenez le concept, voyons comment utiliser React Router concrètement.
+
+## Setup Initial
+
+### 1. Installer React Router
+
+```bash
+npm install react-router-dom
+```
+
+### 2. Envelopper l'App avec BrowserRouter
+
+```javascript
+// main.jsx ou index.js
+import React from 'react';
+import ReactDOM from 'react-dom/client';
+import { BrowserRouter } from 'react-router-dom';
+import App from './App';
+
+ReactDOM.createRoot(document.getElementById('root')).render(
+  <React.StrictMode>
+    <BrowserRouter>
+      <App />
+    </BrowserRouter>
+  </React.StrictMode>
+);
+```
+
+<Callout type="tip" title="Où mettre BrowserRouter ?">
+**Option 1 : Dans main.jsx** (recommandé)
+```javascript
+<BrowserRouter>
+  <App />
+</BrowserRouter>
+```
+
+**Option 2 : Dans App.jsx**
+```javascript
+function App() {
+  return (
+    <BrowserRouter>
+      {/* Routes */}
+    </BrowserRouter>
+  );
+}
+```
+
+Les deux fonctionnent, mais Option 1 est plus propre !
+</Callout>
+
+## Définir des Routes
+
+### Routes Simples
+
+```javascript
+// App.jsx
+import { Routes, Route } from 'react-router-dom';
+import Home from './pages/Home';
+import About from './pages/About';
+import Contact from './pages/Contact';
+
+function App() {
+  return (
+    <div>
+      <Routes>
+        <Route path="/" element={<Home />} />
+        <Route path="/about" element={<About />} />
+        <Route path="/contact" element={<Contact />} />
+      </Routes>
+    </div>
+  );
+}
+
+export default App;
+```
+
+<Callout type="info" title="Syntaxe Route">
+```javascript
+<Route path="/url" element={<Component />} />
+```
+
+- **path** : L'URL qui active cette route
+- **element** : Le composant à afficher
+
+**Important :** `element` prend un **élément JSX**, pas un composant !
+
+```javascript
+// ✅ Bon
+<Route path="/" element={<Home />} />
+
+// ❌ Mauvais
+<Route path="/" element={Home} />
+<Route path="/" component={Home} /> // v5 syntax, obsolète
+```
+</Callout>
+
+### Index Route
+
+Pour la page d'accueil, vous pouvez utiliser `path="/"` ou `index` :
+
+```javascript
+<Routes>
+  <Route path="/" element={<Layout />}>
+    {/* Ces deux sont équivalents pour la page d'accueil */}
+    <Route path="/" element={<Home />} />
+    {/* OU */}
+    <Route index element={<Home />} />
+
+    <Route path="about" element={<About />} />
+  </Route>
+</Routes>
+```
+
+## Navigation avec Link
+
+Pour créer des liens entre pages, utilisez `<Link>`.
+
+```javascript
+import { Link } from 'react-router-dom';
+
+function Navigation() {
+  return (
+    <nav>
+      <ul>
+        <li>
+          <Link to="/">Accueil</Link>
+        </li>
+        <li>
+          <Link to="/about">À propos</Link>
+        </li>
+        <li>
+          <Link to="/contact">Contact</Link>
+        </li>
+      </ul>
+    </nav>
+  );
+}
+```
+
+<Callout type="warning" title="Link vs <a>">
+**Utilisez toujours `<Link>` pour la navigation interne !**
+
+```javascript
+// ❌ Recharge la page
+<a href="/about">About</a>
+
+// ✅ Navigation SPA (sans rechargement)
+<Link to="/about">About</Link>
+
+// ✅ Pour les liens externes, utilisez <a>
+<a href="https://google.com" target="_blank">Google</a>
+```
+</Callout>
+
+### NavLink : Link avec Style Actif
+
+`NavLink` est comme `Link`, mais avec un style automatique pour le lien actif.
+
+```javascript
+import { NavLink } from 'react-router-dom';
+
+function Navigation() {
+  return (
+    <nav>
+      <NavLink
+        to="/"
+        className={({ isActive }) => (isActive ? 'active' : '')}
+      >
+        Home
+      </NavLink>
+
+      <NavLink
+        to="/about"
+        className={({ isActive }) => (isActive ? 'active' : '')}
+      >
+        About
+      </NavLink>
+    </nav>
+  );
+}
+
+// CSS
+// .active { color: blue; font-weight: bold; }
+```
+
+**Syntaxe plus simple avec style inline :**
+
+```javascript
+<NavLink
+  to="/about"
+  style={({ isActive }) => ({
+    color: isActive ? 'blue' : 'black',
+    fontWeight: isActive ? 'bold' : 'normal'
+  })}
+>
+  About
+</NavLink>
+```
+
+<Callout type="tip" title="Quand utiliser NavLink ?">
+**NavLink** : Pour la navigation principale où vous voulez montrer la page active
+
+**Link** : Pour tous les autres liens
+
+```javascript
+// Navigation principale → NavLink
+<nav>
+  <NavLink to="/">Home</NavLink>
+  <NavLink to="/about">About</NavLink>
+</nav>
+
+// Liens dans le contenu → Link
+<p>
+  Voir notre <Link to="/blog">blog</Link> pour plus d'infos.
+</p>
+```
+</Callout>
+
+## Navigation Programmatique
+
+Parfois, vous devez naviguer depuis du code JavaScript (pas un clic de lien).
+
+### useNavigate Hook
+
+```javascript
+import { useNavigate } from 'react-router-dom';
+
+function LoginForm() {
+  const navigate = useNavigate();
+  const [username, setUsername] = useState('');
+
+  function handleSubmit(e) {
+    e.preventDefault();
+
+    // Faire la validation...
+    if (username) {
+      // Rediriger vers le dashboard
+      navigate('/dashboard');
+    }
+  }
+
+  return (
+    <form onSubmit={handleSubmit}>
+      <input
+        value={username}
+        onChange={(e) => setUsername(e.target.value)}
+        placeholder="Username"
+      />
+      <button type="submit">Se connecter</button>
+    </form>
+  );
+}
+```
+
+### Cas d'Usage de navigate()
+
+```javascript
+const navigate = useNavigate();
+
+// Naviguer vers une URL
+navigate('/products');
+
+// Naviguer en arrière (comme le bouton retour)
+navigate(-1);
+
+// Naviguer en avant
+navigate(1);
+
+// Remplacer l'historique (pas de bouton retour possible)
+navigate('/login', { replace: true });
+
+// Passer des données à la page suivante
+navigate('/profile', { state: { from: 'login' } });
+```
+
+<Callout type="info" title="navigate vs Link">
+**`<Link>` :** Pour les liens cliquables (UI)
+
+```javascript
+<Link to="/about">About</Link>
+```
+
+**`navigate()` :** Pour la navigation programmatique (logique)
+
+```javascript
+// Après une action
+handleSubmit() {
+  // ... validation
+  navigate('/success');
+}
+
+// Redirection conditionnelle
+if (!isLoggedIn) {
+  navigate('/login');
+}
+```
+</Callout>
+
+## Layouts & Routes Imbriquées
+
+Pour partager un layout commun entre plusieurs routes.
+
+### Sans Layouts (Répétitif)
+
+```javascript
+// ❌ Répétition du Header et Footer
+function Home() {
+  return (
+    <div>
+      <Header />
+      <main>Page d'accueil</main>
+      <Footer />
+    </div>
+  );
+}
+
+function About() {
+  return (
+    <div>
+      <Header />
+      <main>À propos</main>
+      <Footer />
+    </div>
+  );
+}
+```
+
+### Avec Layouts (DRY)
+
+```javascript
+import { Outlet } from 'react-router-dom';
+
+// Layout commun
+function Layout() {
+  return (
+    <div>
+      <Header />
+      <main>
+        <Outlet /> {/* Le contenu de la route enfant s'affiche ici */}
+      </main>
+      <Footer />
+    </div>
+  );
+}
+
+// Pages (sans Header/Footer)
+function Home() {
+  return <h1>Page d'accueil</h1>;
+}
+
+function About() {
+  return <h1>À propos</h1>;
+}
+
+// Routes
+function App() {
+  return (
+    <Routes>
+      <Route path="/" element={<Layout />}>
+        <Route index element={<Home />} />
+        <Route path="about" element={<About />} />
+        <Route path="contact" element={<Contact />} />
+      </Route>
+    </Routes>
+  );
+}
+```
+
+**Résultat :**
+```
+/ → Layout (Header + Home + Footer)
+/about → Layout (Header + About + Footer)
+/contact → Layout (Header + Contact + Footer)
+```
+
+<Callout type="success" title="Outlet">
+`<Outlet />` est un placeholder pour les routes enfants.
+
+```javascript
+function Layout() {
+  return (
+    <div>
+      <Header />
+      <Outlet /> {/* Ici s'affiche <Home />, <About />, etc. */}
+      <Footer />
+    </div>
+  );
+}
+```
+
+C'est l'équivalent de `{children}` mais pour le routing !
+</Callout>
+
+## Page 404 (Not Found)
+
+Gérer les URLs invalides avec une route "catch-all".
+
+```javascript
+function NotFound() {
+  return (
+    <div>
+      <h1>404 - Page non trouvée</h1>
+      <p>La page que vous cherchez n'existe pas.</p>
+      <Link to="/">Retour à l'accueil</Link>
+    </div>
+  );
+}
+
+function App() {
+  return (
+    <Routes>
+      <Route path="/" element={<Home />} />
+      <Route path="/about" element={<About />} />
+
+      {/* Route catch-all : doit être en dernier */}
+      <Route path="*" element={<NotFound />} />
+    </Routes>
+  );
+}
+```
+
+<Callout type="info" title="path=*">
+`path="*"` match **n'importe quelle URL** qui ne correspond pas aux routes précédentes.
+
+**Important :** Mettez-la toujours en **dernier** !
+
+```javascript
+<Routes>
+  <Route path="/" element={<Home />} />
+  <Route path="/about" element={<About />} />
+  <Route path="*" element={<NotFound />} /> {/* En dernier */}
+</Routes>
+```
+</Callout>
+
+## Exemple Complet
+
+```javascript
+// App.jsx
+import { Routes, Route, Link } from 'react-router-dom';
+import { Outlet } from 'react-router-dom';
+
+// Layout
+function Layout() {
+  return (
+    <div>
+      <header>
+        <h1>Mon Site</h1>
+        <nav>
+          <Link to="/">Home</Link>
+          <Link to="/about">About</Link>
+          <Link to="/blog">Blog</Link>
+          <Link to="/contact">Contact</Link>
+        </nav>
+      </header>
+
+      <main>
+        <Outlet />
+      </main>
+
+      <footer>
+        <p>&copy; 2025 Mon Site</p>
+      </footer>
+    </div>
+  );
+}
+
+// Pages
+function Home() {
+  return <h2>Bienvenue !</h2>;
+}
+
+function About() {
+  return <h2>À propos de nous</h2>;
+}
+
+function Blog() {
+  return <h2>Blog</h2>;
+}
+
+function Contact() {
+  const navigate = useNavigate();
+
+  function handleSubmit(e) {
+    e.preventDefault();
+    // ... envoyer le message
+    navigate('/'); // Rediriger vers home
+  }
+
+  return (
+    <div>
+      <h2>Contactez-nous</h2>
+      <form onSubmit={handleSubmit}>
+        <input type="email" placeholder="Email" />
+        <textarea placeholder="Message" />
+        <button type="submit">Envoyer</button>
+      </form>
+    </div>
+  );
+}
+
+function NotFound() {
+  return (
+    <div>
+      <h2>404 - Page non trouvée</h2>
+      <Link to="/">Retour à l'accueil</Link>
+    </div>
+  );
+}
+
+// App
+function App() {
+  return (
+    <Routes>
+      <Route path="/" element={<Layout />}>
+        <Route index element={<Home />} />
+        <Route path="about" element={<About />} />
+        <Route path="blog" element={<Blog />} />
+        <Route path="contact" element={<Contact />} />
+        <Route path="*" element={<NotFound />} />
+      </Route>
+    </Routes>
+  );
+}
+
+export default App;
+```
+
+## Organisation des Fichiers
+
+```
+src/
+├── pages/
+│   ├── Home.jsx
+│   ├── About.jsx
+│   ├── Blog.jsx
+│   ├── Contact.jsx
+│   └── NotFound.jsx
+├── components/
+│   ├── Layout.jsx
+│   ├── Header.jsx
+│   ├── Footer.jsx
+│   └── Navigation.jsx
+├── App.jsx
+└── main.jsx
+```
+
+<Callout type="tip" title="Convention">
+**pages/** : Composants qui sont des "pages" (une par route)
+
+**components/** : Composants réutilisables (Header, Button, Card, etc.)
+
+**layouts/** : Layouts communs (MainLayout, AdminLayout, etc.)
+</Callout>
+
+## Récapitulatif
+
+<Callout type="success" title="Ce qu'il faut retenir">
+**Setup :**
+```javascript
+<BrowserRouter>
+  <App />
+</BrowserRouter>
+```
+
+**Routes :**
+```javascript
+<Routes>
+  <Route path="/" element={<Home />} />
+  <Route path="/about" element={<About />} />
+  <Route path="*" element={<NotFound />} />
+</Routes>
+```
+
+**Navigation :**
+- `<Link to="/about">` pour les liens cliquables
+- `<NavLink>` pour les liens avec style actif
+- `navigate()` pour la navigation programmatique
+
+**Layouts :**
+- Routes imbriquées avec `<Outlet />`
+- Partager Header/Footer entre pages
+
+**404 :**
+- `<Route path="*" element={<NotFound />} />` en dernier
+</Callout>
+
+## Prochaine Étape
+
+Maintenant que vous maîtrisez les bases du routing, découvrons les **routes dynamiques** avec paramètres d'URL !

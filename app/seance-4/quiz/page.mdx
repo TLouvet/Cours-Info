@@ -1,0 +1,303 @@
+# Quiz de Validation - Séance 4
+
+Testez vos connaissances sur les effets et le routing ! Ce quiz couvre tous les concepts vus durant la Séance 4.
+
+<Callout type="info" title="À propos de ce quiz">
+- **20 questions** couvrant tous les sujets de la Séance 4
+- Réponses avec explications détaillées
+- Validez votre compréhension avant de passer à la Séance 5
+- Aucune note n'est enregistrée, c'est pour votre apprentissage !
+</Callout>
+
+## Side Effects & Cycle de Vie
+
+<QuickCheck
+  question="1. Qu'est-ce qu'un side effect en React ?"
+  options={[
+    "Une opération qui interagit avec le monde extérieur au composant",
+    "Une erreur dans le code",
+    "Un effet visuel CSS",
+    "Une fonction qui retourne du JSX"
+  ]}
+  correctAnswer={0}
+  explanation="✅ Un side effect est toute opération qui interagit avec quelque chose en dehors du composant : API calls, DOM manipulation, timers, localStorage, etc. ❌ Ce n'est PAS une erreur - le terme 'effect' vient de 'effet de bord'. ❌ Rien à voir avec CSS. ❌ Retourner du JSX fait partie du rendu, pas un side effect. Les side effects sont nécessaires mais doivent être gérés avec useEffect."
+/>
+
+<QuickCheck
+  question="2. Pourquoi ne doit-on PAS faire de side effects directement dans le corps du composant ?"
+  options={[
+    "Ils s'exécutent à chaque rendu et peuvent causer des boucles infinies",
+    "C'est interdit par JavaScript",
+    "Ça ralentit toujours l'application",
+    "React ne permet pas les fonctions asynchrones"
+  ]}
+  correctAnswer={0}
+  explanation="✅ Les side effects dans le corps du composant s'exécutent à chaque rendu. Si un side effect modifie l'état (ex: fetch → setData), ça déclenche un re-render → fetch → setData → boucle infinie ! ❌ JavaScript l'autorise, mais c'est une mauvaise pratique en React. ❌ Pas toujours lent, mais dangereux et non contrôlé. ❌ React permet l'async, mais dans useEffect, pas directement dans le render."
+/>
+
+<QuickCheck
+  question="3. Quelles sont les 3 phases du cycle de vie d'un composant ?"
+  options={[
+    "Mount, Update, Unmount",
+    "Start, Run, Stop",
+    "Create, Modify, Delete",
+    "Init, Render, Destroy"
+  ]}
+  correctAnswer={0}
+  explanation="✅ Mount (création et ajout au DOM), Update (re-render quand état/props changent), Unmount (retrait du DOM). ❌ Start/Run/Stop ne sont pas les termes officiels React. ❌ Create/Modify/Delete sont des opérations CRUD, pas le lifecycle. ❌ Init/Render/Destroy ne sont pas les termes standard React. Connaître ces phases est crucial pour comprendre quand useEffect s'exécute."
+/>
+
+## useEffect - Syntaxe & Dépendances
+
+<QuickCheck
+  question="4. Que fait useEffect(() => { console.log('Hello') }) sans deuxième argument ?"
+  options={[
+    "S'exécute après chaque rendu",
+    "S'exécute une seule fois au mount",
+    "Ne s'exécute jamais",
+    "Provoque une erreur"
+  ]}
+  correctAnswer={0}
+  explanation="✅ Sans tableau de dépendances, useEffect s'exécute après CHAQUE rendu (mount + tous les updates). ❌ Pour s'exécuter une fois, il faut useEffect(() => {}, []). ❌ Il s'exécute bel et bien. ❌ Ce n'est pas une erreur, mais rarement ce qu'on veut (performance). Pattern rarement utilisé en pratique."
+/>
+
+<QuickCheck
+  question="5. Que signifie useEffect(() => { fetch(url) }, []) ?"
+  options={[
+    "S'exécute une seule fois au mount",
+    "S'exécute à chaque rendu",
+    "S'exécute quand url change",
+    "Ne s'exécute jamais"
+  ]}
+  correctAnswer={0}
+  explanation="✅ Le tableau vide [] signifie 'aucune dépendance' → l'effet s'exécute UNE SEULE FOIS au montage du composant. ❌ Sans tableau ça s'exécute à chaque rendu. ❌ Pour réagir à url, il faut useEffect(() => {}, [url]). ❌ Il s'exécute bien, mais seulement au mount. C'est le pattern le plus courant pour fetch initial."
+/>
+
+<QuickCheck
+  question="6. Que se passe-t-il si on utilise une variable dans useEffect sans la mettre dans les dépendances ?"
+  options={[
+    "L'effet utilise toujours la valeur initiale de la variable",
+    "React génère une erreur",
+    "La variable est automatiquement ajoutée aux dépendances",
+    "Rien, ça fonctionne normalement"
+  ]}
+  correctAnswer={0}
+  explanation="✅ L'effet capture (closure) la valeur de la variable lors de sa création. Si la variable change, l'effet ne se re-exécute pas et continue d'utiliser l'ancienne valeur. ❌ React warning en mode strict, pas une erreur bloquante. ❌ React n'ajoute PAS automatiquement - vous devez le faire. ❌ Ça 'fonctionne' mais avec des bugs subtils (valeurs obsolètes). Toujours mettre toutes les variables utilisées dans les dépendances !"
+/>
+
+<QuickCheck
+  question="7. Comment faire un fetch de données dans useEffect ?"
+  options={[
+    "Créer une fonction async interne et l'appeler",
+    "Rendre le callback de useEffect async directement",
+    "Utiliser .then() sans async/await",
+    "Les deux premières options fonctionnent"
+  ]}
+  correctAnswer={0}
+  explanation="✅ Le pattern correct : useEffect(() => { async function fetchData() { ... } fetchData(); }, []). On NE PEUT PAS rendre le callback useEffect async directement. ❌ useEffect(async () => {}) ne fonctionne PAS - le callback doit retourner void ou une fonction cleanup, pas une Promise. ❌ .then() fonctionne mais async/await est plus propre. ❌ Seulement la première option est correcte."
+/>
+
+## Cleanup
+
+<QuickCheck
+  question="8. À quoi sert la fonction de cleanup dans useEffect ?"
+  options={[
+    "Nettoyer les ressources avant le prochain effect ou unmount",
+    "Supprimer le composant du DOM",
+    "Annuler le rendu en cours",
+    "Réinitialiser l'état à zéro"
+  ]}
+  correctAnswer={0}
+  explanation="✅ Le cleanup (return () => {...}) s'exécute AVANT le prochain effect ou au unmount. Utilisé pour clearInterval, clearTimeout, unsubscribe, abort fetch, etc. ❌ Le cleanup ne supprime pas le composant, c'est React qui s'en charge. ❌ On ne peut pas annuler un rendu en cours. ❌ Il ne réinitialise pas l'état automatiquement. Le cleanup évite les fuites mémoire (memory leaks)."
+/>
+
+<QuickCheck
+  question="9. Quel est le bon pattern pour un timer avec useEffect ?"
+  options={[
+    "useEffect(() => { const id = setInterval(...); return () => clearInterval(id); }, [])",
+    "useEffect(() => { setInterval(...); }, [])",
+    "useEffect(() => { clearInterval(setInterval(...)); }, [])",
+    "setInterval(() => { useEffect(...) }, 1000)"
+  ]}
+  correctAnswer={0}
+  explanation="✅ Toujours stocker l'ID du timer et le clearInterval dans le cleanup : useEffect(() => { const id = setInterval(...); return () => clearInterval(id); }, []). ❌ Sans cleanup, le timer continue même après unmount → fuite mémoire ! ❌ clearInterval immédiat annule le timer avant qu'il ne démarre. ❌ On ne peut PAS appeler useEffect dans un timer (Hooks uniquement au top-level). Le cleanup est CRUCIAL pour les timers."
+/>
+
+## Data Fetching
+
+<QuickCheck
+  question="10. Quelle est la bonne structure pour gérer loading et error lors d'un fetch ?"
+  options={[
+    "Trois états : loading (boolean), error (string|null), data (array|null)",
+    "Un seul état : status ('idle'|'loading'|'success'|'error')",
+    "Deux états : loading (boolean), data (array)",
+    "Les deux premières options sont valides"
+  ]}
+  correctAnswer={3}
+  explanation="✅ Les DEUX patterns sont valides et courants ! Pattern 1 : const [loading, setLoading] = useState(true); const [error, setError] = useState(null); const [data, setData] = useState(null). Pattern 2 : const [status, setStatus] = useState('idle'). ❌ Deux états seulement ne suffisent pas - on doit gérer les erreurs. Les deux approches sont utilisées en pratique selon les préférences."
+/>
+
+<QuickCheck
+  question="11. Que retourne fetch('https://api.example.com/data') ?"
+  options={[
+    "Une Promise qui se résout avec un objet Response",
+    "Directement les données JSON",
+    "Une chaîne de caractères",
+    "Un tableau d'objets"
+  ]}
+  correctAnswer={0}
+  explanation="✅ fetch() retourne une Promise<Response>. Il faut ensuite appeler response.json() pour parser le JSON → Promise<Data>. ❌ Il ne retourne PAS directement le JSON - deux étapes : await fetch() puis await response.json(). ❌ Pas une string. ❌ Pas un tableau. N'oubliez jamais la deuxième étape : .json() !"
+/>
+
+<QuickCheck
+  question="12. Pourquoi doit-on faire await response.json() après le fetch ?"
+  options={[
+    "Pour parser le corps de la réponse en objet JavaScript",
+    "Pour attendre que le serveur réponde",
+    "Pour valider que les données sont correctes",
+    "C'est optionnel, on peut l'omettre"
+  ]}
+  correctAnswer={0}
+  explanation="✅ response.json() parse le corps de la réponse (texte JSON) en objet JavaScript utilisable. C'est aussi asynchrone, donc await. ❌ await fetch() attend déjà la réponse du serveur. ❌ .json() ne valide pas les données, juste les parse. ❌ Ce n'est PAS optionnel - sans .json() vous avez un Response, pas vos données ! Deux étapes : fetch (réseau) → json() (parsing)."
+/>
+
+## React Router - Bases
+
+<QuickCheck
+  question="13. Quelle est la différence entre <a href='/about'> et <Link to='/about'> ?"
+  options={[
+    "<a> recharge la page, <Link> navigue sans rechargement (SPA)",
+    "Aucune différence, ils font la même chose",
+    "<Link> est plus rapide que <a>",
+    "<a> est obsolète en React"
+  ]}
+  correctAnswer={0}
+  explanation="✅ <a href='/about'> recharge toute la page (requête HTTP, perte d'état). <Link to='/about'> change l'URL et le composant affiché SANS rechargement (SPA). ❌ Énorme différence ! <a> casse l'expérience SPA. ❌ Ce n'est pas juste une question de vitesse, c'est le principe des SPA. ❌ <a> n'est pas obsolète, mais ne l'utilisez PAS pour la navigation interne en React. Toujours <Link> pour la navigation !"
+/>
+
+<QuickCheck
+  question="14. Que fait <BrowserRouter> ?"
+  options={[
+    "Enveloppe l'application pour activer le routing",
+    "Crée automatiquement toutes les routes",
+    "Gère uniquement l'historique du navigateur",
+    "Remplace React.StrictMode"
+  ]}
+  correctAnswer={0}
+  explanation="✅ <BrowserRouter> est le wrapper qui active le routing pour toute l'app. Il doit envelopper <Routes> et <Route>. ❌ Il ne crée PAS les routes automatiquement - vous devez les définir avec <Route>. ❌ Il gère l'historique mais fait plus (contexte routing, URL sync, etc.). ❌ Il ne remplace pas StrictMode, les deux sont indépendants. Toujours wrapper l'app avec <BrowserRouter> en premier."
+/>
+
+<QuickCheck
+  question="15. Quelle syntaxe pour définir une route vers le composant About à l'URL /about ?"
+  options={[
+    "<Route path='/about' element={<About />} />",
+    "<Route url='/about' component={<About />} />",
+    "<Route to='/about'><About /></Route>",
+    "<Link path='/about' element={<About />} />"
+  ]}
+  correctAnswer={0}
+  explanation="✅ La syntaxe correcte : <Route path='/about' element={<About />} />. 'path' définit l'URL, 'element' le composant à afficher. ❌ 'url' et 'component' ne sont pas les props correctes (c'était l'ancienne API React Router v5). ❌ <Route> n'a pas de children JSX pour le composant. ❌ <Link> est pour la NAVIGATION, pas pour DÉFINIR des routes. Route = définir, Link = naviguer."
+/>
+
+## Routes Dynamiques
+
+<QuickCheck
+  question="16. Que signifie <Route path='/users/:userId' element={<User />} /> ?"
+  options={[
+    "Route dynamique où :userId est un paramètre variable",
+    "Route qui affiche tous les utilisateurs avec l'ID userId",
+    ":userId est une typo, il faut écrire {userId}",
+    "Route qui n'accepte que les IDs numériques"
+  ]}
+  correctAnswer={0}
+  explanation="✅ Le : devant userId indique un paramètre dynamique. /users/1, /users/42, /users/abc matchent tous cette route. ❌ Ce n'est pas une liste d'utilisateurs, c'est UNE route qui match plusieurs URLs. ❌ La syntaxe :param est correcte en React Router (pas de {}). ❌ Le paramètre accepte n'importe quelle valeur (string, number, etc.). Utilisez useParams() pour récupérer la valeur."
+/>
+
+<QuickCheck
+  question="17. Comment récupérer le paramètre userId de l'URL /users/42 dans le composant ?"
+  options={[
+    "const { userId } = useParams()",
+    "const userId = props.match.params.userId",
+    "const userId = window.location.pathname.split('/')[2]",
+    "const userId = useRoute().params.userId"
+  ]}
+  correctAnswer={0}
+  explanation="✅ useParams() est le hook React Router pour récupérer les paramètres d'URL : const { userId } = useParams(). ❌ props.match est l'ancienne API (React Router v5), plus utilisée en v6. ❌ Parsing manuel de window.location fonctionne mais c'est moche et fragile. ❌ useRoute() n'existe pas en React Router. Toujours utiliser useParams() en React Router v6."
+/>
+
+<QuickCheck
+  question="18. Quel est le bon pattern pour fetch des données basées sur un paramètre d'URL ?"
+  options={[
+    "useEffect(() => { fetch(`/api/users/${userId}`); }, [userId])",
+    "useEffect(() => { fetch(`/api/users/${userId}`); }, [])",
+    "useEffect(() => { const { userId } = useParams(); fetch(`/api/users/${userId}`); }, [])",
+    "fetch(`/api/users/${userId}`) directement dans le render"
+  ]}
+  correctAnswer={0}
+  explanation="✅ Mettre userId dans les dépendances : useEffect(() => { fetch(`/api/users/${userId}`); }, [userId]). Comme ça, re-fetch quand userId change. ❌ Avec [], l'effet ne se re-exécute jamais, même si userId change → bug ! ❌ useParams() doit être au top-level du composant, pas dans useEffect. ❌ Fetch dans le render = boucle infinie. Toujours inclure les params d'URL dans les dépendances !"
+/>
+
+## Combiner Effects & Routing
+
+<QuickCheck
+  question="19. Que se passe-t-il quand on navigue de /users/1 à /users/2 avec le même composant ?"
+  options={[
+    "Le composant ne se démonte pas, seules les props/params changent",
+    "Le composant se démonte et se remonte complètement",
+    "React recharge toute la page",
+    "L'URL change mais le composant ne réagit pas"
+  ]}
+  correctAnswer={0}
+  explanation="✅ Si c'est le MÊME composant (UserProfile), React ne le démonte pas, il met juste à jour les params. useEffect avec [userId] en dépendances se re-déclenche. ❌ Le composant ne se démonte PAS (pas de cleanup → mount, juste update). ❌ React Router ne recharge JAMAIS la page (SPA). ❌ Le composant réagit si vous avez bien mis userId dans les dépendances. C'est pourquoi les dépendances sont cruciales !"
+/>
+
+<QuickCheck
+  question="20. Pourquoi est-il important de combiner useEffect et routing ?"
+  options={[
+    "Pour charger automatiquement les bonnes données selon l'URL",
+    "C'est obligatoire, React Router ne fonctionne pas sans useEffect",
+    "Pour améliorer les performances",
+    "Pour éviter les bugs de routing"
+  ]}
+  correctAnswer={0}
+  explanation="✅ Combiner useEffect + useParams permet de synchroniser les données avec l'URL : quand l'URL change (/users/1 → /users/2), useEffect re-fetch les nouvelles données automatiquement. ❌ Ce n'est PAS obligatoire - Router fonctionne sans useEffect, mais c'est moins utile (pages statiques seulement). ❌ Pas directement pour la performance. ❌ Ça ne prévient pas les bugs de routing. C'est LE pattern pour créer des pages dynamiques !"
+/>
+
+---
+
+## Résultats
+
+<Callout type="success" title="Félicitations !">
+Si vous avez répondu correctement à la plupart des questions, vous êtes prêt(e) pour la **Séance 5 - Projet Final & IA** !
+
+**Score cible :** Au moins 17/20 pour passer confortablement à la Séance 5.
+</Callout>
+
+<Callout type="warning" title="Besoin de réviser ?">
+Si vous avez eu des difficultés avec certaines questions, prenez le temps de réviser les sections correspondantes :
+
+- **Side Effects & Cycle de Vie** → [Introduction aux Side Effects](/seance-4/introduction)
+- **useEffect** → [Le Hook useEffect](/seance-4/useEffect)
+- **Data Fetching** → [Récupération de Données](/seance-4/data-fetching)
+- **React Router Basics** → [Bases du Routing](/seance-4/routing-basics)
+- **Routes Dynamiques** → [Routes Dynamiques](/seance-4/dynamic-routes)
+- **Combiner Effects & Routing** → [Combiner useEffect & Routing](/seance-4/combining)
+</Callout>
+
+## Prochaines étapes
+
+<div className="grid grid-cols-1 md:grid-cols-2 gap-4 my-6">
+  <a href="/seance-4/exercises" className="block p-4 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg hover:border-cyan-500 dark:hover:border-cyan-500 transition-colors">
+    <h3 className="font-semibold text-gray-900 dark:text-gray-100 mb-2">📝 Refaire les exercices</h3>
+    <p className="text-sm text-gray-600 dark:text-gray-400">Pratiquez avec les exercices de la Séance 4</p>
+  </a>
+
+  <a href="/seance-5" className="block p-4 bg-cyan-50 dark:bg-cyan-900/20 border border-cyan-200 dark:border-cyan-800 rounded-lg hover:border-cyan-500 dark:hover:border-cyan-500 transition-colors">
+    <h3 className="font-semibold text-gray-900 dark:text-gray-100 mb-2">🚀 Séance 5 - Projet Final</h3>
+    <p className="text-sm text-gray-600 dark:text-gray-400">Appliquez tout ce que vous avez appris !</p>
+  </a>
+</div>
+
+<Callout type="tip" title="Conseil">
+N'hésitez pas à refaire ce quiz plusieurs fois jusqu'à obtenir 20/20 sans regarder les explications. C'est le signe que vous maîtrisez vraiment les concepts !
+</Callout>

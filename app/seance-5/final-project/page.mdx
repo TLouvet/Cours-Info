@@ -1,0 +1,487 @@
+# Projet Final
+
+Le projet final est votre opportunité de démontrer toutes les compétences acquises durant ce cours.
+
+<Callout type="info" title="Objectif">
+Construire une application React complète et fonctionnelle, déployée en production, qui utilise les concepts vus dans les 5 séances.
+
+**Ce projet comptera pour votre évaluation finale.**
+</Callout>
+
+## Format du projet
+
+### Modalités
+
+- **Individuel** ou **en binôme** (2 personnes maximum)
+- **Durée :** 2 semaines après la dernière séance
+- **Rendu :** Via Moodle
+
+### Ce que vous devez rendre
+
+1. **Lien GitHub** - Repository public avec le code source
+2. **Lien de déploiement** - Application déployée sur Vercel/Netlify
+3. **README.md** - Documentation complète (voir plus bas)
+
+<Callout type="warning">
+**Date limite :** [À définir par l'enseignant]
+
+Les retards seront pénalisés : -2 points par jour de retard.
+</Callout>
+
+## Options de projets
+
+Choisissez **l'un des projets suivants** ou proposez votre propre idée (à faire valider).
+
+### Option 1 : Recipe Manager
+
+Application de gestion de recettes de cuisine.
+
+**Fonctionnalités requises :**
+- Ajouter/Modifier/Supprimer des recettes
+- Chaque recette contient :
+  - Nom, image, temps de préparation
+  - Liste d'ingrédients
+  - Instructions étape par étape
+  - Catégorie (entrée, plat, dessert)
+  - Difficulté (facile, moyen, difficile)
+- Recherche par nom ou ingrédient
+- Filtrage par catégorie et difficulté
+- Page de détails pour chaque recette
+- Marquer des recettes comme favorites
+- Persistance avec localStorage
+
+**Bonus (optionnel) :**
+- Calculateur de portions (ajuster les quantités)
+- Liste de courses générée depuis une recette
+- Notes et commentaires sur les recettes
+- Timer de cuisine intégré
+
+### Option 2 : Expense Tracker
+
+Application de suivi de dépenses personnelles.
+
+**Fonctionnalités requises :**
+- Ajouter/Modifier/Supprimer des dépenses
+- Chaque dépense contient :
+  - Montant, date, catégorie
+  - Description
+  - Type (dépense ou revenu)
+- Catégories prédéfinies (alimentation, transport, loisirs, etc.)
+- Vue par liste et par mois
+- Statistiques :
+  - Total des dépenses du mois
+  - Répartition par catégorie (avec graphique simple)
+  - Budget restant si défini
+- Filtrage par catégorie et période
+- Persistance avec localStorage
+
+**Bonus (optionnel) :**
+- Graphiques avec une bibliothèque (Chart.js, Recharts)
+- Définir un budget mensuel par catégorie
+- Alertes si budget dépassé
+- Export des données en CSV
+
+### Option 3 : Workout Logger
+
+Application de suivi d'entraînements sportifs.
+
+**Fonctionnalités requises :**
+- Ajouter/Modifier/Supprimer des séances d'entraînement
+- Chaque séance contient :
+  - Date, durée, type (cardio, musculation, yoga, etc.)
+  - Exercices réalisés
+  - Notes/ressenti
+- Créer et sauvegarder des routines d'entraînement
+- Calendrier des séances (vue liste ou grille)
+- Statistiques :
+  - Nombre de séances par semaine/mois
+  - Temps total d'entraînement
+  - Exercices les plus pratiqués
+- Filtrage par type d'entraînement
+- Persistance avec localStorage
+
+**Bonus (optionnel) :**
+- Graphique de progression
+- Timer pour les exercices
+- Photos avant/après
+- Objectifs et suivi de progression
+
+### Option 4 : Votre propre idée
+
+Vous avez une idée de projet ? **Proposez-la !**
+
+**Critères pour une idée personnelle :**
+- Doit utiliser les concepts du cours (voir ci-dessous)
+- Complexité équivalente aux options proposées
+- **Doit être validée par l'enseignant avant de commencer**
+
+**Comment proposer :**
+1. Décrivez votre idée en 3-5 phrases
+2. Listez les fonctionnalités principales (min. 5)
+3. Envoyez par email ou demandez validation en cours
+
+## Exigences techniques
+
+### Obligatoires (requis pour valider le projet)
+
+<Callout type="error" title="Requirements">
+Votre projet **DOIT** inclure :
+
+✅ **React et Vite**
+- Application créée avec Vite
+- Composants fonctionnels (pas de class components)
+
+✅ **State Management**
+- useState pour la gestion d'état local
+- Minimum 3 états différents
+
+✅ **Side Effects**
+- useEffect pour au moins un use case
+  - Exemples : localStorage, fetch API, event listeners
+
+✅ **Routing**
+- React Router avec minimum 3 pages/routes
+  - Exemple : Home, Add/Edit, Detail
+
+✅ **Formulaires**
+- Au moins un formulaire avec validation
+- Inputs contrôlés (controlled components)
+- Gestion des erreurs de validation
+
+✅ **Liste dynamique**
+- Affichage de données avec .map()
+- Keys uniques sur chaque élément
+
+✅ **Persistance**
+- localStorage OU appels API (minimum)
+
+✅ **Responsive Design**
+- Fonctionne sur mobile et desktop
+- Testable avec DevTools responsive mode
+
+✅ **Déploiement**
+- Application déployée sur Vercel ou Netlify
+- Lien public fonctionnel
+
+✅ **Code propre**
+- Pas d'erreurs dans la console
+- Code indenté et lisible
+- Conventions de nommage respectées
+</Callout>
+
+### Recommandées (pour un meilleur score)
+
+<Callout type="tip" title="Bonnes pratiques">
+Pour obtenir une excellente note, ajoutez :
+
+⭐ **Custom Hooks**
+- Au moins un custom hook réutilisable
+
+⭐ **Composition de composants**
+- Composants petits et réutilisables
+- Props bien structurées
+
+⭐ **Gestion d'erreur**
+- États de chargement (loading states)
+- Messages d'erreur clairs
+- Cas limites gérés (listes vides, etc.)
+
+⭐ **UX/UI**
+- Interface intuitive et agréable
+- Feedback visuel (confirmations, animations)
+- Navigation fluide
+
+⭐ **Performance**
+- Pas de re-renders inutiles
+- Code optimisé
+
+⭐ **Documentation**
+- README complet et clair
+- Commentaires pour le code complexe
+- Instructions de setup détaillées
+</Callout>
+
+## Structure du README
+
+Votre README.md doit contenir :
+
+### Template README
+
+```markdown
+# [Nom du Projet]
+
+Description courte de votre application (2-3 phrases).
+
+![Screenshot](./screenshot.png)
+*Ajoutez une capture d'écran de votre application*
+
+## 🚀 Démo en ligne
+
+[Lien vers l'application déployée](https://votre-app.vercel.app)
+
+## 📋 Fonctionnalités
+
+- [ ] Fonctionnalité 1
+- [ ] Fonctionnalité 2
+- [ ] Fonctionnalité 3
+- [ ] Fonctionnalité 4
+- [ ] Fonctionnalité 5
+
+## 🛠️ Technologies utilisées
+
+- React 18
+- React Router
+- Vite
+- [Autres bibliothèques si vous en utilisez]
+
+## 📦 Installation
+
+### Prérequis
+
+- Node.js 16+ installé
+- npm ou yarn
+
+### Étapes
+
+1. Cloner le repository
+\`\`\`bash
+git clone https://github.com/votre-username/votre-projet.git
+cd votre-projet
+\`\`\`
+
+2. Installer les dépendances
+\`\`\`bash
+npm install
+\`\`\`
+
+3. Lancer en développement
+\`\`\`bash
+npm run dev
+\`\`\`
+
+4. Ouvrir http://localhost:5173
+
+## 🏗️ Build
+
+Pour créer un build de production :
+
+\`\`\`bash
+npm run build
+npm run preview
+\`\`\`
+
+## 📁 Structure du projet
+
+\`\`\`
+src/
+├── components/     # Composants réutilisables
+├── pages/          # Pages/Routes
+├── hooks/          # Custom hooks
+├── utils/          # Fonctions utilitaires
+├── App.jsx
+└── main.jsx
+\`\`\`
+
+## 🎯 Défis rencontrés
+
+*Optionnel : Décrivez 1-2 défis et comment vous les avez résolus*
+
+## 📚 Ce que j'ai appris
+
+*Optionnel : Listez 2-3 choses nouvelles que vous avez apprises*
+
+## 👤 Auteur
+
+- [Votre Nom]
+- [Email ou GitHub]
+- [Binôme si applicable]
+
+## 📄 Licence
+
+Ce projet a été créé dans le cadre du cours R4A10 - Compléments Web (IUT).
+```
+
+## Grille d'évaluation
+
+Voici comment votre projet sera évalué :
+
+### Fonctionnalités (40 points)
+
+- ✅ Toutes les fonctionnalités requises sont présentes (20 pts)
+- ✅ Les fonctionnalités fonctionnent correctement (10 pts)
+- ✅ Gestion des cas limites et erreurs (5 pts)
+- ✅ Fonctionnalités bonus (5 pts)
+
+### Code et Architecture (30 points)
+
+- ✅ Code propre et bien organisé (10 pts)
+- ✅ Composants bien structurés (5 pts)
+- ✅ Bonnes pratiques React (hooks, props, state) (10 pts)
+- ✅ Pas d'erreurs dans la console (5 pts)
+
+### UI/UX (15 points)
+
+- ✅ Interface utilisable et intuitive (5 pts)
+- ✅ Design soigné (5 pts)
+- ✅ Responsive (mobile + desktop) (5 pts)
+
+### Déploiement (10 points)
+
+- ✅ Application déployée et accessible (5 pts)
+- ✅ Pas de bugs en production (5 pts)
+
+### Documentation (5 points)
+
+- ✅ README complet et clair (3 pts)
+- ✅ Code commenté si nécessaire (2 pts)
+
+**Total : 100 points**
+
+<Callout type="success">
+**Note finale :** La note sera sur 20, convertie proportionnellement.
+
+- 90-100 pts → 18-20/20 (Excellent)
+- 75-89 pts → 15-17/20 (Très bien)
+- 60-74 pts → 12-14/20 (Bien)
+- 50-59 pts → 10-11/20 (Passable)
+- < 50 pts → < 10/20 (Insuffisant)
+</Callout>
+
+## Conseils pour réussir
+
+### Planification
+
+1. **Choisissez votre projet rapidement** (jour 1)
+2. **Faites un plan** :
+   - Liste des fonctionnalités
+   - Structure des données
+   - Liste des composants nécessaires
+3. **Commencez simple** :
+   - Version basique qui fonctionne d'abord
+   - Ajoutez des features progressivement
+
+### Développement
+
+1. **Créez la structure de base** :
+   - Setup Vite + React Router
+   - Pages vides
+   - Navigation
+
+2. **Développez feature par feature** :
+   - Une fonctionnalité à la fois
+   - Testez immédiatement
+   - Committez régulièrement
+
+3. **Testez constamment** :
+   - Après chaque feature
+   - Sur différents navigateurs
+   - En mode responsive
+
+### Avant de rendre
+
+<Callout type="warning" title="Checklist finale">
+- [ ] Toutes les features fonctionnent
+- [ ] Aucune erreur dans la console
+- [ ] Testé sur mobile et desktop
+- [ ] Application déployée et accessible
+- [ ] README complet avec screenshot
+- [ ] Code nettoyé (pas de console.log inutiles)
+- [ ] Repository GitHub public
+- [ ] .env ajouté au .gitignore
+</Callout>
+
+## Questions fréquentes
+
+**Q : Puis-je utiliser des bibliothèques CSS comme Tailwind ?**
+R : Oui, absolument ! Tailwind, Bootstrap, ou CSS pur sont tous acceptés.
+
+**Q : Puis-je utiliser une API externe ?**
+R : Oui, mais ce n'est pas obligatoire. localStorage suffit pour la persistance.
+
+**Q : Puis-je réutiliser du code du projet guidé ?**
+R : Vous pouvez vous inspirer de la structure, mais votre projet doit être différent.
+
+**Q : Combien de temps ça prend ?**
+R : En moyenne 8-12 heures pour un projet de qualité. Répartissez sur les 2 semaines.
+
+**Q : Puis-je changer de projet en cours de route ?**
+R : Non, choisissez bien dès le début pour éviter de perdre du temps.
+
+**Q : L'application doit-elle avoir un backend ?**
+R : Non, localStorage est suffisant. Un backend est un bonus mais pas requis.
+
+**Q : Que faire si je bloque ?**
+R :
+1. Consultez la documentation React
+2. Demandez à l'IA (ChatGPT, Claude)
+3. Cherchez sur Stack Overflow
+4. Envoyez un email à l'enseignant
+
+## Ressources utiles
+
+**Documentation :**
+- [React Documentation](https://react.dev)
+- [React Router](https://reactrouter.com)
+- [Vite Guide](https://vitejs.dev/guide/)
+
+**Inspiration UI :**
+- [Dribbble](https://dribbble.com/)
+- [Behance](https://www.behance.net/)
+- [Tailwind UI](https://tailwindui.com/components)
+
+**Aide au développement :**
+- [MDN Web Docs](https://developer.mozilla.org)
+- [Stack Overflow](https://stackoverflow.com/)
+- ChatGPT / Claude pour des questions spécifiques
+
+**Déploiement :**
+- [Vercel](https://vercel.com)
+- [Netlify](https://netlify.com)
+
+## Exemples de projets réussis
+
+<Callout type="tip" title="Inspirations">
+Voici des exemples de projets qui ont obtenu d'excellentes notes :
+
+**Todo App avancée**
+- Catégories de tâches
+- Drag & drop pour réorganiser
+- Statistiques de productivité
+- Mode sombre
+
+**Portfolio personnel**
+- Présentation de projets
+- Blog intégré
+- Formulaire de contact
+- Animations fluides
+
+**Quiz App**
+- Plusieurs catégories
+- Timer par question
+- Score et résultats
+- Historique des tentatives
+
+**Music Player UI**
+- Interface similaire à Spotify
+- Playlists personnalisées
+- Contrôles audio
+- Design moderne
+</Callout>
+
+## Soutenance (optionnel)
+
+Une soutenance de 10 minutes pourra être organisée où vous présenterez :
+
+1. **Démo** (5 min) - Montrez les fonctionnalités
+2. **Code** (3 min) - Expliquez les parties intéressantes
+3. **Questions** (2 min) - Répondez aux questions
+
+<Callout type="success" title="Bon courage !">
+Ce projet est votre opportunité de montrer tout ce que vous avez appris.
+
+**Prenez du plaisir à créer quelque chose dont vous serez fier !**
+
+N'oubliez pas : la créativité et la qualité comptent plus que la complexité. Une application simple mais très bien réalisée vaut mieux qu'une application complexe pleine de bugs.
+
+**Bonne chance !** 🚀
+</Callout>

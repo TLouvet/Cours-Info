@@ -1,0 +1,489 @@
+# Autres Hooks Utiles
+
+Au-delà de useState et useEffect, React offre d'autres hooks pour des cas d'usage spécifiques. Découvrons les plus importants.
+
+<Callout type="info">
+Ces hooks sont moins fréquemment utilisés que useState/useEffect, mais très utiles dans certaines situations.
+</Callout>
+
+## useRef
+
+Le hook useRef permet de **créer une référence** qui persiste entre les rendus sans déclencher de re-render.
+
+### Cas d'usage 1 : Accéder aux éléments DOM
+
+```jsx
+function TextInput() {
+  const inputRef = useRef(null);
+
+  const focusInput = () => {
+    // Accès direct à l'élément DOM
+    inputRef.current.focus();
+  };
+
+  return (
+    <div>
+      <input ref={inputRef} type="text" placeholder="Tapez ici..." />
+      <button onClick={focusInput}>Focus sur l'input</button>
+    </div>
+  );
+}
+```
+
+**Autres exemples DOM :**
+
+```jsx
+function VideoPlayer() {
+  const videoRef = useRef(null);
+
+  const play = () => videoRef.current.play();
+  const pause = () => videoRef.current.pause();
+
+  return (
+    <div>
+      <video ref={videoRef} src="video.mp4" />
+      <button onClick={play}>Play</button>
+      <button onClick={pause}>Pause</button>
+    </div>
+  );
+}
+```
+
+### Cas d'usage 2 : Stocker des valeurs mutables
+
+useRef est parfait pour stocker des valeurs qui **ne doivent pas déclencher de re-render**.
+
+```jsx
+function Timer() {
+  const [count, setCount] = useState(0);
+  const intervalRef = useRef(null);
+
+  const startTimer = () => {
+    // Stocker l'ID de l'intervalle dans la ref
+    intervalRef.current = setInterval(() => {
+      setCount(c => c + 1);
+    }, 1000);
+  };
+
+  const stopTimer = () => {
+    // Utiliser la ref pour arrêter l'intervalle
+    clearInterval(intervalRef.current);
+  };
+
+  useEffect(() => {
+    // Cleanup quand le composant est démonté
+    return () => clearInterval(intervalRef.current);
+  }, []);
+
+  return (
+    <div>
+      <p>Timer: {count}s</p>
+      <button onClick={startTimer}>Start</button>
+      <button onClick={stopTimer}>Stop</button>
+    </div>
+  );
+}
+```
+
+### useRef vs useState
+
+<Callout type="warning" title="Différence importante">
+**useState :**
+- Déclenche un re-render quand la valeur change
+- Pour les données affichées dans l'UI
+
+**useRef :**
+- NE déclenche PAS de re-render
+- Pour les valeurs techniques (timers, références DOM, etc.)
+</Callout>
+
+**Exemple comparatif :**
+
+```jsx
+function Counter() {
+  const [stateCount, setStateCount] = useState(0); // Re-render
+  const refCount = useRef(0); // Pas de re-render
+
+  const incrementState = () => {
+    setStateCount(stateCount + 1); // ✅ Le UI se met à jour
+  };
+
+  const incrementRef = () => {
+    refCount.current = refCount.current + 1; // ❌ Le UI ne change pas
+    console.log('Ref count:', refCount.current);
+  };
+
+  return (
+    <div>
+      <p>State count (visible): {stateCount}</p>
+      <p>Ref count (pas visible): {refCount.current}</p>
+      <button onClick={incrementState}>Increment State</button>
+      <button onClick={incrementRef}>Increment Ref</button>
+    </div>
+  );
+}
+```
+
+### Cas d'usage 3 : Stocker la valeur précédente
+
+```jsx
+function usePrevious(value) {
+  const ref = useRef();
+
+  useEffect(() => {
+    ref.current = value;
+  }, [value]);
+
+  return ref.current;
+}
+
+// Utilisation
+function Counter() {
+  const [count, setCount] = useState(0);
+  const previousCount = usePrevious(count);
+
+  return (
+    <div>
+      <p>Actuel: {count}</p>
+      <p>Précédent: {previousCount}</p>
+      <button onClick={() => setCount(count + 1)}>Increment</button>
+    </div>
+  );
+}
+```
+
+## useMemo
+
+useMemo **mémorise le résultat d'un calcul** pour éviter de le recalculer à chaque render.
+
+### Quand utiliser useMemo ?
+
+<Callout type="tip">
+Utilisez useMemo seulement quand :
+- Le calcul est **vraiment coûteux** (filtrage/tri de grandes listes, calculs complexes)
+- Vous avez identifié un **problème de performance**
+
+**Ne l'utilisez pas par défaut !** C'est une optimisation prématurée.
+</Callout>
+
+### Exemple sans useMemo
+
+```jsx
+function ProductList({ products }) {
+  // ❌ Ce calcul se fait à CHAQUE render, même si products n'a pas changé
+  const expensiveProducts = products.filter(p => p.price > 1000);
+  const sortedProducts = [...expensiveProducts].sort((a, b) => b.price - a.price);
+
+  return (
+    <ul>
+      {sortedProducts.map(p => (
+        <li key={p.id}>{p.name} - {p.price}€</li>
+      ))}
+    </ul>
+  );
+}
+```
+
+### Exemple avec useMemo
+
+```jsx
+function ProductList({ products }) {
+  // ✅ Le calcul ne se fait que si products change
+  const sortedProducts = useMemo(() => {
+    console.log('Calcul en cours...');
+    const expensive = products.filter(p => p.price > 1000);
+    return expensive.sort((a, b) => b.price - a.price);
+  }, [products]); // Dépendance : refait le calcul si products change
+
+  return (
+    <ul>
+      {sortedProducts.map(p => (
+        <li key={p.id}>{p.name} - {p.price}€</li>
+      ))}
+    </ul>
+  );
+}
+```
+
+### Exemple pratique
+
+```jsx
+function DataAnalysis({ data }) {
+  // Calcul coûteux - seulement si data change
+  const statistics = useMemo(() => {
+    if (!data || data.length === 0) return null;
+
+    const sum = data.reduce((acc, val) => acc + val, 0);
+    const avg = sum / data.length;
+    const max = Math.max(...data);
+    const min = Math.min(...data);
+
+    return { sum, avg, max, min };
+  }, [data]);
+
+  if (!statistics) return <p>Pas de données</p>;
+
+  return (
+    <div>
+      <p>Somme: {statistics.sum}</p>
+      <p>Moyenne: {statistics.avg}</p>
+      <p>Max: {statistics.max}</p>
+      <p>Min: {statistics.min}</p>
+    </div>
+  );
+}
+```
+
+## useCallback
+
+useCallback **mémorise une fonction** pour éviter de la recréer à chaque render.
+
+### Pourquoi mémoriser une fonction ?
+
+En JavaScript, deux fonctions avec le même code sont considérées **différentes** :
+
+```javascript
+const func1 = () => console.log('Hello');
+const func2 = () => console.log('Hello');
+
+console.log(func1 === func2); // false !
+```
+
+Donc à chaque render, React crée de **nouvelles fonctions**, ce qui peut causer des re-renders inutiles.
+
+### Exemple sans useCallback
+
+```jsx
+function ParentComponent() {
+  const [count, setCount] = useState(0);
+
+  // ❌ Cette fonction est recréée à CHAQUE render
+  const handleClick = () => {
+    console.log('Clicked!');
+  };
+
+  return (
+    <div>
+      <p>Count: {count}</p>
+      <button onClick={() => setCount(count + 1)}>Increment</button>
+      <ChildComponent onClick={handleClick} />
+    </div>
+  );
+}
+
+// ChildComponent se re-render même si rien n'a changé pour lui
+function ChildComponent({ onClick }) {
+  console.log('Child rendered');
+  return <button onClick={onClick}>Click me</button>;
+}
+```
+
+### Exemple avec useCallback
+
+```jsx
+function ParentComponent() {
+  const [count, setCount] = useState(0);
+
+  // ✅ La fonction est mémorisée
+  const handleClick = useCallback(() => {
+    console.log('Clicked!');
+  }, []); // Dépendances vides = fonction créée une seule fois
+
+  return (
+    <div>
+      <p>Count: {count}</p>
+      <button onClick={() => setCount(count + 1)}>Increment</button>
+      <ChildComponent onClick={handleClick} />
+    </div>
+  );
+}
+
+// Avec React.memo, ChildComponent ne se re-render pas inutilement
+const ChildComponent = React.memo(({ onClick }) => {
+  console.log('Child rendered');
+  return <button onClick={onClick}>Click me</button>;
+});
+```
+
+### useCallback avec dépendances
+
+```jsx
+function SearchComponent() {
+  const [query, setQuery] = useState('');
+  const [filter, setFilter] = useState('all');
+
+  // La fonction est recréée seulement si query ou filter change
+  const handleSearch = useCallback(() => {
+    console.log('Searching for:', query, 'with filter:', filter);
+    // Appel API avec query et filter
+  }, [query, filter]);
+
+  return (
+    <div>
+      <input value={query} onChange={(e) => setQuery(e.target.value)} />
+      <select value={filter} onChange={(e) => setFilter(e.target.value)}>
+        <option value="all">Tous</option>
+        <option value="active">Actifs</option>
+      </select>
+      <SearchButton onSearch={handleSearch} />
+    </div>
+  );
+}
+```
+
+## Quand utiliser ces hooks ?
+
+<Callout type="warning" title="N'optimisez pas trop tôt">
+**Règle générale :** Commencez sans optimisation, optimisez seulement si nécessaire.
+
+Ces hooks ajoutent de la complexité. Ne les utilisez que si vous avez un **vrai problème de performance**.
+</Callout>
+
+### Checklist d'utilisation
+
+**useRef :**
+- ✅ Accéder aux éléments DOM
+- ✅ Stocker des timers/intervalles
+- ✅ Stocker des valeurs qui ne doivent pas trigger de re-render
+- ✅ Stocker la valeur précédente d'une prop/state
+
+**useMemo :**
+- ✅ Calculs très coûteux (filtrage/tri de grandes listes)
+- ✅ Création d'objets/tableaux complexes
+- ✅ Performance identifiée comme problème
+- ❌ Calculs simples
+- ❌ Par défaut "au cas où"
+
+**useCallback :**
+- ✅ Fonctions passées à des composants mémorisés (React.memo)
+- ✅ Dépendances dans useEffect
+- ✅ Performance identifiée comme problème
+- ❌ Par défaut sur toutes les fonctions
+- ❌ Si le composant enfant n'est pas mémorisé
+
+## Exemples pratiques complets
+
+### Exemple 1 : Scroll automatique
+
+```jsx
+function ChatMessages({ messages }) {
+  const messagesEndRef = useRef(null);
+
+  // Scroll vers le bas quand de nouveaux messages arrivent
+  useEffect(() => {
+    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+  }, [messages]);
+
+  return (
+    <div className="messages">
+      {messages.map(msg => (
+        <div key={msg.id}>{msg.text}</div>
+      ))}
+      <div ref={messagesEndRef} />
+    </div>
+  );
+}
+```
+
+### Exemple 2 : Recherche avec debounce et memo
+
+```jsx
+function SearchProducts({ products }) {
+  const [searchTerm, setSearchTerm] = useState('');
+
+  // Mémorise le résultat du filtrage
+  const filteredProducts = useMemo(() => {
+    if (!searchTerm) return products;
+    return products.filter(p =>
+      p.name.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+  }, [products, searchTerm]);
+
+  // Mémorise la fonction de recherche
+  const handleSearch = useCallback((term) => {
+    setSearchTerm(term);
+  }, []);
+
+  return (
+    <div>
+      <SearchInput onSearch={handleSearch} />
+      <ProductList products={filteredProducts} />
+    </div>
+  );
+}
+```
+
+### Exemple 3 : Formulaire avec focus
+
+```jsx
+function LoginForm() {
+  const emailRef = useRef(null);
+  const passwordRef = useRef(null);
+
+  // Focus sur email au mount
+  useEffect(() => {
+    emailRef.current.focus();
+  }, []);
+
+  const handleSubmit = useCallback((e) => {
+    e.preventDefault();
+
+    const email = emailRef.current.value;
+    const password = passwordRef.current.value;
+
+    if (!email) {
+      emailRef.current.focus();
+      return;
+    }
+
+    if (!password) {
+      passwordRef.current.focus();
+      return;
+    }
+
+    // Submit form
+    console.log('Login:', { email, password });
+  }, []);
+
+  return (
+    <form onSubmit={handleSubmit}>
+      <input ref={emailRef} type="email" placeholder="Email" />
+      <input ref={passwordRef} type="password" placeholder="Password" />
+      <button type="submit">Login</button>
+    </form>
+  );
+}
+```
+
+## Récapitulatif
+
+<Callout type="success" title="Points clés">
+**useRef**
+- Accès au DOM
+- Valeurs qui ne déclenchent pas de re-render
+- Persiste entre les renders
+
+**useMemo**
+- Mémorise le **résultat** d'un calcul
+- Utiliser seulement pour les calculs coûteux
+- Dépendances comme useEffect
+
+**useCallback**
+- Mémorise une **fonction**
+- Utiliser avec React.memo pour éviter des re-renders
+- Dépendances comme useEffect
+
+**Règle d'or :** Commencez simple, optimisez seulement si nécessaire !
+</Callout>
+
+## Pour aller plus loin
+
+**Autres hooks React :**
+- `useReducer` - Alternative à useState pour logique complexe
+- `useContext` - Partager des données sans prop drilling
+- `useId` - Générer des IDs uniques
+- `useImperativeHandle` - Personnaliser les refs
+
+**Ressources :**
+- [React Hooks Reference](https://react.dev/reference/react)
+- [When to useMemo and useCallback](https://kentcdodds.com/blog/usememo-and-usecallback)

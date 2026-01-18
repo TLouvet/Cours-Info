@@ -1,0 +1,553 @@
+# Workflow avec l'IA
+
+L'intelligence artificielle a révolutionné le développement web. Mais comme tout outil puissant, il faut savoir l'utiliser correctement.
+
+<Callout type="info" title="Philosophie">
+**L'IA est un pair programmer, pas un pilote automatique.**
+
+Vous restez le développeur. L'IA vous assiste, accélère votre travail, mais c'est **vous** qui prenez les décisions et validez le code.
+</Callout>
+
+## L'IA comme outil de développement
+
+### Quand utiliser l'IA
+
+✅ **Situations où l'IA excelle :**
+
+- Expliquer des concepts React que vous ne comprenez pas
+- Générer du code boilerplate (structure de base)
+- Suggérer des solutions à des problèmes spécifiques
+- Debugger des erreurs avec des messages d'erreur précis
+- Refactorer du code pour améliorer la lisibilité
+- Proposer des alternatives à votre approche
+
+❌ **Situations où l'IA peut vous induire en erreur :**
+
+- Code de sécurité (authentification, validation)
+- Optimisations de performance critiques
+- Choix d'architecture majeurs
+- Solutions sans contexte de votre projet
+
+### Quand consulter la documentation officielle
+
+L'IA est entraînée sur des données passées. La documentation officielle est **toujours** à jour.
+
+<Callout type="warning">
+**Consultez la documentation pour :**
+- Les API officielles de React, Vite, etc.
+- Les hooks et leurs règles d'utilisation
+- Les features récentes (< 6 mois)
+- Les breaking changes entre versions
+- Les best practices officielles
+</Callout>
+
+## Comment prompter efficacement
+
+### ❌ Mauvais prompts
+
+**Trop vague :**
+```
+"Crée-moi un formulaire"
+```
+→ L'IA ne sait pas quels champs, quelle validation, quel style...
+
+**Sans contexte :**
+```
+"Pourquoi ça ne marche pas ?"
+```
+→ L'IA ne connaît pas votre code, votre erreur, votre environnement...
+
+**Trop ambitieux :**
+```
+"Crée-moi une application complète de e-commerce"
+```
+→ Trop complexe, résultat générique et inutilisable
+
+### ✅ Bons prompts
+
+**Spécifique et détaillé :**
+```
+Crée un composant React de formulaire d'inscription avec :
+- Champs : email, password, confirmPassword
+- Validation :
+  * Email doit être un format valide
+  * Password minimum 8 caractères
+  * Les deux passwords doivent correspondre
+- Affiche les erreurs sous chaque champ
+- Bouton désactivé tant que le formulaire n'est pas valide
+- Utilise useState pour gérer l'état
+```
+
+**Avec le contexte :**
+```
+J'ai un composant UserList qui fetch des utilisateurs avec useEffect.
+Je veux ajouter :
+- Un état de chargement (loading)
+- Une gestion d'erreur (error)
+- Un affichage conditionnel selon l'état
+
+Voici mon code actuel :
+[coller le code]
+```
+
+**Progressif et ciblé :**
+```
+Étape 1 : Crée d'abord la structure du composant ProductCard
+Étape 2 : Ensuite on ajoutera l'interaction
+```
+
+## Le workflow en 6 étapes
+
+Voici un workflow efficace pour travailler avec l'IA :
+
+### 1. Définir le problème clairement
+
+Avant de demander à l'IA, **écrivez** ce que vous voulez accomplir.
+
+```
+Objectif : Créer un hook custom useFetch qui :
+- Prend une URL en paramètre
+- Retourne { data, loading, error }
+- Gère les états de chargement et erreur
+- Utilise useEffect pour le fetch
+```
+
+### 2. Demander l'approche avant le code
+
+```
+Prompt : "Comment structurerais-tu un custom hook useFetch ?
+Explique l'approche sans donner le code complet."
+```
+
+**Pourquoi ?** Vous comprenez la logique avant de voir le code.
+
+### 3. Obtenir le code
+
+```
+Prompt : "Maintenant, implémente le hook useFetch avec l'approche
+que tu as décrite."
+```
+
+### 4. Revoir le code ligne par ligne
+
+<Callout type="warning" title="Ne copiez JAMAIS sans comprendre">
+Pour chaque ligne de code généré, demandez-vous :
+- Qu'est-ce que cette ligne fait ?
+- Pourquoi est-elle nécessaire ?
+- Quelles sont les alternatives ?
+- Y a-t-il un meilleur moyen ?
+</Callout>
+
+### 5. Poser des questions
+
+```
+"Pourquoi utilises-tu un tableau vide [] comme dépendance de useEffect ?"
+"Qu'est-ce qui se passe si l'URL change ?"
+"Pourquoi initialiser data à null plutôt qu'à un tableau vide ?"
+```
+
+### 6. Tester et itérer
+
+```javascript
+// Testez avec différents cas
+useFetch('/api/users') // OK
+useFetch('invalid-url') // Erreur ?
+useFetch(null) // Bug ?
+```
+
+Si quelque chose ne va pas, retournez vers l'IA avec le feedback :
+
+```
+"Le hook fonctionne bien, mais il ne gère pas le cas où l'URL
+est null. Comment modifier pour gérer ce cas ?"
+```
+
+## Exemples de prompts pour React
+
+### Explication de concepts
+
+```
+✅ "Explique-moi comment fonctionne le tableau de dépendances de
+useEffect avec un exemple simple"
+
+✅ "Quelle est la différence entre un composant contrôlé et non
+contrôlé dans un formulaire React ?"
+
+✅ "Pourquoi React recommande-t-il de ne jamais muter l'état
+directement ?"
+```
+
+### Génération de code
+
+```
+✅ "Crée un composant SearchBar avec :
+- Un input contrôlé
+- Une fonction onSearch qui se déclenche quand on appuie sur Enter
+- Un bouton clear qui vide l'input
+- Utilise useState pour l'état"
+
+✅ "Crée un custom hook useLocalStorage qui :
+- Prend (key, initialValue) comme paramètres
+- Retourne [value, setValue] comme useState
+- Persiste automatiquement dans localStorage
+- Charge la valeur au premier rendu"
+```
+
+### Debugging
+
+```
+✅ "J'ai cette erreur : 'Cannot read property map of undefined'
+Voici mon code :
+[coller le code]
+Qu'est-ce qui cause cette erreur ?"
+
+✅ "Mon useEffect se déclenche en boucle infinie. Pourquoi ?
+[coller le code du useEffect]"
+
+✅ "Pourquoi mon état ne se met pas à jour immédiatement après
+avoir appelé setState ?"
+```
+
+### Code Review
+
+```
+✅ "Peux-tu review ce code et suggérer des améliorations ?
+[coller le code]
+Focus sur :
+- Les bonnes pratiques React
+- La lisibilité
+- Les performances potentielles"
+```
+
+## Red Flags : quand se méfier
+
+<Callout type="error" title="Signaux d'alarme">
+Si l'IA génère du code avec ces patterns, **vérifiez doublement** :
+</Callout>
+
+### 1. Class Components
+
+```javascript
+// ❌ Pattern obsolète
+class MyComponent extends React.Component {
+  // ...
+}
+
+// ✅ Utilisez les function components
+function MyComponent() {
+  // ...
+}
+```
+
+### 2. Lifecycle Methods (ancien style)
+
+```javascript
+// ❌ Obsolète
+componentDidMount() { }
+componentWillUnmount() { }
+
+// ✅ Utilisez useEffect
+useEffect(() => {
+  // mount
+  return () => {
+    // unmount
+  };
+}, []);
+```
+
+### 3. Mutation directe de l'état
+
+```javascript
+// ❌ DANGER !
+const addItem = (item) => {
+  items.push(item); // Mutation !
+  setItems(items);
+};
+
+// ✅ Créez un nouveau tableau
+const addItem = (item) => {
+  setItems([...items, item]);
+};
+```
+
+### 4. Any en TypeScript (si vous l'utilisez)
+
+```typescript
+// ❌ Évitez autant que possible
+const data: any = fetchData();
+
+// ✅ Typez correctement
+interface User {
+  id: number;
+  name: string;
+}
+const data: User[] = fetchData();
+```
+
+### 5. Logique de sécurité côté client
+
+```javascript
+// ❌ JAMAIS !
+if (password === 'admin123') {
+  setIsAuthenticated(true);
+}
+
+// ✅ Authentification côté serveur
+const response = await fetch('/api/login', {
+  method: 'POST',
+  body: JSON.stringify({ email, password })
+});
+```
+
+## Vérifier les suggestions de l'IA
+
+### Checklist de validation
+
+Avant d'utiliser du code généré par l'IA :
+
+#### ✅ Compréhension
+- [ ] Je comprends chaque ligne de code
+- [ ] Je peux expliquer ce que fait ce code à quelqu'un
+- [ ] Je sais pourquoi cette approche a été choisie
+
+#### ✅ Bonnes pratiques React
+- [ ] Utilise des function components (pas des classes)
+- [ ] Les hooks suivent les règles (pas dans des conditions/boucles)
+- [ ] Pas de mutation d'état directe
+- [ ] Les dépendances de useEffect sont correctes
+- [ ] Les keys sont présentes sur les listes
+
+#### ✅ JavaScript moderne
+- [ ] const/let (pas de var)
+- [ ] Arrow functions quand approprié
+- [ ] Destructuration utilisée
+- [ ] Template literals pour les strings
+
+#### ✅ Qualité du code
+- [ ] Nommage clair et descriptif
+- [ ] Pas de code dupliqué
+- [ ] Gestion des erreurs
+- [ ] Gestion des états de chargement
+
+## Améliorer progressivement
+
+L'IA peut vous aider à améliorer du code existant de manière itérative.
+
+### Itération 1 : Code fonctionnel
+
+```jsx
+function UserList() {
+  const [users, setUsers] = useState([]);
+
+  useEffect(() => {
+    fetch('/api/users')
+      .then(res => res.json())
+      .then(data => setUsers(data));
+  }, []);
+
+  return (
+    <ul>
+      {users.map(user => <li key={user.id}>{user.name}</li>)}
+    </ul>
+  );
+}
+```
+
+**Prompt :** "Ce code fonctionne mais il manque la gestion d'erreur et de chargement. Améliore-le."
+
+### Itération 2 : Avec gestion d'état
+
+```jsx
+function UserList() {
+  const [users, setUsers] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    fetch('/api/users')
+      .then(res => res.json())
+      .then(data => {
+        setUsers(data);
+        setLoading(false);
+      })
+      .catch(err => {
+        setError(err.message);
+        setLoading(false);
+      });
+  }, []);
+
+  if (loading) return <p>Chargement...</p>;
+  if (error) return <p>Erreur : {error}</p>;
+
+  return (
+    <ul>
+      {users.map(user => <li key={user.id}>{user.name}</li>)}
+    </ul>
+  );
+}
+```
+
+**Prompt :** "Maintenant extrait la logique de fetch dans un custom hook useFetch"
+
+### Itération 3 : Avec custom hook
+
+```jsx
+function useFetch(url) {
+  const [data, setData] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    setLoading(true);
+    fetch(url)
+      .then(res => res.json())
+      .then(data => {
+        setData(data);
+        setLoading(false);
+      })
+      .catch(err => {
+        setError(err.message);
+        setLoading(false);
+      });
+  }, [url]);
+
+  return { data, loading, error };
+}
+
+function UserList() {
+  const { data: users, loading, error } = useFetch('/api/users');
+
+  if (loading) return <p>Chargement...</p>;
+  if (error) return <p>Erreur : {error}</p>;
+
+  return (
+    <ul>
+      {users?.map(user => <li key={user.id}>{user.name}</li>)}
+    </ul>
+  );
+}
+```
+
+<Callout type="success">
+**Résultat :** Code plus propre, réutilisable, et professionnel !
+</Callout>
+
+## Les questions à se poser
+
+Avant d'utiliser du code généré par l'IA :
+
+### 1. Compréhension
+- Est-ce que je comprends **complètement** ce code ?
+- Puis-je l'expliquer à quelqu'un d'autre ?
+- Qu'est-ce qui se passe si je modifie telle ligne ?
+
+### 2. Pertinence
+- Est-ce que ça résout **mon** problème spécifique ?
+- Y a-t-il du code inutile à retirer ?
+- Est-ce que c'est trop complexe pour ce que je veux faire ?
+
+### 3. Qualité
+- Le code suit-il les bonnes pratiques React ?
+- Est-il lisible et maintenable ?
+- Y a-t-il des bugs potentiels ?
+
+### 4. Tests
+- Ai-je testé tous les cas d'usage ?
+- Que se passe-t-il en cas d'erreur ?
+- Et si les données sont vides/null/undefined ?
+
+<Callout type="error" title="Règle d'or">
+Si vous ne pouvez pas répondre "OUI" à la question 1 (compréhension), **n'utilisez PAS ce code**.
+
+Demandez à l'IA de l'expliquer ou de le simplifier.
+</Callout>
+
+## Bonnes pratiques
+
+### ✅ À faire
+
+1. **Commencer simple**
+   - Demandez d'abord une version basique
+   - Ajoutez de la complexité progressivement
+
+2. **Contextualiser vos prompts**
+   - Donnez votre code existant
+   - Expliquez ce que vous avez déjà essayé
+   - Précisez les contraintes
+
+3. **Valider et tester**
+   - Testez immédiatement le code généré
+   - Vérifiez les cas limites
+   - Utilisez React DevTools
+
+4. **Apprendre, pas copier**
+   - Demandez des explications
+   - Comprenez le "pourquoi"
+   - Expérimentez avec le code
+
+### ❌ À éviter
+
+1. **Copier-coller aveugle**
+   - Ne jamais utiliser du code sans comprendre
+   - Toujours lire ligne par ligne
+
+2. **Faire confiance à 100%**
+   - L'IA fait des erreurs
+   - Vérifiez toujours la logique
+   - Testez avec vos données
+
+3. **Demander l'impossible**
+   - L'IA ne connaît pas votre base de code
+   - Elle n'a pas accès à vos fichiers
+   - Elle peut halluciner des API inexistantes
+
+4. **Ignorer les erreurs**
+   - Si ça ne compile pas, ne forcez pas
+   - Lisez les messages d'erreur
+   - Retournez vers l'IA avec l'erreur
+
+## Exercice pratique
+
+<Callout type="tip" title="Mise en pratique">
+Essayez cet exercice pour pratiquer le workflow avec l'IA :
+
+**Objectif :** Créer un composant TodoList avec l'aide de l'IA
+
+**Étapes :**
+1. Écrivez d'abord les spécifications (ce que doit faire le composant)
+2. Demandez à l'IA d'expliquer l'approche
+3. Demandez le code
+4. Reviewez ligne par ligne
+5. Posez des questions sur ce que vous ne comprenez pas
+6. Testez
+7. Demandez des améliorations
+
+**Spécifications :**
+- Afficher une liste de tâches
+- Ajouter une nouvelle tâche
+- Marquer une tâche comme terminée
+- Supprimer une tâche
+- Utiliser useState pour l'état
+- Persister dans localStorage
+</Callout>
+
+## Pour aller plus loin
+
+### Outils d'IA pour le développement
+
+- **ChatGPT / Claude** - Assistants conversationnels
+- **GitHub Copilot** - Autocomplétion de code
+- **v0.dev** - Génération de composants UI
+- **Cursor** - IDE avec IA intégrée
+
+### Ressources
+
+- [React DevTools](https://react.dev/learn/react-developer-tools) - Pour débugger
+- [MDN Web Docs](https://developer.mozilla.org) - Pour JavaScript
+- [React Documentation](https://react.dev) - Source de vérité
+
+<Callout type="success" title="Vous êtes prêts !">
+Avec ces techniques, vous pouvez maintenant utiliser l'IA comme un véritable assistant de développement, tout en gardant le contrôle et la compréhension de votre code.
+
+**Prochaine étape :** Appliquer ces principes aux meilleures pratiques React !
+</Callout>

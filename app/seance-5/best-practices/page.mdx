@@ -1,0 +1,731 @@
+# Meilleures Pratiques React
+
+Maintenant que vous connaissez les bases de React, apprenons à écrire du code de qualité professionnelle.
+
+<Callout type="info">
+**Le code est lu beaucoup plus souvent qu'il n'est écrit.**
+
+Un bon code n'est pas seulement un code qui fonctionne, c'est un code que vous (et d'autres) pourrez comprendre et maintenir dans 6 mois.
+</Callout>
+
+## Principes de design de composants
+
+### Single Responsibility Principle
+
+Un composant doit avoir **une seule responsabilité**, une seule raison de changer.
+
+**❌ Mauvais exemple :** Un composant qui fait tout
+
+```jsx
+function Dashboard() {
+  const [users, setUsers] = useState([]);
+  const [products, setProducts] = useState([]);
+  const [orders, setOrders] = useState([]);
+  const [stats, setStats] = useState({});
+
+  // 200 lignes de code...
+  // Fetch users, products, orders
+  // Calculate stats
+  // Render everything
+
+  return (
+    <div>
+      {/* Header */}
+      {/* User list */}
+      {/* Product list */}
+      {/* Order list */}
+      {/* Statistics */}
+      {/* Charts */}
+    </div>
+  );
+}
+```
+
+**✅ Bon exemple :** Composants décomposés
+
+```jsx
+function Dashboard() {
+  return (
+    <div>
+      <DashboardHeader />
+      <StatsCards />
+      <UsersList />
+      <ProductsList />
+      <OrdersList />
+      <SalesChart />
+    </div>
+  );
+}
+
+function UsersList() {
+  const [users, setUsers] = useState([]);
+  // Logique spécifique aux users
+  return <div>{/* Affichage users */}</div>;
+}
+
+function StatsCards() {
+  const [stats, setStats] = useState({});
+  // Logique spécifique aux stats
+  return <div>{/* Affichage stats */}</div>;
+}
+```
+
+<Callout type="success">
+**Avantages :**
+- Code plus lisible
+- Plus facile à tester
+- Plus facile à réutiliser
+- Plus facile à débugger
+</Callout>
+
+### Quand diviser un composant
+
+Divisez un composant quand :
+
+1. **Il dépasse 150 lignes**
+   - Trop long = trop complexe
+
+2. **Logique réutilisable ailleurs**
+   ```jsx
+   // Si vous utilisez <Button> partout, extrayez-le
+   function Button({ children, onClick, variant = 'primary' }) {
+     return (
+       <button className={`btn btn-${variant}`} onClick={onClick}>
+         {children}
+       </button>
+     );
+   }
+   ```
+
+3. **Séparation des responsabilités claire**
+   ```jsx
+   // Séparez le formulaire de la liste
+   function UsersPage() {
+     return (
+       <>
+         <AddUserForm />
+         <UsersList />
+       </>
+     );
+   }
+   ```
+
+4. **Améliore la lisibilité**
+   ```jsx
+   // Au lieu de :
+   return (
+     <div>
+       <div className="header">
+         <h1>{title}</h1>
+         <button>...</button>
+         {/* 20 lignes */}
+       </div>
+       {/* ... */}
+     </div>
+   );
+
+   // Faites :
+   return (
+     <div>
+       <PageHeader title={title} />
+       <PageContent />
+     </div>
+   );
+   ```
+
+## Conventions de nommage
+
+### Composants : PascalCase
+
+```jsx
+// ✅ Bon
+function UserCard() { }
+function ProductList() { }
+function NavigationBar() { }
+
+// ❌ Mauvais
+function userCard() { }
+function product_list() { }
+function navigation-bar() { }
+```
+
+### Fonctions et variables : camelCase
+
+```jsx
+// ✅ Bon
+const userName = 'Alice';
+const isLoggedIn = true;
+function fetchUserData() { }
+function handleSubmit() { }
+
+// ❌ Mauvais
+const UserName = 'Alice';
+const is_logged_in = true;
+function FetchUserData() { }
+```
+
+### Event handlers : handle* ou on*
+
+```jsx
+// ✅ Bon - handle* dans le composant
+function Form() {
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    // ...
+  };
+
+  const handleInputChange = (e) => {
+    // ...
+  };
+
+  return <form onSubmit={handleSubmit}>...</form>;
+}
+
+// ✅ Bon - on* pour les props
+function Button({ onButtonClick, children }) {
+  return <button onClick={onButtonClick}>{children}</button>;
+}
+```
+
+### Props booléennes : is*, has*, can*, should*
+
+```jsx
+// ✅ Bon
+<Button isLoading={true} />
+<User hasPermission={true} />
+<Form canSubmit={false} />
+<Modal shouldShow={true} />
+
+// ❌ Mauvais
+<Button loading={true} />
+<User permission={true} />
+<Form submit={false} />
+```
+
+## Gestion des Props
+
+### Destructuration
+
+**✅ Toujours destructurer les props**
+
+```jsx
+// ✅ Bon
+function UserCard({ name, email, avatar, isActive }) {
+  return (
+    <div>
+      <img src={avatar} alt={name} />
+      <h3>{name}</h3>
+      <p>{email}</p>
+      {isActive && <span>En ligne</span>}
+    </div>
+  );
+}
+
+// ❌ Mauvais
+function UserCard(props) {
+  return (
+    <div>
+      <img src={props.avatar} alt={props.name} />
+      <h3>{props.name}</h3>
+      <p>{props.email}</p>
+      {props.isActive && <span>En ligne</span>}
+    </div>
+  );
+}
+```
+
+### Valeurs par défaut
+
+```jsx
+// ✅ Bon - Valeurs par défaut dans la destructuration
+function Button({
+  children,
+  variant = 'primary',
+  size = 'medium',
+  disabled = false
+}) {
+  return (
+    <button className={`btn-${variant} btn-${size}`} disabled={disabled}>
+      {children}
+    </button>
+  );
+}
+
+// Utilisation
+<Button>Click</Button> // Utilise les valeurs par défaut
+<Button variant="secondary" size="large">Big Button</Button>
+```
+
+### Prop Drilling - Le problème
+
+Évitez de passer des props à travers trop de niveaux (max 2-3).
+
+**❌ Problème : Prop Drilling**
+
+```jsx
+function App() {
+  const [user, setUser] = useState(null);
+  return <Layout user={user} />;
+}
+
+function Layout({ user }) {
+  return <Sidebar user={user} />;
+}
+
+function Sidebar({ user }) {
+  return <UserMenu user={user} />;
+}
+
+function UserMenu({ user }) {
+  return <div>{user.name}</div>; // Enfin utilisé ici !
+}
+```
+
+**✅ Solution 1 : Composition**
+
+```jsx
+function App() {
+  const [user, setUser] = useState(null);
+  return (
+    <Layout>
+      <Sidebar>
+        <UserMenu user={user} /> {/* Direct ! */}
+      </Sidebar>
+    </Layout>
+  );
+}
+
+function Layout({ children }) {
+  return <div className="layout">{children}</div>;
+}
+
+function Sidebar({ children }) {
+  return <aside>{children}</aside>;
+}
+```
+
+**✅ Solution 2 : Context (séance avancée)**
+
+```jsx
+// On verra ça plus tard si nécessaire
+const UserContext = createContext();
+```
+
+## Gestion de l'état
+
+### Principe : Start local, lift when needed
+
+**Commencez avec l'état local, montez-le seulement quand nécessaire.**
+
+```jsx
+// ✅ État local si utilisé seulement ici
+function SearchBar() {
+  const [query, setQuery] = useState('');
+  return <input value={query} onChange={e => setQuery(e.target.value)} />;
+}
+
+// ✅ Lift state up quand plusieurs composants en ont besoin
+function ProductsPage() {
+  const [searchQuery, setSearchQuery] = useState('');
+
+  return (
+    <>
+      <SearchBar query={searchQuery} onQueryChange={setSearchQuery} />
+      <ProductList query={searchQuery} />
+    </>
+  );
+}
+```
+
+### Ne pas tout mettre dans l'état
+
+**Les valeurs dérivées ne doivent PAS être dans l'état.**
+
+**❌ Mauvais : État redondant**
+
+```jsx
+function ProductList() {
+  const [products, setProducts] = useState([]);
+  const [productCount, setProductCount] = useState(0); // ❌ Redondant !
+  const [expensiveProducts, setExpensiveProducts] = useState([]); // ❌ Redondant !
+
+  useEffect(() => {
+    setProductCount(products.length); // ❌ Pas nécessaire
+    setExpensiveProducts(products.filter(p => p.price > 100)); // ❌ Pas nécessaire
+  }, [products]);
+}
+```
+
+**✅ Bon : Calculer à la volée**
+
+```jsx
+function ProductList() {
+  const [products, setProducts] = useState([]);
+
+  // ✅ Calculé, pas stocké
+  const productCount = products.length;
+  const expensiveProducts = products.filter(p => p.price > 100);
+
+  return (
+    <div>
+      <p>Total : {productCount} produits</p>
+      <p>Chers : {expensiveProducts.length}</p>
+      {/* ... */}
+    </div>
+  );
+}
+```
+
+<Callout type="tip">
+**Règle simple :** Si vous pouvez calculer une valeur à partir de l'état existant, ne la mettez pas dans l'état.
+</Callout>
+
+### Immutabilité de l'état
+
+**Ne JAMAIS muter l'état directement.**
+
+**❌ Mutation directe**
+
+```jsx
+// ❌ NE FAITES JAMAIS ÇA
+const addProduct = (newProduct) => {
+  products.push(newProduct); // ❌ Mutation !
+  setProducts(products); // React ne détectera pas le changement
+};
+
+const updateProduct = (id, newPrice) => {
+  const product = products.find(p => p.id === id);
+  product.price = newPrice; // ❌ Mutation !
+  setProducts(products);
+};
+
+const removeProduct = (id) => {
+  products.splice(index, 1); // ❌ Mutation !
+  setProducts(products);
+};
+```
+
+**✅ Créer de nouveaux objets/tableaux**
+
+```jsx
+// ✅ Ajouter
+const addProduct = (newProduct) => {
+  setProducts([...products, newProduct]);
+};
+
+// ✅ Modifier
+const updateProduct = (id, newPrice) => {
+  setProducts(products.map(p =>
+    p.id === id ? { ...p, price: newPrice } : p
+  ));
+};
+
+// ✅ Supprimer
+const removeProduct = (id) => {
+  setProducts(products.filter(p => p.id !== id));
+};
+```
+
+## Composition over Complexity
+
+Préférez composer plusieurs composants simples plutôt qu'un composant complexe.
+
+**❌ Complexité**
+
+```jsx
+function Card({ title, content, hasImage, imageUrl, hasButton, buttonText, onButtonClick }) {
+  return (
+    <div className="card">
+      <h3>{title}</h3>
+      {hasImage && <img src={imageUrl} />}
+      <p>{content}</p>
+      {hasButton && <button onClick={onButtonClick}>{buttonText}</button>}
+    </div>
+  );
+}
+
+// Utilisation compliquée
+<Card
+  title="Hello"
+  content="World"
+  hasImage={true}
+  imageUrl="/img.jpg"
+  hasButton={true}
+  buttonText="Click"
+  onButtonClick={handler}
+/>
+```
+
+**✅ Composition**
+
+```jsx
+function Card({ children }) {
+  return <div className="card">{children}</div>;
+}
+
+function CardTitle({ children }) {
+  return <h3>{children}</h3>;
+}
+
+function CardContent({ children }) {
+  return <p>{children}</p>;
+}
+
+function CardImage({ src, alt }) {
+  return <img src={src} alt={alt} />;
+}
+
+// Utilisation flexible et claire
+<Card>
+  <CardTitle>Hello</CardTitle>
+  <CardImage src="/img.jpg" alt="Hello" />
+  <CardContent>World</CardContent>
+  <Button onClick={handler}>Click</Button>
+</Card>
+```
+
+<Callout type="success">
+**Avantages de la composition :**
+- Plus flexible
+- Plus lisible
+- Plus facile à maintenir
+- Chaque composant a une responsabilité unique
+</Callout>
+
+## Rendu conditionnel
+
+### Opérateur &&
+
+Pour afficher ou non un élément :
+
+```jsx
+// ✅ Bon
+{isLoggedIn && <WelcomeMessage />}
+{error && <ErrorMessage message={error} />}
+{items.length > 0 && <ItemList items={items} />}
+
+// ⚠️ Attention avec les nombres
+{count && <p>{count} items</p>} // ❌ Affiche "0" si count = 0
+{count > 0 && <p>{count} items</p>} // ✅ Bon
+```
+
+### Opérateur ternaire
+
+Pour choisir entre deux options :
+
+```jsx
+// ✅ Bon
+{isLoggedIn ? <Dashboard /> : <LoginPage />}
+{loading ? <Spinner /> : <Content />}
+
+// ❌ Évitez de ternaires imbriqués (illisible)
+{loading ? <Spinner /> : error ? <Error /> : data ? <Content /> : <Empty />}
+
+// ✅ Utilisez plutôt une fonction
+function renderContent() {
+  if (loading) return <Spinner />;
+  if (error) return <Error />;
+  if (!data) return <Empty />;
+  return <Content />;
+}
+
+return <div>{renderContent()}</div>;
+```
+
+## Listes et keys
+
+**Toujours mettre une key unique lors du mapping.**
+
+**❌ Mauvais**
+
+```jsx
+// ❌ Pas de key
+{users.map(user => <UserCard {...user} />)}
+
+// ❌ Index comme key (évitez si possible)
+{users.map((user, index) => <UserCard key={index} {...user} />)}
+```
+
+**✅ Bon**
+
+```jsx
+// ✅ ID unique
+{users.map(user => <UserCard key={user.id} {...user} />)}
+
+// ✅ Si pas d'ID, combinez des valeurs uniques
+{users.map(user => <UserCard key={`${user.email}-${user.name}`} {...user} />)}
+```
+
+<Callout type="warning">
+**Pourquoi pas l'index ?**
+
+L'index peut causer des bugs si la liste change d'ordre ou si des items sont ajoutés/supprimés. React utilise la key pour identifier quel élément a changé.
+</Callout>
+
+## Organisation du code dans un composant
+
+**Ordre recommandé :**
+
+```jsx
+function MyComponent({ propA, propB }) {
+  // 1. Hooks d'état
+  const [state1, setState1] = useState(initialValue);
+  const [state2, setState2] = useState(initialValue);
+
+  // 2. Hooks d'effet
+  useEffect(() => {
+    // Side effect
+  }, [dependencies]);
+
+  // 3. Custom hooks
+  const { data, loading } = useFetch('/api/data');
+
+  // 4. Variables dérivées
+  const computedValue = state1 + state2;
+  const filteredItems = items.filter(item => item.active);
+
+  // 5. Event handlers
+  const handleClick = () => {
+    setState1(newValue);
+  };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    // ...
+  };
+
+  // 6. Fonctions de rendu (si complexe)
+  const renderHeader = () => {
+    return <header>...</header>;
+  };
+
+  // 7. Rendu conditionnel de retour anticipé
+  if (loading) return <Spinner />;
+  if (error) return <Error />;
+
+  // 8. Return principal
+  return (
+    <div>
+      {renderHeader()}
+      {/* ... */}
+    </div>
+  );
+}
+```
+
+## Extraire les constantes
+
+**Ne définissez pas de constantes dans le rendu.**
+
+**❌ Mauvais**
+
+```jsx
+function ProductCard({ product }) {
+  return (
+    <div>
+      <h3>{product.name}</h3>
+      {/* ❌ Constantes dans le JSX */}
+      {product.price > 100 && <span className="expensive">Cher !</span>}
+      {product.stock < 5 && <span className="low-stock">Stock bas</span>}
+    </div>
+  );
+}
+```
+
+**✅ Bon**
+
+```jsx
+// ✅ Constantes en haut du fichier
+const EXPENSIVE_THRESHOLD = 100;
+const LOW_STOCK_THRESHOLD = 5;
+
+function ProductCard({ product }) {
+  const isExpensive = product.price > EXPENSIVE_THRESHOLD;
+  const isLowStock = product.stock < LOW_STOCK_THRESHOLD;
+
+  return (
+    <div>
+      <h3>{product.name}</h3>
+      {isExpensive && <span className="expensive">Cher !</span>}
+      {isLowStock && <span className="low-stock">Stock bas</span>}
+    </div>
+  );
+}
+```
+
+## Récapitulatif
+
+<Callout type="success" title="Checklist des bonnes pratiques">
+✅ **Composants**
+- Un composant = une responsabilité
+- Max 150 lignes
+- Noms en PascalCase
+
+✅ **Props**
+- Toujours destructurer
+- Valeurs par défaut
+- Noms clairs (is*, has*, on*, handle*)
+
+✅ **État**
+- Commencer local
+- Pas de valeurs dérivées dans l'état
+- Jamais de mutation directe
+
+✅ **Code**
+- DRY (Don't Repeat Yourself)
+- Composition > Complexité
+- Constantes extraites
+- Organisation claire
+
+✅ **Rendu**
+- Keys uniques sur les listes
+- Conditions claires
+- Retours anticipés si nécessaire
+</Callout>
+
+## Exercice pratique
+
+Refactorisez ce composant en suivant les bonnes pratiques :
+
+```jsx
+function UserDashboard(props) {
+  const [users, setUsers] = useState([]);
+  const [filteredUsers, setFilteredUsers] = useState([]);
+  const [searchTerm, setSearchTerm] = useState('');
+
+  useEffect(() => {
+    fetch('/api/users').then(r => r.json()).then(d => setUsers(d));
+  }, []);
+
+  useEffect(() => {
+    setFilteredUsers(users.filter(u => u.name.includes(searchTerm)));
+  }, [users, searchTerm]);
+
+  return (
+    <div>
+      <input value={searchTerm} onChange={e => setSearchTerm(e.target.value)} />
+      <div>
+        {filteredUsers.map((u, i) => (
+          <div key={i}>
+            <h3>{u.name}</h3>
+            <p>{u.email}</p>
+            {u.age > 18 && <span>Adulte</span>}
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+```
+
+**Points à améliorer :**
+1. Destructuration des props
+2. État redondant (filteredUsers)
+3. Index comme key
+4. Magic number (18)
+5. Composants à extraire
+6. Nommage des variables
+
+<Callout type="tip">
+Essayez de refactoriser ce code avant de passer à la section suivante !
+</Callout>

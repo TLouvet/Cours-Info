@@ -1,0 +1,647 @@
+# Rendu Conditionnel
+
+Afficher du contenu différent selon une condition est essentiel en React. Découvrons les différentes approches !
+
+## Qu'est-ce que le rendu conditionnel ?
+
+Le **rendu conditionnel** consiste à afficher des éléments différents selon une **condition**.
+
+```jsx
+// Exemple simple
+function Greeting({ isLoggedIn }) {
+  if (isLoggedIn) {
+    return <h1>Bienvenue !</h1>;
+  }
+  return <h1>Veuillez vous connecter</h1>;
+}
+```
+
+<Callout type="info" title="Pourquoi c'est important">
+Le rendu conditionnel permet de créer des interfaces **dynamiques** :
+
+- Afficher un spinner pendant le chargement
+- Montrer un message d'erreur si nécessaire
+- Adapter l'UI selon le rôle de l'utilisateur
+- Cacher/afficher des éléments selon l'état
+</Callout>
+
+## Méthode 1 : `if/else`
+
+La méthode la plus classique avec un `if` avant le `return`.
+
+```jsx
+function WelcomeMessage({ isLoggedIn, username }) {
+  if (isLoggedIn) {
+    return <h1>Bienvenue, {username} !</h1>;
+  }
+
+  return <h1>Veuillez vous connecter</h1>;
+}
+```
+
+### Avec plusieurs conditions
+
+```jsx
+function UserStatus({ user }) {
+  if (!user) {
+    return <p>Chargement...</p>;
+  }
+
+  if (user.isPremium) {
+    return <div className="premium-banner">Membre Premium ⭐</div>;
+  }
+
+  return <div className="standard-banner">Membre Standard</div>;
+}
+```
+
+<Callout type="tip" title="Early return">
+Utilisez des **early returns** pour simplifier le code :
+
+```jsx
+// ❌ Imbrications complexes
+function Component({ data, loading, error }) {
+  if (!loading) {
+    if (!error) {
+      if (data) {
+        return <div>{data}</div>;
+      }
+    }
+  }
+  return null;
+}
+
+// ✅ Early returns (plus clair)
+function Component({ data, loading, error }) {
+  if (loading) return <p>Chargement...</p>;
+  if (error) return <p>Erreur : {error}</p>;
+  if (!data) return <p>Aucune donnée</p>;
+
+  return <div>{data}</div>;
+}
+```
+</Callout>
+
+## Méthode 2 : Opérateur ternaire `? :`
+
+Pour des conditions simples **dans le JSX**.
+
+```jsx
+function Greeting({ isLoggedIn }) {
+  return (
+    <div>
+      {isLoggedIn ? (
+        <h1>Bienvenue !</h1>
+      ) : (
+        <h1>Veuillez vous connecter</h1>
+      )}
+    </div>
+  );
+}
+```
+
+### Avantages et limites
+
+**✅ Avantages :**
+- Concis pour des conditions simples
+- S'intègre dans le JSX
+- Parfait pour choisir entre deux options
+
+**⚠️ Limites :**
+- Moins lisible si imbriqué
+- Pas adapté pour des logiques complexes
+
+```jsx
+// ✅ Bon usage
+<p>{isActive ? 'Actif' : 'Inactif'}</p>
+
+// ❌ Trop complexe (utilisez if/else)
+{isLoggedIn ? (
+  user.isPremium ? (
+    <PremiumDashboard />
+  ) : (
+    <StandardDashboard />
+  )
+) : (
+  <LoginPage />
+)}
+```
+
+### Exemples pratiques
+
+```jsx
+// Badge de statut
+function StatusBadge({ isOnline }) {
+  return (
+    <span className={isOnline ? 'badge-online' : 'badge-offline'}>
+      {isOnline ? '🟢 En ligne' : '⚫ Hors ligne'}
+    </span>
+  );
+}
+
+// Bouton dynamique
+function ActionButton({ isSaved }) {
+  return (
+    <button>
+      {isSaved ? '✓ Enregistré' : 'Enregistrer'}
+    </button>
+  );
+}
+
+// Prix avec réduction
+function Price({ price, discount }) {
+  return (
+    <div>
+      {discount ? (
+        <div>
+          <span className="old-price">{price}€</span>
+          <span className="new-price">{price - discount}€</span>
+        </div>
+      ) : (
+        <span className="price">{price}€</span>
+      )}
+    </div>
+  );
+}
+```
+
+## Méthode 3 : Opérateur logique `&&`
+
+Pour afficher un élément **seulement si** la condition est vraie.
+
+```jsx
+function Notification({ hasMessages, messageCount }) {
+  return (
+    <div>
+      <h1>Accueil</h1>
+      {hasMessages && (
+        <div className="notification">
+          Vous avez {messageCount} nouveau(x) message(s)
+        </div>
+      )}
+    </div>
+  );
+}
+```
+
+### Comment ça marche ?
+
+L'opérateur `&&` retourne :
+- La **deuxième valeur** si la première est `true`
+- La **première valeur** si elle est `false`
+
+```jsx
+true && <div>Affiché</div>   // → <div>Affiché</div>
+false && <div>Pas affiché</div> // → false (React ignore)
+```
+
+### Exemples pratiques
+
+```jsx
+// Afficher un loader
+function Dashboard({ isLoading, data }) {
+  return (
+    <div>
+      {isLoading && <Spinner />}
+      {data && <DataDisplay data={data} />}
+    </div>
+  );
+}
+
+// Badge "Nouveau"
+function ProductCard({ product, isNew }) {
+  return (
+    <div className="product">
+      <h3>{product.name}</h3>
+      {isNew && <span className="badge-new">Nouveau !</span>}
+    </div>
+  );
+}
+
+// Message d'erreur
+function Form({ error }) {
+  return (
+    <form>
+      {error && (
+        <div className="error-message">
+          ❌ {error}
+        </div>
+      )}
+      {/* Champs du formulaire */}
+    </form>
+  );
+}
+```
+
+<Callout type="warning" title="Piège avec les nombres">
+Attention avec les **nombres** et l'opérateur `&&` :
+
+```jsx
+// ❌ Affiche "0" si count === 0
+{count && <p>Vous avez {count} message(s)</p>}
+
+// ✅ Correct
+{count > 0 && <p>Vous avez {count} message(s)</p>}
+```
+
+**Pourquoi ?** React affiche `0`, `''`, `null`, `undefined`, et `false` différemment :
+- `null`, `undefined`, `false` : **Ignorés** (rien n'est affiché)
+- `0` et `''` : **Affichés** tels quels
+
+**Solution :** Utilisez une comparaison explicite (`> 0`, `!== 0`, `!== ''`)
+</Callout>
+
+## Méthode 4 : Variable intermédiaire
+
+Pour des logiques complexes, stockez le résultat dans une **variable**.
+
+```jsx
+function Dashboard({ user }) {
+  let content;
+
+  if (!user) {
+    content = <p>Chargement...</p>;
+  } else if (user.role === 'admin') {
+    content = <AdminPanel />;
+  } else if (user.role === 'moderator') {
+    content = <ModeratorPanel />;
+  } else {
+    content = <UserPanel />;
+  }
+
+  return (
+    <div className="dashboard">
+      <h1>Tableau de bord</h1>
+      {content}
+    </div>
+  );
+}
+```
+
+### Avec switch
+
+```jsx
+function StatusMessage({ status }) {
+  let message;
+
+  switch (status) {
+    case 'loading':
+      message = <Spinner />;
+      break;
+    case 'success':
+      message = <SuccessIcon />;
+      break;
+    case 'error':
+      message = <ErrorIcon />;
+      break;
+    default:
+      message = null;
+  }
+
+  return <div className="status">{message}</div>;
+}
+```
+
+## Méthode 5 : IIFE (Immediately Invoked Function Expression)
+
+Pour des conditions complexes **directement dans le JSX**.
+
+```jsx
+function UserCard({ user }) {
+  return (
+    <div className="user-card">
+      <h2>{user.name}</h2>
+      {(() => {
+        if (user.role === 'admin') {
+          return <span className="badge admin">Admin</span>;
+        }
+        if (user.role === 'moderator') {
+          return <span className="badge mod">Modérateur</span>;
+        }
+        return <span className="badge user">Utilisateur</span>;
+      })()}
+    </div>
+  );
+}
+```
+
+<Callout type="tip" title="Quand utiliser une IIFE ?">
+**Utilisez une IIFE** quand :
+- Vous avez besoin de logique complexe dans le JSX
+- Vous voulez éviter d'extraire un composant
+
+**Sinon, préférez :**
+- Variables intermédiaires (plus lisible)
+- Extraction en composant séparé (meilleure organisation)
+
+```jsx
+// ⚠️ IIFE (fonctionne mais verbeux)
+{(() => {
+  if (condition) return <A />;
+  return <B />;
+})()}
+
+// ✅ Mieux : Variable
+const content = condition ? <A /> : <B />;
+return <div>{content}</div>;
+```
+</Callout>
+
+## Rendu de null
+
+Retournez `null` pour ne **rien afficher**.
+
+```jsx
+function WarningBanner({ showWarning }) {
+  if (!showWarning) {
+    return null;
+  }
+
+  return (
+    <div className="warning">
+      ⚠️ Attention : Action irréversible !
+    </div>
+  );
+}
+```
+
+### Avec l'opérateur &&
+
+```jsx
+function AdminPanel({ isAdmin }) {
+  return (
+    <>
+      {isAdmin && (
+        <div className="admin-panel">
+          Configuration administrative
+        </div>
+      )}
+    </>
+  );
+}
+```
+
+## Exemples complets
+
+### Exemple 1 : Formulaire de connexion
+
+```jsx
+function LoginForm() {
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [username, setUsername] = useState('');
+
+  if (isLoggedIn) {
+    return (
+      <div className="welcome">
+        <h1>Bienvenue, {username} !</h1>
+        <button onClick={() => setIsLoggedIn(false)}>
+          Se déconnecter
+        </button>
+      </div>
+    );
+  }
+
+  return (
+    <div className="login-form">
+      <h1>Connexion</h1>
+      <input
+        type="text"
+        placeholder="Nom d'utilisateur"
+        onChange={(e) => setUsername(e.target.value)}
+      />
+      <button onClick={() => setIsLoggedIn(true)}>
+        Se connecter
+      </button>
+    </div>
+  );
+}
+```
+
+### Exemple 2 : Chargement de données
+
+```jsx
+function UserProfile({ userId }) {
+  const [user, setUser] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  // Early returns pour chaque état
+  if (loading) {
+    return <div className="spinner">Chargement...</div>;
+  }
+
+  if (error) {
+    return (
+      <div className="error">
+        ❌ Erreur : {error}
+        <button onClick={retry}>Réessayer</button>
+      </div>
+    );
+  }
+
+  if (!user) {
+    return <div>Utilisateur introuvable</div>;
+  }
+
+  return (
+    <div className="user-profile">
+      <h1>{user.name}</h1>
+      <p>{user.bio}</p>
+    </div>
+  );
+}
+```
+
+### Exemple 3 : Liste avec états
+
+```jsx
+function ProductList({ products, loading, error }) {
+  if (loading) {
+    return <p>Chargement des produits...</p>;
+  }
+
+  if (error) {
+    return (
+      <div className="error-banner">
+        Impossible de charger les produits : {error}
+      </div>
+    );
+  }
+
+  if (products.length === 0) {
+    return (
+      <div className="empty-state">
+        <p>Aucun produit disponible</p>
+        <button>Ajouter un produit</button>
+      </div>
+    );
+  }
+
+  return (
+    <div className="product-grid">
+      {products.map(product => (
+        <ProductCard key={product.id} product={product} />
+      ))}
+    </div>
+  );
+}
+```
+
+### Exemple 4 : Permissions utilisateur
+
+```jsx
+function Dashboard({ user }) {
+  const canEdit = user.role === 'admin' || user.role === 'editor';
+  const canDelete = user.role === 'admin';
+
+  return (
+    <div className="dashboard">
+      <h1>Tableau de bord</h1>
+
+      {/* Actions conditionnelles */}
+      <div className="actions">
+        <button>Voir</button>
+        {canEdit && <button>Éditer</button>}
+        {canDelete && <button className="danger">Supprimer</button>}
+      </div>
+
+      {/* Panneaux conditionnels */}
+      {user.role === 'admin' && <AdminPanel />}
+      {user.role === 'editor' && <EditorPanel />}
+
+      {/* Badge de rôle */}
+      <div className="user-info">
+        <span>{user.name}</span>
+        {user.isPremium && <span className="badge">⭐ Premium</span>}
+      </div>
+    </div>
+  );
+}
+```
+
+### Exemple 5 : Modal conditionnel
+
+```jsx
+function App() {
+  const [showModal, setShowModal] = useState(false);
+
+  return (
+    <div className="app">
+      <button onClick={() => setShowModal(true)}>
+        Ouvrir la modal
+      </button>
+
+      {showModal && (
+        <div className="modal-overlay">
+          <div className="modal">
+            <h2>Confirmation</h2>
+            <p>Êtes-vous sûr de vouloir continuer ?</p>
+            <button onClick={() => setShowModal(false)}>
+              Annuler
+            </button>
+            <button onClick={() => {
+              console.log('Confirmé !');
+              setShowModal(false);
+            }}>
+              Confirmer
+            </button>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+```
+
+## Quelle méthode choisir ?
+
+<Callout type="tip" title="Guide de choix">
+**`if/else` avant le return**
+- Logique complexe avec plusieurs conditions
+- Early returns pour simplifier le code
+- Différents rendus complets
+
+**Opérateur ternaire `? :`**
+- Choix simple entre deux options
+- Dans le JSX
+- Une ligne suffit
+
+**Opérateur logique `&&`**
+- Afficher OU cacher un élément
+- Condition simple
+- Pas de "sinon"
+
+**Variable intermédiaire**
+- Logique complexe
+- Plusieurs conditions (switch)
+- Besoin de lisibilité
+
+**IIFE**
+- Dernier recours pour logique dans JSX
+- Évitez si possible (moins lisible)
+</Callout>
+
+## Bonnes pratiques
+
+<Callout type="success" title="Conseils pour le rendu conditionnel">
+**1. Utilisez des early returns**
+```jsx
+// ✅ Lisible
+if (loading) return <Spinner />;
+if (error) return <Error />;
+return <Content />;
+```
+
+**2. Évitez les ternaires imbriqués**
+```jsx
+// ❌ Difficile à lire
+{a ? b ? c : d : e}
+
+// ✅ Plus clair
+if (a) {
+  return b ? c : d;
+}
+return e;
+```
+
+**3. Nommez les booléens clairement**
+```jsx
+// ✅ Explicite
+const isLoggedIn = user !== null;
+const hasPermission = user.role === 'admin';
+const shouldShowBanner = !dismissed && isImportant;
+```
+
+**4. Attention aux valeurs falsy**
+```jsx
+// ⚠️ Affiche "0"
+{count && <p>{count} items</p>}
+
+// ✅ Correct
+{count > 0 && <p>{count} items</p>}
+```
+
+**5. Groupez les conditions liées**
+```jsx
+// ✅ Bon
+const canEdit = isAdmin || isOwner;
+return <>{canEdit && <EditButton />}</>;
+```
+</Callout>
+
+## Récapitulatif
+
+<Callout type="success" title="Ce que vous avez appris">
+Vous maîtrisez maintenant :
+
+- ✅ Les 5 méthodes de rendu conditionnel
+- ✅ `if/else` pour des logiques complexes
+- ✅ Opérateur ternaire pour des choix simples
+- ✅ Opérateur `&&` pour afficher conditionnellement
+- ✅ Variables intermédiaires pour plus de clarté
+- ✅ Retourner `null` pour ne rien afficher
+- ✅ Early returns pour simplifier le code
+- ✅ Éviter les pièges courants (0, '', etc.)
+
+**Prochaine étape :** Mettre tout ça en pratique avec des **exercices** !
+</Callout>

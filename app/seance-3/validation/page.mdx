@@ -1,0 +1,667 @@
+# Validation de formulaires - Séance 3
+
+La validation garantit que les données saisies par l'utilisateur sont **correctes** et **sûres** avant de les traiter ou envoyer au serveur.
+
+## Pourquoi valider ?
+
+<Callout type="warning" title="Ne jamais faire confiance aux données utilisateur">
+**Côté client** (React) :
+- ✅ **Meilleure expérience utilisateur** : feedback immédiat
+- ✅ **Moins d'erreurs** : empêche les soumissions invalides
+- ✅ **Économie de bande passante** : pas d'appels API inutiles
+
+**Côté serveur** (API) :
+- ✅ **Sécurité** : protection contre les attaques
+- ✅ **Intégrité des données** : garantir la cohérence
+- ⚠️ **Validation client ≠ sécurité** : toujours valider côté serveur aussi !
+</Callout>
+
+## Types de validation
+
+### 1. Validation de champs requis
+
+Le plus simple : vérifier que le champ n'est pas vide.
+
+```jsx
+function LoginForm() {
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [errors, setErrors] = useState({});
+
+  const validate = () => {
+    const newErrors = {};
+
+    if (!email) {
+      newErrors.email = 'L\'email est requis';
+    }
+
+    if (!password) {
+      newErrors.password = 'Le mot de passe est requis';
+    }
+
+    return newErrors;
+  };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+
+    const validationErrors = validate();
+
+    if (Object.keys(validationErrors).length === 0) {
+      // Formulaire valide
+      console.log('Envoi des données...');
+    } else {
+      // Erreurs détectées
+      setErrors(validationErrors);
+    }
+  };
+
+  return (
+    <form onSubmit={handleSubmit}>
+      <div>
+        <input
+          type="email"
+          value={email}
+          onChange={e => setEmail(e.target.value)}
+          placeholder="Email"
+        />
+        {errors.email && (
+          <span className="error">{errors.email}</span>
+        )}
+      </div>
+
+      <div>
+        <input
+          type="password"
+          value={password}
+          onChange={e => setPassword(e.target.value)}
+          placeholder="Mot de passe"
+        />
+        {errors.password && (
+          <span className="error">{errors.password}</span>
+        )}
+      </div>
+
+      <button type="submit">Se connecter</button>
+    </form>
+  );
+}
+```
+
+### 2. Validation de format (regex)
+
+Vérifier que les données respectent un format spécifique.
+
+```jsx
+function validate() {
+  const newErrors = {};
+
+  // Email : format valide
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  if (!email) {
+    newErrors.email = 'L\'email est requis';
+  } else if (!emailRegex.test(email)) {
+    newErrors.email = 'L\'email n\'est pas valide';
+  }
+
+  // Téléphone : format français (10 chiffres)
+  const phoneRegex = /^0[1-9]\d{8}$/;
+  if (!phone) {
+    newErrors.phone = 'Le téléphone est requis';
+  } else if (!phoneRegex.test(phone)) {
+    newErrors.phone = 'Le téléphone doit contenir 10 chiffres';
+  }
+
+  return newErrors;
+}
+```
+
+<Callout type="tip" title="Regex courantes">
+```javascript
+// Email
+/^[^\s@]+@[^\s@]+\.[^\s@]+$/
+
+// Téléphone français (10 chiffres)
+/^0[1-9]\d{8}$/
+
+// Code postal français (5 chiffres)
+/^\d{5}$/
+
+// URL
+/^https?:\/\/.+/
+
+// Uniquement lettres et espaces
+/^[a-zA-ZÀ-ÿ\s]+$/
+```
+</Callout>
+
+### 3. Validation de longueur
+
+Vérifier qu'un champ a une longueur minimale ou maximale.
+
+```jsx
+function validate() {
+  const newErrors = {};
+
+  // Nom : minimum 2 caractères
+  if (!name) {
+    newErrors.name = 'Le nom est requis';
+  } else if (name.length < 2) {
+    newErrors.name = 'Le nom doit contenir au moins 2 caractères';
+  }
+
+  // Mot de passe : minimum 8 caractères
+  if (!password) {
+    newErrors.password = 'Le mot de passe est requis';
+  } else if (password.length < 8) {
+    newErrors.password = 'Le mot de passe doit contenir au moins 8 caractères';
+  }
+
+  // Message : entre 10 et 500 caractères
+  if (!message) {
+    newErrors.message = 'Le message est requis';
+  } else if (message.length < 10) {
+    newErrors.message = 'Le message doit contenir au moins 10 caractères';
+  } else if (message.length > 500) {
+    newErrors.message = 'Le message ne peut pas dépasser 500 caractères';
+  }
+
+  return newErrors;
+}
+```
+
+### 4. Validation de correspondance
+
+Vérifier que deux champs correspondent (ex: confirmation de mot de passe).
+
+```jsx
+function RegistrationForm() {
+  const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [errors, setErrors] = useState({});
+
+  const validate = () => {
+    const newErrors = {};
+
+    if (!password) {
+      newErrors.password = 'Le mot de passe est requis';
+    } else if (password.length < 8) {
+      newErrors.password = 'Minimum 8 caractères';
+    }
+
+    if (!confirmPassword) {
+      newErrors.confirmPassword = 'Confirmez le mot de passe';
+    } else if (password !== confirmPassword) {
+      newErrors.confirmPassword = 'Les mots de passe ne correspondent pas';
+    }
+
+    return newErrors;
+  };
+
+  // ...
+}
+```
+
+### 5. Validation personnalisée
+
+Règles métier spécifiques à votre application.
+
+```jsx
+function validate() {
+  const newErrors = {};
+
+  // Âge : doit être majeur
+  const age = parseInt(formData.age);
+  if (!age) {
+    newErrors.age = 'L\'âge est requis';
+  } else if (age < 18) {
+    newErrors.age = 'Vous devez avoir au moins 18 ans';
+  } else if (age > 120) {
+    newErrors.age = 'Âge invalide';
+  }
+
+  // Date : doit être dans le futur
+  const selectedDate = new Date(formData.date);
+  const today = new Date();
+  if (!formData.date) {
+    newErrors.date = 'La date est requise';
+  } else if (selectedDate < today) {
+    newErrors.date = 'La date doit être dans le futur';
+  }
+
+  return newErrors;
+}
+```
+
+## Quand valider ?
+
+### Validation à la soumission (recommandé)
+
+Valider quand l'utilisateur soumet le formulaire.
+
+```jsx
+const handleSubmit = (e) => {
+  e.preventDefault();
+
+  const validationErrors = validate();
+
+  if (Object.keys(validationErrors).length === 0) {
+    // Formulaire valide
+    submitForm(formData);
+  } else {
+    // Afficher les erreurs
+    setErrors(validationErrors);
+  }
+};
+```
+
+**Avantages** :
+- ✅ Pas de distractions pendant la saisie
+- ✅ L'utilisateur peut remplir dans l'ordre qu'il veut
+
+### Validation en temps réel (onChange)
+
+Valider à chaque modification.
+
+```jsx
+const [email, setEmail] = useState('');
+const [emailError, setEmailError] = useState('');
+
+const handleEmailChange = (e) => {
+  const value = e.target.value;
+  setEmail(value);
+
+  // Valider immédiatement
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  if (value && !emailRegex.test(value)) {
+    setEmailError('Email invalide');
+  } else {
+    setEmailError('');
+  }
+};
+```
+
+**Avantages** :
+- ✅ Feedback immédiat
+- ✅ Bon pour les règles complexes (force du mot de passe)
+
+**Inconvénients** :
+- ⚠️ Peut être frustrant (affiche erreur avant de finir de taper)
+
+### Validation onBlur (recommandé pour UX)
+
+Valider quand l'utilisateur quitte le champ.
+
+```jsx
+const [email, setEmail] = useState('');
+const [emailError, setEmailError] = useState('');
+const [touched, setTouched] = useState(false);
+
+const handleBlur = () => {
+  setTouched(true);
+
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  if (email && !emailRegex.test(email)) {
+    setEmailError('Email invalide');
+  } else {
+    setEmailError('');
+  }
+};
+
+return (
+  <div>
+    <input
+      type="email"
+      value={email}
+      onChange={e => setEmail(e.target.value)}
+      onBlur={handleBlur}
+    />
+    {touched && emailError && (
+      <span className="error">{emailError}</span>
+    )}
+  </div>
+);
+```
+
+<Callout type="tip" title="Meilleure approche : combinée">
+**Recommandation** :
+
+1. **Première fois** : valider onBlur (quand l'utilisateur quitte le champ)
+2. **Après touché** : valider onChange (feedback immédiat après la première tentative)
+3. **Soumission** : toujours valider tout le formulaire
+
+C'est le meilleur compromis entre UX et validation !
+</Callout>
+
+## Exemple complet : Formulaire de contact
+
+```jsx
+function ContactForm() {
+  const [formData, setFormData] = useState({
+    name: '',
+    email: '',
+    phone: '',
+    message: ''
+  });
+
+  const [errors, setErrors] = useState({});
+  const [touched, setTouched] = useState({});
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData({ ...formData, [name]: value });
+
+    // Si le champ a été touché, valider en temps réel
+    if (touched[name]) {
+      validateField(name, value);
+    }
+  };
+
+  const handleBlur = (e) => {
+    const { name, value } = e.target;
+    setTouched({ ...touched, [name]: true });
+    validateField(name, value);
+  };
+
+  const validateField = (fieldName, value) => {
+    let error = '';
+
+    switch (fieldName) {
+      case 'name':
+        if (!value) {
+          error = 'Le nom est requis';
+        } else if (value.length < 2) {
+          error = 'Le nom doit contenir au moins 2 caractères';
+        }
+        break;
+
+      case 'email':
+        if (!value) {
+          error = 'L\'email est requis';
+        } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)) {
+          error = 'L\'email n\'est pas valide';
+        }
+        break;
+
+      case 'phone':
+        if (!value) {
+          error = 'Le téléphone est requis';
+        } else if (!/^0[1-9]\d{8}$/.test(value)) {
+          error = 'Le téléphone doit contenir 10 chiffres';
+        }
+        break;
+
+      case 'message':
+        if (!value) {
+          error = 'Le message est requis';
+        } else if (value.length < 10) {
+          error = 'Le message doit contenir au moins 10 caractères';
+        }
+        break;
+    }
+
+    setErrors({ ...errors, [fieldName]: error });
+  };
+
+  const validateAll = () => {
+    const newErrors = {};
+
+    // Nom
+    if (!formData.name) {
+      newErrors.name = 'Le nom est requis';
+    } else if (formData.name.length < 2) {
+      newErrors.name = 'Le nom doit contenir au moins 2 caractères';
+    }
+
+    // Email
+    if (!formData.email) {
+      newErrors.email = 'L\'email est requis';
+    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
+      newErrors.email = 'L\'email n\'est pas valide';
+    }
+
+    // Téléphone
+    if (!formData.phone) {
+      newErrors.phone = 'Le téléphone est requis';
+    } else if (!/^0[1-9]\d{8}$/.test(formData.phone)) {
+      newErrors.phone = 'Le téléphone doit contenir 10 chiffres';
+    }
+
+    // Message
+    if (!formData.message) {
+      newErrors.message = 'Le message est requis';
+    } else if (formData.message.length < 10) {
+      newErrors.message = 'Le message doit contenir au moins 10 caractères';
+    }
+
+    return newErrors;
+  };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+
+    const validationErrors = validateAll();
+
+    if (Object.keys(validationErrors).length === 0) {
+      console.log('Formulaire valide !', formData);
+      // Envoyer les données...
+    } else {
+      setErrors(validationErrors);
+      setTouched({
+        name: true,
+        email: true,
+        phone: true,
+        message: true
+      });
+    }
+  };
+
+  const isFormValid = Object.keys(validateAll()).length === 0;
+
+  return (
+    <form onSubmit={handleSubmit}>
+      <div>
+        <input
+          type="text"
+          name="name"
+          value={formData.name}
+          onChange={handleChange}
+          onBlur={handleBlur}
+          placeholder="Nom complet"
+        />
+        {touched.name && errors.name && (
+          <span className="error">{errors.name}</span>
+        )}
+      </div>
+
+      <div>
+        <input
+          type="email"
+          name="email"
+          value={formData.email}
+          onChange={handleChange}
+          onBlur={handleBlur}
+          placeholder="Email"
+        />
+        {touched.email && errors.email && (
+          <span className="error">{errors.email}</span>
+        )}
+      </div>
+
+      <div>
+        <input
+          type="tel"
+          name="phone"
+          value={formData.phone}
+          onChange={handleChange}
+          onBlur={handleBlur}
+          placeholder="Téléphone"
+        />
+        {touched.phone && errors.phone && (
+          <span className="error">{errors.phone}</span>
+        )}
+      </div>
+
+      <div>
+        <textarea
+          name="message"
+          value={formData.message}
+          onChange={handleChange}
+          onBlur={handleBlur}
+          placeholder="Votre message..."
+          rows={5}
+        />
+        {touched.message && errors.message && (
+          <span className="error">{errors.message}</span>
+        )}
+      </div>
+
+      <button type="submit" disabled={!isFormValid}>
+        Envoyer
+      </button>
+    </form>
+  );
+}
+```
+
+## Affichage des erreurs
+
+### Sous le champ (recommandé)
+
+```jsx
+<div>
+  <input {...props} />
+  {error && <span className="error">{error}</span>}
+</div>
+```
+
+### Style CSS pour les erreurs
+
+```css
+.error {
+  color: #ef4444;
+  font-size: 0.875rem;
+  margin-top: 0.25rem;
+  display: block;
+}
+
+input.invalid {
+  border-color: #ef4444;
+}
+
+input.valid {
+  border-color: #10b981;
+}
+```
+
+### Avec icône
+
+```jsx
+{error && (
+  <span className="error">
+    ⚠️ {error}
+  </span>
+)}
+```
+
+### Message de succès global
+
+```jsx
+{submitSuccess && (
+  <div className="success">
+    ✅ Formulaire envoyé avec succès !
+  </div>
+)}
+```
+
+## Désactiver le bouton si invalide
+
+```jsx
+const isFormValid = () => {
+  return Object.keys(validateAll()).length === 0;
+};
+
+return (
+  <button type="submit" disabled={!isFormValid()}>
+    Envoyer
+  </button>
+);
+```
+
+## Bonnes pratiques
+
+<Callout type="tip" title="Conseils UX">
+**1. Messages clairs et constructifs**
+
+```jsx
+// ❌ Pas assez clair
+"Champ invalide"
+
+// ✅ Message explicite
+"L'email doit contenir un @ et un domaine"
+```
+
+**2. Valider au bon moment**
+
+- Premier passage : onBlur
+- Après touché : onChange
+- Soumission : toujours valider
+
+**3. Indicateurs visuels**
+
+- Bordure rouge pour erreur
+- Bordure verte pour valide
+- Icônes (✅ ❌)
+
+**4. Désactiver le bouton si invalide**
+
+Empêche la soumission d'un formulaire invalide.
+
+**5. Ne pas bloquer la saisie**
+
+```jsx
+// ❌ Trop restrictif
+const handleChange = (e) => {
+  if (e.target.value.length <= 10) {
+    setValue(e.target.value);
+  }
+};
+
+// ✅ Afficher un warning mais autoriser
+const handleChange = (e) => {
+  setValue(e.target.value);
+  if (e.target.value.length > 10) {
+    setWarning('Trop long');
+  }
+};
+```
+</Callout>
+
+## Récapitulatif
+
+<Callout type="success" title="Ce que vous avez appris">
+**Validation de formulaires** :
+
+1. **Types** : champs requis, format, longueur, correspondance, personnalisée
+2. **Timing** : onBlur (première fois) → onChange (après) → onSubmit (toujours)
+3. **État** : `errors` pour les erreurs, `touched` pour savoir si touché
+4. **Affichage** : messages clairs sous les champs
+5. **UX** : désactiver le bouton submit si invalide
+6. **Regex** : pour valider email, téléphone, etc.
+
+**Prochaine étape** : découvrir Zod, la solution moderne et type-safe pour la validation !
+</Callout>
+
+## Et les alternatives modernes ?
+
+<Callout type="info" title="Ne vous inquiétez pas !">
+La validation manuelle avec regex fonctionne bien pour des cas simples, mais devient vite **complexe et répétitive** pour de gros formulaires.
+
+**Il existe des bibliothèques modernes** qui simplifient énormément la validation :
+- **Zod** - Type-safe, moderne, très populaire ⭐ (voir chapitre suivant)
+- **Yup** - Alternative populaire
+- **Joi** - Validation côté serveur
+- **React Hook Form** - Gestion complète de formulaires + validation
+
+Dans le prochain chapitre, nous allons découvrir **Zod**, le standard de l'industrie pour la validation type-safe en TypeScript !
+</Callout>

@@ -1,0 +1,627 @@
+# Exercices - Séance 2
+
+Mettez en pratique ce que vous avez appris sur React : composants, props, listes et rendu conditionnel !
+
+<Callout type="info" title="Instructions">
+Ces exercices progressent en difficulté. Commencez par le premier et avancez à votre rythme.
+
+**Conseils :**
+- Testez votre code régulièrement
+- Utilisez React DevTools pour déboguer
+- N'hésitez pas à revoir les sections du cours
+- L'IA peut vous aider, mais assurez-vous de comprendre le code !
+</Callout>
+
+## Exercice 1 : Carte de profil (Facile)
+
+**Objectif :** Créer un composant de carte de profil réutilisable.
+
+### Consignes
+
+Créez un composant `ProfileCard` qui affiche :
+- Une photo de profil (avatar)
+- Un nom
+- Une biographie
+- Un lien vers le profil
+
+**Props attendues :**
+- `name` : string (requis)
+- `bio` : string (requis)
+- `avatarUrl` : string (requis)
+- `profileUrl` : string (optionnel)
+
+### Exemple d'utilisation
+
+```jsx
+<ProfileCard
+  name="Alice Dupont"
+  bio="Développeuse frontend passionnée par React"
+  avatarUrl="https://i.pravatar.cc/150?img=1"
+  profileUrl="/profile/alice"
+/>
+```
+
+### Points à vérifier
+
+- [ ] Le composant affiche toutes les informations
+- [ ] L'avatar a une taille raisonnable (ex: 80x80px)
+- [ ] Le lien du profil ne s'affiche que si `profileUrl` est fourni
+- [ ] Le composant est réutilisable avec différentes données
+
+<Callout type="tip" title="Astuce">
+Utilisez l'opérateur `&&` pour afficher conditionnellement le lien du profil :
+
+```jsx
+{profileUrl && <a href={profileUrl}>Voir le profil</a>}
+```
+</Callout>
+
+### Bonus
+
+- Ajoutez un style CSS pour rendre la carte attrayante
+- Ajoutez une prop `isOnline` pour afficher un badge "En ligne"
+- Créez 3 cartes différentes dans `App.jsx`
+
+---
+
+## Exercice 2 : Liste de produits avec filtrage (Moyen)
+
+**Objectif :** Créer une liste de produits avec filtrage par catégorie.
+
+### Consignes
+
+Créez deux composants :
+
+**1. `ProductCard`**
+- Affiche un produit (nom, prix, image, catégorie)
+- Props : `product` (objet avec id, name, price, image, category)
+
+**2. `ProductList`**
+- Affiche une liste de produits
+- Props : `products` (tableau), `category` (string ou null)
+- Filtre les produits par catégorie si fournie
+- Affiche "Aucun produit trouvé" si la liste est vide
+
+### Données de test
+
+```jsx
+const products = [
+  {
+    id: 1,
+    name: 'Laptop',
+    price: 999,
+    image: 'https://via.placeholder.com/150',
+    category: 'electronics'
+  },
+  {
+    id: 2,
+    name: 'T-shirt',
+    price: 29,
+    image: 'https://via.placeholder.com/150',
+    category: 'clothing'
+  },
+  {
+    id: 3,
+    name: 'Smartphone',
+    price: 699,
+    image: 'https://via.placeholder.com/150',
+    category: 'electronics'
+  },
+  {
+    id: 4,
+    name: 'Chaussures',
+    price: 89,
+    image: 'https://via.placeholder.com/150',
+    category: 'clothing'
+  },
+  {
+    id: 5,
+    name: 'Casque audio',
+    price: 149,
+    image: 'https://via.placeholder.com/150',
+    category: 'electronics'
+  }
+];
+```
+
+### Exemple d'utilisation
+
+```jsx
+// Tous les produits
+<ProductList products={products} />
+
+// Uniquement l'électronique
+<ProductList products={products} category="electronics" />
+
+// Uniquement les vêtements
+<ProductList products={products} category="clothing" />
+```
+
+### Points à vérifier
+
+- [ ] `ProductCard` affiche toutes les informations du produit
+- [ ] Chaque carte de produit a une `key` unique
+- [ ] Le filtrage fonctionne correctement
+- [ ] Un message s'affiche si aucun produit n'est trouvé
+- [ ] Le prix est formaté correctement (ex: "999€")
+
+<Callout type="tip" title="Astuce pour le filtrage">
+Utilisez `.filter()` avant `.map()` :
+
+```jsx
+const filteredProducts = category
+  ? products.filter(p => p.category === category)
+  : products;
+
+return (
+  <div>
+    {filteredProducts.map(product => (
+      <ProductCard key={product.id} product={product} />
+    ))}
+  </div>
+);
+```
+</Callout>
+
+### Bonus
+
+- Ajoutez des boutons pour changer la catégorie active
+- Ajoutez un compteur : "5 produits trouvés"
+- Ajoutez un bouton "Ajouter au panier" (avec console.log)
+- Triez les produits par prix (croissant/décroissant)
+
+---
+
+## Exercice 3 : Composition de composants - Layout (Moyen)
+
+**Objectif :** Créer un système de layout réutilisable avec composition.
+
+### Consignes
+
+Créez les composants suivants :
+
+**1. `Header`**
+- Affiche le titre de l'application
+- Props : `title` (string)
+
+**2. `Footer`**
+- Affiche un copyright
+- Props : `year` (number), `company` (string)
+
+**3. `Sidebar`**
+- Affiche une liste de liens
+- Props : `links` (array d'objets `{ title, url }`)
+
+**4. `MainContent`**
+- Zone de contenu principal
+- Props : `children`
+
+**5. `Layout`**
+- Compose Header, Sidebar, MainContent, Footer
+- Props : `title`, `children`
+
+### Structure attendue
+
+```jsx
+function Layout({ title, children }) {
+  const navLinks = [
+    { title: 'Accueil', url: '/' },
+    { title: 'Produits', url: '/products' },
+    { title: 'Contact', url: '/contact' }
+  ];
+
+  return (
+    <div className="layout">
+      <Header title={title} />
+      <div className="container">
+        <Sidebar links={navLinks} />
+        <MainContent>
+          {children}
+        </MainContent>
+      </div>
+      <Footer year={2024} company="Mon Entreprise" />
+    </div>
+  );
+}
+```
+
+### Exemple d'utilisation
+
+```jsx
+function App() {
+  return (
+    <Layout title="Mon Application React">
+      <h1>Page d'accueil</h1>
+      <p>Bienvenue sur mon site !</p>
+    </Layout>
+  );
+}
+```
+
+### Points à vérifier
+
+- [ ] Tous les composants sont créés et exportés
+- [ ] Le layout compose correctement tous les éléments
+- [ ] La prop `children` fonctionne correctement
+- [ ] La sidebar affiche tous les liens
+- [ ] Le footer affiche l'année et le nom de l'entreprise
+
+<Callout type="tip" title="Astuce pour la Sidebar">
+Utilisez `.map()` pour afficher les liens :
+
+```jsx
+function Sidebar({ links }) {
+  return (
+    <nav className="sidebar">
+      <ul>
+        {links.map((link, index) => (
+          <li key={index}>
+            <a href={link.url}>{link.title}</a>
+          </li>
+        ))}
+      </ul>
+    </nav>
+  );
+}
+```
+</Callout>
+
+### Bonus
+
+- Ajoutez du CSS pour un layout en grille
+- Ajoutez un composant `Button` réutilisable
+- Créez plusieurs pages utilisant le même Layout
+- Ajoutez un dark mode toggle dans le Header
+
+---
+
+## Exercice 4 : Dashboard avec statuts (Avancé)
+
+**Objectif :** Créer un dashboard avec gestion d'états de chargement et d'erreur.
+
+### Consignes
+
+Créez un composant `Dashboard` qui simule le chargement de données et affiche :
+
+**États possibles :**
+1. **Loading** : Affiche un spinner ou message "Chargement..."
+2. **Error** : Affiche un message d'erreur avec bouton "Réessayer"
+3. **Empty** : Affiche "Aucune donnée disponible"
+4. **Success** : Affiche les données sous forme de cartes
+
+**Props :**
+- `loading` : boolean
+- `error` : string | null
+- `data` : array | null
+
+### Données de test
+
+```jsx
+const mockData = [
+  { id: 1, title: 'Ventes', value: 1234, trend: '+12%' },
+  { id: 2, title: 'Utilisateurs', value: 567, trend: '+8%' },
+  { id: 3, title: 'Revenus', value: 8910, trend: '-3%' }
+];
+```
+
+### Structure du composant
+
+```jsx
+function Dashboard({ loading, error, data }) {
+  // 1. État Loading
+  if (loading) {
+    return (
+      <div className="dashboard-loading">
+        <p>Chargement des données...</p>
+      </div>
+    );
+  }
+
+  // 2. État Error
+  if (error) {
+    return (
+      <div className="dashboard-error">
+        <p>❌ Erreur : {error}</p>
+        <button onClick={() => window.location.reload()}>
+          Réessayer
+        </button>
+      </div>
+    );
+  }
+
+  // 3. État Empty
+  if (!data || data.length === 0) {
+    return (
+      <div className="dashboard-empty">
+        <p>Aucune donnée disponible</p>
+      </div>
+    );
+  }
+
+  // 4. État Success
+  return (
+    <div className="dashboard">
+      <h1>Tableau de bord</h1>
+      <div className="stats-grid">
+        {data.map(stat => (
+          <StatCard key={stat.id} stat={stat} />
+        ))}
+      </div>
+    </div>
+  );
+}
+```
+
+### Composant StatCard
+
+Créez également un composant `StatCard` :
+
+```jsx
+function StatCard({ stat }) {
+  const isPositive = stat.trend.startsWith('+');
+
+  return (
+    <div className="stat-card">
+      <h3>{stat.title}</h3>
+      <p className="value">{stat.value}</p>
+      <span className={isPositive ? 'trend-positive' : 'trend-negative'}>
+        {stat.trend}
+      </span>
+    </div>
+  );
+}
+```
+
+### Tester les différents états
+
+```jsx
+function App() {
+  // État 1 : Loading
+  return <Dashboard loading={true} error={null} data={null} />;
+
+  // État 2 : Error
+  return <Dashboard loading={false} error="Impossible de charger les données" data={null} />;
+
+  // État 3 : Empty
+  return <Dashboard loading={false} error={null} data={[]} />;
+
+  // État 4 : Success
+  return <Dashboard loading={false} error={null} data={mockData} />;
+}
+```
+
+### Points à vérifier
+
+- [ ] Les 4 états s'affichent correctement
+- [ ] Le composant StatCard affiche toutes les informations
+- [ ] Les tendances positives et négatives ont des styles différents
+- [ ] Le bouton "Réessayer" fonctionne
+- [ ] Les early returns simplifient la logique
+
+### Bonus
+
+- Ajoutez un vrai spinner avec une animation CSS
+- Ajoutez des icônes pour chaque statistique
+- Ajoutez un bouton "Rafraîchir" dans l'état Success
+- Créez un composant `LoadingSpinner` réutilisable
+- Ajoutez des graphiques (avec une bibliothèque ou en CSS)
+
+---
+
+## Exercice 5 : Application de tâches (Projet complet)
+
+**Objectif :** Créer une application de gestion de tâches complète.
+
+### Fonctionnalités
+
+1. **Afficher une liste de tâches**
+2. **Marquer une tâche comme complétée**
+3. **Supprimer une tâche**
+4. **Filtrer les tâches** (Toutes / Actives / Complétées)
+5. **Compter les tâches** restantes
+
+### Structure des données
+
+```jsx
+const initialTasks = [
+  { id: 1, text: 'Apprendre React', completed: true },
+  { id: 2, text: 'Faire les exercices', completed: false },
+  { id: 3, text: 'Créer un projet', completed: false }
+];
+```
+
+### Composants à créer
+
+**1. `TaskItem`**
+```jsx
+function TaskItem({ task, onToggle, onDelete }) {
+  return (
+    <div className={`task ${task.completed ? 'completed' : ''}`}>
+      <input
+        type="checkbox"
+        checked={task.completed}
+        onChange={() => onToggle(task.id)}
+      />
+      <span>{task.text}</span>
+      <button onClick={() => onDelete(task.id)}>🗑️</button>
+    </div>
+  );
+}
+```
+
+**2. `TaskList`**
+```jsx
+function TaskList({ tasks, onToggle, onDelete }) {
+  if (tasks.length === 0) {
+    return <p className="empty">Aucune tâche à afficher</p>;
+  }
+
+  return (
+    <div className="task-list">
+      {tasks.map(task => (
+        <TaskItem
+          key={task.id}
+          task={task}
+          onToggle={onToggle}
+          onDelete={onDelete}
+        />
+      ))}
+    </div>
+  );
+}
+```
+
+**3. `FilterButtons`**
+```jsx
+function FilterButtons({ currentFilter, onFilterChange }) {
+  const filters = ['all', 'active', 'completed'];
+
+  return (
+    <div className="filters">
+      {filters.map(filter => (
+        <button
+          key={filter}
+          className={currentFilter === filter ? 'active' : ''}
+          onClick={() => onFilterChange(filter)}
+        >
+          {filter === 'all' ? 'Toutes' : filter === 'active' ? 'Actives' : 'Complétées'}
+        </button>
+      ))}
+    </div>
+  );
+}
+```
+
+**4. `TaskStats`**
+```jsx
+function TaskStats({ total, completed }) {
+  const remaining = total - completed;
+
+  return (
+    <div className="stats">
+      <p>{remaining} tâche(s) restante(s)</p>
+      <p>{completed} complétée(s) sur {total}</p>
+    </div>
+  );
+}
+```
+
+### Logique de filtrage
+
+```jsx
+function App() {
+  const [tasks, setTasks] = useState(initialTasks);
+  const [filter, setFilter] = useState('all');
+
+  // Filtrer les tâches
+  const filteredTasks = tasks.filter(task => {
+    if (filter === 'active') return !task.completed;
+    if (filter === 'completed') return task.completed;
+    return true; // 'all'
+  });
+
+  // Calculer les stats
+  const totalTasks = tasks.length;
+  const completedTasks = tasks.filter(t => t.completed).length;
+
+  // Handlers (à implémenter)
+  function handleToggle(id) {
+    console.log('Toggle task:', id);
+    // TODO: Inverser task.completed
+  }
+
+  function handleDelete(id) {
+    console.log('Delete task:', id);
+    // TODO: Supprimer la tâche
+  }
+
+  return (
+    <div className="app">
+      <h1>Mes Tâches</h1>
+      <TaskStats total={totalTasks} completed={completedTasks} />
+      <FilterButtons currentFilter={filter} onFilterChange={setFilter} />
+      <TaskList
+        tasks={filteredTasks}
+        onToggle={handleToggle}
+        onDelete={handleDelete}
+      />
+    </div>
+  );
+}
+```
+
+### Points à vérifier
+
+- [ ] Toutes les tâches s'affichent correctement
+- [ ] Le filtrage fonctionne (Toutes / Actives / Complétées)
+- [ ] Les statistiques sont justes
+- [ ] L'état "completed" change visuellement une tâche
+- [ ] Le bouton de filtre actif a un style différent
+
+<Callout type="warning" title="Note importante">
+Pour cet exercice, vous avez besoin de **useState** que vous verrez dans la prochaine séance.
+
+**Pour l'instant :**
+- Créez les composants avec les props
+- Testez avec des données statiques
+- Utilisez `console.log()` dans les handlers
+
+**Prochaine séance :**
+- Vous ajouterez `useState` pour rendre l'app interactive
+- Vous implémenterez les fonctions `handleToggle` et `handleDelete`
+</Callout>
+
+### Bonus
+
+- Ajoutez un champ pour créer de nouvelles tâches
+- Ajoutez un bouton "Tout effacer"
+- Ajoutez la possibilité de modifier le texte d'une tâche
+- Sauvegardez les tâches dans localStorage
+- Ajoutez des animations CSS pour les transitions
+
+---
+
+## Ressources supplémentaires
+
+<Callout type="info" title="Pour aller plus loin">
+**Documentation officielle :**
+- [React Docs - Composants et Props](https://react.dev/learn/passing-props-to-a-component)
+- [React Docs - Rendu de listes](https://react.dev/learn/rendering-lists)
+- [React Docs - Rendu conditionnel](https://react.dev/learn/conditional-rendering)
+
+**Outils utiles :**
+- [React DevTools](https://react.dev/learn/react-developer-tools)
+- [CodeSandbox](https://codesandbox.io/) - Pour tester rapidement
+- [Placeholder images](https://placeholder.com/) - Images de test
+
+**Pratique supplémentaire :**
+- [React Tutorial](https://react.dev/learn/tutorial-tic-tac-toe) - Jeu de Tic-Tac-Toe officiel
+- [FreeCodeCamp React](https://www.freecodecamp.org/learn/front-end-development-libraries/#react) - Exercices supplémentaires
+</Callout>
+
+## Soumission
+
+<Callout type="success" title="Comment soumettre vos exercices">
+**Sur Moodle :**
+1. Créez un projet Vite avec tous vos exercices
+2. Testez que tout fonctionne
+3. Poussez votre code sur GitHub
+4. Soumettez le lien du repository
+
+**OU sur CodeSandbox :**
+1. Créez un sandbox React
+2. Complétez les exercices
+3. Partagez le lien du sandbox
+
+**Date limite :** Voir Moodle
+
+**Barème :**
+- Exercice 1 : 3 points
+- Exercice 2 : 4 points
+- Exercice 3 : 4 points
+- Exercice 4 : 4 points
+- Exercice 5 : 5 points
+- **Bonus :** Jusqu'à 5 points supplémentaires
+
+**Total :** 20 points + bonus
+</Callout>

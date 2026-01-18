@@ -33,13 +33,15 @@ export default function CodeBlock({
     background: '#1e1e1e',
     fontSize: '0.875rem',
     lineHeight: '1.5',
+    maxWidth: '100%',
+    overflowX: 'auto',
   };
 
   return (
-    <div className="my-6 rounded-lg overflow-hidden border border-gray-700">
+    <div className="my-6 rounded-lg border border-gray-700 max-w-full overflow-x-auto">
       {/* Header */}
       {(filename || language) && (
-        <div className="flex items-center justify-between px-4 py-2 bg-gray-800 border-b border-gray-700">
+        <div className="flex items-center justify-between px-4 py-2 bg-gray-800 border-b border-gray-700 min-w-0">
           <div className="flex items-center gap-2">
             {filename && (
               <span className="text-sm text-gray-300 font-mono">{filename}</span>

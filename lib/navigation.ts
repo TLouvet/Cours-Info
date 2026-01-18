@@ -122,6 +122,7 @@ export const navigation: NavSession[] = [
     sections: [
       { id: 'git-basics', title: 'Git - Bases & Commandes', href: '/annexes/git-basics' },
       { id: 'css-selectors', title: 'CSS - Sélecteurs & Propriétés', href: '/annexes/css-selectors' },
+      { id: 'gh-pages', title: 'Déployer sur GitHub Pages', href: '/annexes/gh-pages' },
     ],
   },
 ];

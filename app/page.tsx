@@ -92,101 +92,113 @@ export default function Home() {
             </div>
           </Link>
 
-          <div className="block p-6 bg-gray-50 dark:bg-gray-800/50 border border-gray-200 dark:border-gray-700 rounded-xl opacity-60">
+          <Link
+            href="/seance-2"
+            className="block p-6 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl hover:border-cyan-500 dark:hover:border-cyan-500 transition-colors group"
+          >
             <div className="flex items-start justify-between">
               <div className="flex-1">
                 <div className="flex items-center gap-3 mb-2">
-                  <span className="px-3 py-1 text-xs font-medium bg-gray-200 dark:bg-gray-700 text-gray-600 dark:text-gray-400 rounded-full">
+                  <span className="px-3 py-1 text-xs font-medium bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400 rounded-full">
                     Séance 2
                   </span>
                   <span className="text-xs text-gray-500 dark:text-gray-400">3h30</span>
-                  <span className="text-xs text-gray-500 dark:text-gray-400">• Bientôt disponible</span>
                 </div>
-                <h3 className="text-lg font-semibold text-gray-700 dark:text-gray-300 mb-2">
-                  Introduction à React
+                <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-2 group-hover:text-cyan-600 dark:group-hover:text-cyan-400 transition-colors">
+                  React Fundamentals
                 </h3>
-                <p className="text-sm text-gray-500 dark:text-gray-400">
-                  JSX, Composants, Props, Structure de projet
+                <p className="text-sm text-gray-600 dark:text-gray-400">
+                  JSX, Composants, Props, Listes & Keys, Rendu conditionnel, React avec TypeScript
                 </p>
               </div>
+              <FiArrowRight className="w-5 h-5 text-gray-400 group-hover:text-cyan-600 dark:group-hover:text-cyan-400 transition-colors" />
             </div>
-          </div>
+          </Link>
 
-          <div className="block p-6 bg-gray-50 dark:bg-gray-800/50 border border-gray-200 dark:border-gray-700 rounded-xl opacity-60">
+          <Link
+            href="/seance-3"
+            className="block p-6 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl hover:border-cyan-500 dark:hover:border-cyan-500 transition-colors group"
+          >
             <div className="flex items-start justify-between">
               <div className="flex-1">
                 <div className="flex items-center gap-3 mb-2">
-                  <span className="px-3 py-1 text-xs font-medium bg-gray-200 dark:bg-gray-700 text-gray-600 dark:text-gray-400 rounded-full">
+                  <span className="px-3 py-1 text-xs font-medium bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-400 rounded-full">
                     Séance 3
                   </span>
                   <span className="text-xs text-gray-500 dark:text-gray-400">3h30</span>
-                  <span className="text-xs text-gray-500 dark:text-gray-400">• Bientôt disponible</span>
                 </div>
-                <h3 className="text-lg font-semibold text-gray-700 dark:text-gray-300 mb-2">
-                  useState
+                <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-2 group-hover:text-cyan-600 dark:group-hover:text-cyan-400 transition-colors">
+                  Interactivité & Formulaires
                 </h3>
-                <p className="text-sm text-gray-500 dark:text-gray-400">
-                  Gestion d'état, Événements, Rendu conditionnel
+                <p className="text-sm text-gray-600 dark:text-gray-400">
+                  useState, Événements, Formulaires contrôlés, Validation, Zod, Lifting State Up
                 </p>
               </div>
+              <FiArrowRight className="w-5 h-5 text-gray-400 group-hover:text-cyan-600 dark:group-hover:text-cyan-400 transition-colors" />
             </div>
-          </div>
+          </Link>
 
-          <div className="block p-6 bg-gray-50 dark:bg-gray-800/50 border border-gray-200 dark:border-gray-700 rounded-xl opacity-60">
+          <Link
+            href="/seance-4"
+            className="block p-6 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl hover:border-cyan-500 dark:hover:border-cyan-500 transition-colors group"
+          >
             <div className="flex items-start justify-between">
               <div className="flex-1">
                 <div className="flex items-center gap-3 mb-2">
-                  <span className="px-3 py-1 text-xs font-medium bg-gray-200 dark:bg-gray-700 text-gray-600 dark:text-gray-400 rounded-full">
+                  <span className="px-3 py-1 text-xs font-medium bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400 rounded-full">
                     Séance 4
                   </span>
                   <span className="text-xs text-gray-500 dark:text-gray-400">3h30</span>
-                  <span className="text-xs text-gray-500 dark:text-gray-400">• Bientôt disponible</span>
                 </div>
-                <h3 className="text-lg font-semibold text-gray-700 dark:text-gray-300 mb-2">
-                  useEffect
+                <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-2 group-hover:text-cyan-600 dark:group-hover:text-cyan-400 transition-colors">
+                  Effects & Routing
                 </h3>
-                <p className="text-sm text-gray-500 dark:text-gray-400">
-                  Cycle de vie, async/await, Appels API
+                <p className="text-sm text-gray-600 dark:text-gray-400">
+                  useEffect, Data Fetching, React Router, Routes dynamiques, Navigation
                 </p>
               </div>
+              <FiArrowRight className="w-5 h-5 text-gray-400 group-hover:text-cyan-600 dark:group-hover:text-cyan-400 transition-colors" />
             </div>
-          </div>
+          </Link>
 
-          <div className="block p-6 bg-gray-50 dark:bg-gray-800/50 border border-gray-200 dark:border-gray-700 rounded-xl opacity-60">
+          <Link
+            href="/seance-5"
+            className="block p-6 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl hover:border-cyan-500 dark:hover:border-cyan-500 transition-colors group"
+          >
             <div className="flex items-start justify-between">
               <div className="flex-1">
                 <div className="flex items-center gap-3 mb-2">
-                  <span className="px-3 py-1 text-xs font-medium bg-gray-200 dark:bg-gray-700 text-gray-600 dark:text-gray-400 rounded-full">
+                  <span className="px-3 py-1 text-xs font-medium bg-orange-100 dark:bg-orange-900/30 text-orange-700 dark:text-orange-400 rounded-full">
                     Séance 5
                   </span>
                   <span className="text-xs text-gray-500 dark:text-gray-400">3h30</span>
-                  <span className="text-xs text-gray-500 dark:text-gray-400">• Bientôt disponible</span>
                 </div>
-                <h3 className="text-lg font-semibold text-gray-700 dark:text-gray-300 mb-2">
-                  Architecture & Bonnes Pratiques
+                <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-2 group-hover:text-cyan-600 dark:group-hover:text-cyan-400 transition-colors">
+                  Projet & IA
                 </h3>
-                <p className="text-sm text-gray-500 dark:text-gray-400">
-                  Structure de projet, Bonnes pratiques, Révisions
+                <p className="text-sm text-gray-600 dark:text-gray-400">
+                  Workflow IA, Best Practices, Custom Hooks, Debugging, Déploiement, Projet final
                 </p>
               </div>
+              <FiArrowRight className="w-5 h-5 text-gray-400 group-hover:text-cyan-600 dark:group-hover:text-cyan-400 transition-colors" />
             </div>
-          </div>
+          </Link>
         </div>
       </section>
 
       {/* CTA */}
       <section className="text-center py-8 px-6 bg-gradient-to-br from-cyan-50 to-cyan-100 dark:from-cyan-900/20 dark:to-cyan-800/20 rounded-xl border border-cyan-200 dark:border-cyan-800">
         <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-3">
-          Prêt à commencer ?
+          Prêt à apprendre React ?
         </h2>
         <p className="text-gray-600 dark:text-gray-400 mb-6">
-          Commencez par la Séance 1 pour apprendre les fondamentaux de JavaScript moderne
+          5 séances complètes pour maîtriser React, du JavaScript moderne jusqu'au déploiement
         </p>
         <Link
           href="/seance-1"
           className="inline-flex items-center gap-2 px-6 py-3 bg-cyan-600 hover:bg-cyan-700 text-white font-medium rounded-lg transition-colors"
         >
-          Commencer maintenant
+          Commencer la Séance 1
           <FiArrowRight className="w-5 h-5" />
         </Link>
       </section>

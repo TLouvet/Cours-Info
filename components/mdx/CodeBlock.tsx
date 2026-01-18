@@ -34,7 +34,7 @@ export default function CodeBlock({
     fontSize: '0.875rem',
     lineHeight: '1.5',
     maxWidth: '100%',
-    overflowX: 'auto',
+    overflowX: 'auto' as const,
   };
 
   return (

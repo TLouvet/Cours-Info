@@ -108,7 +108,7 @@ Testez vos connaissances sur les effets et le routing ! Ce quiz couvre tous les 
     "Réinitialiser l'état à zéro"
   ]}
   correctAnswer={0}
-  explanation="✅ Le cleanup (return () => {...}) s'exécute AVANT le prochain effect ou au unmount. Utilisé pour clearInterval, clearTimeout, unsubscribe, abort fetch, etc. ❌ Le cleanup ne supprime pas le composant, c'est React qui s'en charge. ❌ On ne peut pas annuler un rendu en cours. ❌ Il ne réinitialise pas l'état automatiquement. Le cleanup évite les fuites mémoire (memory leaks)."
+  explanation="✅ Le cleanup (return () =&gt; &#123;...&#125;) s'exécute AVANT le prochain effect ou au unmount. Utilisé pour clearInterval, clearTimeout, unsubscribe, abort fetch, etc. ❌ Le cleanup ne supprime pas le composant, c'est React qui s'en charge. ❌ On ne peut pas annuler un rendu en cours. ❌ Il ne réinitialise pas l'état automatiquement. Le cleanup évite les fuites mémoire (memory leaks)."
 />
 
 <QuickCheck

@@ -37,8 +37,8 @@ export default function Resources({ resources }: ResourcesProps) {
     <div className="my-8 grid gap-4 sm:grid-cols-2">
       {resources.map((resource, index) => {
         const type = resource.type || 'website';
-        const Icon = typeIcons[type];
-        const typeColor = typeColors[type];
+        const Icon = typeIcons[type] || FiGlobe;
+        const typeColor = typeColors[type] || typeColors.website;
 
         return (
           <a

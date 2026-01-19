@@ -1,0 +1,321 @@
+# Structures de contrôle
+
+Les structures de contrôle permettent de contrôler le flux d'exécution du code. Si vous avez fait du C, la syntaxe vous sera très familière.
+
+## Conditions
+
+### if / else
+
+```javascript
+const age = 20;
+
+if (age >= 18) {
+  console.log('Majeur');
+} else {
+  console.log('Mineur');
+}
+
+// Avec else if
+const score = 85;
+
+if (score >= 90) {
+  console.log('Excellent');
+} else if (score >= 75) {
+  console.log('Bien');
+} else if (score >= 50) {
+  console.log('Passable');
+} else {
+  console.log('Insuffisant');
+}
+```
+
+### Opérateur ternaire
+
+Pour les conditions simples, l'opérateur ternaire `? :` est plus concis.
+
+```javascript
+const age = 20;
+const status = age >= 18 ? 'Majeur' : 'Mineur';
+console.log(status); // 'Majeur'
+
+// Utile dans les return
+function getStatus(age) {
+  return age >= 18 ? 'Majeur' : 'Mineur';
+}
+```
+
+<QuickCheck
+  question="Que retourne cette expression : const result = 5 > 3 ? 'oui' : 'non' ?"
+  options={[
+    "'oui'",
+    "'non'",
+    "true",
+    "false"
+  ]}
+  correctAnswer={0}
+  explanation="L'opérateur ternaire (condition ? valeurSiVrai : valeurSiFaux) évalue 5 > 3 qui est true, donc retourne 'oui'."
+/>
+
+### Switch
+
+Pour tester plusieurs valeurs d'une même variable.
+
+```javascript
+const day = 'lundi';
+
+switch (day) {
+  case 'lundi':
+  case 'mardi':
+  case 'mercredi':
+  case 'jeudi':
+  case 'vendredi':
+    console.log('Jour de semaine');
+    break;
+  case 'samedi':
+  case 'dimanche':
+    console.log('Week-end');
+    break;
+  default:
+    console.log('Jour invalide');
+}
+```
+
+<Callout type="warning">
+N'oubliez pas le `break` dans chaque case, sinon l'exécution continue dans les cases suivants (fall-through).
+</Callout>
+
+## Boucles
+
+### for
+
+```javascript
+// Boucle classique
+for (let i = 0; i < 5; i++) {
+  console.log(i); // 0, 1, 2, 3, 4
+}
+
+// Parcourir un tableau (mais préférez .forEach() ou for...of)
+const fruits = ['pomme', 'banane', 'orange'];
+for (let i = 0; i < fruits.length; i++) {
+  console.log(fruits[i]);
+}
+```
+
+### for...of
+
+Pour itérer sur les éléments d'un tableau (plus lisible que `for` classique).
+
+```javascript
+const fruits = ['pomme', 'banane', 'orange'];
+
+for (const fruit of fruits) {
+  console.log(fruit);
+}
+// 'pomme'
+// 'banane'
+// 'orange'
+```
+
+<Callout type="tip">
+**Avec les tableaux**, préférez souvent `.forEach()`, `.map()`, `.filter()` plutôt que les boucles `for` classiques. Nous verrons cela dans le chapitre Tableaux.
+
+```javascript
+// Au lieu de :
+for (const fruit of fruits) {
+  console.log(fruit);
+}
+
+// Vous pouvez faire :
+fruits.forEach(fruit => console.log(fruit));
+```
+</Callout>
+
+### while
+
+```javascript
+let count = 0;
+
+while (count < 5) {
+  console.log(count);
+  count++;
+}
+// 0, 1, 2, 3, 4
+```
+
+### do...while
+
+Exécute le bloc au moins une fois, puis vérifie la condition.
+
+```javascript
+let count = 0;
+
+do {
+  console.log(count);
+  count++;
+} while (count < 5);
+// 0, 1, 2, 3, 4
+```
+
+<QuickCheck
+  question="Quelle est la différence entre while et do...while ?"
+  options={[
+    "Aucune différence",
+    "do...while s'exécute au moins une fois, while peut ne jamais s'exécuter",
+    "while est plus rapide",
+    "do...while est obsolète"
+  ]}
+  correctAnswer={1}
+  explanation="do...while vérifie la condition APRÈS l'exécution du bloc, donc le code s'exécute au moins une fois. while vérifie la condition AVANT, donc si elle est fausse dès le début, le bloc ne s'exécute jamais."
+/>
+
+## break et continue
+
+### break
+
+Arrête complètement la boucle.
+
+```javascript
+for (let i = 0; i < 10; i++) {
+  if (i === 5) {
+    break; // Arrête la boucle
+  }
+  console.log(i);
+}
+// 0, 1, 2, 3, 4
+```
+
+### continue
+
+Passe à l'itération suivante.
+
+```javascript
+for (let i = 0; i < 5; i++) {
+  if (i === 2) {
+    continue; // Saute cette itération
+  }
+  console.log(i);
+}
+// 0, 1, 3, 4 (pas de 2)
+```
+
+<QuickCheck
+  question="Que fait continue dans une boucle ?"
+  options={[
+    "Arrête complètement la boucle",
+    "Redémarre la boucle depuis le début",
+    "Passe directement à l'itération suivante",
+    "Continue la boucle indéfiniment"
+  ]}
+  correctAnswer={2}
+  explanation="continue saute le reste du code de l'itération actuelle et passe directement à la prochaine itération de la boucle."
+/>
+
+## Opérateurs logiques
+
+Utiles dans les conditions.
+
+```javascript
+const age = 25;
+const hasLicense = true;
+
+// AND (&&) - Les deux conditions doivent être vraies
+if (age >= 18 && hasLicense) {
+  console.log('Peut conduire');
+}
+
+// OR (||) - Au moins une condition doit être vraie
+if (age < 18 || !hasLicense) {
+  console.log('Ne peut pas conduire');
+}
+
+// NOT (!) - Inverse la valeur booléenne
+if (!hasLicense) {
+  console.log('Pas de permis');
+}
+```
+
+<Callout type="tip" title="Comprendre, pas mémoriser">
+**Ce qu'il faut retenir :**
+
+- **if/else** : exécuter du code selon une condition
+- **Ternaire** : `condition ? siVrai : siFaux` pour les conditions simples
+- **for** : boucle avec compteur (mais souvent remplacé par `.forEach()`, `.map()`)
+- **for...of** : itérer sur les éléments d'un tableau
+- **while** : boucle tant qu'une condition est vraie
+- **break** : sortir d'une boucle
+- **continue** : passer à l'itération suivante
+- **&&** (ET), **||** (OU), **!** (NON) : combiner des conditions
+
+Ces structures sont quasi-identiques à celles de C/Java. Avec la pratique et les méthodes de tableaux, vous les utiliserez naturellement.
+</Callout>
+
+<Exercise
+  title="Pratique : Structures de contrôle"
+  difficulty="easy"
+  solution={
+<CodeBlock language="javascript">{`const students = [
+  { name: 'Alice', grade: 15 },
+  { name: 'Bob', grade: 8 },
+  { name: 'Charlie', grade: 12 },
+  { name: 'Diana', grade: 18 }
+];
+
+// 1. Afficher le statut de chaque étudiant
+for (const student of students) {
+  const status = student.grade >= 10 ? 'Admis' : 'Recalé';
+  console.log(\`\${student.name}: \${status}\`);
+}
+// Alice: Admis
+// Bob: Recalé
+// Charlie: Admis
+// Diana: Admis
+
+// 2. Compter les étudiants admis
+let passedCount = 0;
+for (const student of students) {
+  if (student.grade >= 10) {
+    passedCount++;
+  }
+}
+console.log(\`Admis: \${passedCount}\`); // Admis: 3
+
+// 3. Trouver le premier étudiant avec une mention (>= 16)
+for (const student of students) {
+  if (student.grade >= 16) {
+    console.log(\`Premier avec mention: \${student.name}\`);
+    break; // Arrête dès qu'on trouve
+  }
+}
+// Premier avec mention: Diana
+
+// 4. Afficher les notes sauf celle de Bob
+for (const student of students) {
+  if (student.name === 'Bob') {
+    continue; // Saute Bob
+  }
+  console.log(\`\${student.name}: \${student.grade}/20\`);
+}
+// Alice: 15/20
+// Charlie: 12/20
+// Diana: 18/20`}
+</CodeBlock>
+  }
+>
+Avec ce tableau d'étudiants :
+
+```javascript
+const students = [
+  { name: 'Alice', grade: 15 },
+  { name: 'Bob', grade: 8 },
+  { name: 'Charlie', grade: 12 },
+  { name: 'Diana', grade: 18 }
+];
+```
+
+1. Pour chaque étudiant, afficher "Nom: Admis" si note >= 10, sinon "Nom: Recalé" (utilisez l'opérateur ternaire)
+2. Compter combien d'étudiants sont admis (note >= 10)
+3. Trouver le premier étudiant avec une mention (note >= 16) et afficher son nom (utilisez `break`)
+4. Afficher les notes de tous les étudiants SAUF Bob (utilisez `continue`)
+
+**Astuce :** Utilisez `for...of` pour parcourir le tableau.
+</Exercise>

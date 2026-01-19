@@ -3,7 +3,7 @@
 Testez vos connaissances sur les fondamentaux JavaScript ! Ce quiz couvre tous les concepts vus durant la Séance 1.
 
 <Callout type="info" title="À propos de ce quiz">
-- **18 questions** couvrant tous les sujets de la Séance 1
+- **16 questions** couvrant tous les sujets de la Séance 1
 - Validez votre compréhension avant de passer à React
 - Aucune note n'est enregistrée, c'est pour votre apprentissage !
 </Callout>
@@ -19,7 +19,7 @@ Testez vos connaissances sur les fondamentaux JavaScript ! Ce quiz couvre tous l
     "Il n'y a aucune différence"
   ]}
   correctAnswer={0}
-  explanation="✅ const empêche la réassignation, let permet la réassignation. ❌ const n'est PAS limité aux constantes mathématiques - utilisez-le pour toute valeur non réassignée (objets, tableaux, etc.). ❌ let n'est PAS obsolète - utilisez-le quand vous devez réassigner (compteurs, boucles). ❌ La différence est cruciale pour la lisibilité du code. Note : const n'empêche pas la mutation des objets/tableaux !"
+  explanation=" const empêche la réassignation, let permet la réassignation.const n'est PAS limité aux constantes mathématiques - utilisez-le pour toute valeur non réassignée (objets, tableaux, etc.).let n'est PAS obsolète - utilisez-le quand vous devez réassigner (compteurs, boucles).La différence est cruciale pour la lisibilité du code. Note : const n'empêche pas la mutation des objets/tableaux !"
 />
 
 <QuickCheck
@@ -31,7 +31,7 @@ Testez vos connaissances sur les fondamentaux JavaScript ! Ce quiz couvre tous l
     "boolean"
   ]}
   correctAnswer={0}
-  explanation="✅ typeof null retourne 'object' - c'est un bug historique de JavaScript jamais corrigé pour la compatibilité. ❌ 'null' n'est pas un type valide retourné par typeof. ❌ undefined est un type différent (variable non initialisée). ❌ boolean est pour true/false uniquement. Astuce : pour vérifier null, utilisez === null directement."
+  explanation=" typeof null retourne 'object' - c'est un bug historique de JavaScript jamais corrigé pour la compatibilité.'null' n'est pas un type valide retourné par typeof.undefined est un type différent (variable non initialisée).boolean est pour true/false uniquement. Astuce : pour vérifier null, utilisez === null directement."
 />
 
 <QuickCheck
@@ -43,7 +43,7 @@ Testez vos connaissances sur les fondamentaux JavaScript ! Ce quiz couvre tous l
     "<<Hello ${name}>>"
   ]}
   correctAnswer={0}
-  explanation="✅ Les backticks (`) permettent l'interpolation avec ${expression}. ❌ Les guillemets simples ('') affichent ${name} littéralement, sans interpolation. ❌ Les guillemets doubles font pareil - pas d'interpolation. ❌ << >> n'est pas une syntaxe JavaScript valide. Seuls les backticks supportent l'interpolation et les chaînes multi-lignes."
+  explanation=" Les backticks (`) permettent l'interpolation avec ${expression}.Les guillemets simples ('') affichent ${name} littéralement, sans interpolation.Les guillemets doubles font pareil - pas d'interpolation.<< >> n'est pas une syntaxe JavaScript valide. Seuls les backticks supportent l'interpolation et les chaînes multi-lignes."
 />
 
 ## Fonctions
@@ -57,7 +57,7 @@ Testez vos connaissances sur les fondamentaux JavaScript ! Ce quiz couvre tous l
     "const add = function(a, b) => a + b"
   ]}
   correctAnswer={0}
-  explanation="✅ Sans accolades, le return est implicite : (a, b) => a + b retourne automatiquement. ❌ Avec accolades { a + b }, il faut return explicite sinon retourne undefined. ❌ La syntaxe -> n'existe pas en JavaScript (c'est du PHP/Kotlin). ❌ On ne peut pas mélanger function et => dans la même déclaration. Règle : pas d'accolades = return implicite."
+  explanation=" Sans accolades, le return est implicite : (a, b) => a + b retourne automatiquement.Avec accolades { a + b }, il faut return explicite sinon retourne undefined.La syntaxe -> n'existe pas en JavaScript (c'est du PHP/Kotlin).On ne peut pas mélanger function et => dans la même déclaration. Règle : pas d'accolades = return implicite."
 />
 
 <QuickCheck
@@ -69,7 +69,7 @@ Testez vos connaissances sur les fondamentaux JavaScript ! Ce quiz couvre tous l
     "const makeUser = (name) => [name]"
   ]}
   correctAnswer={0}
-  explanation="✅ Pour retourner un objet en return implicite, entourez-le de parenthèses : () => ({ name }). ❌ Sans parenthèses { name }, JavaScript interprète les accolades comme un bloc de code, pas un objet. ❌ => name retourne juste la valeur name, pas un objet. ❌ => [name] retourne un tableau, pas un objet. Les parenthèses forcent l'interprétation comme objet."
+  explanation=" Pour retourner un objet en return implicite, entourez-le de parenthèses : () => ({ name }).Sans parenthèses { name }, JavaScript interprète les accolades comme un bloc de code, pas un objet.=> name retourne juste la valeur name, pas un objet.=> [name] retourne un tableau, pas un objet. Les parenthèses forcent l'interprétation comme objet."
 />
 
 ## Tableaux
@@ -83,7 +83,7 @@ Testez vos connaissances sur les fondamentaux JavaScript ! Ce quiz couvre tous l
     ".forEach()"
   ]}
   correctAnswer={0}
-  explanation="✅ .map() transforme chaque élément et retourne un nouveau tableau de même longueur. ❌ .filter() sélectionne des éléments (peut avoir moins d'éléments), ne transforme pas. ❌ .find() retourne UN SEUL élément, pas un tableau. ❌ .forEach() exécute du code mais ne retourne rien (undefined). Pour transformer : toujours .map() !"
+  explanation=" .map() transforme chaque élément et retourne un nouveau tableau de même longueur..filter() sélectionne des éléments (peut avoir moins d'éléments), ne transforme pas..find() retourne UN SEUL élément, pas un tableau..forEach() exécute du code mais ne retourne rien (undefined). Pour transformer : toujours .map() !"
 />
 
 <QuickCheck
@@ -95,7 +95,7 @@ Testez vos connaissances sur les fondamentaux JavaScript ! Ce quiz couvre tous l
     "Le nombre d'éléments qui passent le test"
   ]}
   correctAnswer={0}
-  explanation="✅ .filter() retourne un nouveau tableau avec seulement les éléments où la fonction retourne true. ❌ .find() retourne LE PREMIER élément qui passe, pas tous. ❌ .some() retourne true/false (booléen), pas un tableau. ❌ .reduce() pourrait compter les éléments mais ce n'est pas son usage principal. .filter() = garder certains éléments."
+  explanation=" .filter() retourne un nouveau tableau avec seulement les éléments où la fonction retourne true..find() retourne LE PREMIER élément qui passe, pas tous..some() retourne true/false (booléen), pas un tableau..reduce() pourrait compter les éléments mais ce n'est pas son usage principal. .filter() = garder certains éléments."
 />
 
 <QuickCheck
@@ -107,7 +107,7 @@ Testez vos connaissances sur les fondamentaux JavaScript ! Ce quiz couvre tous l
     "Filtre les valeurs nulles"
   ]}
   correctAnswer={0}
-  explanation="✅ .reduce() accumule les valeurs pour les réduire à UNE SEULE valeur (somme, produit, objet, etc.). ❌ Il ne réduit pas la taille du tableau (c'est .filter() ou .slice()). ❌ Pour les doublons, utilisez Set ou .filter() avec indexOf. ❌ Pour filtrer les nulls, utilisez .filter(). .reduce() = accumuler vers une valeur unique."
+  explanation=" .reduce() accumule les valeurs pour les réduire à UNE SEULE valeur (somme, produit, objet, etc.).Il ne réduit pas la taille du tableau (c'est .filter() ou .slice()).Pour les doublons, utilisez Set ou .filter() avec indexOf.Pour filtrer les nulls, utilisez .filter(). .reduce() = accumuler vers une valeur unique."
 />
 
 ## Objets
@@ -121,7 +121,7 @@ Testez vos connaissances sur les fondamentaux JavaScript ! Ce quiz couvre tous l
     "obj.getKeys()"
   ]}
   correctAnswer={0}
-  explanation="✅ Object.keys(obj) retourne un tableau des clés - c'est une méthode statique de Object. ❌ obj.keys() n'existe pas, les objets n'ont pas cette méthode. ❌ Object.getKeys() n'existe pas en JavaScript. ❌ obj.getKeys() n'existe pas non plus. Autres méthodes utiles : Object.values() et Object.entries()."
+  explanation=" Object.keys(obj) retourne un tableau des clés - c'est une méthode statique de Object.obj.keys() n'existe pas, les objets n'ont pas cette méthode.Object.getKeys() n'existe pas en JavaScript.obj.getKeys() n'existe pas non plus. Autres méthodes utiles : Object.values() et Object.entries()."
 />
 
 ## Destructuration
@@ -135,7 +135,7 @@ Testez vos connaissances sur les fondamentaux JavaScript ! Ce quiz couvre tous l
     "Fusionne name et age dans user"
   ]}
   correctAnswer={0}
-  explanation="✅ C'est la destructuration : elle extrait les propriétés name et age de user dans des variables séparées. ❌ Elle n'écrit pas, elle lit et extrait. ❌ Elle ne crée pas un nouvel objet, elle crée des variables. ❌ Elle n'est pas une comparaison (pas de ==). ❌ Elle ne fusionne rien. Destructuration = extraire des propriétés en variables."
+  explanation=" C'est la destructuration : elle extrait les propriétés name et age de user dans des variables séparées.Elle n'écrit pas, elle lit et extrait.Elle ne crée pas un nouvel objet, elle crée des variables.Elle n'est pas une comparaison (pas de ==).Elle ne fusionne rien. Destructuration = extraire des propriétés en variables."
 />
 
 <QuickCheck
@@ -147,7 +147,7 @@ Testez vos connaissances sur les fondamentaux JavaScript ! Ce quiz couvre tous l
     "const { userName = name } = user"
   ]}
   correctAnswer={0}
-  explanation="✅ La syntaxe correcte est { name: userName } - deux-points pour renommer. ❌ 'as' n'est pas utilisé en JavaScript (c'est du TypeScript pour le casting). ❌ La flèche -> n'est pas la syntaxe JavaScript. ❌ { userName = name } crée une valeur par défaut, ne renomme pas. Pensez-y comme 'nom d'origine : nouveau nom'."
+  explanation=" La syntaxe correcte est { name: userName } - deux-points pour renommer.'as' n'est pas utilisé en JavaScript (c'est du TypeScript pour le casting).La flèche -> n'est pas la syntaxe JavaScript.{ userName = name } crée une valeur par défaut, ne renomme pas. Pensez-y comme 'nom d'origine : nouveau nom'."
 />
 
 ## Spread Operator
@@ -161,7 +161,7 @@ Testez vos connaissances sur les fondamentaux JavaScript ! Ce quiz couvre tous l
     "Trie le tableau"
   ]}
   correctAnswer={0}
-  explanation="✅ Le spread (...) déploie/étale les éléments : [1, 2, ...arr] ajoute tous les éléments de arr. ❌ Il ne supprime pas les doublons (utilisez new Set([...arr])). ❌ Il ne tri pas et n'inverse pas l'ordre. ❌ Il ne trie pas non plus (utilisez .sort()). Le spread = étaler les éléments individuellement."
+  explanation=" Le spread (...) déploie/étale les éléments : [1, 2, ...arr] ajoute tous les éléments de arr.Il ne supprime pas les doublons (utilisez new Set([...arr])).Il ne tri pas et n'inverse pas l'ordre.Il ne trie pas non plus (utilisez .sort()). Le spread = étaler les éléments individuellement."
 />
 
 <QuickCheck
@@ -173,21 +173,21 @@ Testez vos connaissances sur les fondamentaux JavaScript ! Ce quiz couvre tous l
     "const copy = Object(original)"
   ]}
   correctAnswer={0}
-  explanation="✅ { ...original } crée une copie superficielle (shallow copy) - modifications n'affectent pas l'original. ❌ = original fait une référence, pas une copie - modifier l'un modifie l'autre ! ❌ .copy() n'existe pas sur les objets JavaScript. ❌ Object(original) ne copie pas, crée juste un wrapper. Le spread est LA méthode standard pour copier."
+  explanation=" { ...original } crée une copie superficielle (shallow copy) - modifications n'affectent pas l'original.= original fait une référence, pas une copie - modifier l'un modifie l'autre !.copy() n'existe pas sur les objets JavaScript.Object(original) ne copie pas, crée juste un wrapper. Le spread est LA méthode standard pour copier."
 />
 
-## Modules
+## Structures de contrôle
 
 <QuickCheck
-  question="14. Quelle syntaxe pour importer un export nommé ?"
+  question="14. Que fait l'opérateur ternaire ? condition ? 'oui' : 'non' ?"
   options={[
-    "import { add } from './utils'",
-    "import add from './utils'",
-    "import * add from './utils'",
-    "import default add from './utils'"
+    "Retourne 'oui' si la condition est vraie, sinon 'non'",
+    "Compare deux valeurs",
+    "Retourne toujours 'oui'",
+    "C'est une erreur de syntaxe"
   ]}
   correctAnswer={0}
-  explanation="✅ Les exports nommés utilisent les accolades : import { add } from './utils'. ❌ Sans accolades c'est pour l'export par défaut uniquement. ❌ import * add importe TOUT comme un objet (import * as utils). ❌ 'default' est un mot-clé pour exporter, pas importer. Accolades = export nommé, pas d'accolades = export default."
+  explanation="L'opérateur ternaire est une version condensée de if/else : condition ? valeurSiVrai : valeurSiFaux. Il n'est pas une comparaison, c'est une expression conditionnelle. Il retourne l'une des deux valeurs selon la condition. C'est une syntaxe JavaScript valide et très utilisée. Le ternaire est parfait pour les assignations conditionnelles simples."
 />
 
 ## TypeScript
@@ -201,7 +201,7 @@ Testez vos connaissances sur les fondamentaux JavaScript ! Ce quiz couvre tous l
     "TypeScript ne fonctionne que dans Node.js"
   ]}
   correctAnswer={0}
-  explanation="✅ TypeScript = JavaScript + types statiques pour détecter les erreurs avant l'exécution. ❌ TypeScript n'est PAS plus rapide à l'exécution - il est compilé en JavaScript. ❌ Il ne remplace pas JavaScript, il se compile EN JavaScript. ❌ Il fonctionne partout où JavaScript fonctionne (navigateur + Node.js). TypeScript = superset de JavaScript."
+  explanation=" TypeScript = JavaScript + types statiques pour détecter les erreurs avant l'exécution.TypeScript n'est PAS plus rapide à l'exécution - il est compilé en JavaScript.Il ne remplace pas JavaScript, il se compile EN JavaScript.Il fonctionne partout où JavaScript fonctionne (navigateur + Node.js). TypeScript = superset de JavaScript."
 />
 
 <QuickCheck
@@ -213,7 +213,7 @@ Testez vos connaissances sur les fondamentaux JavaScript ! Ce quiz couvre tous l
     "function add(a, b): number, number"
   ]}
   correctAnswer={0}
-  explanation="✅ La syntaxe correcte : function add(a: number, b: number): number - deux-points après chaque paramètre et après les parenthèses. ❌ Sans deux-points, ce n'est pas du TypeScript valide. ❌ <number> est pour les génériques, pas pour typer des paramètres simples. ❌ Les types ne vont pas après le return mais après les parenthèses de la fonction."
+  explanation=" La syntaxe correcte : function add(a: number, b: number): number - deux-points après chaque paramètre et après les parenthèses.Sans deux-points, ce n'est pas du TypeScript valide.<number> est pour les génériques, pas pour typer des paramètres simples.Les types ne vont pas après le return mais après les parenthèses de la fonction."
 />
 
 <QuickCheck
@@ -225,21 +225,7 @@ Testez vos connaissances sur les fondamentaux JavaScript ! Ce quiz couvre tous l
     "La propriété est en lecture seule"
   ]}
   correctAnswer={0}
-  explanation="✅ Le ? signifie optionnel : email?: string peut être absent (undefined). ❌ Ce n'est PAS spécifique aux booléens. ❌ nullable (null) se note | null, pas ?. ❌ readonly se note avec le mot-clé readonly, pas ?. Le ? est uniquement pour rendre une propriété non obligatoire."
-/>
-
-## Collaboration avec l'IA
-
-<QuickCheck
-  question="18. Pourquoi est-il important de connaître JavaScript avant d'utiliser l'IA ?"
-  options={[
-    "Pour valider et comprendre le code généré",
-    "L'IA ne peut pas générer de code JavaScript",
-    "C'est obligatoire pour utiliser ChatGPT",
-    "Pour taper plus vite"
-  ]}
-  correctAnswer={0}
-  explanation="✅ Connaître JS vous permet de valider le code généré, comprendre les solutions, déboguer, et adapter à vos besoins. ❌ L'IA peut TRÈS BIEN générer du JavaScript, mais fait parfois des erreurs. ❌ Aucune connaissance n'est obligatoire pour utiliser ChatGPT, mais c'est moins efficace. ❌ Ce n'est pas pour taper plus vite, c'est pour comprendre et valider. Connaître JS = utiliser l'IA intelligemment."
+  explanation=" Le ? signifie optionnel : email?: string peut être absent (undefined).Ce n'est PAS spécifique aux booléens.nullable (null) se note | null, pas ?.readonly se note avec le mot-clé readonly, pas ?. Le ? est uniquement pour rendre une propriété non obligatoire."
 />
 
 ---
@@ -249,38 +235,37 @@ Testez vos connaissances sur les fondamentaux JavaScript ! Ce quiz couvre tous l
 <Callout type="success" title="Félicitations !">
 Si vous avez répondu correctement à la plupart des questions, vous êtes prêt(e) pour la **Séance 2 - Introduction à React avec TypeScript** !
 
-**Score cible :** Au moins 15/18 pour passer confortablement à React.
+**Score cible :** Au moins 13/16 pour passer confortablement à React.
 </Callout>
 
 <Callout type="warning" title="Besoin de réviser ?">
 Si vous avez eu des difficultés avec certaines questions, prenez le temps de réviser les sections correspondantes :
 
 - **Variables & Types** → [Variables & Types](/seance-1/variables)
+- **Structures de contrôle** → [Structures de contrôle](/seance-1/control-structures)
 - **Fonctions** → [Fonctions](/seance-1/functions)
 - **Tableaux** → [Tableaux](/seance-1/arrays)
 - **Objets** → [Objets](/seance-1/objects)
 - **Destructuration** → [Destructuration](/seance-1/destructuring)
 - **Spread Operator** → [Spread Operator](/seance-1/spread)
-- **Modules** → [Modules ES6](/seance-1/modules)
 - **TypeScript** → [Introduction à TypeScript](/seance-1/typescript-intro)
-- **IA** → [Collaborer avec l'IA](/seance-1/ai-collaboration)
 </Callout>
 
 ## Prochaines étapes
 
 <div className="grid grid-cols-1 md:grid-cols-2 gap-4 my-6">
   <a href="/seance-1/exercises" className="block p-4 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg hover:border-cyan-500 dark:hover:border-cyan-500 transition-colors">
-    <h3 className="font-semibold text-gray-900 dark:text-gray-100 mb-2">📝 Refaire les exercices</h3>
+    <h3 className="font-semibold text-gray-900 dark:text-gray-100 mb-2">Refaire les exercices</h3>
     <p className="text-sm text-gray-600 dark:text-gray-400">Pratiquez avec les exercices de la Séance 1</p>
   </a>
 
   <a href="/seance-2" className="block p-4 bg-cyan-50 dark:bg-cyan-900/20 border border-cyan-200 dark:border-cyan-800 rounded-lg hover:border-cyan-500 dark:hover:border-cyan-500 transition-colors">
-    <h3 className="font-semibold text-gray-900 dark:text-gray-100 mb-2">🚀 Séance 2 - React</h3>
+    <h3 className="font-semibold text-gray-900 dark:text-gray-100 mb-2">Séance 2 - React</h3>
     <p className="text-sm text-gray-600 dark:text-gray-400">Commencez à apprendre React !</p>
   </a>
 </div>
 
 <Callout type="tip" title="Conseil">
-N'hésitez pas à refaire ce quiz plusieurs fois jusqu'à obtenir 15/15 sans regarder les explications. C'est le signe que vous maîtrisez vraiment les concepts !
+N'hésitez pas à refaire ce quiz plusieurs fois jusqu'à obtenir un score parfait sans regarder les explications. C'est le signe que vous maîtrisez vraiment les concepts !
 </Callout>
 

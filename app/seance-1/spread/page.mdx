@@ -1,8 +1,63 @@
 # Spread Operator (...)
 
-**Essentiel pour l'immutabilité !**
+Le spread operator `...` permet de "déplier" les éléments d'un tableau ou d'un objet pour créer de nouvelles copies sans modifier les originaux.
 
-Le spread operator `...` permet de "déplier" les éléments d'un tableau ou d'un objet.
+## Avec les objets
+
+### Copier un objet
+
+```javascript
+const user = { name: 'Alice', age: 25 };
+
+const copy = { ...user };
+console.log(copy); // { name: 'Alice', age: 25 }
+```
+
+### Modifier une propriété
+
+```javascript
+const user = { name: 'Alice', age: 25 };
+
+const updated = { ...user, age: 26 };
+console.log(updated); // { name: 'Alice', age: 26 }
+console.log(user);    // { name: 'Alice', age: 25 } (inchangé)
+```
+
+### Fusionner des objets
+
+```javascript
+const person = { name: 'Bob', age: 30 };
+const address = { city: 'Paris', country: 'France' };
+
+const complete = { ...person, ...address };
+console.log(complete);
+// { name: 'Bob', age: 30, city: 'Paris', country: 'France' }
+```
+
+### Ordre important
+
+```javascript
+const user = { name: 'Alice', age: 25 };
+
+// Les propriétés après écrasent les précédentes
+const updated1 = { ...user, age: 26 };
+// { name: 'Alice', age: 26 }
+
+const updated2 = { age: 26, ...user };
+// { age: 25, name: 'Alice' } (user.age écrase 26)
+```
+
+<QuickCheck
+  question="Quelle est la différence entre { ...user, age: 26 } et { age: 26, ...user } ?"
+  options={[
+    "Aucune différence",
+    "Le premier met à jour age à 26, le second garde l'age original de user",
+    "Le second est invalide en JavaScript",
+    "Le premier copie user, le second ne le copie pas"
+  ]}
+  correctAnswer={1}
+  explanation="L'ordre compte ! Dans { ...user, age: 26 }, l'age 26 ÉCRASE l'age de user. Dans { age: 26, ...user }, l'age de user ÉCRASE 26. La dernière valeur gagne toujours."
+/>
 
 ## Avec les tableaux
 
@@ -43,66 +98,33 @@ const extended = [...arr1.slice(0, 2), 99, ...arr1.slice(2)];
 ```
 
 <Callout type="tip" title="Immutabilité">
-Le spread operator permet de créer de nouvelles copies au lieu de modifier les originaux. C'est une pratique essentielle en programmation moderne.
+Le spread operator permet de créer de nouvelles copies au lieu de modifier les originaux. C'est une pratique essentielle pour éviter les effets de bord.
 
 ```javascript
-// ❌ Mutation directe
+// Mutation directe
 const numbers = [1, 2, 3];
 numbers.push(4);
 console.log(numbers); // [1, 2, 3, 4] - modifié
 
-// ✅ Immutabilité avec spread
+// Immutabilité avec spread
 const numbers = [1, 2, 3];
 const newNumbers = [...numbers, 4];
-console.log(numbers);    // [1, 2, 3] - inchangé ✅
+console.log(numbers);    // [1, 2, 3] - inchangé
 console.log(newNumbers); // [1, 2, 3, 4]
 ```
 </Callout>
 
-## Avec les objets
-
-### Copier un objet
-
-```javascript
-const user = { name: 'Alice', age: 25 };
-
-const copy = { ...user };
-console.log(copy); // { name: 'Alice', age: 25 }
-```
-
-### Modifier une propriété
-
-```javascript
-const user = { name: 'Alice', age: 25 };
-
-const updated = { ...user, age: 26 };
-console.log(updated); // { name: 'Alice', age: 26 }
-console.log(user);    // { name: 'Alice', age: 25 } (inchangé ✅)
-```
-
-### Fusionner des objets
-
-```javascript
-const person = { name: 'Bob', age: 30 };
-const address = { city: 'Paris', country: 'France' };
-
-const complete = { ...person, ...address };
-console.log(complete);
-// { name: 'Bob', age: 30, city: 'Paris', country: 'France' }
-```
-
-### Ordre important
-
-```javascript
-const user = { name: 'Alice', age: 25 };
-
-// Les propriétés après écrasent les précédentes
-const updated1 = { ...user, age: 26 };
-// { name: 'Alice', age: 26 }
-
-const updated2 = { age: 26, ...user };
-// { age: 25, name: 'Alice' } (user.age écrase 26)
-```
+<QuickCheck
+  question="Que se passe-t-il avec : const copy = [...original] ?"
+  options={[
+    "Crée une référence vers le tableau original",
+    "Crée une nouvelle copie indépendante du tableau original",
+    "Vide le tableau original",
+    "Fusionne le tableau avec un autre tableau"
+  ]}
+  correctAnswer={1}
+  explanation="Le spread operator [...original] crée un NOUVEAU tableau avec les mêmes éléments. Les modifications sur copy n'affectent pas original, car ce sont deux tableaux distincts en mémoire."
+/>
 
 ## Exemples pratiques
 
@@ -185,7 +207,7 @@ const updatedUser = {
 };
 
 console.log(updatedUser.address.city); // 'Lyon'
-console.log(user.address.city);        // 'Paris' (inchangé ✅)
+console.log(user.address.city);        // 'Paris' (inchangé)
 ```
 
 <Callout type="warning" title="Shallow copy (copie superficielle)">
@@ -200,7 +222,7 @@ const user = {
 const copy = { ...user };
 copy.address.city = 'Lyon';
 
-console.log(user.address.city); // 'Lyon' (modifié aussi! 😱)
+console.log(user.address.city); // 'Lyon' (modifié aussi!)
 ```
 
 **Solutions :**
@@ -212,14 +234,14 @@ const copy = {
   address: { ...user.address }
 };
 copy.address.city = 'Lyon';
-console.log(user.address.city); // 'Paris' (inchangé ✅)
+console.log(user.address.city); // 'Paris' (inchangé)
 ```
 
-2. **Utiliser `structuredClone()`** (moderne, recommandé)
+2. **Utiliser `structuredClone()`**
 ```javascript
 const copy = structuredClone(user);
 copy.address.city = 'Lyon';
-console.log(user.address.city); // 'Paris' (inchangé ✅)
+console.log(user.address.city); // 'Paris' (inchangé)
 ```
 
 `structuredClone()` fait une **copie profonde** (deep copy) de tout l'objet, y compris les objets imbriqués. C'est la solution la plus simple et la plus sûre pour copier des objets complexes.
@@ -231,6 +253,18 @@ console.log(user.address.city); // 'Paris' (inchangé ✅)
 
 Pour la plupart des cas d'usage (données JSON, objets simples), `structuredClone()` est parfait.
 </Callout>
+
+<QuickCheck
+  question="Que se passe-t-il si vous modifiez une propriété imbriquée après avoir utilisé le spread operator ?"
+  options={[
+    "L'objet original est également modifié (copie superficielle)",
+    "Seule la copie est modifiée",
+    "Une erreur est levée",
+    "Les deux objets sont fusionnés"
+  ]}
+  correctAnswer={0}
+  explanation="Le spread operator fait une copie superficielle. Les propriétés de premier niveau sont copiées, mais les objets imbriqués restent partagés par référence. Pour une vraie copie indépendante, utilisez structuredClone() ou le spread à chaque niveau."
+/>
 
 ## Rest vs Spread
 
@@ -246,4 +280,102 @@ const [first, ...rest] = arr;
 console.log(first); // 1
 console.log(rest);  // [2, 3]
 ```
+
+<QuickCheck
+  question="Quelle est la différence entre spread et rest operator ?"
+  options={[
+    "Ce sont deux syntaxes différentes",
+    "Spread déploie des éléments, rest collecte des éléments dans un tableau",
+    "Rest est utilisé uniquement avec les objets",
+    "Spread modifie l'original, rest ne le modifie pas"
+  ]}
+  correctAnswer={1}
+  explanation="Même syntaxe (...) mais usages opposés : spread DÉPLOIE des éléments ([...arr] déploie le tableau), rest COLLECTE des éléments (const [a, ...rest] = arr collecte le reste dans 'rest')."
+/>
+
+<Callout type="tip" title="Comprendre, pas mémoriser">
+**Ce qu'il faut retenir :**
+
+- **Spread operator** : `...` pour déplier des éléments
+- **Copier** : `[...arr]` pour tableaux, `{ ...obj }` pour objets
+- **Fusionner** : `[...arr1, ...arr2]` ou `{ ...obj1, ...obj2 }`
+- **Immutabilité** : créer de nouvelles copies au lieu de modifier les originaux
+- **Shallow copy** : attention aux objets imbriqués (utiliser `structuredClone()` ou spread à chaque niveau)
+- **Ordre compte** : `{ ...user, age: 26 }` écrase age, `{ age: 26, ...user }` garde l'age de user
+
+Le spread operator est omniprésent pour manipuler des données de manière immutable.
+</Callout>
+
+<Exercise
+  title="Pratique : Spread Operator"
+  difficulty="easy"
+  solution={
+<CodeBlock language="javascript">{`const cart = [
+  { id: 1, name: 'Laptop', price: 1000 },
+  { id: 2, name: 'Mouse', price: 25 }
+];
+
+const user = {
+  name: 'Alice',
+  email: 'alice@example.com',
+  preferences: {
+    theme: 'dark',
+    language: 'fr'
+  }
+};
+
+// 1. Ajouter un produit au panier
+const newCart = [...cart, { id: 3, name: 'Keyboard', price: 75 }];
+console.log(newCart.length); // 3
+
+// 2. Modifier le prix du premier produit
+const updatedCart = cart.map((item, index) =>
+  index === 0 ? { ...item, price: 850 } : item
+);
+console.log(updatedCart[0].price); // 850
+console.log(cart[0].price); // 1000 (inchangé)
+
+// 3. Ajouter une propriété age à user
+const updatedUser = { ...user, age: 25 };
+console.log(updatedUser);
+// { name: 'Alice', email: '...', preferences: {...}, age: 25 }
+
+// 4. Changer le thème à 'light'
+const withLightTheme = {
+  ...user,
+  preferences: {
+    ...user.preferences,
+    theme: 'light'
+  }
+};
+console.log(withLightTheme.preferences.theme); // 'light'
+console.log(user.preferences.theme); // 'dark' (inchangé)`}
+</CodeBlock>
+  }
+>
+Avec ces données :
+
+```javascript
+const cart = [
+  { id: 1, name: 'Laptop', price: 1000 },
+  { id: 2, name: 'Mouse', price: 25 }
+];
+
+const user = {
+  name: 'Alice',
+  email: 'alice@example.com',
+  preferences: {
+    theme: 'dark',
+    language: 'fr'
+  }
+};
+```
+
+1. Ajouter un nouveau produit `{ id: 3, name: 'Keyboard', price: 75 }` au panier
+2. Modifier le prix du premier produit à 850€ (sans modifier l'original)
+3. Ajouter une propriété `age: 25` à `user` (sans modifier l'original)
+4. Changer `preferences.theme` à `'light'` (sans modifier l'original)
+
+**Astuce :** Utilisez le spread operator et `.map()` pour les modifications dans les tableaux.
+</Exercise>
 

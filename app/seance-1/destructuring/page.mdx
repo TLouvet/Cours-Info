@@ -1,6 +1,6 @@
 # Destructuration
 
-**Essentiel pour React !** Permet d'extraire des valeurs facilement.
+La destructuration permet d'extraire facilement des valeurs d'objets et de tableaux dans des variables distinctes.
 
 ## Destructuration d'objet
 
@@ -11,7 +11,7 @@ const user = { name: 'Alice', age: 25, city: 'Paris' };
 const name = user.name;
 const age = user.age;
 
-// Avec destructuration ✨
+// Avec destructuration
 const { name, age } = user;
 console.log(name); // 'Alice'
 console.log(age); // 25
@@ -25,6 +25,18 @@ const user = { name: 'Alice', age: 25 };
 const { name: userName } = user;
 console.log(userName); // 'Alice'
 ```
+
+<QuickCheck
+  question="Que se passe-t-il avec : const { name: userName } = user ?"
+  options={[
+    "Crée une variable userName qui contient la valeur de user.name",
+    "Renomme la propriété name en userName dans l'objet user",
+    "Crée deux variables : name et userName",
+    "Copie l'objet user dans userName"
+  ]}
+  correctAnswer={0}
+  explanation="La syntaxe { name: userName } extrait la propriété 'name' et la stocke dans une nouvelle variable appelée 'userName'. L'objet original n'est pas modifié."
+/>
 
 ### Avec valeur par défaut
 
@@ -50,22 +62,6 @@ const { address: { city, country } } = user;
 console.log(city); // 'Paris'
 console.log(country); // 'France'
 ```
-
-<Callout type="info" title="En React - Props">
-La destructuration est **omniprésente** pour accéder aux props :
-
-```javascript
-// Sans destructuration
-const UserCard = (props) => {
-  return <div>{props.name} - {props.age} ans</div>;
-};
-
-// Avec destructuration ✨
-const UserCard = ({ name, age }) => {
-  return <div>{name} - {age} ans</div>;
-};
-```
-</Callout>
 
 ## Destructuration de tableau
 
@@ -103,21 +99,17 @@ console.log(second); // 2
 console.log(rest); // [3, 4, 5]
 ```
 
-<Callout type="info" title="En React - useState">
-La destructuration est **omniprésente** avec les hooks React :
-
-```javascript
-import { useState } from 'react';
-
-// useState retourne un tableau [valeur, setter]
-const [count, setCount] = useState(0);
-
-// Équivalent sans destructuration (moins lisible)
-const countState = useState(0);
-const count = countState[0];
-const setCount = countState[1];
-```
-</Callout>
+<QuickCheck
+  question="Quelle est la différence entre destructuration d'objet et destructuration de tableau ?"
+  options={[
+    "Aucune différence, c'est la même syntaxe",
+    "Objet utilise {}, tableau utilise [] - objet extrait par nom de propriété, tableau par position",
+    "La destructuration d'objet est plus rapide",
+    "On ne peut pas utiliser de valeurs par défaut avec les tableaux"
+  ]}
+  correctAnswer={1}
+  explanation="La destructuration d'objet utilise {} et extrait les valeurs par nom de propriété (ordre non important). La destructuration de tableau utilise [] et extrait les valeurs par position (ordre important)."
+/>
 
 <QuickCheck
   question="Que fait ce code : const { name, age } = user ?"
@@ -141,7 +133,7 @@ const displayUser = (user) => {
   console.log(`${user.name} - ${user.age} ans`);
 };
 
-// Avec destructuration ✨
+// Avec destructuration
 const displayUser = ({ name, age }) => {
   console.log(`${name} - ${age} ans`);
 };
@@ -162,6 +154,18 @@ console.log(greet({ name: 'Alice' })); // "Bonjour Alice!"
 console.log(greet({ name: 'Bob', greeting: 'Salut' })); // "Salut Bob!"
 ```
 
+<QuickCheck
+  question="Pourquoi utiliser la destructuration dans les paramètres de fonction ?"
+  options={[
+    "C'est obligatoire en JavaScript",
+    "Cela rend le code plus lisible en montrant explicitement quelles propriétés sont utilisées",
+    "Cela améliore les performances",
+    "Cela permet de modifier l'objet original"
+  ]}
+  correctAnswer={1}
+  explanation="La destructuration dans les paramètres rend le code plus clair : on voit immédiatement quelles propriétés de l'objet sont utilisées dans la fonction, sans avoir à lire tout le corps de la fonction."
+/>
+
 ## Échange de variables
 
 ```javascript
@@ -175,7 +179,85 @@ console.log(a); // 2
 console.log(b); // 1
 ```
 
-<Callout type="tip">
-La destructuration rend le code plus lisible et concis. C'est une compétence essentielle pour React !
+<Callout type="tip" title="Comprendre, pas mémoriser">
+**Ce qu'il faut retenir :**
+
+- **Destructuration d'objet** : `const { name, age } = user` extrait par nom de propriété
+- **Destructuration de tableau** : `const [first, second] = arr` extrait par position
+- **Renommage** : `const { name: userName } = user` pour éviter les conflits de noms
+- **Valeurs par défaut** : `const { city = 'Paris' } = user` si la propriété n'existe pas
+- **Dans les paramètres** : très utile pour rendre les fonctions plus lisibles
+
+La destructuration est omniprésente en JavaScript - vous la reconnaîtrez avec la pratique.
 </Callout>
+
+<Exercise
+  title="Pratique : Destructuration"
+  difficulty="easy"
+  solution={
+<CodeBlock language="javascript">{`const product = {
+  id: 1,
+  name: 'Laptop',
+  price: 1000,
+  specs: {
+    ram: '16GB',
+    cpu: 'i7'
+  }
+};
+
+const reviews = [
+  { rating: 5, comment: 'Excellent' },
+  { rating: 4, comment: 'Good' },
+  { rating: 3, comment: 'Average' }
+];
+
+// 1. Extraire name et price
+const { name, price } = product;
+console.log(name, price); // 'Laptop' 1000
+
+// 2. Extraire specs.ram en le renommant memory
+const { specs: { ram: memory } } = product;
+console.log(memory); // '16GB'
+
+// 3. Extraire le premier et dernier avis
+const [first, , last] = reviews;
+console.log(first); // { rating: 5, comment: 'Excellent' }
+console.log(last); // { rating: 3, comment: 'Average' }
+
+// 4. Fonction avec destructuration
+const displayProduct = ({ name, price, specs: { cpu } }) => {
+  return \`\${name} - \${price}€ (CPU: \${cpu})\`;
+};
+console.log(displayProduct(product));
+// 'Laptop - 1000€ (CPU: i7)'`}
+</CodeBlock>
+  }
+>
+Avec ces données :
+
+```javascript
+const product = {
+  id: 1,
+  name: 'Laptop',
+  price: 1000,
+  specs: {
+    ram: '16GB',
+    cpu: 'i7'
+  }
+};
+
+const reviews = [
+  { rating: 5, comment: 'Excellent' },
+  { rating: 4, comment: 'Good' },
+  { rating: 3, comment: 'Average' }
+];
+```
+
+1. Extraire `name` et `price` de `product`
+2. Extraire `specs.ram` en le renommant `memory`
+3. Extraire le premier et le dernier avis (ignorer celui du milieu)
+4. Créer une fonction `displayProduct` qui utilise la destructuration dans ses paramètres pour afficher : "Laptop - 1000€ (CPU: i7)"
+
+**Astuce :** Utilisez la destructuration d'objets imbriqués et de tableaux.
+</Exercise>
 

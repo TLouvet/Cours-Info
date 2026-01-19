@@ -17,7 +17,7 @@ export default function Home() {
         </p>
         <Link
           href="/seance-1"
-          className="inline-flex items-center gap-2 px-6 py-3 bg-cyan-600 hover:bg-cyan-700 text-white font-medium rounded-lg transition-colors"
+          className="inline-flex items-center gap-2 px-6 py-3 bg-cyan-600 hover:bg-cyan-700 !text-white font-medium rounded-lg transition-colors"
         >
           Commencer la Séance 1
           <FiArrowRight className="w-5 h-5" />
@@ -196,7 +196,7 @@ export default function Home() {
         </p>
         <Link
           href="/seance-1"
-          className="inline-flex items-center gap-2 px-6 py-3 bg-cyan-600 hover:bg-cyan-700 text-white font-medium rounded-lg transition-colors"
+          className="inline-flex items-center gap-2 px-6 py-3 bg-cyan-600 hover:bg-cyan-700 !text-white font-medium rounded-lg transition-colors"
         >
           Commencer la Séance 1
           <FiArrowRight className="w-5 h-5" />

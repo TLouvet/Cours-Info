@@ -31,7 +31,6 @@ export const navigation: NavSession[] = [
       { id: 'destructuring', title: 'Destructuration', href: '/seance-1/destructuring' },
       { id: 'spread', title: 'Spread Operator', href: '/seance-1/spread' },
       { id: 'typescript-intro', title: 'Introduction à TypeScript', href: '/seance-1/typescript-intro' },
-      { id: 'ai-collaboration', title: "Collaborer avec l'IA", href: '/seance-1/ai-collaboration' },
       { id: 'conclusion', title: 'Conclusion', href: '/seance-1/conclusion' },
       { id: 'exercises', title: 'Exercices', href: '/seance-1/exercises' },
       { id: 'quiz', title: 'Quiz de validation', href: '/seance-1/quiz' },
@@ -102,6 +101,7 @@ export const navigation: NavSession[] = [
     href: '/seance-5',
     sections: [
       { id: 's5-intro', title: 'Introduction', href: '/seance-5/introduction' },
+      { id: 's5-ai-collaboration', title: "Collaborer avec l'IA", href: '/seance-5/ai-collaboration' },
       { id: 's5-ai', title: 'Workflow IA', href: '/seance-5/ai-workflow' },
       { id: 's5-practices', title: 'Best Practices', href: '/seance-5/best-practices' },
       { id: 's5-structure', title: 'Structure Projet', href: '/seance-5/project-structure' },

@@ -35,9 +35,9 @@ function greet(name: string): string {
   return `Hello ${name}!`;
 }
 
-greet('Alice');     // ✅ OK
-greet(42);          // ❌ Erreur: number n'est pas string
-greet();            // ❌ Erreur: argument manquant
+greet('Alice');     // OK
+greet(42);          // Erreur: number n'est pas string
+greet();            // Erreur: argument manquant
 ```
 
 **Avantage** : TypeScript détecte les erreurs **avant** d'exécuter le code.
@@ -61,6 +61,18 @@ const isStudent = true;      // TypeScript sait que c'est un boolean
 <Callout type="tip">
 **Type inference** : TypeScript devine souvent les types tout seul. Pas besoin de tout annoter !
 </Callout>
+
+<QuickCheck
+  question="Quelle est la différence entre const name: string = 'Alice' et const name = 'Alice' ?"
+  options={[
+    "La première est invalide en TypeScript",
+    "Aucune différence, TypeScript infère le type dans les deux cas",
+    "La seconde crée une variable non typée",
+    "La première est obligatoire en TypeScript"
+  ]}
+  correctAnswer={1}
+  explanation="TypeScript utilise l'inférence de type : quand vous assignez 'Alice', TypeScript sait automatiquement que c'est un string. L'annotation explicite (: string) est optionnelle mais peut améliorer la lisibilité."
+/>
 
 ### Tableaux
 
@@ -98,6 +110,18 @@ const user: User = {
 };
 ```
 
+<QuickCheck
+  question="Que signifie le ? dans email?: string ?"
+  options={[
+    "email est une propriété obligatoire",
+    "email est une propriété optionnelle qui peut être absente",
+    "email doit être un string vide",
+    "email peut être n'importe quel type"
+  ]}
+  correctAnswer={1}
+  explanation="Le ? rend une propriété optionnelle. email?: string signifie que l'objet peut avoir ou non cette propriété, mais si elle existe, elle doit être un string."
+/>
+
 ## Fonctions
 
 ### Typer les paramètres et le retour
@@ -113,8 +137,8 @@ function add(a: number, b: number): number {
   return a + b;
 }
 
-add(2, 3);        // ✅ OK: 5
-add('2', '3');    // ❌ Erreur: string n'est pas number
+add(2, 3);        // OK: 5
+add('2', '3');    // Erreur: string n'est pas number
 ```
 
 ### Arrow functions
@@ -178,9 +202,9 @@ value = [1, 2, 3];    // OK
 // Variable qui peut être string OU number
 let id: string | number;
 
-id = '123';     // ✅ OK
-id = 123;       // ✅ OK
-id = true;      // ❌ Erreur
+id = '123';     // OK
+id = 123;       // OK
+id = true;      // Erreur
 
 // Utile pour les fonctions
 function printId(id: string | number) {
@@ -191,15 +215,27 @@ printId('ABC123');  // OK
 printId(456);       // OK
 ```
 
+<QuickCheck
+  question="Que fait le type string | number ?"
+  options={[
+    "Convertit un string en number",
+    "Permet à une variable d'être soit un string, soit un number",
+    "Crée un nouveau type qui est à la fois string et number",
+    "Concatène un string et un number"
+  ]}
+  correctAnswer={1}
+  explanation="Le pipe | crée un union type : la variable peut être d'un type OU d'un autre. string | number signifie 'soit string, soit number, mais pas les deux en même temps'."
+/>
+
 ### Type literal
 
 ```typescript
 // Variable qui ne peut avoir que certaines valeurs
 let status: 'pending' | 'success' | 'error';
 
-status = 'pending';   // ✅ OK
-status = 'success';   // ✅ OK
-status = 'loading';   // ❌ Erreur: pas dans les valeurs autorisées
+status = 'pending';   // OK
+status = 'success';   // OK
+status = 'loading';   // Erreur: pas dans les valeurs autorisées
 ```
 
 ## Interfaces vs Types
@@ -239,6 +275,18 @@ const user: User = {
 <Callout type="info">
 **Interface vs Type** : Pour les objets simples, les deux fonctionnent. Les interfaces sont plus extensibles, les types plus flexibles. Dans la plupart des cas, utilisez ce que vous préférez !
 </Callout>
+
+<QuickCheck
+  question="Quelle est la principale différence entre interface et type pour définir un objet ?"
+  options={[
+    "interface est plus rapide à l'exécution",
+    "Pour les objets simples, les deux fonctionnent de manière similaire",
+    "type ne peut pas définir d'objets",
+    "interface est obligatoire avec React"
+  ]}
+  correctAnswer={1}
+  explanation="Pour définir la structure d'un objet, interface et type fonctionnent de manière très similaire. Les deux sont valides et le choix dépend souvent de la préférence personnelle ou des conventions du projet."
+/>
 
 ## Exemples pratiques
 
@@ -346,7 +394,7 @@ Un fichier `tsconfig.json` configure TypeScript :
 
 <div className="my-6 grid grid-cols-1 md:grid-cols-2 gap-4">
   <div className="p-4 bg-green-900/20 border border-green-800 rounded-lg">
-    <h3 className="font-semibold text-green-100 mb-2">✅ Avantages</h3>
+    <h3 className="font-semibold text-green-100 mb-2">Avantages</h3>
     <ul className="text-sm text-gray-300 space-y-1">
       <li>Erreurs détectées immédiatement</li>
       <li>Autocomplétion puissante</li>
@@ -357,7 +405,7 @@ Un fichier `tsconfig.json` configure TypeScript :
   </div>
 
   <div className="p-4 bg-blue-900/20 border border-blue-800 rounded-lg">
-    <h3 className="font-semibold text-blue-100 mb-2">📚 En pratique</h3>
+    <h3 className="font-semibold text-blue-100 mb-2">En pratique</h3>
     <ul className="text-sm text-gray-300 space-y-1">
       <li>React utilise TypeScript</li>
       <li>Next.js supporte TypeScript</li>
@@ -368,17 +416,84 @@ Un fichier `tsconfig.json` configure TypeScript :
   </div>
 </div>
 
-## À retenir
+<Callout type="tip" title="Comprendre, pas mémoriser">
+**Ce qu'il faut retenir :**
 
-<Callout type="success" title="Les essentiels TypeScript">
-1. **Types de base** : `string`, `number`, `boolean`, `array`
-2. **Interfaces** : Définir la structure des objets
-3. **Typer les fonctions** : Paramètres et retour
-4. **Type inference** : TypeScript devine souvent tout seul
-5. **Union types** : `string | number` pour plusieurs types possibles
+- **TypeScript = JavaScript + Types** : tout code JS valide est du TS valide
+- **Types de base** : `string`, `number`, `boolean`, `array[]`
+- **Interfaces** : définir la structure des objets (`interface User { name: string }`)
+- **Type inference** : TypeScript devine souvent les types automatiquement
+- **Optional** : `?` rend une propriété optionnelle (`email?: string`)
+- **Union types** : `string | number` pour plusieurs types possibles
+- **Avoid `any`** : désactive complètement TypeScript
 
-**En Séance 2**, vous verrez TypeScript en action avec React !
+Vous n'avez pas besoin de tout mémoriser maintenant. En Séance 2, vous verrez TypeScript en action avec React et tout deviendra plus concret !
 </Callout>
+
+<Exercise
+  title="Pratique : TypeScript"
+  difficulty="easy"
+  solution={
+<CodeBlock language="typescript">{`// 1. Interface Book
+interface Book {
+  title: string;
+  author: string;
+  year: number;
+  pages: number;
+  isbn?: string;  // optionnel
+}
+
+// 2. Tableau typé
+const books: Book[] = [
+  { title: '1984', author: 'George Orwell', year: 1949, pages: 328 },
+  { title: 'Le Petit Prince', author: 'Antoine de Saint-Exupéry', year: 1943, pages: 96, isbn: '978-2-07-061275-8' }
+];
+
+// 3. Fonction avec union type
+function findBook(identifier: string | number): Book | undefined {
+  if (typeof identifier === 'string') {
+    return books.find(b => b.title === identifier);
+  } else {
+    return books.find(b => b.year === identifier);
+  }
+}
+
+console.log(findBook('1984'));
+// { title: '1984', author: 'George Orwell', year: 1949, pages: 328 }
+
+console.log(findBook(1943));
+// { title: 'Le Petit Prince', author: '...', year: 1943, pages: 96, isbn: '...' }
+
+// 4. Fonction calculateAveragePages
+function calculateAveragePages(books: Book[]): number {
+  const total = books.reduce((sum, book) => sum + book.pages, 0);
+  return total / books.length;
+}
+
+console.log(calculateAveragePages(books)); // 212`}
+</CodeBlock>
+  }
+>
+Créez une petite bibliothèque avec TypeScript :
+
+1. Créer une interface `Book` avec :
+   - `title`: string
+   - `author`: string
+   - `year`: number
+   - `pages`: number
+   - `isbn`: string (optionnel)
+
+2. Créer un tableau `books: Book[]` avec au moins 2 livres
+
+3. Créer une fonction `findBook(identifier: string | number)` qui :
+   - Cherche un livre par titre si `identifier` est un string
+   - Cherche un livre par année si `identifier` est un number
+   - Retourne `Book | undefined`
+
+4. Créer une fonction `calculateAveragePages(books: Book[]): number` qui calcule la moyenne de pages
+
+**Astuce :** Utilisez `typeof` pour vérifier le type à l'exécution dans les union types.
+</Exercise>
 
 ## Prochaine étape
 

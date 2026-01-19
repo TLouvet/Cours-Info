@@ -34,7 +34,7 @@ export default function Home() {
             5 Séances
           </h3>
           <p className="text-sm text-gray-600 dark:text-gray-400">
-            Du JavaScript moderne aux concepts avancés de React avec des exercices pratiques
+            Du JavaScript aux concepts avancés de React avec des exercices pratiques
           </p>
         </div>
 
@@ -85,7 +85,7 @@ export default function Home() {
                   Bases JavaScript
                 </h3>
                 <p className="text-sm text-gray-600 dark:text-gray-400">
-                  Rappels HTML/CSS, JavaScript moderne ES6+, arrow functions, destructuration, spread operator, modules
+                  Rappels HTML/CSS, JavaScript ES6+, arrow functions, destructuration, spread operator, modules
                 </p>
               </div>
               <FiArrowRight className="w-5 h-5 text-gray-400 group-hover:text-cyan-600 dark:group-hover:text-cyan-400 transition-colors" />
@@ -192,7 +192,7 @@ export default function Home() {
           Prêt à apprendre React ?
         </h2>
         <p className="text-gray-600 dark:text-gray-400 mb-6">
-          5 séances complètes pour maîtriser React, du JavaScript moderne jusqu'au déploiement
+          5 séances complètes pour maîtriser React, du JavaScript jusqu'au déploiement
         </p>
         <Link
           href="/seance-1"

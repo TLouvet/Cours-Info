@@ -54,28 +54,28 @@ export default function Breadcrumbs() {
 
   return (
     <nav aria-label="Breadcrumb" className="mb-6">
-      <ol className="flex items-center gap-2 text-sm flex-wrap">
+      <ol className="flex items-center justify-center sm:justify-start gap-2 text-sm flex-wrap">
         {breadcrumbs.map((crumb, index) => {
           const isLast = index === breadcrumbs.length - 1;
 
           return (
             <li key={crumb.href} className="flex items-center gap-2">
               {index > 0 && (
-                <FiChevronRight className="w-4 h-4 text-gray-400 dark:text-gray-600" />
+                <FiChevronRight className="w-4 h-4 text-gray-400 dark:text-gray-600 flex-shrink-0" />
               )}
 
               {index === 0 && (
-                <FiHome className="w-4 h-4 text-gray-500 dark:text-gray-400" />
+                <FiHome className="w-4 h-4 text-gray-500 dark:text-gray-400 flex-shrink-0" />
               )}
 
               {isLast ? (
-                <span className="text-gray-900 dark:text-gray-100 font-medium">
+                <span className="text-gray-900 dark:text-gray-100 font-medium inline-flex items-center">
                   {crumb.label}
                 </span>
               ) : (
                 <Link
                   href={crumb.href}
-                  className="text-cyan-600 dark:text-cyan-400 hover:text-cyan-700 dark:hover:text-cyan-300 transition-colors no-prose-styles"
+                  className="text-cyan-600 dark:text-cyan-400 hover:text-cyan-700 dark:hover:text-cyan-300 transition-colors no-prose-styles inline-flex items-center"
                 >
                   {crumb.label}
                 </Link>

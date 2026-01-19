@@ -13,7 +13,7 @@ export default function Seance1Page() {
           Bases JavaScript
         </h1>
         <p className="text-xl text-gray-600 dark:text-gray-400">
-          Rappels HTML/CSS, JavaScript moderne ES6+, et fondamentaux pour React
+          Rappels HTML/CSS, JavaScript ES6+, et fondamentaux pour React
         </p>
       </div>
 
@@ -29,7 +29,7 @@ export default function Seance1Page() {
           </li>
           <li className="flex items-start gap-2">
             <span className="text-cyan-600 dark:text-cyan-400">•</span>
-            <span>JavaScript moderne (ES6+) : variables, fonctions, arrow functions</span>
+            <span>JavaScript (ES6+) : variables, fonctions, arrow functions</span>
           </li>
           <li className="flex items-start gap-2">
             <span className="text-cyan-600 dark:text-cyan-400">•</span>

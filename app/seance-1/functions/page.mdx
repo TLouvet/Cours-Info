@@ -1,6 +1,6 @@
 # Fonctions
 
-Les fonctions sont au cœur de JavaScript et de React. Voyons les différentes syntaxes.
+Les fonctions sont au cœur de JavaScript. Voyons les différentes syntaxes et leurs cas d'usage.
 
 ## Fonction classique
 
@@ -20,9 +20,41 @@ const greet = function(name) {
 };
 ```
 
-## Arrow Functions ⭐
+<Callout type="info" title="Hoisting - Différence importante">
+Les **fonction classiques** sont "remontées" (hoisted) au début du scope. Vous pouvez les appeler avant leur déclaration.
 
-**La syntaxe moderne, indispensable pour React !**
+```javascript
+// ✅ Fonctionne (hoisting)
+console.log(greet('Alice')); // "Hello Alice!"
+function greet(name) {
+  return `Hello ${name}!`;
+}
+
+// ❌ Erreur (pas de hoisting)
+console.log(sayHi('Bob')); // ReferenceError
+const sayHi = (name) => `Hello ${name}!`;
+```
+
+En pratique, **écrivez vos fonctions avant de les utiliser** pour éviter toute confusion.
+</Callout>
+
+<QuickCheck
+  question="Que se passe-t-il si vous appelez une arrow function avant sa déclaration ?"
+  options={[
+    "Ça fonctionne grâce au hoisting",
+    "ReferenceError: Cannot access before initialization",
+    "undefined est retourné",
+    "La fonction est automatiquement déclarée"
+  ]}
+  correctAnswer={1}
+  explanation="Les arrow functions et les fonctions anonymes (const/let) ne sont pas hoistées. Seules les déclarations 'function' classiques le sont. En pratique, déclarez toujours vos fonctions avant de les utiliser."
+/>
+
+## Arrow Functions
+
+**La syntaxe moderne en JavaScript !**
+
+Les arrow functions offrent une syntaxe plus concise pour déclarer des fonctions.
 
 ```javascript
 // Syntaxe complète
@@ -40,22 +72,6 @@ const double = n => n * 2;
 const hello = () => 'Hello!';
 ```
 
-<Callout type="info" title="En React">
-Les composants React sont des fonctions ! Vous utiliserez constamment les arrow functions :
-
-```javascript
-// Composant React
-const Button = () => {
-  return <button>Click me</button>;
-};
-
-// Event handler
-<button onClick={() => alert('Hi!')}>
-  Click
-</button>
-```
-</Callout>
-
 <QuickCheck
   question="Quelle est la syntaxe correcte pour une arrow function avec return implicite ?"
   options={[
@@ -68,11 +84,97 @@ const Button = () => {
   explanation="Sans accolades, le return est implicite. Les accolades nécessitent un return explicite."
 />
 
-<Callout type="warning" title="Différence importante">
-Les arrow functions n'ont **pas leur propre `this`**, ce qui est crucial en React !
+### Quand NE PAS utiliser les arrow functions
+
+Bien que les arrow functions soient la syntaxe moderne recommandée, elles ont quelques limitations :
+
+```javascript
+// ❌ Ne peuvent pas être utilisées comme constructeurs
+const Person = (name) => {
+  this.name = name; // Ne fonctionne pas
+};
+// const p = new Person('Alice'); // TypeError
+
+// ✅ Utilisez une fonction classique pour les constructeurs
+function Person(name) {
+  this.name = name;
+}
+
+// ❌ Pas d'objet arguments
+const sum = () => {
+  console.log(arguments); // ReferenceError
+};
+
+// ✅ Fonction classique si vous avez besoin d'arguments
+function sum() {
+  console.log(arguments); // [1, 2, 3]
+}
+sum(1, 2, 3);
+```
+
+<Callout type="info">
+En pratique, ces limitations sont rarement un problème. **Les arrow functions restent le choix par défaut** pour la plupart des cas d'usage en JavaScript moderne.
 </Callout>
 
+## Paramètres par défaut
+
+Vous pouvez définir des valeurs par défaut pour les paramètres. Si l'argument n'est pas fourni, la valeur par défaut est utilisée.
+
+```javascript
+// Sans valeur par défaut
+const greet = (name) => `Hello ${name}!`;
+console.log(greet()); // "Hello undefined!"
+
+// Avec valeur par défaut
+const greet = (name = 'World') => `Hello ${name}!`;
+console.log(greet()); // "Hello World!"
+console.log(greet('Alice')); // "Hello Alice!"
+```
+
+**Cas d'usage pratique :**
+
+```javascript
+const createUser = (name, role = 'user', isActive = true) => ({
+  name,
+  role,
+  isActive,
+  createdAt: new Date()
+});
+
+console.log(createUser('Alice'));
+// { name: 'Alice', role: 'user', isActive: true, createdAt: ... }
+
+console.log(createUser('Bob', 'admin'));
+// { name: 'Bob', role: 'admin', isActive: true, createdAt: ... }
+```
+
+<Callout type="tip">
+Les paramètres par défaut rendent vos fonctions plus robustes et évitent les vérifications manuelles comme `role = role || 'user'`.
+</Callout>
+
+<QuickCheck
+  question="Que se passe-t-il avec : const multiply = (a, b = 2) => a * b; console.log(multiply(5));"
+  options={[
+    "NaN",
+    "undefined",
+    "10",
+    "Erreur: missing argument"
+  ]}
+  correctAnswer={2}
+  explanation="Le paramètre b prend la valeur par défaut 2, donc multiply(5) devient 5 * 2 = 10. Les paramètres par défaut sont utilisés quand l'argument n'est pas fourni."
+/>
+
 ## Exemples pratiques
+
+<Callout type="tip" title="Comprendre, pas mémoriser">
+Vous n'avez pas besoin de tout mémoriser sur les fonctions. **L'important est de comprendre les concepts** :
+
+- Les arrow functions sont la syntaxe moderne à privilégier
+- Les callbacks sont des fonctions passées en argument
+- Les paramètres par défaut évitent les valeurs undefined
+
+Avec la pratique, ces syntaxes deviendront naturelles. Consultez la documentation (MDN) ou demandez à l'IA si vous avez un doute.
+</Callout>
 
 ### Fonction avec plusieurs opérations
 
@@ -105,6 +207,10 @@ Pour retourner un objet avec une arrow function et return implicite, entourez l'
 
 ### Fonctions de callback
 
+**Un callback est une fonction passée en argument à une autre fonction.**
+
+C'est un concept fondamental en JavaScript, utilisé partout : événements, manipulation de tableaux, opérations asynchrones...
+
 ```javascript
 const numbers = [1, 2, 3, 4, 5];
 
@@ -115,5 +221,83 @@ console.log(doubled); // [2, 4, 6, 8, 10]
 // Avec plusieurs paramètres
 const filtered = numbers.filter((n, index) => index % 2 === 0);
 console.log(filtered); // [1, 3, 5]
+
+// Callback avec événement
+const button = document.querySelector('button');
+button.addEventListener('click', () => {
+  console.log('Bouton cliqué !');
+});
+
+// Callback avec setTimeout
+setTimeout(() => {
+  console.log('Exécuté après 2 secondes');
+}, 2000);
 ```
+
+<Callout type="info">
+Les callbacks seront omniprésents dans votre code JavaScript : gestion d'événements, manipulation de tableaux (map, filter, reduce), appels réseau (fetch), timers, etc.
+</Callout>
+
+<QuickCheck
+  question="Qu'est-ce qu'un callback en JavaScript ?"
+  options={[
+    "Une fonction qui rappelle automatiquement une autre fonction",
+    "Une fonction passée en argument à une autre fonction",
+    "Une fonction qui retourne toujours true ou false",
+    "Une fonction qui s'exécute en arrière-plan"
+  ]}
+  correctAnswer={1}
+  explanation="Un callback est simplement une fonction passée comme argument à une autre fonction, qui sera exécutée plus tard. C'est un pattern fondamental en JavaScript pour gérer les événements, les opérations asynchrones, et la manipulation de données."
+/>
+
+## Exercice rapide
+
+<Exercise
+  title="Manipulation de fonctions"
+  difficulty="easy"
+  solution={
+    <CodeBlock language="javascript">{`// 1. Calculer le prix TTC
+const calculatePriceTTC = (priceHT, taxRate = 0.2) => priceHT * (1 + taxRate);
+
+console.log(calculatePriceTTC(100)); // 120 (TVA 20% par défaut)
+console.log(calculatePriceTTC(100, 0.055)); // 105.5 (TVA 5.5%)
+
+// 2. Créer un utilisateur
+const createUser = (name, email, role = 'user') => ({
+  name,
+  email,
+  role,
+  id: Math.random().toString(36).substr(2, 9)
+});
+
+console.log(createUser('Alice', 'alice@example.com'));
+// { name: 'Alice', email: 'alice@example.com', role: 'user', id: '...' }
+
+console.log(createUser('Bob', 'bob@example.com', 'admin'));
+// { name: 'Bob', email: 'bob@example.com', role: 'admin', id: '...' }
+
+// 3. Filtrer les nombres pairs
+const numbers = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
+const evenNumbers = numbers.filter(n => n % 2 === 0);
+
+console.log(evenNumbers); // [2, 4, 6, 8, 10]
+
+// 4. Transformer les prix (ajouter 10% et arrondir)
+const prices = [19.99, 49.50, 99.99];
+const adjustedPrices = prices.map(price => Math.round(price * 1.1 * 100) / 100);
+
+console.log(adjustedPrices); // [21.99, 54.45, 109.99]`}</CodeBlock>
+  }
+>
+Créez les fonctions suivantes en utilisant les **arrow functions** :
+
+<CodeBlock language="javascript">{`const numbers = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
+const prices = [19.99, 49.50, 99.99];`}</CodeBlock>
+
+1. **calculatePriceTTC** : Prend un prix HT et un taux de taxe (par défaut 0.2), retourne le prix TTC
+2. **createUser** : Prend un nom, un email, et un rôle (par défaut "user"), retourne un objet utilisateur avec un id aléatoire
+3. **evenNumbers** : Utilisez `filter()` pour extraire uniquement les nombres pairs du tableau `numbers`
+4. **adjustedPrices** : Utilisez `map()` pour ajouter 10% à chaque prix et arrondir à 2 décimales
+
+</Exercise>
 

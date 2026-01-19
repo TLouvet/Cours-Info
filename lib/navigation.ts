@@ -22,6 +22,7 @@ export const navigation: NavSession[] = [
       { id: 'intro', title: 'Introduction', href: '/seance-1/introduction' },
       { id: 'html-css', title: 'HTML & CSS', href: '/seance-1/html-css' },
       { id: 'javascript', title: 'JavaScript', href: '/seance-1/javascript' },
+      { id: 'devtools', title: 'DevTools & Débogage', href: '/seance-1/devtools' },
       { id: 'variables', title: 'Variables & Types', href: '/seance-1/variables' },
       { id: 'strings', title: 'Strings & Templates', href: '/seance-1/strings' },
       { id: 'functions', title: 'Fonctions', href: '/seance-1/functions' },

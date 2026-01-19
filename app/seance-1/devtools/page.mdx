@@ -1,0 +1,469 @@
+# Outils de développement (DevTools)
+
+Les **DevTools** (outils de développement) sont votre meilleur allié en développement JavaScript. Ils vous permettent d'inspecter, déboguer et analyser votre code en temps réel.
+
+## Ouvrir les DevTools
+
+Les DevTools sont intégrés à tous les navigateurs modernes.
+
+**Raccourcis clavier :**
+- **Windows/Linux :** `F12` ou `Ctrl + Shift + I`
+- **macOS :** `Cmd + Option + I`
+
+**Astuce :** Vous pouvez aussi faire **clic droit** sur n'importe quel élément de la page → **"Inspecter"** pour ouvrir directement les DevTools sur cet élément.
+
+<Callout type="tip" title="Habitude à prendre">
+**Gardez toujours les DevTools ouverts pendant le développement !** C'est votre principal outil de débogage.
+</Callout>
+
+## Les onglets principaux
+
+### 1. Console - Votre outil de débogage JavaScript
+
+La **console** affiche les messages, erreurs, warnings et vous permet de tester du code JavaScript.
+
+#### Méthodes console courantes
+
+```javascript
+// Message simple
+console.log('Message informatif');
+
+// Afficher plusieurs valeurs
+const name = 'Alice';
+const age = 25;
+console.log('Utilisateur:', name, 'Age:', age);
+
+// Warning (jaune)
+console.warn('Attention : Cette fonction est dépréciée');
+
+// Erreur (rouge)
+console.error('Erreur : Impossible de charger les données');
+
+// Afficher un objet de manière lisible
+const user = { name: 'Alice', age: 25, role: 'admin' };
+console.log(user);
+
+// Tableau formaté
+const users = [
+  { name: 'Alice', age: 25 },
+  { name: 'Bob', age: 30 }
+];
+console.table(users);
+
+// Grouper des logs
+console.group('Détails utilisateur');
+console.log('Nom: Alice');
+console.log('Email: alice@example.com');
+console.log('Rôle: Admin');
+console.groupEnd();
+
+// Mesurer le temps d'exécution
+console.time('Calcul');
+// ... code à mesurer ...
+console.timeEnd('Calcul'); // Affiche: "Calcul: 15.2ms"
+
+// Afficher la pile d'appels
+console.trace('Trace de l'exécution');
+```
+
+#### Exemple pratique : Déboguer une fonction
+
+```javascript
+function calculateTotal(items) {
+  console.log('📦 Calcul du total pour', items.length, 'articles');
+
+  let total = 0;
+  items.forEach((item, index) => {
+    console.log(`  Article ${index + 1}:`, item.name, '-', item.price + '€');
+    total += item.price;
+  });
+
+  console.log('💰 Total final:', total + '€');
+  return total;
+}
+
+const cart = [
+  { name: 'Laptop', price: 999 },
+  { name: 'Mouse', price: 25 },
+  { name: 'Keyboard', price: 75 }
+];
+
+calculateTotal(cart);
+```
+
+**Sortie console :**
+```
+📦 Calcul du total pour 3 articles
+  Article 1: Laptop - 999€
+  Article 2: Mouse - 25€
+  Article 3: Keyboard - 75€
+💰 Total final: 1099€
+```
+
+<Callout type="warning" title="En production">
+**N'oubliez pas de retirer vos `console.log()` avant de déployer !**
+
+Les `console.log()` :
+- Ralentissent l'application
+- Exposent des informations sensibles
+- Encombrent la console de l'utilisateur
+
+**Pour la production :** Utilisez des outils de logging professionnels comme Sentry, LogRocket, ou Datadog.
+</Callout>
+
+#### Tester du code directement dans la console
+
+La console est un **REPL** (Read-Eval-Print Loop) - vous pouvez exécuter du JavaScript directement :
+
+```javascript
+// Essayez dans la console de ce site :
+document.querySelector('h1').textContent
+// Retourne le texte du premier h1
+
+Array.from({length: 5}, (_, i) => i * 2)
+// [0, 2, 4, 6, 8]
+
+fetch('https://api.github.com/users/octocat')
+  .then(r => r.json())
+  .then(data => console.log(data))
+// Affiche les données de l'utilisateur GitHub
+```
+
+<QuickCheck
+  question="Que se passe-t-il si votre code JavaScript contient une erreur de syntaxe ?"
+  options={[
+    "Le code s'exécute partiellement jusqu'à l'erreur",
+    "L'erreur s'affiche dans la console des DevTools (en rouge)",
+    "Le navigateur affiche une popup d'erreur",
+    "Rien ne se passe, l'erreur est ignorée silencieusement"
+  ]}
+  correctAnswer={1}
+  explanation="Les erreurs JavaScript s'affichent en rouge dans la console des DevTools. L'erreur indique le fichier, la ligne et le type d'erreur pour vous aider à déboguer. C'est pourquoi il est essentiel d'avoir toujours les DevTools ouverts pendant le développement."
+/>
+
+### 2. Elements - Inspecter le HTML et CSS
+
+L'onglet **Elements** (ou **Inspecteur** sur Firefox) permet de :
+- Voir le HTML rendu en temps réel
+- Modifier le contenu et les attributs (temporaire, pour tester)
+- Inspecter les styles CSS appliqués
+- Voir l'ordre de priorité des règles CSS (spécificité)
+- Visualiser le box model (margin, padding, border)
+- Voir les événements JavaScript attachés aux éléments
+
+**Astuce :** Survolez un élément dans le panneau Elements pour le mettre en surbrillance sur la page.
+
+### 3. Sources - Déboguer le JavaScript
+
+L'onglet **Sources** (ou **Débogueur** sur Firefox) est l'outil de débogage le plus puissant.
+
+#### Points d'arrêt (Breakpoints)
+
+Les **breakpoints** mettent le code en pause pour inspecter l'état de l'application.
+
+**Comment ajouter un breakpoint :**
+1. Ouvrez l'onglet **Sources**
+2. Trouvez votre fichier JavaScript dans l'arborescence
+3. Cliquez sur le numéro de ligne où vous voulez arrêter l'exécution
+
+```javascript
+function addToCart(item) {
+  // Breakpoint ici (ligne 2)
+  console.log('Ajout au panier:', item);
+
+  const cart = getCart();
+  cart.push(item); // Breakpoint ici (ligne 5)
+
+  saveCart(cart);
+  return cart;
+}
+```
+
+**Quand le code atteint un breakpoint :**
+- ✅ L'exécution se met en pause
+- ✅ Vous pouvez inspecter les variables locales
+- ✅ Vous pouvez exécuter du code dans la console
+- ✅ Vous pouvez avancer pas à pas
+
+#### Contrôles de débogage
+
+<div className="grid grid-cols-2 gap-3 my-4">
+  <div className="p-3 bg-gray-50 dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700">
+    <strong>▶️ Resume (F8)</strong><br/>
+    <span className="text-sm text-gray-600 dark:text-gray-400">Reprendre l'exécution</span>
+  </div>
+  <div className="p-3 bg-gray-50 dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700">
+    <strong>⤵️ Step over (F10)</strong><br/>
+    <span className="text-sm text-gray-600 dark:text-gray-400">Passer à la ligne suivante</span>
+  </div>
+  <div className="p-3 bg-gray-50 dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700">
+    <strong>⬇️ Step into (F11)</strong><br/>
+    <span className="text-sm text-gray-600 dark:text-gray-400">Entrer dans la fonction</span>
+  </div>
+  <div className="p-3 bg-gray-50 dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700">
+    <strong>⬆️ Step out (Shift+F11)</strong><br/>
+    <span className="text-sm text-gray-600 dark:text-gray-400">Sortir de la fonction</span>
+  </div>
+</div>
+
+#### Déboguer avec `debugger`
+
+Vous pouvez aussi ajouter le mot-clé `debugger` directement dans votre code :
+
+```javascript
+function complexCalculation(data) {
+  const result = data.map(x => x * 2);
+
+  debugger; // Le code s'arrête ici si les DevTools sont ouverts
+
+  return result.reduce((sum, val) => sum + val, 0);
+}
+```
+
+<Callout type="info" title="debugger vs breakpoint">
+- **`debugger` dans le code** : S'arrête toujours si les DevTools sont ouverts
+- **Breakpoint dans les DevTools** : Ne modifie pas le code, plus flexible
+
+Préférez les **breakpoints dans les DevTools** pour ne pas polluer votre code.
+</Callout>
+
+#### Watch Expressions
+
+Vous pouvez surveiller des expressions en temps réel :
+
+1. Dans l'onglet **Sources**, trouvez la section **Watch**
+2. Cliquez sur **+** et ajoutez une expression : `cart.length`, `user.isAuthenticated`, etc.
+3. Quand le code est en pause, les valeurs s'affichent automatiquement
+
+### 4. Network - Analyser les requêtes réseau
+
+L'onglet **Network** montre toutes les requêtes HTTP :
+- Requêtes API (fetch, axios)
+- Chargement des images, scripts, CSS
+- Temps de chargement
+- Statut HTTP (200, 404, 500, etc.)
+- Headers et payload
+
+**Utile pour :**
+- Déboguer les appels API
+- Voir les données envoyées/reçues
+- Comprendre pourquoi une ressource ne charge pas
+- Analyser les performances
+
+<QuickCheck
+  question="Quel outil devez-vous utiliser pour mettre votre code en pause et inspecter les variables à un moment précis ?"
+  options={[
+    "console.log() dans le code",
+    "L'onglet Elements pour voir le HTML",
+    "Un breakpoint dans l'onglet Sources",
+    "L'onglet Network pour voir les requêtes"
+  ]}
+  correctAnswer={2}
+  explanation="Les breakpoints dans l'onglet Sources permettent de mettre le code en pause à un endroit précis. Vous pouvez ensuite inspecter les variables, exécuter du code dans la console, et avancer pas à pas. C'est l'outil de débogage le plus puissant pour comprendre ce qui se passe dans votre code."
+/>
+
+### 5. Application - Stockage et état
+
+L'onglet **Application** (Chrome/Edge) ou **Stockage** (Firefox) permet d'inspecter :
+- **Local Storage** - Données persistantes (clé-valeur)
+- **Session Storage** - Données temporaires (session)
+- **Cookies** - Cookies HTTP
+- **Cache** - Ressources en cache
+- **IndexedDB** - Base de données côté client
+
+**En React :**
+Vous pourrez aussi voir l'état de vos composants avec **React Developer Tools** (extension).
+
+## Erreurs JavaScript courantes
+
+### TypeError
+
+```javascript
+const user = null;
+console.log(user.name);
+// TypeError: Cannot read property 'name' of null
+```
+
+**Cause :** Tentative d'accès à une propriété sur `null` ou `undefined`.
+
+**Solution :** Vérifier que l'objet existe avant d'y accéder.
+
+```javascript
+// ✅ Bon
+if (user) {
+  console.log(user.name);
+}
+
+// ✅ Encore mieux (optional chaining)
+console.log(user?.name);
+```
+
+### ReferenceError
+
+```javascript
+console.log(myVariable);
+// ReferenceError: myVariable is not defined
+```
+
+**Cause :** Variable non déclarée ou hors de portée (scope).
+
+**Solution :** Vérifier l'orthographe et déclarer la variable.
+
+### SyntaxError
+
+```javascript
+const user = { name: 'Alice' age: 25 };
+// SyntaxError: Unexpected identifier
+```
+
+**Cause :** Erreur de syntaxe (virgule manquante, parenthèse, etc.).
+
+**Solution :** Lire attentivement le message d'erreur qui indique la ligne.
+
+### Async Errors
+
+```javascript
+async function fetchData() {
+  const response = await fetch('/api/data');
+  const data = await response.json();
+  console.log(data.users.length);
+  // TypeError si data.users est undefined
+}
+```
+
+**Solution :** Toujours vérifier la structure des données reçues.
+
+```javascript
+async function fetchData() {
+  try {
+    const response = await fetch('/api/data');
+    const data = await response.json();
+
+    if (data.users && Array.isArray(data.users)) {
+      console.log(data.users.length);
+    } else {
+      console.error('Format de données invalide:', data);
+    }
+  } catch (error) {
+    console.error('Erreur lors du fetch:', error);
+  }
+}
+```
+
+## Workflow de débogage
+
+Quand votre code ne fonctionne pas comme prévu :
+
+### 1. Ouvrir la console
+   - Y a-t-il des erreurs en rouge ?
+   - Lire le message d'erreur et la ligne indiquée
+
+### 2. Ajouter des console.log()
+   - Avant et après la zone problématique
+   - Afficher les valeurs des variables
+   - Confirmer que le code s'exécute
+
+### 3. Utiliser un breakpoint
+   - Mettre en pause au bon endroit
+   - Inspecter les variables dans le panneau Scope
+   - Avancer pas à pas pour comprendre le flux
+
+### 4. Tester dans la console
+   - Exécuter du code pour tester des hypothèses
+   - Modifier temporairement des valeurs
+   - Appeler des fonctions avec différents paramètres
+
+### 5. Vérifier le Network
+   - Si le problème vient d'une API
+   - Vérifier le statut HTTP (200 = OK, 404 = Not Found, 500 = Erreur serveur)
+   - Inspecter les données reçues
+
+<Callout type="tip" title="Méthode du canard en plastique (Rubber Duck Debugging)">
+Expliquez votre code **à voix haute** comme si vous parliez à un canard en plastique. Le simple fait de verbaliser votre logique vous aide souvent à trouver le problème vous-même !
+
+**Version moderne :** Écrire une description détaillée de votre problème à l'IA (ChatGPT, Claude, etc.) a le même effet. Souvent, en formulant clairement le problème, vous réalisez la solution avant même d'envoyer le message ! L'IA devient votre canard en plastique digital (et elle peut même répondre 🦆).
+
+C'est une technique réelle utilisée par les développeurs professionnels.
+</Callout>
+
+## Extensions DevTools utiles
+
+### React Developer Tools
+
+Extension officielle pour déboguer les applications React :
+- Voir l'arbre de composants
+- Inspecter les props et le state
+- Suivre les re-renders
+- Analyser les performances
+
+**Installation :** [Chrome](https://chrome.google.com/webstore) / [Firefox](https://addons.mozilla.org)
+
+### Redux DevTools
+
+Si vous utilisez Redux pour la gestion d'état :
+- Time-travel debugging
+- Voir toutes les actions dispatchées
+- Inspecter le state global
+
+<QuickCheck
+  question="Vous avez un bug dans votre code mais pas d'erreur dans la console. Quelle est la meilleure approche ?"
+  options={[
+    "Réinstaller le navigateur, c'est probablement un bug du navigateur",
+    "Ajouter des console.log() pour tracer l'exécution et voir les valeurs des variables",
+    "Supprimer tout le code et recommencer",
+    "Attendre que le bug se corrige tout seul"
+  ]}
+  correctAnswer={1}
+  explanation="Quand il n'y a pas d'erreur mais que le comportement est incorrect, c'est une erreur de logique. La meilleure approche est d'ajouter des console.log() stratégiquement pour tracer l'exécution du code et voir quelles valeurs prennent vos variables. Vous pouvez aussi utiliser des breakpoints pour inspecter l'état à différents moments."
+/>
+
+## Bonnes pratiques
+
+### ✅ À faire
+
+- **Toujours garder les DevTools ouverts** pendant le développement
+- **Utiliser des messages console descriptifs** : `console.log('User data:', user)` plutôt que `console.log(user)`
+- **Retirer les console.log()** avant de committer le code
+- **Utiliser des breakpoints** pour les bugs complexes
+- **Consulter la documentation** (MDN) quand vous ne comprenez pas une erreur
+
+### ❌ À éviter
+
+- **Ignorer les warnings** (jaunes) dans la console
+- **Ne pas lire les messages d'erreur** complètement
+- **Laisser des console.log()** dans le code de production
+- **Utiliser `alert()` pour déboguer** (bloque l'exécution)
+- **Ne jamais ouvrir les DevTools** et coder "à l'aveugle"
+
+## Ressources
+
+<Resources resources={[
+  {
+    title: "Chrome DevTools Documentation",
+    description: "Documentation officielle complète des DevTools Chrome",
+    url: "https://developer.chrome.com/docs/devtools/",
+    type: "doc"
+  },
+  {
+    title: "Firefox Developer Tools",
+    description: "Guide des outils de développement Firefox",
+    url: "https://firefox-source-docs.mozilla.org/devtools-user/",
+    type: "doc"
+  },
+  {
+    title: "Debugging JavaScript - MDN",
+    description: "Guide de débogage JavaScript par Mozilla",
+    url: "https://developer.mozilla.org/en-US/docs/Learn/JavaScript/First_steps/What_went_wrong",
+    type: "doc"
+  },
+  {
+    title: "React Developer Tools",
+    description: "Extension officielle pour déboguer React",
+    url: "https://react.dev/learn/react-developer-tools",
+    type: "doc"
+  }
+]} />
+
+<Callout type="success" title="Prêt à déboguer !">
+Maintenant que vous connaissez les DevTools, vous avez tous les outils pour déboguer efficacement votre code JavaScript et React. N'oubliez pas : **un bon développeur passe plus de temps à déboguer qu'à coder !**
+</Callout>

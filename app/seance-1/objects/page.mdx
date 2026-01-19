@@ -141,44 +141,31 @@ console.log(user);
 // { name: 'Alice', nameUpper: 'ALICE' }
 ```
 
-## Méthode raccourcie
+## Méthode raccourcie (Shorthand property)
+
+Quand le nom de la variable correspond au nom de la propriété, vous pouvez utiliser une syntaxe raccourcie. C'est très courant et rend le code plus lisible.
 
 ```javascript
 const name = 'Alice';
 const age = 25;
 
-// Avant ES6
+// Avant ES6 : répétition du nom
 const user = { name: name, age: age };
 
-// Avec ES6 ✨
+// Avec ES6 : syntaxe raccourcie
 const user = { name, age };
 
 console.log(user); // { name: 'Alice', age: 25 }
 ```
 
-## Méthodes d'objet
+<Callout type="tip">
+Cette syntaxe est très utilisée, notamment pour créer des objets à partir de variables ou de paramètres de fonction.
 
 ```javascript
-const calculator = {
-  value: 0,
-  add(n) {
-    this.value += n;
-    return this;
-  },
-  multiply(n) {
-    this.value *= n;
-    return this;
-  },
-  getValue() {
-    return this.value;
-  }
-};
-
-calculator.add(5).multiply(2).getValue(); // 10
+function createUser(name, email) {
+  return { name, email }; // Au lieu de { name: name, email: email }
+}
 ```
-
-<Callout type="info">
-Les méthodes avec `this` sont moins courantes aujourd'hui. On préfère souvent des fonctions pures et des objets de données simples. Cependant, `this` reste utile pour comprendre comment fonctionnent les objets et les classes.
 </Callout>
 
 ## Vérifier l'existence d'une propriété

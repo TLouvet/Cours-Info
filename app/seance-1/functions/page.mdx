@@ -39,7 +39,7 @@ En pratique, **écrivez vos fonctions avant de les utiliser** pour éviter toute
 </Callout>
 
 <QuickCheck
-  question="Que se passe-t-il si vous appelez une arrow function avant sa déclaration ?"
+  question="Que se passe-t-il si vous appelez une fonction anonyme (déclarée avec const/let) avant sa déclaration ?"
   options={[
     "Ça fonctionne grâce au hoisting",
     "ReferenceError: Cannot access before initialization",
@@ -47,7 +47,7 @@ En pratique, **écrivez vos fonctions avant de les utiliser** pour éviter toute
     "La fonction est automatiquement déclarée"
   ]}
   correctAnswer={1}
-  explanation="Les arrow functions et les fonctions anonymes (const/let) ne sont pas hoistées. Seules les déclarations 'function' classiques le sont. En pratique, déclarez toujours vos fonctions avant de les utiliser."
+  explanation="Les fonctions anonymes (déclarées avec const ou let) ne sont pas hoistées. Seules les déclarations 'function' classiques le sont. En pratique, déclarez toujours vos fonctions avant de les utiliser."
 />
 
 ## Arrow Functions

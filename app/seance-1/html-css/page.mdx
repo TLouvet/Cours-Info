@@ -172,27 +172,25 @@ React gère le DOM via son **Virtual DOM**. Vous déclarez ce que vous voulez af
 **En React :** `<h1>{greeting}</h1>` (React met à jour automatiquement)
 </Callout>
 
-## Inspecter le HTML et CSS
+<Callout type="tip" title="Comprendre, pas mémoriser">
+**Ce qu'il faut retenir :**
 
-Pour inspecter et déboguer votre HTML et CSS, utilisez l'onglet **Elements** (ou **Inspecteur** sur Firefox) des DevTools.
+**HTML :**
+- Comprendre la **différence entre balises sémantiques et non-sémantiques**
+  - `<div>` vs `<section>` : les deux créent des sections, mais `<section>` a du sens sémantique
+  - `<span>` vs `<strong>` : les deux mettent en évidence, mais `<strong>` indique une importance
+- Savoir **pourquoi** la sémantique est importante (SEO, accessibilité, maintenabilité)
+- Les balises existent et vous les reconnaîtrez avec la pratique
 
-**Ouvrir les DevTools :**
-- **Windows/Linux :** `F12` ou `Ctrl + Shift + I`
-- **macOS :** `Cmd + Option + I`
+**CSS :**
+- Comprendre les sélecteurs (balise, classe, ID) et la spécificité
+- Savoir qu'il existe de nombreuses propriétés → consultez MDN au besoin
 
-**L'onglet Elements permet de :**
-- Voir le HTML rendu en temps réel
-- Modifier le contenu et les attributs (temporaire, pour tester)
-- Inspecter les styles CSS appliqués
-- Voir l'ordre de priorité des règles CSS (spécificité)
-- Visualiser le box model (margin, padding, border)
+**DOM :**
+- Le DOM est la représentation objet de votre HTML
+- Avec React, vous ne toucherez plus directement au DOM
 
-**Astuce :** Faites **clic droit** sur n'importe quel élément de la page → **"Inspecter"** pour ouvrir directement cet élément dans les DevTools.
-
-<Callout type="info" title="Pour le débogage JavaScript">
-Pour apprendre à déboguer JavaScript (console, breakpoints, erreurs courantes, etc.), consultez le chapitre dédié : [**Outils de développement & Débogage**](/seance-1/devtools).
-
-Cette section couvre en détail la console JavaScript, les points d'arrêt, et les techniques de débogage.
+Consultez la documentation (MDN) quand vous avez besoin d'un rappel sur une balise ou une propriété CSS spécifique.
 </Callout>
 
 ## MDN - Votre ressource

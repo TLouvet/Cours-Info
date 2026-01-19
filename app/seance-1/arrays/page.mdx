@@ -15,6 +15,16 @@ console.log(fruits[1]); // 'banane'
 console.log(fruits.length); // 3
 ```
 
+<Callout type="info">
+Contrairement à des langages comme C ou Java, les tableaux JavaScript peuvent contenir **plusieurs types différents** :
+
+```javascript
+const mixed = [1, 'hello', true, { name: 'Alice' }]; // ✅ Valide
+```
+
+**Cependant, cette pratique n'est pas recommandée.** Privilégiez des tableaux homogènes (un seul type) pour un code plus prévisible et plus facile à maintenir.
+</Callout>
+
 ## Méthodes de base
 
 ```javascript
@@ -64,24 +74,42 @@ Les méthodes comme `.map()`, `.filter()`, `.reduce()` ne modifient jamais le ta
 **Privilégiez toujours les méthodes immutables**.
 </Callout>
 
-### .map() - Transformer
-
-Transforme chaque élément et retourne un nouveau tableau.
+### Les méthodes essentielles
 
 ```javascript
-const numbers = [1, 2, 3];
-const doubled = numbers.map(n => n * 2);
-console.log(doubled); // [2, 4, 6]
-console.log(numbers); // [1, 2, 3] (inchangé)
-
-// Exemple avec des objets
+const numbers = [1, 2, 3, 4, 5];
 const users = [
-  { name: 'Alice', age: 25 },
-  { name: 'Bob', age: 30 }
+  { id: 1, name: 'Alice', age: 25 },
+  { id: 2, name: 'Bob', age: 30 }
 ];
 
+// .map() - Transforme chaque élément
+const doubled = numbers.map(n => n * 2);
+// [2, 4, 6, 8, 10]
+
 const names = users.map(user => user.name);
-console.log(names); // ['Alice', 'Bob']
+// ['Alice', 'Bob']
+
+// .filter() - Garde les éléments qui passent le test
+const evens = numbers.filter(n => n % 2 === 0);
+// [2, 4]
+
+const adults = users.filter(user => user.age >= 18);
+// [{ id: 1, name: 'Alice', age: 25 }, { id: 2, name: 'Bob', age: 30 }]
+
+// .find() - Retourne le premier élément qui correspond
+const bob = users.find(user => user.id === 2);
+// { id: 2, name: 'Bob', age: 30 }
+
+// .some() - Au moins un élément passe le test ?
+numbers.some(n => n > 3); // true
+
+// .every() - Tous les éléments passent le test ?
+numbers.every(n => n > 0); // true
+
+// .reduce() - Réduit à une seule valeur
+const sum = numbers.reduce((acc, n) => acc + n, 0);
+// 15 (1+2+3+4+5)
 ```
 
 <QuickCheck
@@ -96,27 +124,6 @@ console.log(names); // ['Alice', 'Bob']
   explanation=".map(n => n * n) multiplie chaque nombre par lui-même (carré), donc 1*1=1, 2*2=4, 3*3=9. Le résultat est [1, 4, 9]."
 />
 
-### .filter() - Filtrer
-
-Garde seulement les éléments qui passent le test.
-
-```javascript
-const numbers = [1, 2, 3, 4, 5];
-const evens = numbers.filter(n => n % 2 === 0);
-console.log(evens); // [2, 4]
-
-// Exemple avec des objets
-const products = [
-  { name: 'Laptop', price: 1000 },
-  { name: 'Mouse', price: 25 },
-  { name: 'Keyboard', price: 75 }
-];
-
-const affordable = products.filter(p => p.price < 100);
-console.log(affordable);
-// [{ name: 'Mouse', price: 25 }, { name: 'Keyboard', price: 75 }]
-```
-
 <QuickCheck
   question="Quelle différence entre .map() et .filter() ?"
   options={[
@@ -128,61 +135,6 @@ console.log(affordable);
   correctAnswer={0}
   explanation=".map() transforme chaque élément et retourne un tableau de même taille. .filter() garde uniquement les éléments qui passent le test, donc peut retourner un tableau plus petit."
 />
-
-### .find() - Premier match
-
-Retourne le **premier** élément qui correspond.
-
-```javascript
-const users = [
-  { id: 1, name: 'Alice' },
-  { id: 2, name: 'Bob' }
-];
-
-const bob = users.find(user => user.id === 2);
-console.log(bob); // { id: 2, name: 'Bob' }
-```
-
-### .some() / .every()
-
-```javascript
-const numbers = [1, 2, 3, 4];
-
-// Au moins un élément > 2 ?
-numbers.some(n => n > 2); // true
-
-// Tous les éléments > 0 ?
-numbers.every(n => n > 0); // true
-```
-
-### .reduce() - Accumuler
-
-Réduit un tableau à une seule valeur en accumulant les résultats.
-
-```javascript
-const numbers = [1, 2, 3, 4];
-
-// Somme : 0 + 1 + 2 + 3 + 4 = 10
-const sum = numbers.reduce((acc, n) => acc + n, 0);
-console.log(sum); // 10
-
-// Produit : 1 * 1 * 2 * 3 * 4 = 24
-const product = numbers.reduce((acc, n) => acc * n, 1);
-console.log(product); // 24
-
-// Exemple avancé : compter les occurrences
-const fruits = ['pomme', 'banane', 'pomme', 'orange', 'banane', 'pomme'];
-const count = fruits.reduce((acc, fruit) => {
-  acc[fruit] = (acc[fruit] || 0) + 1;
-  return acc;
-}, {});
-console.log(count);
-// { pomme: 3, banane: 2, orange: 1 }
-```
-
-<Callout type="tip">
-`.reduce()` est puissant mais peut sembler complexe au début. C'est normal ! Concentrez-vous d'abord sur `.map()` et `.filter()`, vous maîtriserez `.reduce()` avec la pratique.
-</Callout>
 
 <QuickCheck
   question="Que fait le deuxième paramètre de .reduce() ?"

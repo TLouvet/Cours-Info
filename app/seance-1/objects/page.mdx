@@ -280,7 +280,7 @@ Votre code sera plus prévisible, plus facile à déboguer, et maintenable.
   title="Manipulation d'objets"
   difficulty="easy"
   solution={
-    <CodeBlock language="javascript">{`const product = {
+<CodeBlock language="javascript">{`const product = {
   name: 'Laptop',
   price: 1000,
   specs: {
@@ -309,19 +309,22 @@ console.log(keys); // ['name', 'price', 'specs']
 
 // 4. Accès sûr à la propriété storage
 const storage = product?.specs?.storage ?? 'Non spécifié';
-console.log(storage); // 'Non spécifié'`}</CodeBlock>
+console.log(storage); // 'Non spécifié'`}
+</CodeBlock>
   }
 >
 Avec cet objet produit :
 
-<CodeBlock language="javascript">{`const product = {
+```javascript
+const product = {
   name: 'Laptop',
   price: 1000,
   specs: {
     ram: '16GB',
     cpu: 'i7'
   }
-};`}</CodeBlock>
+};
+```
 
 1. Créez une copie avec le prix réduit à 850€
 2. Ajoutez les propriétés `stock: 50` et `category: 'Electronics'` (sans modifier l'original)

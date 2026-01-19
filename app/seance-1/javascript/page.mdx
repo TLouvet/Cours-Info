@@ -1,4 +1,4 @@
-# JavaScript Moderne
+# JavaScript
 
 JavaScript a beaucoup évolué depuis ES6 (2015). Voyons les concepts essentiels pour React.
 
@@ -18,16 +18,61 @@ JavaScript a été créé en **1995** par Brendan Eich. Aujourd'hui, c'est le la
 - **Desktop** - Electron
 - **IoT** - Johnny-Five
 
-### ECMAScript (ES)
+### ECMAScript (ES) - L'évolution du langage
 
-**ES6 (2015)** marque le début du JavaScript "moderne" avec des fonctionnalités majeures :
-- `let` et `const`
-- Arrow functions
-- Classes
-- Modules
-- Destructuration
-- Template literals
-- Promises
+**ECMAScript** est le standard qui définit JavaScript. Chaque version apporte de nouvelles fonctionnalités.
+
+#### ES6 (2015) - La révolution
+
+**ES6 (ECMAScript 2015)** a transformé JavaScript avec des fonctionnalités majeures :
+
+<div className="grid grid-cols-1 md:grid-cols-2 gap-3 my-4">
+  <div className="p-3 bg-cyan-50 dark:bg-cyan-900/20 rounded-lg border border-cyan-200 dark:border-cyan-800">
+    <strong>🔤 let & const</strong> - Variables modernes
+  </div>
+  <div className="p-3 bg-cyan-50 dark:bg-cyan-900/20 rounded-lg border border-cyan-200 dark:border-cyan-800">
+    <strong>➡️ Arrow functions</strong> - Syntaxe concise
+  </div>
+  <div className="p-3 bg-cyan-50 dark:bg-cyan-900/20 rounded-lg border border-cyan-200 dark:border-cyan-800">
+    <strong>📦 Modules</strong> - import/export
+  </div>
+  <div className="p-3 bg-cyan-50 dark:bg-cyan-900/20 rounded-lg border border-cyan-200 dark:border-cyan-800">
+    <strong>🎯 Destructuration</strong> - Extraire facilement
+  </div>
+  <div className="p-3 bg-cyan-50 dark:bg-cyan-900/20 rounded-lg border border-cyan-200 dark:border-cyan-800">
+    <strong>📝 Template literals</strong> - Strings améliorés
+  </div>
+  <div className="p-3 bg-cyan-50 dark:bg-cyan-900/20 rounded-lg border border-cyan-200 dark:border-cyan-800">
+    <strong>⏱️ Promises</strong> - Code asynchrone
+  </div>
+  <div className="p-3 bg-cyan-50 dark:bg-cyan-900/20 rounded-lg border border-cyan-200 dark:border-cyan-800">
+    <strong>🏛️ Classes</strong> - POO simplifiée
+  </div>
+  <div className="p-3 bg-cyan-50 dark:bg-cyan-900/20 rounded-lg border border-cyan-200 dark:border-cyan-800">
+    <strong>... Spread</strong> - Copie et fusion
+  </div>
+</div>
+
+#### Évolutions depuis ES6
+
+Depuis 2015, une nouvelle version sort **chaque année** avec des améliorations progressives :
+
+- **ES2016 (ES7)** - `Array.includes()`, opérateur exponentiel `**`
+- **ES2017 (ES8)** - `async/await`, `Object.entries()`, `Object.values()`
+- **ES2018 (ES9)** - Rest/spread pour objets, `Promise.finally()`
+- **ES2019 (ES10)** - `Array.flat()`, `Object.fromEntries()`
+- **ES2020 (ES11)** - Optional chaining `?.`, nullish coalescing `??`
+- **ES2021 (ES12)** - `String.replaceAll()`, `Promise.any()`
+- **ES2022 (ES13)** - Top-level await, private fields `#`
+- **ES2023 (ES14)** - `Array.toSorted()`, `Array.findLast()`
+- **ES2024 (ES15)** - `Object.groupBy()`, Promise enhancements
+- **ES2025 (ES16)** - En cours...
+
+<Callout type="info" title="Où en sommes-nous aujourd'hui ?">
+En 2026, nous sommes à **ES2025 (ES16)**. Mais **ES6 reste la base fondamentale** que tout développeur JavaScript doit maîtriser. Les versions suivantes sont des améliorations incrémentales.
+
+**Bonne nouvelle :** Tous les navigateurs modernes supportent ES6+ nativement !
+</Callout>
 
 <Callout type="tip" title="Pour React">
 Dans ce cours, nous allons nous concentrer sur les concepts JavaScript les plus utilisés en React. Chaque section contient des exemples spécifiques à React !
@@ -84,6 +129,28 @@ Cette section JavaScript est divisée en plusieurs pages pour faciliter l'appren
   </a>
 </div>
 
+## Compatibilité navigateurs
+
+<Callout type="success" title="Excellente nouvelle">
+**Tous les navigateurs modernes supportent ES6+ !**
+
+Depuis 2017, Chrome, Firefox, Safari, et Edge supportent nativement ES6 et les versions ultérieures. Vous n'avez plus besoin de Babel (transpiler) pour la plupart des cas d'usage.
+
+**Pour React :** Les outils comme Vite et Create React App gèrent automatiquement la compatibilité si nécessaire.
+</Callout>
+
+<QuickCheck
+  question="Quelle version d'ECMAScript a introduit les arrow functions, let/const, et les modules ?"
+  options={[
+    "ES5 (2009)",
+    "ES6 (2015)",
+    "ES2020 (ES11)",
+    "ES2025 (ES16)"
+  ]}
+  correctAnswer={1}
+  explanation="ES6 (ECMAScript 2015) a été la version révolutionnaire qui a introduit les arrow functions, let/const, les modules, les classes, les template literals, les Promises, et bien plus. C'est la base du JavaScript moderne que nous utilisons aujourd'hui."
+/>
+
 ## Pourquoi apprendre tout ça ?
 
 <Callout type="tip" title="L'importance des bases">
@@ -97,4 +164,33 @@ Sans comprendre les fondamentaux, vous ne pourrez pas :
 
 L'objectif : vous pilotez, l'IA exécute !
 </Callout>
+
+## Ressources
+
+<Resources resources={[
+  {
+    title: "MDN JavaScript Guide",
+    description: "Guide complet JavaScript par Mozilla avec exemples interactifs",
+    url: "https://developer.mozilla.org/fr/docs/Web/JavaScript/Guide",
+    type: "doc"
+  },
+  {
+    title: "JavaScript.info",
+    description: "Tutoriel moderne et détaillé couvrant tout JavaScript",
+    url: "https://javascript.info",
+    type: "website"
+  },
+  {
+    title: "TC39 Proposals",
+    description: "Suivre les nouvelles fonctionnalités JavaScript en cours de développement",
+    url: "https://github.com/tc39/proposals",
+    type: "website"
+  },
+  {
+    title: "Can I Use",
+    description: "Vérifier la compatibilité des fonctionnalités JavaScript",
+    url: "https://caniuse.com",
+    type: "website"
+  }
+]} />
 

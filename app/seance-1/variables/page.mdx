@@ -75,7 +75,7 @@ console.log(window.globalLet); // undefined ✅
 
 ## Types primitifs
 
-JavaScript a plusieurs types de base.
+JavaScript a plusieurs types de base (primitifs).
 
 ### number
 
@@ -88,7 +88,45 @@ const pasUnNombre = NaN; // Not a Number
 ```
 
 <Callout type="tip">
-JavaScript n'a qu'un seul type numérique (64 bits). Pas de distinction int/float/double.
+JavaScript n'a qu'un seul type numérique (format **IEEE 754** 64 bits, aussi appelé "double precision"). Pas de distinction int/float/double comme en Java ou C++.
+</Callout>
+
+#### NaN - Not a Number
+
+`NaN` représente une valeur qui **devrait être un nombre mais ne l'est pas**. C'est le résultat d'opérations mathématiques invalides.
+
+```javascript
+// Quand obtient-on NaN ?
+const resultat1 = 0 / 0;              // NaN
+const resultat2 = Math.sqrt(-1);      // NaN (racine carrée d'un négatif)
+const resultat3 = parseInt('hello');  // NaN (conversion impossible)
+const resultat4 = 'text' * 5;         // NaN (opération invalide)
+
+// NaN a un comportement bizarre !
+console.log(NaN === NaN);  // false (!!)
+console.log(NaN == NaN);   // false
+
+// Pour vérifier si une valeur est NaN :
+console.log(isNaN(NaN));              // true
+console.log(Number.isNaN(NaN));       // true (plus fiable)
+
+// Différence entre les deux :
+console.log(isNaN('hello'));          // true (converti d'abord en Number)
+console.log(Number.isNaN('hello'));   // false (vérifie strictement)
+```
+
+<Callout type="warning" title="NaN n'est pas égal à lui-même !">
+`NaN` est la **seule valeur en JavaScript qui n'est pas égale à elle-même**. C'est pour cette raison qu'on utilise `Number.isNaN()` pour le vérifier.
+
+```javascript
+if (resultat === NaN) {  // ❌ Ne fonctionne jamais !
+  console.log('NaN détecté');
+}
+
+if (Number.isNaN(resultat)) {  // ✅ Bon
+  console.log('NaN détecté');
+}
+```
 </Callout>
 
 ### string
@@ -110,13 +148,23 @@ Les strings seront détaillés dans la page suivante avec les template literals 
 ```javascript
 const vrai = true;
 const faux = false;
+
+// Souvent utilisé pour des conditions
+const isLoggedIn = true;
+const hasPermission = false;
 ```
 
 ### undefined et null
 
 ```javascript
-let x; // undefined (déclaré mais non assigné)
-const y = null; // null (absence volontaire de valeur)
+// undefined - variable déclarée mais non initialisée
+let x;
+console.log(x); // undefined
+
+// null - absence volontaire de valeur (sera assignée plus tard)
+let currentUser = null;  // Pas encore d'utilisateur connecté
+// ... plus tard, après login
+currentUser = { name: 'Alice', id: 123 };
 ```
 
 <QuickCheck
@@ -128,8 +176,33 @@ const y = null; // null (absence volontaire de valeur)
     "undefined pour les objets, null pour les primitifs"
   ]}
   correctAnswer={0}
-  explanation="undefined signifie qu'une variable n'a pas encore reçu de valeur, tandis que null est une assignation explicite indiquant 'pas de valeur'."
+  explanation="undefined signifie qu'une variable n'a pas encore reçu de valeur, tandis que null est une assignation explicite indiquant 'pas de valeur'. On utilise souvent null pour dire 'cette variable existe mais est intentionnellement vide pour l'instant'."
 />
+
+### BigInt (ES2020)
+
+Pour les très grands nombres entiers (au-delà de `Number.MAX_SAFE_INTEGER`).
+
+```javascript
+const veryBig = 9007199254740991n; // Notez le 'n' à la fin
+const alsoVeryBig = BigInt(9007199254740991);
+
+console.log(veryBig + 1n); // 9007199254740992n
+```
+
+<Callout type="info">
+Rarement utilisé dans les applications web classiques. Utile pour la cryptographie, les timestamps précis, ou les calculs financiers.
+</Callout>
+
+### Symbol (ES2015)
+
+Crée des identifiants uniques. Avancé, rarement utilisé directement.
+
+```javascript
+const id1 = Symbol('id');
+const id2 = Symbol('id');
+console.log(id1 === id2); // false (toujours unique)
+```
 
 ### typeof
 
@@ -141,6 +214,8 @@ typeof "hello";   // "string"
 typeof true;      // "boolean"
 typeof undefined; // "undefined"
 typeof null;      // "object" (bug historique!)
+typeof [];        // "object" (les tableaux sont des objets!)
+typeof {};        // "object"
 ```
 
 <Callout type="warning" title="Bug historique">
@@ -148,6 +223,18 @@ typeof null;      // "object" (bug historique!)
 
 Pour vérifier si une valeur est `null`, utilisez `=== null` directement.
 </Callout>
+
+<QuickCheck
+  question="Que retourne typeof [] ?"
+  options={[
+    '"array"',
+    '"object"',
+    '"list"',
+    '"undefined"'
+  ]}
+  correctAnswer={1}
+  explanation="typeof [] retourne 'object' car en JavaScript, les tableaux SONT des objets (avec des méthodes spéciales). Pour vérifier si quelque chose est un tableau, utilisez Array.isArray([]) qui retourne true."
+/>
 
 ## Déclaration de variables
 
@@ -166,6 +253,19 @@ count = count + 1; // OK
 - Dans une boucle
 - Pour des valeurs temporaires
 
+```javascript
+// Exemple pratique : boucle
+for (let i = 0; i < 5; i++) {
+  console.log(i); // i change à chaque itération
+}
+
+// Accumulation
+let total = 0;
+total += 10;
+total += 20;
+console.log(total); // 30
+```
+
 ### const - Constante
 
 Ne peut **pas** être réassignée.
@@ -179,6 +279,25 @@ PI = 3; // ❌ Error!
 - La référence ne doit pas changer
 - Pour la plupart de vos variables (par défaut)
 - Pour les fonctions, objets, tableaux
+
+```javascript
+// Exemple pratique : valeurs qui ne changent pas
+const API_URL = 'https://api.example.com';
+const MAX_RETRIES = 3;
+const user = { name: 'Alice', age: 25 };
+```
+
+<QuickCheck
+  question="Quand devriez-vous utiliser let plutôt que const ?"
+  options={[
+    "Toujours, let est plus moderne que const",
+    "Uniquement quand la valeur doit être réassignée",
+    "Pour les objets et tableaux",
+    "Jamais, const est toujours meilleur"
+  ]}
+  correctAnswer={1}
+  explanation="Utilisez const par défaut pour toutes vos variables. Passez à let uniquement si vous devez réassigner la variable (compteurs, boucles, accumulation). Cette approche rend votre code plus prévisible et évite les bugs."
+/>
 
 <Callout type="warning" title="const avec objets/tableaux">
 **Important :** `const` empêche la **réassignation**, pas la **mutation** !
@@ -195,6 +314,78 @@ numbers = []; // ❌ Error (réassignation)
 
 `const` protège la **référence**, pas le **contenu**.
 </Callout>
+
+## Conventions de nommage
+
+Bien nommer vos variables rend votre code lisible et compréhensible.
+
+### camelCase (standard JavaScript)
+
+La convention principale en JavaScript : première lettre minuscule, puis majuscule à chaque nouveau mot.
+
+```javascript
+const firstName = 'Alice';
+const numberOfUsers = 42;
+const isLoggedIn = true;
+const hasPermission = false;
+```
+
+### SNAKE_CASE_MAJUSCULE pour les constantes globales
+
+Pour les valeurs qui ne changeront jamais (configuration, constantes mathématiques).
+
+```javascript
+const MAX_LOGIN_ATTEMPTS = 3;
+const API_BASE_URL = 'https://api.example.com';
+const DEFAULT_TIMEOUT = 5000;
+const PI = 3.14159;
+```
+
+### Préfixes pour les booléens
+
+Utilisez des préfixes qui rendent le code auto-documenté.
+
+```javascript
+// ✅ Bon - on comprend que c'est un boolean
+const isActive = true;
+const hasAccess = false;
+const canEdit = true;
+const shouldRefresh = false;
+
+// ❌ Mauvais - pas clair
+const active = true;
+const access = false;
+```
+
+### Noms descriptifs
+
+```javascript
+// ✅ Bon - descriptif
+const userAge = 25;
+const productPrice = 99.99;
+const isEmailVerified = true;
+
+// ❌ Mauvais - trop court, pas clair
+const a = 25;
+const p = 99.99;
+const v = true;
+```
+
+<Callout type="info" title="Pour aller plus loin">
+Pour en savoir plus sur les conventions de nommage (camelCase, PascalCase, snake_case, kebab-case), consultez l'[**Annexe Conventions de nommage**](/annexes/naming-conventions).
+</Callout>
+
+<QuickCheck
+  question="Quelle est la bonne convention pour nommer une variable contenant le nombre d'utilisateurs actifs ?"
+  options={[
+    "active_users",
+    "ActiveUsers",
+    "activeUsers",
+    "ACTIVE_USERS"
+  ]}
+  correctAnswer={2}
+  explanation="En JavaScript, on utilise camelCase pour les variables : première lettre en minuscule, puis majuscule à chaque nouveau mot. ACTIVE_USERS serait réservé pour une constante globale, ActiveUsers pour un nom de classe (PascalCase), et active_users est du snake_case (Python, Ruby)."
+/>
 
 ## Règle d'or
 

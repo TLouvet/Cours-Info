@@ -26,13 +26,35 @@ Avant de plonger dans React, rappelons les fondamentaux du développement web.
 </html>
 ```
 
-<Callout type="info" title="Sémantique HTML">
+<Callout type="info" title="Pourquoi la sémantique HTML est importante">
 Utilisez des balises sémantiques (`<header>`, `<nav>`, `<main>`, `<article>`, `<section>`, `<footer>`) pour structurer votre contenu de manière significative.
+
+**3 raisons principales :**
+
+1. **SEO (Search Engine Optimization)** - Optimisation pour les moteurs de recherche (Google, Bing, etc.) pour améliorer le référencement naturel de votre site. *À ne pas confondre avec le SEA (Search Engine Advertising) qui désigne la publicité payante sur les moteurs de recherche.*
+
+2. **A11y (Accessibility)** - Accessibilité numérique pour permettre aux personnes en situation de handicap d'utiliser votre site (lecteurs d'écran, navigation au clavier, etc.).
+
+3. **Maintenabilité** - Code plus lisible et plus facile à comprendre pour les développeurs.
 </Callout>
+
+<QuickCheck
+  question="Quelle balise devriez-vous utiliser pour un bouton cliquable qui soumet un formulaire ?"
+  options={[
+    "<div onclick='submit()'>Envoyer</div>",
+    "<a href='#' onclick='submit()'>Envoyer</a>",
+    "<button type='submit'>Envoyer</button>",
+    "<span onclick='submit()'>Envoyer</span>"
+  ]}
+  correctAnswer={2}
+  explanation="<button> est la balise sémantique pour les boutons. Elle offre l'accessibilité clavier (Entrée/Espace), les attributs ARIA par défaut, et le comportement natif de soumission de formulaire. Les <div> et <span> nécessitent du JavaScript supplémentaire pour l'accessibilité. Les <a> sont pour la navigation, pas les actions. Consultez MDN pour plus de détails sur les éléments interactifs."
+/>
 
 ## CSS - Style
 
 **CSS** (Cascading Style Sheets) définit l'apparence visuelle des éléments HTML.
+
+Le terme **"Cascading"** (en cascade) signifie que les styles se superposent et s'héritent selon des règles de priorité. Quand plusieurs règles CSS ciblent le même élément, le navigateur applique celle qui a la **spécificité** la plus élevée.
 
 ### Sélecteurs CSS
 
@@ -53,6 +75,11 @@ h1 {
 #mon-id {
   margin: 0 auto;
 }
+
+/* Sélecteurs combinés */
+nav a.active {
+  font-weight: bold;
+}
 ```
 
 <QuickCheck
@@ -67,78 +94,205 @@ h1 {
   explanation="Les sélecteurs par ID ont la plus haute spécificité, suivis des classes, puis des balises."
 />
 
+<Callout type="tip" title="Aller plus loin">
+Pour approfondir vos connaissances en CSS (sélecteurs avancés, pseudo-classes, combinateurs, etc.), consultez la page [**Annexe CSS**](/annexes/css-selectors).
+
+Vous y trouverez des exemples détaillés et des cas d'usage pratiques.
+</Callout>
+
 ## JavaScript et le DOM
 
-Le **DOM** (Document Object Model) représente la page web comme un arbre d'objets que JavaScript peut manipuler.
+### Qu'est-ce que le DOM ?
 
-### Sélection d'éléments
+Le **DOM** (Document Object Model) est une **interface de programmation** qui représente votre page HTML comme un **arbre d'objets** que JavaScript peut manipuler.
 
-```javascript
-// Par ID
-const element = document.getElementById('mon-id');
+**Comment ça fonctionne ?**
 
-// Par sélecteur CSS (premier match)
-const premier = document.querySelector('.ma-classe');
+1. Le navigateur **parse** (analyse) votre code HTML
+2. Il crée une **structure en arbre** où chaque balise devient un nœud
+3. JavaScript peut **accéder, modifier, ajouter ou supprimer** ces nœuds
 
-// Par sélecteur CSS (tous les matchs)
-const tous = document.querySelectorAll('p');
+```
+document (racine)
+  └─ html
+      ├─ head
+      │   └─ title
+      └─ body
+          ├─ header
+          ├─ main
+          │   ├─ section
+          │   └─ article
+          └─ footer
 ```
 
-### Manipulation du DOM
+### Aperçu rapide : Sélection et manipulation
+
+Voici quelques opérations de base avec le DOM. Nous n'entrerons pas dans les détails ici, car **React remplace cette approche**.
 
 ```javascript
+// Sélectionner un élément
+const element = document.querySelector('.ma-classe');
+
 // Modifier le contenu
 element.textContent = 'Nouveau texte';
-element.innerHTML = '<strong>Texte en gras</strong>';
 
-// Modifier les classes
-element.classList.add('nouvelle-classe');
-element.classList.remove('ancienne-classe');
-element.classList.toggle('active');
+// Ajouter une classe CSS
+element.classList.add('active');
 
-// Écouter des événements
+// Écouter un événement
 element.addEventListener('click', () => {
   console.log('Cliqué !');
 });
 ```
 
+<Callout type="info" title="Pour aller plus loin">
+Si vous souhaitez approfondir la manipulation du DOM (création d'éléments, événements avancés, traversée de l'arbre, data attributes, etc.), consultez l'[**Annexe DOM - Manipulation avancée**](/annexes/dom-manipulation) avec des exemples de code détaillés et des bonnes pratiques.
+
+Pour l'instant, retenez simplement le concept : **le DOM est la représentation objet de votre HTML**.
+</Callout>
+
+<QuickCheck
+  question="Qu'est-ce que le DOM (Document Object Model) ?"
+  options={[
+    "Un fichier HTML stocké sur le serveur",
+    "Une représentation en arbre d'objets JavaScript créée par le navigateur à partir du HTML",
+    "Un langage de programmation pour créer des sites web",
+    "Une bibliothèque JavaScript pour manipuler les styles CSS"
+  ]}
+  correctAnswer={1}
+  explanation="Le DOM est une interface de programmation créée automatiquement par le navigateur lorsqu'il parse votre HTML. Il transforme votre code HTML en une structure arborescente d'objets que JavaScript peut manipuler. Ce n'est ni un fichier, ni un langage, ni une bibliothèque, mais bien une représentation objet de votre document."
+/>
+
 <Callout type="warning" title="Avec React">
 **Important :** Avec React, vous ne manipulerez plus directement le DOM !
 
 React gère le DOM via son **Virtual DOM**. Vous déclarez ce que vous voulez afficher, et React s'occupe des mises à jour du DOM réel de manière optimisée.
+
+**En vanilla JS :** `element.textContent = 'Bonjour'`
+**En React :** `<h1>{greeting}</h1>` (React met à jour automatiquement)
 </Callout>
 
-## Console développeur
+## Outils de développement (DevTools)
 
-La console du navigateur est votre meilleure amie pour déboguer.
+Les **DevTools** (outils de développement) sont intégrés à tous les navigateurs modernes. Ils vous permettent d'inspecter, déboguer et analyser votre code en temps réel.
 
-### Ouvrir la console
+### Ouvrir les DevTools
 
 - **Windows/Linux :** `F12` ou `Ctrl + Shift + I`
 - **macOS :** `Cmd + Option + I`
 
-### Commandes utiles
+### Onglets principaux
 
-```javascript
-// Afficher un message
-console.log('Message');
-
-// Afficher une erreur
-console.error('Erreur !');
-
-// Afficher un tableau
-const data = [1, 2, 3];
-console.table(data);
-
-// Grouper des logs
-console.group('Mon groupe');
-console.log('Message 1');
-console.log('Message 2');
-console.groupEnd();
-```
+**Console** - Afficher des logs, tester du code JavaScript, voir les erreurs
+**Elements** - Inspecter le HTML et CSS en direct
+**Network** - Analyser les requêtes HTTP (API, images, scripts)
+**Sources** - Déboguer le code JavaScript avec des points d'arrêt
 
 <Callout type="tip" title="Astuce">
-**Toujours vérifier la console !** Les erreurs JavaScript s'affichent dans la console. Si votre code ne fonctionne pas, c'est le premier endroit où chercher.
+**Toujours ouvrir les DevTools pendant le développement !** C'est votre principal outil de débogage.
+</Callout>
+
+### La Console JavaScript
+
+La **console** est l'endroit où s'affichent les messages, erreurs et warnings de votre code JavaScript.
+
+#### Méthodes console courantes
+
+```javascript
+// Afficher un message simple
+console.log('Message informatif');
+
+// Afficher plusieurs valeurs
+const name = 'Alice';
+const age = 25;
+console.log('Utilisateur:', name, 'Age:', age);
+
+// Afficher un warning (jaune)
+console.warn('Attention : Cette fonction est dépréciée');
+
+// Afficher une erreur (rouge)
+console.error('Erreur : Impossible de charger les données');
+
+// Afficher un tableau formaté
+const users = [
+  { name: 'Alice', age: 25 },
+  { name: 'Bob', age: 30 }
+];
+console.table(users);
+
+// Grouper des logs
+console.group('Détails utilisateur');
+console.log('Nom: Alice');
+console.log('Email: alice@example.com');
+console.groupEnd();
+
+// Mesurer le temps d'exécution
+console.time('Opération');
+// ... code à mesurer ...
+console.timeEnd('Opération'); // Affiche: "Opération: 15.2ms"
+```
+
+#### Exemple : Déboguer une fonction
+
+```javascript
+function calculateTotal(items) {
+  console.log('Calcul du total pour', items.length, 'articles');
+
+  let total = 0;
+  items.forEach((item, index) => {
+    console.log(`Article ${index}:`, item);
+    total += item.price;
+  });
+
+  console.log('Total final:', total);
+  return total;
+}
+
+const cart = [
+  { name: 'Laptop', price: 999 },
+  { name: 'Mouse', price: 25 }
+];
+
+calculateTotal(cart);
+```
+
+<Callout type="warning" title="En production">
+**N'oubliez pas de retirer vos `console.log()` avant de déployer !** Ils ralentissent l'application et exposent des informations. Utilisez des outils de logging professionnels (Sentry, LogRocket) pour la production.
+</Callout>
+
+### Inspecter le DOM avec l'onglet Elements
+
+L'onglet **Elements** permet de :
+- Voir le HTML rendu en temps réel
+- Modifier le contenu directement (temporaire)
+- Inspecter les styles CSS appliqués
+- Voir les événements attachés aux éléments
+
+**Astuce :** Faites clic droit sur n'importe quel élément de la page → "Inspecter" pour ouvrir directement cet élément dans les DevTools.
+
+<QuickCheck
+  question="Que se passe-t-il si votre code JavaScript contient une erreur de syntaxe ?"
+  options={[
+    "Le code s'exécute partiellement jusqu'à l'erreur",
+    "L'erreur s'affiche dans la console des DevTools",
+    "Le navigateur affiche une popup d'erreur",
+    "Rien ne se passe, l'erreur est ignorée"
+  ]}
+  correctAnswer={1}
+  explanation="Les erreurs JavaScript s'affichent dans la console des DevTools (onglet Console). C'est pourquoi il est essentiel d'avoir toujours les DevTools ouverts pendant le développement. L'erreur indique le fichier, la ligne et le type d'erreur pour vous aider à déboguer."
+/>
+
+<Callout type="tip" title="Raccourci pratique">
+Vous pouvez **exécuter du JavaScript directement** dans la console pour tester des fonctions, inspecter des variables, ou expérimenter du code sans modifier vos fichiers.
+
+```javascript
+// Tapez directement dans la console :
+document.querySelector('h1').textContent
+// Retourne le texte du premier h1
+
+Array.from({length: 5}, (_, i) => i * 2)
+// [0, 2, 4, 6, 8]
+```
 </Callout>
 
 ## MDN - Votre ressource

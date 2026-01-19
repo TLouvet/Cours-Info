@@ -21,7 +21,7 @@ export const navigation: NavSession[] = [
     sections: [
       { id: 'intro', title: 'Introduction', href: '/seance-1/introduction' },
       { id: 'html-css', title: 'HTML & CSS', href: '/seance-1/html-css' },
-      { id: 'javascript', title: 'JavaScript Moderne', href: '/seance-1/javascript' },
+      { id: 'javascript', title: 'JavaScript', href: '/seance-1/javascript' },
       { id: 'variables', title: 'Variables & Types', href: '/seance-1/variables' },
       { id: 'strings', title: 'Strings & Templates', href: '/seance-1/strings' },
       { id: 'functions', title: 'Fonctions', href: '/seance-1/functions' },
@@ -122,6 +122,7 @@ export const navigation: NavSession[] = [
     sections: [
       { id: 'git-basics', title: 'Git - Bases & Commandes', href: '/annexes/git-basics' },
       { id: 'css-selectors', title: 'CSS - Sélecteurs & Propriétés', href: '/annexes/css-selectors' },
+      { id: 'dom-manipulation', title: 'DOM - Manipulation avancée', href: '/annexes/dom-manipulation' },
       { id: 'naming-conventions', title: 'Conventions de nommage', href: '/annexes/naming-conventions' },
       { id: 'gh-pages', title: 'Déployer sur GitHub Pages', href: '/annexes/gh-pages' },
     ],

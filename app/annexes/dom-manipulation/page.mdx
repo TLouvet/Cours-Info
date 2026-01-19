@@ -1,0 +1,551 @@
+# DOM - Manipulation avancée
+
+<Callout type="info" title="Annexe optionnelle">
+Cette page est un complément non obligatoire pour approfondir vos connaissances sur la manipulation du DOM en JavaScript vanilla.
+
+**Note :** Avec React, vous n'aurez pas besoin de manipuler directement le DOM. Cette annexe est utile pour comprendre ce qui se passe "sous le capot" et pour travailler sur des projets JavaScript vanilla.
+</Callout>
+
+Guide complet sur la manipulation du DOM (Document Object Model) avec JavaScript.
+
+## Rappel : Qu'est-ce que le DOM ?
+
+Le **DOM** (Document Object Model) est une interface de programmation créée par le navigateur. Il transforme votre HTML en une structure arborescente d'objets que JavaScript peut manipuler.
+
+```
+document
+  └─ html
+      ├─ head
+      │   └─ title
+      └─ body
+          ├─ header
+          ├─ main
+          └─ footer
+```
+
+## Sélectionner des éléments
+
+### Méthodes modernes (recommandées)
+
+#### `querySelector()` - Premier élément
+
+```javascript
+// Sélectionner le premier élément avec la classe 'button'
+const button = document.querySelector('.button');
+
+// Sélectionner le premier <h1>
+const title = document.querySelector('h1');
+
+// Sélectionner avec un sélecteur complexe
+const firstLink = document.querySelector('nav ul li:first-child a');
+```
+
+#### `querySelectorAll()` - Tous les éléments
+
+```javascript
+// Sélectionner TOUS les éléments avec la classe 'card'
+const cards = document.querySelectorAll('.card');
+
+// Retourne une NodeList (similaire à un tableau)
+console.log(cards.length); // Nombre d'éléments
+
+// Parcourir avec forEach
+cards.forEach(card => {
+  console.log(card.textContent);
+});
+```
+
+<Callout type="tip" title="Astuce">
+`querySelector()` et `querySelectorAll()` acceptent **n'importe quel sélecteur CSS** valide. C'est la méthode moderne et la plus flexible.
+</Callout>
+
+### Méthodes anciennes (à connaître)
+
+```javascript
+// Par ID (retourne un seul élément ou null)
+const header = document.getElementById('header');
+
+// Par nom de balise (retourne une HTMLCollection)
+const paragraphs = document.getElementsByTagName('p');
+
+// Par classe (retourne une HTMLCollection)
+const buttons = document.getElementsByClassName('button');
+```
+
+<Callout type="warning" title="Différence importante">
+- `querySelectorAll()` retourne une **NodeList** (statique)
+- `getElementsByClassName()` retourne une **HTMLCollection** (live - se met à jour automatiquement)
+
+Préférez `querySelector()` et `querySelectorAll()` pour la cohérence.
+</Callout>
+
+## Modifier le contenu
+
+### `textContent` vs `innerHTML`
+
+```javascript
+const element = document.querySelector('.message');
+
+// textContent : texte brut uniquement (sécurisé)
+element.textContent = 'Bonjour !';
+// Résultat : Bonjour !
+
+element.textContent = '<strong>Bonjour</strong>';
+// Résultat : <strong>Bonjour</strong> (affiché comme texte)
+
+// innerHTML : interprète le HTML (attention XSS !)
+element.innerHTML = '<strong>Bonjour</strong>';
+// Résultat : Bonjour (en gras)
+```
+
+<Callout type="warning" title="Sécurité">
+**Attention avec `innerHTML` !** Si vous injectez du contenu provenant de l'utilisateur, utilisez toujours `textContent` pour éviter les failles XSS (Cross-Site Scripting).
+
+```javascript
+// ❌ DANGEREUX si userInput vient d'un utilisateur
+element.innerHTML = userInput;
+
+// ✅ SÉCURISÉ
+element.textContent = userInput;
+```
+</Callout>
+
+### Modifier les attributs
+
+```javascript
+const link = document.querySelector('a');
+
+// Lire un attribut
+const href = link.getAttribute('href');
+console.log(href); // "/page"
+
+// Modifier un attribut
+link.setAttribute('href', '/nouvelle-page');
+link.setAttribute('target', '_blank');
+
+// Supprimer un attribut
+link.removeAttribute('target');
+
+// Attributs courants (accès direct)
+link.href = '/autre-page';
+link.id = 'mon-lien';
+link.className = 'link active';
+```
+
+## Modifier les styles
+
+### Via les classes CSS (recommandé)
+
+```javascript
+const element = document.querySelector('.card');
+
+// Ajouter une classe
+element.classList.add('active');
+
+// Retirer une classe
+element.classList.remove('inactive');
+
+// Basculer une classe (toggle)
+element.classList.toggle('hidden');
+
+// Vérifier si une classe existe
+if (element.classList.contains('active')) {
+  console.log('Élément actif');
+}
+
+// Remplacer une classe
+element.classList.replace('old-class', 'new-class');
+```
+
+<Callout type="tip" title="Bonne pratique">
+Préférez **toujours** modifier les classes CSS plutôt que les styles inline. C'est plus maintenable et performant.
+</Callout>
+
+### Styles inline (à éviter sauf exception)
+
+```javascript
+const element = document.querySelector('.box');
+
+// Modifier un style inline
+element.style.backgroundColor = 'blue';
+element.style.fontSize = '20px';
+element.style.display = 'none';
+
+// Lire un style inline
+console.log(element.style.backgroundColor); // 'blue'
+
+// Lire un style calculé (inclut les styles CSS)
+const styles = window.getComputedStyle(element);
+console.log(styles.backgroundColor); // 'rgb(0, 0, 255)'
+```
+
+## Créer et ajouter des éléments
+
+### Créer un élément
+
+```javascript
+// Créer un nouvel élément
+const newDiv = document.createElement('div');
+
+// Ajouter du contenu
+newDiv.textContent = 'Nouvelle div';
+
+// Ajouter des classes
+newDiv.classList.add('card', 'new');
+
+// Ajouter des attributs
+newDiv.setAttribute('data-id', '123');
+
+// Ajouter des styles
+newDiv.style.padding = '20px';
+```
+
+### Insérer dans le DOM
+
+```javascript
+const container = document.querySelector('.container');
+const newElement = document.createElement('p');
+newElement.textContent = 'Nouveau paragraphe';
+
+// Ajouter à la fin
+container.appendChild(newElement);
+
+// Ajouter au début
+container.insertBefore(newElement, container.firstChild);
+
+// Méthodes modernes (plus flexibles)
+container.append(newElement);        // À la fin
+container.prepend(newElement);       // Au début
+container.before(newElement);        // Avant le container
+container.after(newElement);         // Après le container
+
+// Remplacer un élément
+const oldElement = document.querySelector('.old');
+oldElement.replaceWith(newElement);
+```
+
+### Exemple complet : Créer une carte
+
+```javascript
+// Créer une carte produit
+function createProductCard(product) {
+  // Créer les éléments
+  const card = document.createElement('div');
+  const title = document.createElement('h3');
+  const price = document.createElement('p');
+  const button = document.createElement('button');
+
+  // Ajouter le contenu
+  title.textContent = product.name;
+  price.textContent = `${product.price}€`;
+  button.textContent = 'Acheter';
+
+  // Ajouter les classes
+  card.classList.add('product-card');
+  price.classList.add('price');
+  button.classList.add('btn', 'btn-primary');
+
+  // Ajouter des événements
+  button.addEventListener('click', () => {
+    console.log(`Achat de ${product.name}`);
+  });
+
+  // Assembler la structure
+  card.appendChild(title);
+  card.appendChild(price);
+  card.appendChild(button);
+
+  return card;
+}
+
+// Utilisation
+const product = { name: 'Laptop', price: 999 };
+const card = createProductCard(product);
+document.querySelector('.products').appendChild(card);
+```
+
+## Supprimer des éléments
+
+```javascript
+const element = document.querySelector('.to-remove');
+
+// Méthode moderne
+element.remove();
+
+// Méthode ancienne (encore fonctionnelle)
+element.parentNode.removeChild(element);
+
+// Supprimer tous les enfants
+const container = document.querySelector('.container');
+container.innerHTML = ''; // Simple mais perd les event listeners
+
+// Mieux : supprimer un par un
+while (container.firstChild) {
+  container.removeChild(container.firstChild);
+}
+```
+
+## Événements
+
+### Ajouter un écouteur d'événement
+
+```javascript
+const button = document.querySelector('.btn');
+
+// Syntaxe de base
+button.addEventListener('click', function() {
+  console.log('Bouton cliqué !');
+});
+
+// Avec arrow function
+button.addEventListener('click', () => {
+  console.log('Bouton cliqué !');
+});
+
+// Avec une fonction nommée (pour pouvoir la retirer)
+function handleClick() {
+  console.log('Bouton cliqué !');
+}
+button.addEventListener('click', handleClick);
+
+// Retirer l'écouteur
+button.removeEventListener('click', handleClick);
+```
+
+### Événements courants
+
+```javascript
+// Clic
+element.addEventListener('click', (e) => {
+  console.log('Cliqué', e.target);
+});
+
+// Double-clic
+element.addEventListener('dblclick', (e) => {
+  console.log('Double-cliqué');
+});
+
+// Survol
+element.addEventListener('mouseenter', (e) => {
+  console.log('Souris entrée');
+});
+
+element.addEventListener('mouseleave', (e) => {
+  console.log('Souris sortie');
+});
+
+// Saisie dans un input
+input.addEventListener('input', (e) => {
+  console.log('Valeur:', e.target.value);
+});
+
+// Changement (après perte de focus)
+input.addEventListener('change', (e) => {
+  console.log('Changement:', e.target.value);
+});
+
+// Soumission de formulaire
+form.addEventListener('submit', (e) => {
+  e.preventDefault(); // Empêcher le rechargement de la page
+  console.log('Formulaire soumis');
+});
+
+// Pression de touche
+input.addEventListener('keydown', (e) => {
+  console.log('Touche pressée:', e.key);
+  if (e.key === 'Enter') {
+    console.log('Entrée pressée');
+  }
+});
+```
+
+### Objet Event
+
+```javascript
+button.addEventListener('click', (event) => {
+  // L'élément cliqué
+  console.log(event.target);
+
+  // L'élément avec l'écouteur
+  console.log(event.currentTarget);
+
+  // Empêcher le comportement par défaut
+  event.preventDefault();
+
+  // Empêcher la propagation (bubbling)
+  event.stopPropagation();
+
+  // Type d'événement
+  console.log(event.type); // 'click'
+
+  // Position de la souris
+  console.log(event.clientX, event.clientY);
+});
+```
+
+## Traverser le DOM
+
+### Parents, enfants, et frères
+
+```javascript
+const element = document.querySelector('.current');
+
+// Parent
+const parent = element.parentElement;
+const parentNode = element.parentNode; // Même chose généralement
+
+// Enfants
+const children = element.children;          // HTMLCollection
+const firstChild = element.firstElementChild;
+const lastChild = element.lastElementChild;
+const childCount = element.childElementCount;
+
+// Frères et sœurs
+const nextSibling = element.nextElementSibling;
+const prevSibling = element.previousElementSibling;
+
+// Remonter jusqu'à trouver un parent qui match
+const closestSection = element.closest('section');
+const closestCard = element.closest('.card');
+```
+
+### Exemple : Toggle d'un menu
+
+```javascript
+const menuButton = document.querySelector('.menu-toggle');
+const menu = document.querySelector('.menu');
+
+menuButton.addEventListener('click', () => {
+  menu.classList.toggle('open');
+
+  // Changer l'icône du bouton
+  const icon = menuButton.querySelector('.icon');
+  icon.classList.toggle('rotate');
+
+  // Mettre à jour l'attribut aria
+  const isOpen = menu.classList.contains('open');
+  menuButton.setAttribute('aria-expanded', isOpen);
+});
+```
+
+## Data Attributes
+
+Les attributs `data-*` permettent de stocker des données personnalisées sur des éléments HTML.
+
+```html
+<button class="product-btn" data-id="123" data-name="Laptop" data-price="999">
+  Acheter
+</button>
+```
+
+```javascript
+const button = document.querySelector('.product-btn');
+
+// Lire les data attributes
+console.log(button.dataset.id);    // '123'
+console.log(button.dataset.name);  // 'Laptop'
+console.log(button.dataset.price); // '999'
+
+// Modifier
+button.dataset.id = '456';
+
+// Ajouter
+button.dataset.stock = 'available';
+
+// Le HTML devient :
+// <button ... data-stock="available">
+```
+
+<Callout type="tip" title="Usage avec React">
+En React, vous passerez plutôt ces données via les **props**, mais comprendre les data attributes est utile pour l'intégration de bibliothèques tierces.
+</Callout>
+
+## Bonnes pratiques
+
+### 1. Minimiser les accès au DOM
+
+```javascript
+// ❌ Mauvais : accès DOM répétés
+for (let i = 0; i < 100; i++) {
+  document.querySelector('.container').innerHTML += `<p>Item ${i}</p>`;
+}
+
+// ✅ Bon : construire d'abord, insérer une fois
+const container = document.querySelector('.container');
+let html = '';
+for (let i = 0; i < 100; i++) {
+  html += `<p>Item ${i}</p>`;
+}
+container.innerHTML = html;
+
+// ✅ Encore mieux : DocumentFragment
+const container = document.querySelector('.container');
+const fragment = document.createDocumentFragment();
+for (let i = 0; i < 100; i++) {
+  const p = document.createElement('p');
+  p.textContent = `Item ${i}`;
+  fragment.appendChild(p);
+}
+container.appendChild(fragment);
+```
+
+### 2. Délégation d'événements
+
+```javascript
+// ❌ Mauvais : écouteur sur chaque élément
+document.querySelectorAll('.item').forEach(item => {
+  item.addEventListener('click', handleClick);
+});
+
+// ✅ Bon : écouteur sur le parent (délégation)
+document.querySelector('.container').addEventListener('click', (e) => {
+  if (e.target.classList.contains('item')) {
+    handleClick(e);
+  }
+});
+```
+
+### 3. Nettoyer les écouteurs d'événements
+
+```javascript
+function setupButton() {
+  const button = document.querySelector('.btn');
+
+  function handleClick() {
+    console.log('Cliqué');
+  }
+
+  button.addEventListener('click', handleClick);
+
+  // Retourner une fonction de nettoyage
+  return () => {
+    button.removeEventListener('click', handleClick);
+  };
+}
+
+const cleanup = setupButton();
+
+// Plus tard, quand on n'a plus besoin du bouton
+cleanup();
+```
+
+## Conclusion
+
+La manipulation du DOM est puissante mais peut devenir complexe dans de grandes applications. C'est pourquoi des bibliothèques comme **React** existent : elles gèrent le DOM pour vous de manière optimisée et déclarative.
+
+**Quand utiliser la manipulation DOM directe ?**
+- Petits scripts utilitaires
+- Intégration de bibliothèques tierces
+- Projets JavaScript vanilla simples
+
+**Quand utiliser React ?**
+- Applications interactives complexes
+- Interfaces avec beaucoup de mises à jour dynamiques
+- Projets nécessitant une architecture maintenable
+
+<Callout type="success" title="Pour aller plus loin">
+**Ressources recommandées :**
+- [MDN - Introduction au DOM](https://developer.mozilla.org/fr/docs/Web/API/Document_Object_Model)
+- [MDN - Document API](https://developer.mozilla.org/fr/docs/Web/API/Document)
+- [MDN - Element API](https://developer.mozilla.org/fr/docs/Web/API/Element)
+</Callout>

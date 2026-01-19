@@ -86,23 +86,7 @@ console.log(`Utilisateur: ${getName()}`);
 
 ### Strings multi-lignes
 
-```javascript
-// ❌ Ancien style (difficile à lire)
-const html1 = '<div>\n' +
-              '  <h1>Titre</h1>\n' +
-              '  <p>Contenu</p>\n' +
-              '</div>';
-
-// ✅ Style moderne (template literals)
-const html2 = `
-  <div>
-    <h1>Titre</h1>
-    <p>Contenu</p>
-  </div>
-`;
-```
-
-### Email avec interpolation
+Les template literals permettent d'écrire des strings sur plusieurs lignes sans échappement.
 
 ```javascript
 const user = {
@@ -110,7 +94,7 @@ const user = {
   email: 'alice@example.com'
 };
 
-const emailContent = `
+const message = `
 Bonjour ${user.name},
 
 Votre compte a été créé avec succès.
@@ -123,12 +107,54 @@ Cordialement,
 L'équipe
 `;
 
-console.log(emailContent);
+console.log(message);
 ```
+
+<QuickCheck
+  question="Quelle est la syntaxe moderne pour insérer des variables dans une chaîne de caractères ?"
+  options={[
+    '"Hello " + name + "!"',
+    '"Hello ${name}!"',
+    '`Hello ${name}!`',
+    '"Hello " . name . "!"'
+  ]}
+  correctAnswer={2}
+  explanation="Les template literals utilisent des backticks (`) et la syntaxe ${variable} pour l'interpolation. C'est la méthode moderne et recommandée en JavaScript. Les guillemets simples ou doubles ne permettent pas l'interpolation, uniquement la concaténation avec +."
+/>
 
 ## Méthodes de strings
 
 JavaScript fournit de nombreuses méthodes pour manipuler les strings.
+
+<Callout type="tip" title="Pas besoin de tout mémoriser !">
+Vous n'avez pas besoin d'apprendre toutes ces méthodes par cœur. **L'important est de savoir qu'elles existent.**
+
+Quand vous avez besoin de manipuler un string (découper, transformer en majuscules, chercher un mot, etc.), demandez-vous : "Cette opération existe-t-elle déjà ?". La réponse est presque toujours **oui** !
+
+Consultez la documentation (MDN) ou demandez à l'IA plutôt que de recoder une fonction qui existe déjà.
+</Callout>
+
+<Callout type="warning" title="Les strings sont immuables">
+**Important :** En JavaScript, les strings sont **immuables** - elles ne peuvent pas être modifiées.
+
+```javascript
+const text = 'Hello';
+
+// ❌ Ceci ne fonctionne PAS (pas d'erreur, mais n'a aucun effet)
+text[0] = 'J';
+console.log(text); // Toujours "Hello"
+
+// ✅ Pour "modifier" un string, créez-en un nouveau
+const newText = 'J' + text.slice(1);
+console.log(newText); // "Jello"
+
+// ✅ Ou utilisez les méthodes qui retournent une nouvelle string
+const replaced = text.replace('H', 'J');
+console.log(replaced); // "Jello"
+```
+
+**Toutes les méthodes de string retournent une nouvelle string** sans modifier l'originale.
+</Callout>
 
 ### Longueur
 
@@ -206,6 +232,18 @@ console.log(text.trimStart()); // "Hello World  "
 console.log(text.trimEnd()); // "  Hello World"
 ```
 
+<QuickCheck
+  question="Que se passe-t-il avec ce code : const str = 'Hello'; str[0] = 'J'; ?"
+  options={[
+    "str devient 'Jello'",
+    "Une erreur TypeError est levée",
+    "Rien, str reste 'Hello' car les strings sont immuables",
+    "str devient undefined"
+  ]}
+  correctAnswer={2}
+  explanation="Les strings sont immuables en JavaScript. Tenter de modifier un caractère avec str[0] = 'X' n'a aucun effet et ne génère pas d'erreur. Pour créer une nouvelle string avec un changement, utilisez des méthodes comme replace(), slice(), ou la concaténation."
+/>
+
 ## Cas d'usage pratiques
 
 ### URL dynamique
@@ -242,33 +280,17 @@ if (errors.length > 0) {
 }
 ```
 
-<Callout type="info" title="En React">
-Les template literals sont essentiels en React pour :
-
-**1. Classes CSS dynamiques :**
-```javascript
-const Button = ({ variant, isActive }) => (
-  <button className={`btn btn-${variant} ${isActive ? 'active' : ''}`}>
-    Click
-  </button>
-);
-```
-
-**2. URLs dynamiques :**
-```javascript
-const fetchUser = async (id) => {
-  const response = await fetch(`/api/users/${id}`);
-  return response.json();
-};
-```
-
-**3. Messages conditionnels :**
-```javascript
-const Message = ({ count }) => (
-  <p>{`Vous avez ${count} message${count > 1 ? 's' : ''}`}</p>
-);
-```
-</Callout>
+<QuickCheck
+  question="Que retourne : '5' + 3 + 2 ?"
+  options={[
+    '10',
+    '"532"',
+    '"10"',
+    'NaN'
+  ]}
+  correctAnswer={1}
+  explanation="L'opérateur + est évalué de gauche à droite. '5' + 3 donne '53' (string), puis '53' + 2 donne '532' (string). Dès qu'un string est impliqué avec +, JavaScript fait de la concaténation. Pour éviter ça, utilisez des template literals : `${5 + 3 + 2}` qui donne '10'."
+/>
 
 ## Exercice rapide
 

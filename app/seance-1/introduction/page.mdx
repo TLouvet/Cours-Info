@@ -1,83 +1,71 @@
-# Introduction - Séance 1
+# Introduction aux bases JavaScript - Séance 1
 
-Bienvenue dans le cours **R4A10 - Compléments Web** ! Cette première séance pose les fondations nécessaires pour maîtriser le développement frontend avec React.
+Bienvenue dans le cours **R4A10 - Compléments Web** ! Cette première séance pose les fondations essentielles pour maîtriser React. Avant de plonger dans React, vous devez comprendre le langage sur lequel il est construit : **JavaScript moderne**.
+
+## Pourquoi JavaScript avant React ?
+
+React est une **bibliothèque JavaScript**. Tout ce que vous écrirez en React sera du JavaScript déguisé. Comprendre JavaScript, c'est comprendre React.
+
+```jsx
+// Ce code React...
+function Welcome({ name }) {
+  return <h1>Bonjour {name} !</h1>;
+}
+
+// ...n'est que du JavaScript moderne
+const Welcome = ({ name }) => {
+  return React.createElement('h1', null, `Bonjour ${name} !`);
+};
+```
+
+<Callout type="info" title="Ce que vous allez apprendre">
+À la fin de cette séance, vous serez capable de :
+
+- Comprendre les fondamentaux du web (HTML, CSS, DOM)
+- Utiliser la syntaxe JavaScript moderne (ES6+)
+- Manipuler des tableaux avec `.map()`, `.filter()`, `.reduce()`
+- Maîtriser la destructuration et le spread operator
+- Écrire du code asynchrone avec les Promises
+- Utiliser les modules ES6
+- Collaborer efficacement avec l'IA pour coder
+</Callout>
 
 ## Présentation du cours
 
-Ce cours se compose de **5 séances de 3h30 each**, progressant du JavaScript fondamental aux concepts avancés de React.
+Ce cours se compose de **5 séances de 3h30**, progressant du JavaScript fondamental aux concepts avancés de React.
 
-### Plan des séances
+**Plan des séances :**
 
 1. **Séance 1 - Bases JavaScript** (cette séance)
    - Rappels HTML/CSS/DOM
    - JavaScript moderne ES6+
 
-2. **Séance 2 - Introduction à React**
+2. **Séance 2 - React Fundamentals**
    - JSX, Composants, Props
-   - Structure de projet
+   - Listes et rendu conditionnel
 
-3. **Séance 3 - useState**
-   - Gestion d'état
-   - Événements et rendu conditionnel
+3. **Séance 3 - Interactivité & Formulaires**
+   - useState, événements
+   - Formulaires contrôlés et validation
 
-4. **Séance 4 - useEffect**
-   - Cycle de vie des composants
-   - Appels API et async/await
+4. **Séance 4 - Effects & Routing**
+   - useEffect, data fetching
+   - React Router
 
-5. **Séance 5 - Architecture**
-   - Bonnes pratiques
-   - Structure de projet
-   - Révisions
+5. **Séance 5 - Projet & IA**
+   - Workflow IA
+   - Best practices et déploiement
 
-## Règles du cours
+<Callout type="tip" title="JavaScript moderne = React facilité">
+**Plus vous maîtrisez JavaScript, plus React sera simple.**
 
-<Callout type="warning" title="Important">
-Voici les règles à respecter durant ce cours :
-</Callout>
-
-### Présence et ponctualité
-
-- **1 cours = 1 TP noté** à rendre
-- Retard de plus de 20 minutes = absence
-- Tolérance le matin en cas de problème de transport
-- Absences doivent être justifiées
-
-### Travail et évaluation
-
-- **Plagiat = note divisée par le nombre de personnes concernées**
-- L'IA est **autorisée** sur les TPs, mais attention aux erreurs !
-- Travaillez de manière autonome et comprenez le code que vous soumettez
-
-### Outils recommandés
-
-**Éditeur de code :** VSCode (recommandé)
-- Mais vous pouvez utiliser celui que vous préférez
-- Extensions utiles : ESLint, Prettier, ES7+ React snippets
-
-## Objectifs de cette séance
-
-<Callout type="info" title="Ce que vous allez apprendre">
-À la fin de cette séance, vous serez capable de :
-
-- Comprendre les fondamentaux du web (HTML, CSS, JavaScript)
-- Utiliser la syntaxe JavaScript moderne (ES6+)
-- Manipuler des tableaux et objets efficacement
-- Écrire du code compatible avec React
-- Collaborer efficacement avec l'IA pour coder
-</Callout>
-
-## Pourquoi JavaScript moderne ?
-
-<Callout type="tip" title="L'importance des bases">
-**Connaître les concepts JS = mieux collaborer avec l'IA**
-
-Cette année, l'IA peut vous aider à coder. Mais sans comprendre les fondamentaux, vous ne pourrez pas :
-- Valider le code généré
-- Déboguer les erreurs
-- Donner des prompts précis
+Cette séance vous donne les outils pour :
+- Lire et comprendre du code React
+- Déboguer efficacement vos applications
+- Collaborer avec l'IA en donnant des prompts précis
 - Adapter les solutions à vos besoins
 
-L'objectif : vous pilotez, l'IA exécute !
+**L'objectif : vous pilotez, l'IA exécute !**
 </Callout>
 
 ## Ressources

@@ -1,6 +1,6 @@
 # Tableaux (Arrays)
 
-Les tableaux sont des collections ordonnées d'éléments. En React, vous les utiliserez constamment !
+Les tableaux sont des collections ordonnées d'éléments, essentielles en JavaScript pour manipuler des listes de données.
 
 ## Création et accès
 
@@ -36,9 +36,33 @@ numbers.indexOf(2); // 1
 Array.isArray(numbers); // true
 ```
 
-## Méthodes essentielles pour React ⭐
+<QuickCheck
+  question="Que retourne fruits[fruits.length - 1] si fruits = ['pomme', 'banane', 'orange'] ?"
+  options={[
+    "'pomme'",
+    "'orange'",
+    "undefined",
+    "3"
+  ]}
+  correctAnswer={1}
+  explanation="fruits.length est 3, donc fruits[3 - 1] = fruits[2] = 'orange'. C'est une astuce courante pour accéder au dernier élément d'un tableau."
+/>
 
-Ces méthodes sont **cruciales** pour React car elles créent de nouveaux tableaux sans modifier l'original (immutabilité).
+## Méthodes de transformation
+
+Ces méthodes sont **essentielles** en JavaScript moderne car elles créent de nouveaux tableaux sans modifier l'original (immutabilité).
+
+<Callout type="info" title="Pourquoi l'immutabilité ?">
+Les méthodes comme `.map()`, `.filter()`, `.reduce()` ne modifient jamais le tableau original. Elles en créent un nouveau.
+
+**Avantages :**
+- Code plus prévisible et facile à déboguer
+- Évite les effets de bord (side effects)
+- Facilite le suivi des changements de données
+- Indispensable pour les frameworks modernes (React, Vue, etc.)
+
+En JavaScript moderne, **privilégiez toujours les méthodes immutables**.
+</Callout>
 
 ### .map() - Transformer
 
@@ -49,23 +73,28 @@ const numbers = [1, 2, 3];
 const doubled = numbers.map(n => n * 2);
 console.log(doubled); // [2, 4, 6]
 console.log(numbers); // [1, 2, 3] (inchangé)
+
+// Exemple avec des objets
+const users = [
+  { name: 'Alice', age: 25 },
+  { name: 'Bob', age: 30 }
+];
+
+const names = users.map(user => user.name);
+console.log(names); // ['Alice', 'Bob']
 ```
 
-<Callout type="info" title="En React">
-`.map()` est **partout** en React pour afficher des listes !
-
-```javascript
-const users = ['Alice', 'Bob', 'Charlie'];
-
-return (
-  <ul>
-    {users.map(user => (
-      <li key={user}>{user}</li>
-    ))}
-  </ul>
-);
-```
-</Callout>
+<QuickCheck
+  question="Que retourne [1, 2, 3].map(n => n * n) ?"
+  options={[
+    "[1, 2, 3]",
+    "[2, 4, 6]",
+    "[1, 4, 9]",
+    "[3, 6, 9]"
+  ]}
+  correctAnswer={2}
+  explanation=".map(n => n * n) multiplie chaque nombre par lui-même (carré), donc 1*1=1, 2*2=4, 3*3=9. Le résultat est [1, 4, 9]."
+/>
 
 ### .filter() - Filtrer
 
@@ -75,7 +104,30 @@ Garde seulement les éléments qui passent le test.
 const numbers = [1, 2, 3, 4, 5];
 const evens = numbers.filter(n => n % 2 === 0);
 console.log(evens); // [2, 4]
+
+// Exemple avec des objets
+const products = [
+  { name: 'Laptop', price: 1000 },
+  { name: 'Mouse', price: 25 },
+  { name: 'Keyboard', price: 75 }
+];
+
+const affordable = products.filter(p => p.price < 100);
+console.log(affordable);
+// [{ name: 'Mouse', price: 25 }, { name: 'Keyboard', price: 75 }]
 ```
+
+<QuickCheck
+  question="Quelle différence entre .map() et .filter() ?"
+  options={[
+    ".map() retourne toujours le même nombre d'éléments, .filter() peut en retourner moins",
+    ".map() retourne un boolean, .filter() retourne un tableau",
+    ".filter() transforme les éléments, .map() les supprime",
+    "Aucune différence, ce sont des alias"
+  ]}
+  correctAnswer={0}
+  explanation=".map() transforme chaque élément et retourne un tableau de même taille. .filter() garde uniquement les éléments qui passent le test, donc peut retourner un tableau plus petit."
+/>
 
 ### .find() - Premier match
 
@@ -105,12 +157,99 @@ numbers.every(n => n > 0); // true
 
 ### .reduce() - Accumuler
 
+Réduit un tableau à une seule valeur en accumulant les résultats.
+
 ```javascript
 const numbers = [1, 2, 3, 4];
 
+// Somme : 0 + 1 + 2 + 3 + 4 = 10
 const sum = numbers.reduce((acc, n) => acc + n, 0);
 console.log(sum); // 10
+
+// Produit : 1 * 1 * 2 * 3 * 4 = 24
+const product = numbers.reduce((acc, n) => acc * n, 1);
+console.log(product); // 24
+
+// Exemple avancé : compter les occurrences
+const fruits = ['pomme', 'banane', 'pomme', 'orange', 'banane', 'pomme'];
+const count = fruits.reduce((acc, fruit) => {
+  acc[fruit] = (acc[fruit] || 0) + 1;
+  return acc;
+}, {});
+console.log(count);
+// { pomme: 3, banane: 2, orange: 1 }
 ```
+
+<Callout type="tip">
+`.reduce()` est puissant mais peut sembler complexe au début. C'est normal ! Concentrez-vous d'abord sur `.map()` et `.filter()`, vous maîtriserez `.reduce()` avec la pratique.
+</Callout>
+
+<QuickCheck
+  question="Que fait le deuxième paramètre de .reduce() ?"
+  options={[
+    "Il définit le nombre d'itérations",
+    "Il définit la valeur initiale de l'accumulateur",
+    "Il filtre les éléments avant de les réduire",
+    "Il définit le type de retour"
+  ]}
+  correctAnswer={1}
+  explanation="Le deuxième paramètre (0 dans reduce((acc, n) => acc + n, 0)) est la valeur initiale de l'accumulateur. Sans cette valeur, reduce() utilise le premier élément du tableau comme valeur initiale."
+/>
+
+<Callout type="tip" title="Comprendre, pas mémoriser">
+**Vous n'avez pas besoin de mémoriser toutes ces méthodes !**
+
+L'important est de comprendre les concepts :
+- `.map()` → transformer
+- `.filter()` → filtrer
+- `.find()` → chercher
+- `.reduce()` → accumuler
+
+Avec la pratique, ces méthodes deviendront naturelles. Consultez la documentation (MDN) quand vous avez besoin d'un rappel sur la syntaxe.
+</Callout>
+
+## Opérations immutables
+
+Pour copier ou modifier des tableaux sans mutation, utilisez ces techniques :
+
+```javascript
+const original = [1, 2, 3];
+
+// Copier un tableau
+const copy1 = original.slice(); // Méthode classique
+const copy2 = [...original]; // Spread operator (moderne)
+
+// Ajouter des éléments (sans push)
+const withFour = [...original, 4]; // [1, 2, 3, 4]
+const withZero = [0, ...original]; // [0, 1, 2, 3]
+
+// Combiner des tableaux (sans mutation)
+const arr1 = [1, 2];
+const arr2 = [3, 4];
+const combined = [...arr1, ...arr2]; // [1, 2, 3, 4]
+// Ou : arr1.concat(arr2)
+
+// Retirer un élément par index
+const numbers = [1, 2, 3, 4, 5];
+const index = 2;
+const withoutIndex = [
+  ...numbers.slice(0, index),
+  ...numbers.slice(index + 1)
+];
+console.log(withoutIndex); // [1, 2, 4, 5]
+```
+
+<QuickCheck
+  question="Quelle est la différence entre [1, 2, 3].push(4) et [...[1, 2, 3], 4] ?"
+  options={[
+    "Aucune différence",
+    ".push() modifie le tableau original, [...array, 4] crée un nouveau tableau",
+    ".push() crée un nouveau tableau, [...array, 4] modifie l'original",
+    ".push() est plus moderne que le spread operator"
+  ]}
+  correctAnswer={1}
+  explanation=".push() est une méthode mutante qui modifie le tableau original et retourne la nouvelle longueur. Le spread operator [...array, 4] crée un NOUVEAU tableau sans toucher à l'original. En JavaScript moderne, privilégiez les opérations immutables."
+/>
 
 <Exercise
   title="Pratique : Méthodes de tableaux"
@@ -150,24 +289,85 @@ Avec ce tableau de produits :
 **Astuce :** Utilisez `.map()`, `.filter()` et `.reduce()`
 </Exercise>
 
+
 ## Tableau de syntaxe
 
-<div className="overflow-x-auto">
+<table className="w-full">
+  <thead>
+    <tr className="border-b-2 border-gray-300 dark:border-gray-600">
+      <th className="text-left">Méthode</th>
+      <th className="text-left">Usage</th>
+      <th className="text-left">Retourne</th>
+      <th className="text-left">Mutable ?</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><code>.map()</code></td>
+      <td>Transformer chaque élément</td>
+      <td>Nouveau tableau</td>
+      <td>❌ Non</td>
+    </tr>
+    <tr>
+      <td><code>.filter()</code></td>
+      <td>Filtrer des éléments</td>
+      <td>Nouveau tableau</td>
+      <td>❌ Non</td>
+    </tr>
+    <tr>
+      <td><code>.find()</code></td>
+      <td>Trouver un élément</td>
+      <td>Élément ou undefined</td>
+      <td>❌ Non</td>
+    </tr>
+    <tr>
+      <td><code>.some()</code></td>
+      <td>Tester au moins un</td>
+      <td>boolean</td>
+      <td>❌ Non</td>
+    </tr>
+    <tr>
+      <td><code>.every()</code></td>
+      <td>Tester tous</td>
+      <td>boolean</td>
+      <td>❌ Non</td>
+    </tr>
+    <tr>
+      <td><code>.reduce()</code></td>
+      <td>Accumuler/réduire</td>
+      <td>Une valeur</td>
+      <td>❌ Non</td>
+    </tr>
+    <tr>
+      <td><code>.slice()</code></td>
+      <td>Copier/extraire</td>
+      <td>Nouveau tableau</td>
+      <td>❌ Non</td>
+    </tr>
+    <tr>
+      <td><code>[...array]</code></td>
+      <td>Copier (spread)</td>
+      <td>Nouveau tableau</td>
+      <td>❌ Non</td>
+    </tr>
+    <tr>
+      <td><code>.push()</code></td>
+      <td>Ajouter à la fin</td>
+      <td>Nouvelle longueur</td>
+      <td>✅ Oui</td>
+    </tr>
+    <tr>
+      <td><code>.pop()</code></td>
+      <td>Retirer le dernier</td>
+      <td>Élément retiré</td>
+      <td>✅ Oui</td>
+    </tr>
+  </tbody>
+</table>
 
-| Méthode | Usage | Retourne | Mutable ? |
-|---------|-------|----------|-----------|
-| `.map()` | Transformer chaque élément | Nouveau tableau | ❌ Non |
-| `.filter()` | Filtrer des éléments | Nouveau tableau | ❌ Non |
-| `.find()` | Trouver un élément | Élément ou undefined | ❌ Non |
-| `.some()` | Tester au moins un | boolean | ❌ Non |
-| `.every()` | Tester tous | boolean | ❌ Non |
-| `.reduce()` | Accumuler/réduire | Une valeur | ❌ Non |
-| `.push()` | Ajouter à la fin | Nouvelle longueur | ✅ Oui |
-| `.pop()` | Retirer le dernier | Élément retiré | ✅ Oui |
+<Callout type="success" title="Bonne pratique">
+**Privilégiez toujours les méthodes immutables** (`.map()`, `.filter()`, `.slice()`, spread operator) plutôt que les méthodes mutantes (`.push()`, `.pop()`, `.splice()`).
 
-</div>
-
-<Callout type="warning">
-En React, **privilégiez les méthodes immutables** (`.map()`, `.filter()`, etc.) au lieu de `.push()` ou `.pop()` qui modifient le tableau original.
+Votre code sera plus prévisible, plus facile à déboguer, et compatible avec les pratiques modernes de JavaScript.
 </Callout>
 

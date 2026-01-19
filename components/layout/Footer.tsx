@@ -101,7 +101,7 @@ export default function Footer() {
         <div className="mt-8 pt-6 border-t border-gray-200 dark:border-gray-700">
           <div className="flex flex-col sm:flex-row justify-between items-center gap-4">
             <p className="text-xs text-gray-600 dark:text-gray-400">
-              © {new Date().getFullYear()} IUT Paris 8 - R4A10 Compléments Web
+              © {new Date().getFullYear()} Thomas Louvet - Supports de cours pour IUT Paris 8
             </p>
             <p className="text-xs text-gray-600 dark:text-gray-400">
               Usage éducatif uniquement

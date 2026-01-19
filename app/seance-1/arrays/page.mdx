@@ -50,7 +50,7 @@ Array.isArray(numbers); // true
 
 ## Méthodes de transformation
 
-Ces méthodes sont **essentielles** en JavaScript moderne car elles créent de nouveaux tableaux sans modifier l'original (immutabilité).
+Ces méthodes sont **essentielles** en JavaScript car elles créent de nouveaux tableaux sans modifier l'original (immutabilité).
 
 <Callout type="info" title="Pourquoi l'immutabilité ?">
 Les méthodes comme `.map()`, `.filter()`, `.reduce()` ne modifient jamais le tableau original. Elles en créent un nouveau.
@@ -59,9 +59,9 @@ Les méthodes comme `.map()`, `.filter()`, `.reduce()` ne modifient jamais le ta
 - Code plus prévisible et facile à déboguer
 - Évite les effets de bord (side effects)
 - Facilite le suivi des changements de données
-- Indispensable pour les frameworks modernes (React, Vue, etc.)
+- Bonne pratique pour les applications web
 
-En JavaScript moderne, **privilégiez toujours les méthodes immutables**.
+**Privilégiez toujours les méthodes immutables**.
 </Callout>
 
 ### .map() - Transformer
@@ -217,7 +217,7 @@ const original = [1, 2, 3];
 
 // Copier un tableau
 const copy1 = original.slice(); // Méthode classique
-const copy2 = [...original]; // Spread operator (moderne)
+const copy2 = [...original]; // Spread operator
 
 // Ajouter des éléments (sans push)
 const withFour = [...original, 4]; // [1, 2, 3, 4]
@@ -248,7 +248,7 @@ console.log(withoutIndex); // [1, 2, 4, 5]
     ".push() est plus moderne que le spread operator"
   ]}
   correctAnswer={1}
-  explanation=".push() est une méthode mutante qui modifie le tableau original et retourne la nouvelle longueur. Le spread operator [...array, 4] crée un NOUVEAU tableau sans toucher à l'original. En JavaScript moderne, privilégiez les opérations immutables."
+  explanation=".push() est une méthode mutante qui modifie le tableau original et retourne la nouvelle longueur. Le spread operator [...array, 4] crée un NOUVEAU tableau sans toucher à l'original. Privilégiez les opérations immutables."
 />
 
 <Exercise
@@ -368,6 +368,6 @@ Avec ce tableau de produits :
 <Callout type="success" title="Bonne pratique">
 **Privilégiez toujours les méthodes immutables** (`.map()`, `.filter()`, `.slice()`, spread operator) plutôt que les méthodes mutantes (`.push()`, `.pop()`, `.splice()`).
 
-Votre code sera plus prévisible, plus facile à déboguer, et compatible avec les pratiques modernes de JavaScript.
+Votre code sera plus prévisible, plus facile à déboguer, et maintenable.
 </Callout>
 

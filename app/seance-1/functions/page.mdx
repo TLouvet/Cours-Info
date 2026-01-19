@@ -52,17 +52,15 @@ En pratique, **écrivez vos fonctions avant de les utiliser** pour éviter toute
 
 ## Arrow Functions
 
-**La syntaxe moderne en JavaScript !**
-
-Les arrow functions offrent une syntaxe plus concise pour déclarer des fonctions.
+Les arrow functions offrent une syntaxe plus concise pour déclarer des fonctions. Elles sont particulièrement pratiques pour les **one-liners** grâce au **return implicite**.
 
 ```javascript
-// Syntaxe complète
+// Syntaxe complète avec accolades
 const add = (a, b) => {
   return a + b;
 };
 
-// Return implicite (une seule expression)
+// Return implicite : parfait pour les one-liners !
 const add = (a, b) => a + b;
 
 // Un seul paramètre : parenthèses optionnelles
@@ -83,38 +81,6 @@ const hello = () => 'Hello!';
   correctAnswer={0}
   explanation="Sans accolades, le return est implicite. Les accolades nécessitent un return explicite."
 />
-
-### Quand NE PAS utiliser les arrow functions
-
-Bien que les arrow functions soient la syntaxe moderne recommandée, elles ont quelques limitations :
-
-```javascript
-// ❌ Ne peuvent pas être utilisées comme constructeurs
-const Person = (name) => {
-  this.name = name; // Ne fonctionne pas
-};
-// const p = new Person('Alice'); // TypeError
-
-// ✅ Utilisez une fonction classique pour les constructeurs
-function Person(name) {
-  this.name = name;
-}
-
-// ❌ Pas d'objet arguments
-const sum = () => {
-  console.log(arguments); // ReferenceError
-};
-
-// ✅ Fonction classique si vous avez besoin d'arguments
-function sum() {
-  console.log(arguments); // [1, 2, 3]
-}
-sum(1, 2, 3);
-```
-
-<Callout type="info">
-En pratique, ces limitations sont rarement un problème. **Les arrow functions restent le choix par défaut** pour la plupart des cas d'usage en JavaScript moderne.
-</Callout>
 
 ## Paramètres par défaut
 
@@ -169,7 +135,7 @@ Les paramètres par défaut rendent vos fonctions plus robustes et évitent les 
 <Callout type="tip" title="Comprendre, pas mémoriser">
 Vous n'avez pas besoin de tout mémoriser sur les fonctions. **L'important est de comprendre les concepts** :
 
-- Les arrow functions sont la syntaxe moderne à privilégier
+- Les arrow functions offrent une syntaxe concise
 - Les callbacks sont des fonctions passées en argument
 - Les paramètres par défaut évitent les valeurs undefined
 

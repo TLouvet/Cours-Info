@@ -1,6 +1,6 @@
 # Objets
 
-Les objets sont des collections de paires clé-valeur. En React, les props et le state sont des objets !
+Les objets sont des collections de paires clé-valeur, essentiels pour structurer et organiser les données en JavaScript.
 
 ## Création et accès
 
@@ -24,6 +24,18 @@ user.age = 26;
 user.city = 'Paris';
 ```
 
+<QuickCheck
+  question="Quand devez-vous utiliser la notation crochet (user['key']) plutôt que la notation point (user.key) ?"
+  options={[
+    "Toujours, c'est plus moderne",
+    "Quand la clé contient des espaces ou des caractères spéciaux, ou quand la clé est une variable",
+    "Uniquement pour les objets imbriqués",
+    "Jamais, la notation point est toujours préférable"
+  ]}
+  correctAnswer={1}
+  explanation="La notation crochet est nécessaire quand : (1) la clé contient des espaces ou caractères spéciaux (user['first name']), (2) la clé est stockée dans une variable (user[key]), ou (3) la clé est calculée dynamiquement. Sinon, préférez la notation point pour la lisibilité."
+/>
+
 ## Méthodes utiles
 
 ```javascript
@@ -40,19 +52,21 @@ Object.entries(user);
 // [['name', 'Alice'], ['age', 25]]
 ```
 
-<Callout type="info" title="En React">
-Les **props** et le **state** sont des objets ! Vous les manipulerez constamment.
-
-```javascript
-// Props d'un composant
-const UserCard = ({ name, age, email }) => {
-  return <div>{name} - {age} ans</div>;
-};
-
-// State (Séance 3)
-const [user, setUser] = useState({ name: 'Alice', age: 25 });
-```
+<Callout type="tip">
+Ces méthodes sont très utiles pour itérer sur des objets, convertir des objets en tableaux, ou créer des listes dynamiques à partir de données structurées.
 </Callout>
+
+<QuickCheck
+  question="Que retourne Object.keys({ name: 'Alice', age: 25, city: 'Paris' }) ?"
+  options={[
+    "['Alice', 25, 'Paris']",
+    "['name', 'age', 'city']",
+    "[['name', 'Alice'], ['age', 25], ['city', 'Paris']]",
+    "3"
+  ]}
+  correctAnswer={1}
+  explanation="Object.keys() retourne un tableau contenant uniquement les CLÉS de l'objet, pas les valeurs. Pour les valeurs, utilisez Object.values(). Pour les paires clé-valeur, utilisez Object.entries()."
+/>
 
 ## Objets imbriqués
 
@@ -70,6 +84,47 @@ const user = {
 console.log(user.address.city); // 'Paris'
 console.log(user.hobbies[0]); // 'lecture'
 ```
+
+### Optional Chaining (?.)
+
+Accédez en toute sécurité aux propriétés imbriquées sans risquer une erreur si une propriété n'existe pas.
+
+```javascript
+const user1 = {
+  name: 'Alice',
+  address: { city: 'Paris' }
+};
+
+const user2 = {
+  name: 'Bob'
+  // Pas d'address
+};
+
+// ❌ Sans optional chaining : erreur si address n'existe pas
+console.log(user2.address.city); // TypeError: Cannot read property 'city' of undefined
+
+// ✅ Avec optional chaining : retourne undefined
+console.log(user2?.address?.city); // undefined (pas d'erreur)
+
+// Avec valeur par défaut
+console.log(user2?.address?.city ?? 'Ville inconnue'); // 'Ville inconnue'
+```
+
+<Callout type="tip">
+L'optional chaining (`?.`) est très utile quand vous travaillez avec des données provenant d'APIs ou de formulaires, où certaines propriétés peuvent être absentes.
+</Callout>
+
+<QuickCheck
+  question="Que se passe-t-il avec : const user = { name: 'Alice' }; console.log(user?.address?.city); ?"
+  options={[
+    "TypeError: Cannot read property 'city' of undefined",
+    "undefined",
+    "null",
+    "'city'"
+  ]}
+  correctAnswer={1}
+  explanation="L'optional chaining (?.) retourne undefined si la propriété n'existe pas, au lieu de lever une erreur. C'est une façon sûre d'accéder aux propriétés imbriquées qui peuvent ne pas exister."
+/>
 
 ## Propriétés calculées
 
@@ -122,8 +177,8 @@ const calculator = {
 calculator.add(5).multiply(2).getValue(); // 10
 ```
 
-<Callout type="tip">
-En React, vous utiliserez rarement `this` car nous travaillons avec des composants fonctionnels plutôt que des classes.
+<Callout type="info">
+Les méthodes avec `this` sont moins courantes aujourd'hui. On préfère souvent des fonctions pures et des objets de données simples. Cependant, `this` reste utile pour comprendre comment fonctionnent les objets et les classes.
 </Callout>
 
 ## Vérifier l'existence d'une propriété
@@ -160,6 +215,18 @@ console.log(copy1); // { name: 'Alice', age: 25 }
 console.log(copy2); // { name: 'Alice', age: 25 }
 ```
 
+<Callout type="tip" title="Comprendre, pas mémoriser">
+**Vous n'avez pas besoin de mémoriser toutes les méthodes d'objet !**
+
+L'important est de comprendre les concepts :
+- Objets = collections clé-valeur
+- Spread operator (`...`) pour copier/fusionner
+- `Object.keys/values/entries` pour itérer
+- Optional chaining (`?.`) pour accès sûr
+
+Avec la pratique, ces patterns deviendront naturels. Consultez la documentation (MDN) quand vous avez besoin d'un rappel.
+</Callout>
+
 <Callout type="warning">
 Ces méthodes font une **copie superficielle** (shallow copy). Les objets imbriqués sont toujours partagés par référence !
 
@@ -175,4 +242,105 @@ copy.address.city = 'Lyon';
 console.log(user.address.city); // 'Lyon' (modifié aussi!)
 ```
 </Callout>
+
+<QuickCheck
+  question="Pourquoi user.address.city est-il modifié dans l'exemple ci-dessus ?"
+  options={[
+    "Le spread operator ne fonctionne pas correctement",
+    "La shallow copy ne copie que le premier niveau, les objets imbriqués sont partagés par référence",
+    "C'est un bug de JavaScript",
+    "Il faut utiliser Object.assign à la place"
+  ]}
+  correctAnswer={1}
+  explanation="Le spread operator fait une copie superficielle (shallow copy) : il copie uniquement le premier niveau de propriétés. Les objets imbriqués (comme address) restent partagés par référence entre l'original et la copie. Pour une copie complète, utilisez structuredClone() ou JSON.parse(JSON.stringify(obj))."
+/>
+
+## Manipulation immutable d'objets
+
+Comme pour les tableaux, privilégiez les opérations immutables qui créent de nouveaux objets.
+
+```javascript
+const user = { name: 'Alice', age: 25, city: 'Paris' };
+
+// Ajouter/modifier une propriété (immutable)
+const updatedUser = { ...user, age: 26, country: 'France' };
+console.log(updatedUser);
+// { name: 'Alice', age: 26, city: 'Paris', country: 'France' }
+
+// Retirer une propriété (immutable)
+const { city, ...userWithoutCity } = user;
+console.log(userWithoutCity);
+// { name: 'Alice', age: 25 }
+
+// Fusionner des objets
+const info1 = { name: 'Alice', age: 25 };
+const info2 = { email: 'alice@example.com', age: 26 };
+const merged = { ...info1, ...info2 };
+console.log(merged);
+// { name: 'Alice', age: 26, email: 'alice@example.com' }
+// Note: age de info2 écrase age de info1
+```
+
+<Callout type="success" title="Bonne pratique">
+**Privilégiez toujours les opérations immutables** avec le spread operator plutôt que de modifier directement les objets.
+
+Votre code sera plus prévisible, plus facile à déboguer, et maintenable.
+</Callout>
+
+## Exercice rapide
+
+<Exercise
+  title="Manipulation d'objets"
+  difficulty="easy"
+  solution={
+    <CodeBlock language="javascript">{`const product = {
+  name: 'Laptop',
+  price: 1000,
+  specs: {
+    ram: '16GB',
+    cpu: 'i7'
+  }
+};
+
+// 1. Copier et modifier le prix
+const discountedProduct = { ...product, price: 850 };
+console.log(discountedProduct);
+// { name: 'Laptop', price: 850, specs: { ram: '16GB', cpu: 'i7' } }
+
+// 2. Ajouter stock et category
+const fullProduct = {
+  ...product,
+  stock: 50,
+  category: 'Electronics'
+};
+console.log(fullProduct);
+// { name: 'Laptop', price: 1000, specs: {...}, stock: 50, category: 'Electronics' }
+
+// 3. Extraire toutes les clés
+const keys = Object.keys(product);
+console.log(keys); // ['name', 'price', 'specs']
+
+// 4. Accès sûr à la propriété storage
+const storage = product?.specs?.storage ?? 'Non spécifié';
+console.log(storage); // 'Non spécifié'`}</CodeBlock>
+  }
+>
+Avec cet objet produit :
+
+<CodeBlock language="javascript">{`const product = {
+  name: 'Laptop',
+  price: 1000,
+  specs: {
+    ram: '16GB',
+    cpu: 'i7'
+  }
+};`}</CodeBlock>
+
+1. Créez une copie avec le prix réduit à 850€
+2. Ajoutez les propriétés `stock: 50` et `category: 'Electronics'` (sans modifier l'original)
+3. Extrayez toutes les clés de `product` dans un tableau
+4. Accédez en toute sécurité à `product.specs.storage` avec une valeur par défaut "Non spécifié"
+
+**Astuce :** Utilisez le spread operator, `Object.keys()`, et l'optional chaining.
+</Exercise>
 

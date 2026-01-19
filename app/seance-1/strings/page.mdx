@@ -30,7 +30,7 @@ const multiline = "Ligne 1\nLigne 2";
 
 ## Template Literals ⭐
 
-**La syntaxe moderne pour manipuler les strings !**
+**La meilleure syntaxe pour manipuler les strings !**
 
 Les template literals utilisent des **backticks** (`` ` ``) et permettent :
 - L'interpolation de variables
@@ -46,7 +46,7 @@ const age = 25;
 // ❌ Ancien style (concaténation)
 const message1 = 'Hello ' + name + ', you are ' + age + ' years old';
 
-// ✅ Style moderne (template literals)
+// ✅ Avec template literals
 const message2 = `Hello ${name}, you are ${age} years old`;
 
 console.log(message2); // "Hello Alice, you are 25 years old"
@@ -111,7 +111,7 @@ console.log(message);
 ```
 
 <QuickCheck
-  question="Quelle est la syntaxe moderne pour insérer des variables dans une chaîne de caractères ?"
+  question="Quelle est la syntaxe recommandée pour insérer des variables dans une chaîne de caractères ?"
   options={[
     '"Hello " + name + "!"',
     '"Hello ${name}!"',
@@ -119,7 +119,7 @@ console.log(message);
     '"Hello " . name . "!"'
   ]}
   correctAnswer={2}
-  explanation="Les template literals utilisent des backticks (`) et la syntaxe ${variable} pour l'interpolation. C'est la méthode moderne et recommandée en JavaScript. Les guillemets simples ou doubles ne permettent pas l'interpolation, uniquement la concaténation avec +."
+  explanation="Les template literals utilisent des backticks (`) et la syntaxe ${variable} pour l'interpolation. C'est la méthode recommandée en JavaScript. Les guillemets simples ou doubles ne permettent pas l'interpolation, uniquement la concaténation avec +."
 />
 
 ## Méthodes de strings

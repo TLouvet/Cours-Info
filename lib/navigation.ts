@@ -30,8 +30,6 @@ export const navigation: NavSession[] = [
       { id: 'objects', title: 'Objets', href: '/seance-1/objects' },
       { id: 'destructuring', title: 'Destructuration', href: '/seance-1/destructuring' },
       { id: 'spread', title: 'Spread Operator', href: '/seance-1/spread' },
-      { id: 'modules', title: 'Modules ES6', href: '/seance-1/modules' },
-      { id: 'async', title: 'Asynchrone', href: '/seance-1/async' },
       { id: 'typescript-intro', title: 'Introduction à TypeScript', href: '/seance-1/typescript-intro' },
       { id: 'ai-collaboration', title: "Collaborer avec l'IA", href: '/seance-1/ai-collaboration' },
       { id: 'conclusion', title: 'Conclusion', href: '/seance-1/conclusion' },
@@ -47,6 +45,7 @@ export const navigation: NavSession[] = [
     sections: [
       { id: 's2-intro', title: 'Introduction', href: '/seance-2/introduction' },
       { id: 's2-env', title: 'Node.js & npm', href: '/seance-2/environment' },
+      { id: 's2-modules', title: 'Modules ES6', href: '/seance-2/modules' },
       { id: 's2-spa', title: 'SPA vs MPA', href: '/seance-2/spa-vs-mpa' },
       { id: 's2-jsx', title: 'JSX Syntax', href: '/seance-2/jsx' },
       { id: 's2-components', title: 'Composants', href: '/seance-2/components' },
@@ -85,6 +84,7 @@ export const navigation: NavSession[] = [
     sections: [
       { id: 's4-intro', title: 'Introduction', href: '/seance-4/introduction' },
       { id: 's4-useEffect', title: 'useEffect', href: '/seance-4/useEffect' },
+      { id: 's4-async', title: 'Asynchrone (Promises & async/await)', href: '/seance-4/async' },
       { id: 's4-fetching', title: 'Data Fetching', href: '/seance-4/data-fetching' },
       { id: 's4-routing-intro', title: 'Routing Intro', href: '/seance-4/routing-intro' },
       { id: 's4-routing-basics', title: 'Routing Basics', href: '/seance-4/routing-basics' },

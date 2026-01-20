@@ -25,6 +25,27 @@ const mixed = [1, 'hello', true, { name: 'Alice' }]; // ✅ Valide
 **Cependant, cette pratique n'est pas recommandée.** Privilégiez des tableaux homogènes (un seul type) pour un code plus prévisible et plus facile à maintenir.
 </Callout>
 
+<Callout type="success" title="Tableaux dynamiques">
+Les tableaux JavaScript sont **dynamiques** : leur taille n'est pas fixe et peut changer à tout moment.
+
+```javascript
+const numbers = [1, 2, 3]; // Taille : 3
+numbers.push(4);            // Taille : 4
+numbers.push(5, 6);         // Taille : 6
+numbers.pop();              // Taille : 5
+```
+
+**Si vous connaissez d'autres langages :**
+- Comme `ArrayList` en Java (pas `int[]`)
+- Comme `vector` en C++ (pas les tableaux statiques)
+- Pas besoin de déclarer la taille à l'avance
+- Redimensionnement automatique
+
+**En pratique :** Vous pouvez ajouter ou retirer des éléments librement.
+- **Méthodes mutantes** : `.push()`, `.pop()`, `.shift()`, `.unshift()` modifient le tableau original
+- **Méthodes immutables** : `.map()`, `.filter()`, `.slice()` créent toujours un nouveau tableau
+</Callout>
+
 ## Méthodes de base
 
 ```javascript

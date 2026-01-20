@@ -518,6 +518,203 @@ console.log('Nombre de tâches:', updatedTasks.length);
 // Essayez d'ajouter vos propres opérations !`}
 />
 
+## Exercice 9 : Lecture et validation de code
+
+<Callout type="warning" title="Compétence essentielle">
+Savoir **lire et comprendre** du code est aussi important que savoir l'écrire. C'est crucial quand vous travaillez avec l'IA : vous devez pouvoir **valider** le code généré, **détecter les erreurs**, et **comprendre** ce qu'il fait vraiment.
+</Callout>
+
+<Exercise
+  title="Trouver les bugs dans le code"
+  difficulty="medium"
+  solution={
+    <div className="space-y-4">
+      <div>
+        <p className="font-semibold mb-2">Code 1 - Comprendre le comportement de .push()</p>
+        <CodeBlock language="javascript">{`// Comportement de .push() :
+const numbers = [1, 2, 3];
+const result = numbers.push(4);
+console.log(result);  // 4 (la nouvelle longueur du tableau)
+console.log(numbers); // [1, 2, 3, 4] (tableau modifié)
+
+// .push() fait deux choses :
+// 1. Modifie le tableau original (mutation)
+// 2. Retourne la nouvelle longueur (pas le tableau !)
+
+// Alternative sans mutation (si nécessaire) :
+const numbers = [1, 2, 3];
+const result = [...numbers, 4]; // Nouveau tableau
+console.log(result);  // [1, 2, 3, 4]
+console.log(numbers); // [1, 2, 3] (original inchangé)
+
+// Les deux approches sont valides selon le contexte !
+// - .push() : simple et performant si mutation OK
+// - spread : nécessaire si immutabilité requise (React, etc.)`}</CodeBlock>
+      </div>
+
+      <div>
+        <p className="font-semibold mb-2">Code 2 - Problème : .map() retourne toujours un tableau</p>
+        <CodeBlock language="javascript">{`// ❌ MAUVAIS : .map() cherche à transformer, pas à filtrer
+const users = [
+  { name: 'Alice', age: 25 },
+  { name: 'Bob', age: 17 },
+  { name: 'Charlie', age: 30 }
+];
+
+const adults = users.map(u => {
+  if (u.age >= 18) return u;
+});
+// adults = [{ name: 'Alice', ... }, undefined, { name: 'Charlie', ... }]
+// Contient undefined ! ❌
+
+// ✅ CORRECT : Utiliser .filter()
+const adults = users.filter(u => u.age >= 18);
+// adults = [{ name: 'Alice', ... }, { name: 'Charlie', ... }] ✅`}</CodeBlock>
+      </div>
+
+      <div>
+        <p className="font-semibold mb-2">Code 3 - Problème : Mutation de l'objet au lieu de créer une copie</p>
+        <CodeBlock language="javascript">{`// ❌ MAUVAIS : Modifie directement l'objet original
+const user = { name: 'Alice', age: 25 };
+const updatedUser = user;
+updatedUser.age = 26;
+console.log(user.age); // 26 - original modifié ! ❌
+
+// ✅ CORRECT : Utiliser le spread operator
+const user = { name: 'Alice', age: 25 };
+const updatedUser = { ...user, age: 26 };
+console.log(user.age); // 25 - original intact ✅
+console.log(updatedUser.age); // 26 ✅`}</CodeBlock>
+      </div>
+
+      <div>
+        <p className="font-semibold mb-2">Code 4 - Problème : Mauvaise utilisation de .reduce()</p>
+        <CodeBlock language="javascript">{`// ❌ MAUVAIS : Pas de valeur initiale
+const numbers = [1, 2, 3, 4, 5];
+const sum = numbers.reduce((acc, n) => acc + n);
+// Fonctionne, mais risqué sur un tableau vide !
+
+const empty = [];
+const sumEmpty = empty.reduce((acc, n) => acc + n);
+// ❌ TypeError: Reduce of empty array with no initial value
+
+// ✅ CORRECT : Toujours fournir une valeur initiale
+const numbers = [1, 2, 3, 4, 5];
+const sum = numbers.reduce((acc, n) => acc + n, 0); // 0 = valeur initiale
+const empty = [];
+const sumEmpty = empty.reduce((acc, n) => acc + n, 0); // 0 (pas d'erreur ✅)`}</CodeBlock>
+      </div>
+
+      <div>
+        <p className="font-semibold mb-2">Code 5 - Problème : Confusion entre .find() et .filter()</p>
+        <CodeBlock language="javascript">{`// ❌ MAUVAIS : .find() retourne UN élément ou undefined
+const numbers = [1, 2, 3, 4, 5];
+const evens = numbers.find(n => n % 2 === 0);
+console.log(evens); // 2 (premier pair trouvé, pas tous !) ❌
+
+// ✅ CORRECT : .filter() retourne TOUS les éléments correspondants
+const evens = numbers.filter(n => n % 2 === 0);
+console.log(evens); // [2, 4] ✅`}</CodeBlock>
+      </div>
+    </div>
+  }
+>
+Lisez attentivement les 5 codes suivants. **Chacun contient un bug ou une mauvaise pratique.**
+
+Pour chaque code :
+1. **Identifiez le problème**
+2. **Expliquez pourquoi c'est un bug**
+3. **Proposez la correction**
+
+### Code 1 : Comprendre le comportement de .push()
+
+<CodeBlock language="javascript">{`const numbers = [1, 2, 3];
+const result = numbers.push(4);
+console.log(result);  // Que contient result ?
+console.log(numbers); // numbers a-t-il changé ?`}</CodeBlock>
+
+**Questions :**
+- Que retourne `.push()` ? (le tableau ou autre chose ?)
+- Est-ce que `numbers` est modifié ?
+- Si vous aviez besoin de l'immutabilité, comment feriez-vous ?
+- Quand utiliser `.push()` vs spread operator ?
+
+---
+
+### Code 2 : Filtrer les utilisateurs adultes
+
+<CodeBlock language="javascript">{`const users = [
+  { name: 'Alice', age: 25 },
+  { name: 'Bob', age: 17 },
+  { name: 'Charlie', age: 30 }
+];
+
+const adults = users.map(u => {
+  if (u.age >= 18) return u;
+});
+
+console.log(adults); // Que contient adults ?`}</CodeBlock>
+
+**Questions :**
+- Quelle est la différence entre `.map()` et `.filter()` ?
+- Quel est le problème avec ce code ?
+- Quelle méthode devrait être utilisée ?
+
+---
+
+### Code 3 : Mettre à jour l'âge d'un utilisateur
+
+<CodeBlock language="javascript">{`const user = { name: 'Alice', age: 25 };
+const updatedUser = user;
+updatedUser.age = 26;
+
+console.log(user.age);        // Que vaut user.age ?
+console.log(updatedUser.age); // Que vaut updatedUser.age ?`}</CodeBlock>
+
+**Questions :**
+- Est-ce que `user` et `updatedUser` sont deux objets différents ?
+- Comment créer une vraie copie ?
+
+---
+
+### Code 4 : Calculer la somme d'un tableau
+
+<CodeBlock language="javascript">{`const numbers = [1, 2, 3, 4, 5];
+const sum = numbers.reduce((acc, n) => acc + n);
+
+// Et si le tableau est vide ?
+const empty = [];
+const sumEmpty = empty.reduce((acc, n) => acc + n);`}</CodeBlock>
+
+**Questions :**
+- Que se passe-t-il avec `empty.reduce()` ?
+- Quelle est la bonne pratique avec `.reduce()` ?
+
+---
+
+### Code 5 : Trouver tous les nombres pairs
+
+<CodeBlock language="javascript">{`const numbers = [1, 2, 3, 4, 5];
+const evens = numbers.find(n => n % 2 === 0);
+
+console.log(evens); // Que contient evens ?`}</CodeBlock>
+
+**Questions :**
+- Quelle est la différence entre `.find()` et `.filter()` ?
+- Quel est le problème ici ?
+
+---
+
+<Callout type="tip" title="Pourquoi cet exercice est important">
+Quand vous utilisez l'IA pour générer du code :
+- **L'IA peut faire des erreurs** comme celles-ci
+- **Vous devez pouvoir les détecter** avant d'utiliser le code
+- **Comprendre le code** est plus important que de le copier-coller
+
+Cet exercice vous entraîne à **lire, analyser et valider** du code.
+</Callout>
+</Exercise>
+
 <Resources resources={[
   {
     title: "MDN - Array Methods",

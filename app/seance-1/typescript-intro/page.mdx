@@ -9,7 +9,7 @@ TypeScript est un sur-ensemble de JavaScript qui ajoute des types statiques. Tou
 - **Autocomplétion** : Votre éditeur vous aide mieux
 - **Documentation** : Les types servent de documentation
 - **Refactoring** : Plus facile de modifier du code
-- **Utilisé partout** : Standard dans l'industrie (React, Next.js, etc.)
+- **Utilisé partout** : Standard dans l'industrie
 </Callout>
 
 ## JavaScript vs TypeScript
@@ -285,7 +285,7 @@ const user: User = {
     "interface est obligatoire avec React"
   ]}
   correctAnswer={1}
-  explanation="Pour définir la structure d'un objet, interface et type fonctionnent de manière très similaire. Les deux sont valides et le choix dépend souvent de la préférence personnelle ou des conventions du projet."
+  explanation="Pour définir la structure d'un objet, interface et type fonctionnent de manière très similaire. Les deux sont valides et le choix dépend de la préférence personnelle ou des conventions du projet."
 />
 
 ## Exemples pratiques
@@ -331,90 +331,26 @@ const cart: Product[] = [
 const total = calculateTotal(cart);  // 1025
 ```
 
-## TypeScript avec React (aperçu)
+## Comment utiliser TypeScript ?
 
-Vous verrez TypeScript en action dans la Séance 2 avec React :
+TypeScript ne s'exécute pas directement dans le navigateur. Il doit être **compilé** en JavaScript avant d'être exécuté.
 
-```typescript
-// Props typées
-interface ButtonProps {
-  text: string;
-  onClick: () => void;
-  disabled?: boolean;
-}
+<Callout type="info">
+**Pour cette séance** : Pas besoin d'installer TypeScript maintenant !
 
-function Button({ text, onClick, disabled = false }: ButtonProps) {
-  return (
-    <button onClick={onClick} disabled={disabled}>
-      {text}
-    </button>
-  );
-}
+Nous couvrons ici les concepts fondamentaux de TypeScript pour vous familiariser avec la syntaxe et les types. L'installation et la configuration seront abordées plus tard dans le cours, lorsque nous travaillerons sur des projets concrets.
 
-// Utilisation avec autocomplétion complète !
-<Button text="Click me" onClick={() => alert('Clicked!')} />
-```
-
-## Compiler TypeScript
-
-TypeScript ne s'exécute pas directement dans le navigateur. Il doit être **compilé** en JavaScript.
-
-```bash
-# Installer TypeScript
-npm install -g typescript
-
-# Compiler un fichier .ts en .js
-tsc mon-fichier.ts
-
-# Résultat: mon-fichier.js (JavaScript standard)
-```
-
-<Callout type="success">
-**Avec React/Next.js** : La compilation est automatique ! Vous écrivez en TypeScript, le framework s'occupe du reste.
+Pour l'instant, concentrez-vous sur la **compréhension des concepts** : types, interfaces, et comment TypeScript vous aide à écrire du code plus robuste.
 </Callout>
 
-## Configuration TypeScript
+### Ce qu'il faut savoir
 
-Un fichier `tsconfig.json` configure TypeScript :
+- **TypeScript (.ts)** → Compilé → **JavaScript (.js)**
+- Les navigateurs exécutent du JavaScript, pas du TypeScript
+- Les frameworks modernes gèrent la compilation automatiquement
+- Un fichier `tsconfig.json` configure le comportement de TypeScript
 
-```json
-{
-  "compilerOptions": {
-    "target": "ES6",
-    "module": "commonjs",
-    "strict": true,
-    "esModuleInterop": true
-  }
-}
-```
-
-**Avec Next.js/React** : Ce fichier est généré automatiquement, vous n'avez rien à faire !
-
-## Pourquoi l'apprendre maintenant ?
-
-<div className="my-6 grid grid-cols-1 md:grid-cols-2 gap-4">
-  <div className="p-4 bg-green-900/20 border border-green-800 rounded-lg">
-    <h3 className="font-semibold text-green-100 mb-2">Avantages</h3>
-    <ul className="text-sm text-gray-300 space-y-1">
-      <li>Erreurs détectées immédiatement</li>
-      <li>Autocomplétion puissante</li>
-      <li>Code plus robuste</li>
-      <li>Refactoring facile</li>
-      <li>Standard de l'industrie</li>
-    </ul>
-  </div>
-
-  <div className="p-4 bg-blue-900/20 border border-blue-800 rounded-lg">
-    <h3 className="font-semibold text-blue-100 mb-2">En pratique</h3>
-    <ul className="text-sm text-gray-300 space-y-1">
-      <li>React utilise TypeScript</li>
-      <li>Next.js supporte TypeScript</li>
-      <li>VSCode excellent support</li>
-      <li>Documentation vivante</li>
-      <li>Meilleure collaboration</li>
-    </ul>
-  </div>
-</div>
+**Nous verrons tout cela en détail dans les prochaines séances !**
 
 <Callout type="tip" title="Comprendre, pas mémoriser">
 **Ce qu'il faut retenir :**
@@ -425,82 +361,17 @@ Un fichier `tsconfig.json` configure TypeScript :
 - **Type inference** : TypeScript devine souvent les types automatiquement
 - **Optional** : `?` rend une propriété optionnelle (`email?: string`)
 - **Union types** : `string | number` pour plusieurs types possibles
-- **Avoid `any`** : désactive complètement TypeScript
+- **Évitez `any`** : désactive complètement TypeScript
 
-Vous n'avez pas besoin de tout mémoriser maintenant. En Séance 2, vous verrez TypeScript en action avec React et tout deviendra plus concret !
+Vous n'avez pas besoin de tout mémoriser maintenant. En pratiquant avec les exercices et en Séance 2, tout deviendra plus concret !
 </Callout>
-
-<Exercise
-  title="Pratique : TypeScript"
-  difficulty="easy"
-  solution={
-<CodeBlock language="typescript">{`// 1. Interface Book
-interface Book {
-  title: string;
-  author: string;
-  year: number;
-  pages: number;
-  isbn?: string;  // optionnel
-}
-
-// 2. Tableau typé
-const books: Book[] = [
-  { title: '1984', author: 'George Orwell', year: 1949, pages: 328 },
-  { title: 'Le Petit Prince', author: 'Antoine de Saint-Exupéry', year: 1943, pages: 96, isbn: '978-2-07-061275-8' }
-];
-
-// 3. Fonction avec union type
-function findBook(identifier: string | number): Book | undefined {
-  if (typeof identifier === 'string') {
-    return books.find(b => b.title === identifier);
-  } else {
-    return books.find(b => b.year === identifier);
-  }
-}
-
-console.log(findBook('1984'));
-// { title: '1984', author: 'George Orwell', year: 1949, pages: 328 }
-
-console.log(findBook(1943));
-// { title: 'Le Petit Prince', author: '...', year: 1943, pages: 96, isbn: '...' }
-
-// 4. Fonction calculateAveragePages
-function calculateAveragePages(books: Book[]): number {
-  const total = books.reduce((sum, book) => sum + book.pages, 0);
-  return total / books.length;
-}
-
-console.log(calculateAveragePages(books)); // 212`}
-</CodeBlock>
-  }
->
-Créez une petite bibliothèque avec TypeScript :
-
-1. Créer une interface `Book` avec :
-   - `title`: string
-   - `author`: string
-   - `year`: number
-   - `pages`: number
-   - `isbn`: string (optionnel)
-
-2. Créer un tableau `books: Book[]` avec au moins 2 livres
-
-3. Créer une fonction `findBook(identifier: string | number)` qui :
-   - Cherche un livre par titre si `identifier` est un string
-   - Cherche un livre par année si `identifier` est un number
-   - Retourne `Book | undefined`
-
-4. Créer une fonction `calculateAveragePages(books: Book[]): number` qui calcule la moyenne de pages
-
-**Astuce :** Utilisez `typeof` pour vérifier le type à l'exécution dans les union types.
-</Exercise>
 
 ## Prochaine étape
 
 <Callout type="tip">
 **Ne vous inquiétez pas !**
 
-Vous n'avez pas besoin de mémoriser toute la syntaxe TypeScript maintenant. En Séance 2, nous l'utiliserons naturellement avec React, et vous verrez à quel point c'est utile dans un vrai projet.
+Vous n'avez pas besoin de mémoriser toute la syntaxe TypeScript maintenant. En Séance 2, nous l'utiliserons dans des projets concrets, et vous verrez à quel point c'est utile.
 
 L'essentiel : comprendre que TypeScript = JavaScript + types pour vous aider.
 </Callout>

@@ -2,11 +2,14 @@
 
 Mettez en pratique ce que vous avez appris ! Ces exercices couvrent tous les concepts essentiels de JavaScript.
 
-<Callout type="tip" title="Comment travailler">
-- Essayez de résoudre chaque exercice sans regarder la solution
-- Testez votre code dans la console du navigateur (F12)
-- Comparez ensuite avec la solution proposée
-- L'important est de **comprendre**, pas juste de copier !
+<Callout type="tip" title="Comment travailler efficacement">
+- **Essayez d'abord** : Résolvez chaque exercice sans regarder la solution
+- **Testez dans la console** : Ouvrez les DevTools (F12) et expérimentez
+- **Vérifiez les résultats** : Utilisez `console.log()` pour voir ce que votre code produit
+- **Comparez** : Regardez ensuite la solution et comprenez les différences
+- **L'objectif** : Comprendre, pas copier ! Posez-vous "Pourquoi ça marche ?"
+
+💡 **Astuce** : Les CodePlaygrounds interactifs ci-dessous sont parfaits pour tester rapidement !
 </Callout>
 
 ## Exercice 1 : Variables et types
@@ -149,19 +152,31 @@ Avec ce tableau :
   title="🎯 Testez les méthodes de tableaux"
   initialCode={`const numbers = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
 
-// 1. Nombres pairs
+// 1. .filter() - Garde seulement les éléments qui respectent la condition
 const evens = numbers.filter(n => n % 2 === 0);
-console.log('Pairs:', evens);
+console.log('Pairs:', evens); // [2, 4, 6, 8, 10]
 
-// 2. Nombres au carré
+// 2. .map() - Transforme chaque élément
 const squares = numbers.map(n => n * n);
-console.log('Carrés:', squares);
+console.log('Carrés:', squares); // [1, 4, 9, 16, 25, ...]
 
-// 3. Somme
+// 3. .reduce() - Combine tous les éléments en une seule valeur
 const sum = numbers.reduce((acc, n) => acc + n, 0);
-console.log('Somme:', sum);
+console.log('Somme:', sum); // 55
 
-// Essayez d'ajouter vos propres transformations !`}
+// 4. .find() - Trouve le premier élément qui correspond
+const firstAbove5 = numbers.find(n => n > 5);
+console.log('Premier > 5:', firstAbove5); // 6
+
+// 5. .some() - Vérifie si AU MOINS UN élément correspond
+const hasAbove8 = numbers.some(n => n > 8);
+console.log('Au moins un > 8?', hasAbove8); // true
+
+// 6. .every() - Vérifie si TOUS les éléments correspondent
+const allBelow20 = numbers.every(n => n < 20);
+console.log('Tous < 20?', allBelow20); // true
+
+// Essayez vos propres transformations !`}
 />
 
 ## Exercice 4 : Objets et méthodes
@@ -315,9 +330,18 @@ console.log(withDiscount);
 >
 1. Fusionnez `[1, 2, 3]` et `[4, 5, 6]` avec le spread operator
 2. Copiez `[1, 2, 3]` et ajoutez 4 et 5 (sans modifier l'original)
-3. Copiez l'objet `{'{ name: "Alice", age: 25 }'}` et changez l'âge à 26
-4. Fusionnez `{'{ name: "Bob", age: 30 }'}` avec `{'{ city: "Paris", country: "France" }'}`
-5. Ajoutez une propriété `discount: 10` à `{'{ name: "Laptop", price: 1000 }'}`
+3. Copiez cet objet et changez l'âge à 26 (sans modifier l'original) :
+
+<CodeBlock language="javascript">{`const user = { name: "Alice", age: 25 };`}</CodeBlock>
+
+4. Fusionnez ces deux objets :
+
+<CodeBlock language="javascript">{`const person = { name: "Bob", age: 30 };
+const address = { city: "Paris", country: "France" };`}</CodeBlock>
+
+5. Ajoutez une propriété `discount: 10` à cet objet :
+
+<CodeBlock language="javascript">{`const product = { name: "Laptop", price: 1000 };`}</CodeBlock>
 
 <Callout type="warning">
 **Important :** Vérifiez que les originaux ne sont **pas modifiés** !
@@ -432,16 +456,29 @@ Avec cette liste de tâches :
   { id: 4, title: 'Appeler maman', completed: false, priority: 'medium' }
 ];`}</CodeBlock>
 
-1. Extraire tous les **titres** dans un tableau
+**Partie 1 : Extraction et filtrage**
+
+1. Extraire tous les **titres** dans un tableau (utilisez `.map()`)
 2. Filtrer les tâches **non terminées** (`completed: false`)
-3. Filtrer les tâches **prioritaires** (`priority: 'high'`) **ET non terminées**
-4. Marquer la tâche avec `id: 1` comme terminée **sans modifier l'original** (immutabilité)
-5. Ajouter une nouvelle tâche `{'{ id: 5, title: "Faire du sport", completed: false, priority: "medium" }'}` **sans modifier l'original**
-6. Compter le nombre de tâches **terminées**
+3. Filtrer les tâches **prioritaires** (`priority: 'high'`) **ET non terminées** (combinez deux conditions)
+
+**Partie 2 : Immutabilité**
+
+4. Marquer la tâche avec `id: 1` comme terminée **sans modifier l'original** (`.map()` + spread)
+5. Ajouter cette nouvelle tâche **sans modifier l'original** (spread operator) :
+
+<CodeBlock language="javascript">{`const newTask = { id: 5, title: "Faire du sport", completed: false, priority: "medium" };`}</CodeBlock>
+
+**Partie 3 : Calculs et affichage**
+
+6. Compter le nombre de tâches **terminées** (`.filter()` + `.length`)
 7. Créer un message avec template literal : "Vous avez X tâches, dont Y terminée(s)."
 
-<Callout type="tip">
-Cet exercice combine : \`.map()\`, \`.filter()\`, spread operator, et template literals !
+<Callout type="tip" title="Approche progressive">
+Cet exercice est complexe ! **Résolvez-le étape par étape** :
+- Testez chaque partie séparément dans la console
+- Vérifiez que l'original n'est pas modifié (parties 4 et 5)
+- Combinez : `.map()`, `.filter()`, spread operator, et template literals
 </Callout>
 </Exercise>
 

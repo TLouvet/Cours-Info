@@ -10,35 +10,24 @@ Vous avez acquis les **fondamentaux pour lire, comprendre et valider du code Jav
 
 ### Manipulation de données
 
-**Tableaux (`.map()`, `.filter()`, `.reduce()`)**
-Transformer des données en listes de composants, filtrer, calculer
+- **Tableaux (`.map()`, `.filter()`, `.reduce()`)** : Transformer des données en listes de composants, filtrer, calculer
+- **Destructuration & Spread** : Extraire des props, mettre à jour le state sans mutation
+- **Objets & optional chaining** : Manipuler les props, le state, les données d'API en toute sécurité
 
-**Destructuration & Spread**
-Extraire des props, mettre à jour le state sans mutation
+### Code lisible et moderne
 
-**Objets & optional chaining**
-Manipuler les props, le state, les données d'API en toute sécurité
-
-### Code lisible
-
-**Arrow functions & template literals**
-Syntaxe concise pour callbacks, event handlers, affichage dynamique
-
-**Structures de contrôle**
-Rendu conditionnel, génération de listes
+- **Arrow functions & template literals** : Syntaxe concise pour callbacks, event handlers, affichage dynamique
+- **Structures de contrôle** : Rendu conditionnel, génération de listes
 
 ### Prévention d'erreurs
 
-**TypeScript**
-Typer les props et le state, détecter les erreurs avant l'exécution
-
-**Immutabilité (const, spread)**
-Éviter les bugs liés aux mutations du state
+- **TypeScript** : Typer les props et le state, détecter les erreurs avant l'exécution
+- **Immutabilité (const, spread)** : Éviter les bugs liés aux mutations du state
 
 ### Travail avec l'IA
 
-**Vocabulaire technique** → Instructions précises
-**Lecture de code** → Validation et correction du code généré
+- **Vocabulaire technique** → Donner des instructions précises et comprendre les réponses
+- **Lecture de code** → Valider et corriger le code généré par l'IA
 
 ## Pourquoi ces concepts sont essentiels
 
@@ -137,42 +126,42 @@ Avant de passer à React (Séance 2), assurez-vous de maîtriser ces concepts cl
   <div className="flex items-start gap-3 p-3 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg">
     <div>
       <p className="font-medium text-gray-900 dark:text-gray-100">Je sais utiliser .map(), .filter(), .reduce()</p>
-      <p className="text-sm text-gray-600 dark:text-gray-400">Ces méthodes sont partout en React</p>
+      <p className="text-sm text-gray-600 dark:text-gray-400">Testez-vous : Transformez un tableau d'objets en tableau de noms</p>
     </div>
   </div>
 
   <div className="flex items-start gap-3 p-3 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg">
     <div>
       <p className="font-medium text-gray-900 dark:text-gray-100">Je comprends la destructuration</p>
-      <p className="text-sm text-gray-600 dark:text-gray-400">Utilisée dans les props React et les hooks</p>
+      <p className="text-sm text-gray-600 dark:text-gray-400">Testez-vous : Extrayez 3 propriétés d'un objet en une ligne</p>
     </div>
   </div>
 
   <div className="flex items-start gap-3 p-3 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg">
     <div>
       <p className="font-medium text-gray-900 dark:text-gray-100">Je maîtrise le spread operator</p>
-      <p className="text-sm text-gray-600 dark:text-gray-400">Crucial pour l'immutabilité en React</p>
+      <p className="text-sm text-gray-600 dark:text-gray-400">Testez-vous : Copiez un objet et modifiez une propriété sans toucher à l'original</p>
     </div>
   </div>
 
   <div className="flex items-start gap-3 p-3 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg">
     <div>
       <p className="font-medium text-gray-900 dark:text-gray-100">Je comprends les arrow functions</p>
-      <p className="text-sm text-gray-600 dark:text-gray-400">Syntaxe standard en React</p>
+      <p className="text-sm text-gray-600 dark:text-gray-400">Testez-vous : Écrivez une arrow function avec return implicite</p>
     </div>
   </div>
 
   <div className="flex items-start gap-3 p-3 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg">
     <div>
       <p className="font-medium text-gray-900 dark:text-gray-100">Je comprends les bases de TypeScript</p>
-      <p className="text-sm text-gray-600 dark:text-gray-400">React utilise TypeScript pour les props et le state</p>
+      <p className="text-sm text-gray-600 dark:text-gray-400">Testez-vous : Créez une interface pour un objet User avec nom et âge</p>
     </div>
   </div>
 
   <div className="flex items-start gap-3 p-3 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg">
     <div>
       <p className="font-medium text-gray-900 dark:text-gray-100">Je connais les structures de contrôle</p>
-      <p className="text-sm text-gray-600 dark:text-gray-400">if/else, boucles, opérateur ternaire</p>
+      <p className="text-sm text-gray-600 dark:text-gray-400">Testez-vous : Utilisez l'opérateur ternaire pour afficher "Adulte" ou "Mineur"</p>
     </div>
   </div>
 </div>
@@ -192,16 +181,16 @@ Ne passez pas à React sans maîtriser ces bases - vous seriez perdu(e) !
 
 ### Séance 2 : Introduction à React avec TypeScript
 
-Maintenant que vous maîtrisez JavaScript et TypeScript, vous êtes prêt(e) pour React :
+Maintenant que vous maîtrisez JavaScript et TypeScript, vous êtes prêt(e) pour React. Vous apprendrez :
 
-- Modules ES6 (import/export)
-- Composants et JSX
-- Props typées avec TypeScript
-- Rendu conditionnel
-- Listes et keys
-- Interfaces pour les données
+- **Composants et JSX** : Créer des interfaces réutilisables
+- **Props typées** : Passer des données entre composants avec TypeScript
+- **Rendu conditionnel** : Afficher du contenu dynamiquement (if/else, ternaire)
+- **Listes et keys** : Utiliser `.map()` pour générer des listes
+- **State et événements** : Rendre vos applications interactives
+- **Modules ES6** : Organiser votre code avec import/export
 
-**Tous les concepts JS et TypeScript que vous venez d'apprendre seront utilisés quotidiennement en React !**
+**Tous les concepts que vous venez d'apprendre (`.map()`, destructuration, spread, arrow functions, TypeScript) seront utilisés quotidiennement en React !**
 
 ## Conseils pour la suite
 

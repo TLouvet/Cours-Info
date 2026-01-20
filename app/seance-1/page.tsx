@@ -176,7 +176,7 @@ export default function Seance1Page() {
       <div className="flex gap-4">
         <Link
           href="/seance-1/introduction"
-          className="flex items-center gap-2 px-6 py-3 bg-cyan-600 hover:bg-cyan-700 text-white font-medium rounded-lg transition-colors"
+          className="flex items-center gap-2 px-6 py-3 bg-cyan-600 hover:bg-cyan-700 !text-white font-medium rounded-lg transition-colors"
         >
           Commencer
           <FiArrowRight className="w-5 h-5" />

@@ -60,32 +60,42 @@ function App() {
 **Chaînes de caractères :**
 ```jsx
 <UserCard name="Alice" />
-<UserCard name='Bob' />
 ```
 
 **Nombres, booléens, objets, tableaux :**
 ```jsx
 <ProductCard price={99} inStock={true} />
-<UserList users={['Alice', 'Bob', 'Charlie']} />
 <UserCard user={{ name: 'Alice', age: 25 }} />
 ```
 
 <Callout type="warning" title="Attention aux types">
 **Chaînes** : Avec ou sans accolades
 ```jsx
-<UserCard name="Alice" />  {/* ✅ */}
-<UserCard name={'Alice'} /> {/* ✅ Équivalent */}
+<UserCard name="Alice" />  // ✅
+<UserCard name={'Alice'} /> // ✅ Équivalent
 ```
 
 **Autres types** : Toujours avec accolades
 ```jsx
-<ProductCard price={99} />        {/* ✅ Number */}
-<ProductCard price="99" />        {/* ❌ String "99" */}
+<ProductCard price={99} />        // ✅ Number
+<ProductCard price="99" />        // ❌ String "99"
 
-<Toggle enabled={true} />         {/* ✅ Boolean */}
-<Toggle enabled="true" />         {/* ❌ String "true" */}
+<Toggle enabled={true} />         // ✅ Boolean
+<Toggle enabled="true" />         // ❌ String "true"
 ```
 </Callout>
+
+<QuickCheck
+  question="Comment passe-t-on un nombre en tant que prop ?"
+  options={[
+    '<Component count=\"5\" />',
+    '<Component count=5 />',
+    '<Component count={5} />',
+    '<Component count=(5) />'
+  ]}
+  correctAnswer={2}
+  explanation="Les valeurs non-string doivent être passées entre accolades {}. Les nombres, booléens, objets et tableaux nécessitent tous des accolades. Seules les chaînes de caractères peuvent être passées avec des guillemets simples."
+/>
 
 ## Recevoir des props
 
@@ -102,7 +112,7 @@ function Greeting(props) {
 }
 ```
 
-### Méthode 2 : Destructuration (recommandé) ⭐
+### Méthode 2 : Destructuration (recommandé)
 
 ```jsx
 function Greeting({ name, age }) {
@@ -119,7 +129,7 @@ function Greeting({ name, age }) {
 **Avantages :**
 - Plus court et lisible
 - Vous voyez immédiatement quelles props sont utilisées
-- Auto-complétion plus facile dans VS Code
+- Auto-complétion plus facile dans votre éditeur
 
 ```jsx
 // ❌ Répétitif
@@ -150,8 +160,6 @@ function UserCard({ name, email, bio }) {
 
 Vous pouvez définir des **valeurs par défaut** pour les props.
 
-### Avec la destructuration
-
 ```jsx
 function Button({ text = 'Cliquez-moi', color = 'blue' }) {
   return (
@@ -162,42 +170,10 @@ function Button({ text = 'Cliquez-moi', color = 'blue' }) {
 }
 
 // Utilisation
-<Button />                           {/* Utilise les valeurs par défaut */}
-<Button text="Envoyer" />            {/* text="Envoyer", color="blue" */}
-<Button text="Annuler" color="red" /> {/* Les deux personnalisés */}
+<Button />                           // Utilise les valeurs par défaut
+<Button text="Envoyer" />            // text="Envoyer", color="blue"
+<Button text="Annuler" color="red" /> // Les deux personnalisés
 ```
-
-### Avec `defaultProps` (ancienne méthode)
-
-```jsx
-function Button({ text, color }) {
-  return (
-    <button style={{ backgroundColor: color }}>
-      {text}
-    </button>
-  );
-}
-
-Button.defaultProps = {
-  text: 'Cliquez-moi',
-  color: 'blue'
-};
-```
-
-<Callout type="tip" title="Quelle méthode utiliser ?">
-**Préférez la destructuration** avec valeurs par défaut :
-- Plus moderne et concis
-- Meilleure auto-complétion
-- Plus facile à lire
-
-```jsx
-// ✅ Moderne
-function Button({ text = 'OK' }) { /* ... */ }
-
-// ⚠️ Ancienne méthode (fonctionne mais désuète)
-Button.defaultProps = { text: 'OK' };
-```
-</Callout>
 
 ## Props en lecture seule
 
@@ -232,6 +208,18 @@ function Counter({ count }) {
 **Pourquoi ?** Les props viennent du parent. Si vous les modifiez, vous créez des bugs imprévisibles.
 </Callout>
 
+<QuickCheck
+  question="Peut-on modifier la valeur d'une prop à l'intérieur d'un composant ?"
+  options={[
+    "Oui, les props sont des variables normales",
+    "Oui, mais seulement avec const",
+    "Non, les props sont en lecture seule",
+    "Oui, mais seulement pour les nombres"
+  ]}
+  correctAnswer={2}
+  explanation="Les props sont en lecture seule (read-only). Un composant ne peut jamais modifier ses propres props car elles viennent du parent. Si vous avez besoin de calculer une nouvelle valeur, créez une nouvelle variable locale."
+/>
+
 ## Passer des fonctions en props
 
 Vous pouvez passer des **fonctions** comme props pour gérer les événements.
@@ -250,7 +238,7 @@ function App() {
 }
 ```
 
-### Exemple : Formulaire
+### Exemple : Champ de recherche
 
 ```jsx
 function SearchBar({ onSearch }) {
@@ -321,17 +309,35 @@ function Button({ variant = 'primary', ...rest }) {
 </Button>
 ```
 
-## Validation des props avec PropTypes
+## Validation des props
 
-PropTypes permet de **vérifier les types** des props en développement.
+### Avec TypeScript (recommandé)
 
-### Installation
+TypeScript offre une vérification à la compilation et une excellente auto-complétion.
 
-```bash
-npm install prop-types
+```tsx
+interface UserCardProps {
+  name: string;
+  age: number;
+  email?: string; // Optionnel
+}
+
+function UserCard({ name, age, email }: UserCardProps) {
+  return (
+    <div>
+      <h2>{name}</h2>
+      <p>{age} ans</p>
+      {email && <p>{email}</p>}
+    </div>
+  );
+}
 ```
 
-### Utilisation de base
+Vous verrez TypeScript en détail dans la section dédiée.
+
+### Avec PropTypes
+
+PropTypes permet une validation à l'exécution (moins puissant que TypeScript).
 
 ```jsx
 import PropTypes from 'prop-types';
@@ -353,112 +359,21 @@ UserCard.propTypes = {
 };
 ```
 
-### Types courants
-
-```jsx
-Component.propTypes = {
-  // Types de base
-  name: PropTypes.string,
-  age: PropTypes.number,
-  isActive: PropTypes.bool,
-  onClick: PropTypes.func,
-  data: PropTypes.array,
-  user: PropTypes.object,
-
-  // Requis
-  id: PropTypes.number.isRequired,
-
-  // Énumérations
-  status: PropTypes.oneOf(['active', 'inactive', 'pending']),
-
-  // Un de ces types
-  value: PropTypes.oneOfType([
-    PropTypes.string,
-    PropTypes.number
-  ]),
-
-  // Tableau de type spécifique
-  numbers: PropTypes.arrayOf(PropTypes.number),
-
-  // Objet avec forme spécifique
-  user: PropTypes.shape({
-    name: PropTypes.string,
-    age: PropTypes.number
-  })
-};
-```
-
 <Callout type="info" title="TypeScript vs PropTypes">
-**PropTypes** : Vérification à l'exécution (runtime)
-- Warnings dans la console en développement
-- Facile à ajouter
-- Pas de vérification en production
-
 **TypeScript** : Vérification à la compilation
 - Erreurs avant même de lancer l'app
 - Auto-complétion parfaite
 - Plus de sécurité
 
-**Recommandation :** Utilisez **TypeScript** pour de nouveaux projets, ou **PropTypes** pour ajouter de la validation rapidement.
+**PropTypes** : Vérification à l'exécution
+- Warnings dans la console en développement
+- Plus simple à ajouter à un projet existant
+- Pas de vérification en production
+
+**Recommandation :** Utilisez **TypeScript** pour de nouveaux projets.
 </Callout>
 
-## Composition avec props
-
-Les props permettent de créer des composants **très flexibles**.
-
-### Exemple : Système de cartes
-
-```jsx
-function Card({ title, subtitle, children, footer }) {
-  return (
-    <div className="card">
-      <div className="card-header">
-        <h3>{title}</h3>
-        {subtitle && <p className="subtitle">{subtitle}</p>}
-      </div>
-
-      <div className="card-body">
-        {children}
-      </div>
-
-      {footer && (
-        <div className="card-footer">
-          {footer}
-        </div>
-      )}
-    </div>
-  );
-}
-
-// Utilisation flexible
-function App() {
-  return (
-    <>
-      {/* Simple */}
-      <Card title="Carte simple">
-        <p>Contenu basique</p>
-      </Card>
-
-      {/* Avec sous-titre et footer */}
-      <Card
-        title="Carte complète"
-        subtitle="Avec tous les éléments"
-        footer={<button>Action</button>}
-      >
-        <p>Contenu de la carte</p>
-        <ul>
-          <li>Élément 1</li>
-          <li>Élément 2</li>
-        </ul>
-      </Card>
-    </>
-  );
-}
-```
-
-## Exemples pratiques
-
-### Exemple 1 : Carte de produit
+## Exemple pratique : Carte de produit
 
 ```jsx
 function ProductCard({ name, price, image, onAddToCart }) {
@@ -473,13 +388,6 @@ function ProductCard({ name, price, image, onAddToCart }) {
     </div>
   );
 }
-
-ProductCard.propTypes = {
-  name: PropTypes.string.isRequired,
-  price: PropTypes.number.isRequired,
-  image: PropTypes.string.isRequired,
-  onAddToCart: PropTypes.func.isRequired
-};
 
 // Utilisation
 function App() {
@@ -498,114 +406,10 @@ function App() {
 }
 ```
 
-### Exemple 2 : Système de notifications
-
-```jsx
-function Alert({ type = 'info', title, message, onClose }) {
-  const icons = {
-    success: '✅',
-    error: '❌',
-    warning: '⚠️',
-    info: 'ℹ️'
-  };
-
-  const colors = {
-    success: 'green',
-    error: 'red',
-    warning: 'orange',
-    info: 'blue'
-  };
-
-  return (
-    <div className={`alert alert-${type}`} style={{ borderColor: colors[type] }}>
-      <div className="alert-icon">{icons[type]}</div>
-      <div className="alert-content">
-        <h4>{title}</h4>
-        <p>{message}</p>
-      </div>
-      {onClose && (
-        <button onClick={onClose} className="alert-close">×</button>
-      )}
-    </div>
-  );
-}
-
-// Utilisation
-<Alert
-  type="success"
-  title="Succès !"
-  message="Votre profil a été mis à jour."
-  onClose={() => console.log('Fermé')}
-/>
-
-<Alert
-  type="error"
-  title="Erreur"
-  message="Impossible de charger les données."
-/>
-```
-
-### Exemple 3 : Liste de tâches
-
-```jsx
-function TaskItem({ task, onToggle, onDelete }) {
-  return (
-    <div className={`task ${task.completed ? 'completed' : ''}`}>
-      <input
-        type="checkbox"
-        checked={task.completed}
-        onChange={() => onToggle(task.id)}
-      />
-      <span>{task.text}</span>
-      <button onClick={() => onDelete(task.id)}>🗑️</button>
-    </div>
-  );
-}
-
-function TaskList({ tasks, onToggle, onDelete }) {
-  return (
-    <div className="task-list">
-      {tasks.map(task => (
-        <TaskItem
-          key={task.id}
-          task={task}
-          onToggle={onToggle}
-          onDelete={onDelete}
-        />
-      ))}
-    </div>
-  );
-}
-
-// Utilisation
-function App() {
-  const tasks = [
-    { id: 1, text: 'Apprendre React', completed: true },
-    { id: 2, text: 'Faire les TPs', completed: false }
-  ];
-
-  function handleToggle(id) {
-    console.log('Toggle task:', id);
-  }
-
-  function handleDelete(id) {
-    console.log('Delete task:', id);
-  }
-
-  return (
-    <TaskList
-      tasks={tasks}
-      onToggle={handleToggle}
-      onDelete={handleDelete}
-    />
-  );
-}
-```
-
 ## Bonnes pratiques
 
 <Callout type="tip" title="Conseils pour bien utiliser les props">
-**1. Destructurez les props**
+**Destructurez les props**
 ```jsx
 // ✅ Bon
 function User({ name, email }) { /* ... */ }
@@ -616,19 +420,12 @@ function User(props) {
 }
 ```
 
-**2. Utilisez des valeurs par défaut**
+**Utilisez des valeurs par défaut**
 ```jsx
 function Button({ text = 'OK', variant = 'primary' }) { /* ... */ }
 ```
 
-**3. Validez avec PropTypes ou TypeScript**
-```jsx
-Component.propTypes = {
-  name: PropTypes.string.isRequired
-};
-```
-
-**4. Ne modifiez jamais les props**
+**Ne modifiez jamais les props**
 ```jsx
 // ❌ Interdit
 function Component({ value }) {
@@ -636,33 +433,67 @@ function Component({ value }) {
 }
 ```
 
-**5. Gardez les props simples**
+**Gardez les props simples**
 ```jsx
 // ✅ Bon : Props simples et claires
 <UserCard name="Alice" age={25} />
 
-// ❌ Moins bon : Trop de props
-<UserCard firstName="Alice" lastName="Dupont" age={25} email="alice@example.com" phone="..." address="..." />
+// ❌ Trop de props
+<UserCard firstName="Alice" lastName="Dupont" age={25} email="..." phone="..." />
 
 // ✅ Mieux : Groupez dans un objet
 <UserCard user={{ name: 'Alice', age: 25, email: '...' }} />
 ```
 </Callout>
 
-## Récapitulatif
+## Résumé
 
-<Callout type="success" title="Ce que vous avez appris">
-Vous maîtrisez maintenant :
+<Callout type="info" title="À retenir">
+**Props = Arguments de fonction**
+- Permettent de passer des données du parent vers l'enfant
+- Syntaxe : `<Component prop="value" />`
+- Valeurs non-string avec accolades : `count={5}`, `enabled={true}`
 
-- ✅ Passer des props aux composants
-- ✅ Recevoir et utiliser les props
-- ✅ Destructurer les props
-- ✅ Définir des valeurs par défaut
-- ✅ Comprendre que les props sont read-only
-- ✅ Passer des fonctions en props
-- ✅ Utiliser le spread operator
-- ✅ Valider les props avec PropTypes
-- ✅ Créer des composants flexibles avec props
+**Recevoir les props**
+- Objet props : `function Component(props) { props.name }`
+- Destructuration (recommandé) : `function Component({ name, age })`
+- Valeurs par défaut : `function Component({ name = 'Anonyme' })`
 
-**Prochaine étape :** Afficher des **listes** dynamiques avec `.map()` !
+**Règles importantes**
+- Les props sont **en lecture seule** (immuables)
+- Ne jamais modifier les props reçues
+- Les fonctions peuvent être passées en props (conventions : `onClick`, `handleClick`)
+
+**Spread operator**
+- Passer toutes les props : `<input {...props} />`
+- Combiner avec props spécifiques : `{ variant, ...rest }`
+
+**Validation**
+- TypeScript (recommandé) : typage à la compilation
+- PropTypes : validation à l'exécution
+
+Les props sont essentielles pour créer des composants réutilisables et flexibles !
 </Callout>
+
+## Ressources
+
+<Resources resources={[
+  {
+    title: "Passing Props to a Component",
+    description: "Guide officiel React sur les props",
+    url: "https://react.dev/learn/passing-props-to-a-component",
+    type: "doc"
+  },
+  {
+    title: "TypeScript with React",
+    description: "Utiliser TypeScript pour typer les props",
+    url: "https://react.dev/learn/typescript",
+    type: "doc"
+  },
+  {
+    title: "PropTypes",
+    description: "Documentation de la bibliothèque PropTypes",
+    url: "https://www.npmjs.com/package/prop-types",
+    type: "doc"
+  }
+]} />

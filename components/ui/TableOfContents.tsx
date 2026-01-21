@@ -85,7 +85,7 @@ export default function TableOfContents() {
         className={`
           fixed top-24 right-8 w-64 max-h-[calc(100vh-12rem)] overflow-y-auto
           bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700
-          rounded-lg p-4 shadow-lg
+          rounded-lg py-4 pr-4 shadow-lg
           transition-transform duration-300
           ${isOpen ? 'translate-x-0' : 'translate-x-[120%]'}
           xl:translate-x-0
@@ -93,23 +93,25 @@ export default function TableOfContents() {
           no-print
         `}
       >
-        <h3 className="text-sm font-semibold text-gray-900 dark:text-gray-100 mb-3 flex items-center gap-2">
+        <h3 className="text-sm font-semibold text-gray-900 dark:text-gray-100 mb-3 px-4 flex items-center gap-2">
           <FiList className="w-4 h-4" />
           Sur cette page
         </h3>
         <nav>
-          <ul className="space-y-2">
+          <ul className="space-y-1" style={{ listStyle: 'none', paddingLeft: 0, marginLeft: 0 }}>
             {headings.map((heading) => (
-              <li key={heading.id} style={{ paddingLeft: (heading.level - 2) * 12 }}>
+              <li key={heading.id} style={{ listStyle: 'none', marginLeft: 0, paddingLeft: 0 }}>
                 <a
                   href={`#${heading.id}`}
                   onClick={() => setIsOpen(false)}
                   className={`
-                    block text-sm py-1 hover:text-cyan-600 dark:hover:text-cyan-400 transition-colors
+                    block text-sm py-2 pr-4
+                    border-l-2 transition-all duration-200
+                    ${heading.level === 3 ? 'pl-8' : 'pl-3'}
                     ${
                       activeId === heading.id
-                        ? 'text-cyan-600 dark:text-cyan-400 font-medium'
-                        : 'text-gray-600 dark:text-gray-400'
+                        ? 'border-cyan-500 bg-cyan-50 dark:bg-cyan-900/20 text-cyan-700 dark:text-cyan-300 font-semibold'
+                        : 'border-transparent hover:border-gray-300 dark:hover:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700/50 text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200'
                     }
                   `}
                 >

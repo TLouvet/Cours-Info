@@ -1,26 +1,23 @@
-# Environnement de développement
+# Node.js & npm
 
-Avant de commencer avec React, il faut comprendre les outils qui vont nous permettre de développer. Cette page explique **pourquoi** et **comment** installer l'environnement nécessaire.
+Pour développer avec React, nous avons besoin d'outils qui facilitent l'installation de bibliothèques et la gestion de notre projet. Cette page explique **Node.js** et **npm**.
+
+<Callout type="success" title="À l'IUT">
+**Node.js et npm sont déjà installés** sur les machines de l'IUT. Cette page explique leur rôle et comment les utiliser.
+
+Si vous travaillez sur votre machine personnelle, l'installation est simple : téléchargez Node.js depuis [nodejs.org](https://nodejs.org/) (version LTS) et npm sera installé automatiquement.
+</Callout>
 
 ## Pourquoi avons-nous besoin d'outils ?
 
-React est une bibliothèque JavaScript, mais pour l'utiliser efficacement, nous avons besoin de plusieurs outils :
+React est une bibliothèque JavaScript, mais contrairement à un simple fichier HTML/CSS, le développement React utilise des **outils de build** pour :
 
-1. **Exécuter JavaScript en dehors du navigateur** (Node.js)
-2. **Installer des bibliothèques** comme React (npm/pnpm/yarn)
-3. **Transformer notre code** pour qu'il fonctionne dans tous les navigateurs (Vite/Webpack)
-4. **Tester notre code** pendant le développement (serveur de dev)
+- **Installer des bibliothèques** - React, React Router, et des centaines d'autres
+- **Transformer le code JSX** - En JavaScript que le navigateur comprend
+- **Serveur de développement** - Rechargement automatique pendant le développement
+- **Optimiser pour la production** - Minification, bundling
 
-<Callout type="info" title="L'écosystème JavaScript">
-Contrairement à HTML/CSS qu'on peut écrire directement, le développement JavaScript utilise des **outils de build** pour :
-
-- Utiliser des fonctionnalités récentes (JSX, modules ES6)
-- Optimiser les performances
-- Gérer des dizaines de bibliothèques
-- Avoir un serveur de développement avec rechargement automatique
-</Callout>
-
----
+C'est là qu'interviennent Node.js et npm.
 
 ## Node.js : JavaScript côté serveur
 
@@ -28,74 +25,54 @@ Contrairement à HTML/CSS qu'on peut écrire directement, le développement Java
 
 **Node.js** est un **environnement d'exécution JavaScript** qui permet de faire tourner du code JavaScript en dehors du navigateur.
 
-```
-┌──────────────────┐      ┌──────────────────┐
-│   JavaScript     │      │   JavaScript     │
-│   dans le        │      │   avec           │
-│   navigateur     │      │   Node.js        │
-│                  │      │                  │
-│   • Sites web    │      │   • Serveurs     │
-│   • Interactivité│      │   • Outils CLI   │
-│                  │      │   • Scripts      │
-└──────────────────┘      └──────────────────┘
-```
+<Callout type="info" title="JavaScript peut s'exécuter à deux endroits">
+**Dans le navigateur :**
+- Sites web et applications
+- Manipulation du DOM
+- Interactions utilisateur
+
+**Avec Node.js :**
+- Serveurs et APIs
+- Outils en ligne de commande
+- Scripts et automatisation
+</Callout>
 
 ### Pourquoi Node.js pour React ?
 
-<Callout type="warning" title="Attention : Node.js n'est PAS obligatoire en production">
+<Callout type="warning" title="Node.js n'est PAS obligatoire en production">
 Node.js est utilisé **pendant le développement**, pas en production :
 
-- ✅ Pour installer React et ses dépendances
-- ✅ Pour lancer le serveur de développement
-- ✅ Pour compiler/transformer le code JSX
-- ✅ Pour créer le build de production
+✅ **Pendant le développement :**
+- Installer React et ses dépendances
+- Lancer le serveur de développement
+- Compiler le code JSX
+- Créer le build de production
 
-❌ Le code React final tourne **dans le navigateur**, pas sur Node.js
+❌ **En production :**
+Le code React final tourne **dans le navigateur**, pas sur Node.js
 </Callout>
 
-### Installer Node.js
-
-**Méthode recommandée :**
-
-1. Télécharger depuis [nodejs.org](https://nodejs.org/)
-2. Choisir la version **LTS** (Long Term Support)
-3. Suivre l'installateur (accepter les options par défaut)
-
-**Versions Node.js :**
-- **LTS (recommandé)** : Version stable pour la production
-- **Current** : Dernières fonctionnalités (peut être instable)
-
-<Callout type="tip" title="Quelle version ?">
-Pour ce cours, n'importe quelle version récente (18.x ou supérieure) fonctionne.
+### Vérifier Node.js
 
 ```bash
 # Vérifier la version installée
 node --version
-# Exemple de sortie : v20.10.0
+# Exemple : v20.10.0
+
+# Si la commande fonctionne, Node.js est installé !
 ```
-</Callout>
 
-### Alternatives à Node.js
-
-Il existe d'autres runtimes JavaScript plus modernes :
-
-**Bun** 🥟
-- Runtime ultra-rapide (écrit en Zig)
-- Compatible Node.js
-- Inclut un bundler et un gestionnaire de paquets
-- [bun.sh](https://bun.sh/)
-
-**Deno** 🦕
-- Créé par le créateur de Node.js
-- Sécurisé par défaut
-- Support TypeScript natif
-- [deno.land](https://deno.land/)
-
-<Callout type="info" title="Pour ce cours">
-Nous utilisons **Node.js** car c'est le standard de l'industrie et le mieux supporté. Mais Bun est une excellente alternative si vous voulez expérimenter !
-</Callout>
-
----
+<QuickCheck
+  question="Quel est le rôle principal de Node.js dans un projet React ?"
+  options={[
+    "Exécuter React en production dans le navigateur",
+    "Fournir les outils de développement (npm, serveur dev, build)",
+    "Remplacer le navigateur pour tester React",
+    "Créer des sites web statiques"
+  ]}
+  correctAnswer={1}
+  explanation="Node.js est utilisé uniquement pendant le développement pour installer les dépendances, lancer le serveur de dev, et créer le build. Le code React final s'exécute dans le navigateur, pas sur Node.js."
+/>
 
 ## npm : Le gestionnaire de paquets
 
@@ -108,19 +85,14 @@ Nous utilisons **Node.js** car c'est le standard de l'industrie et le mieux supp
 - **Exécuter des scripts** (lancer le serveur, build, tests)
 
 ```bash
-# Installer une bibliothèque
-npm install react
-
-# Lancer un script défini dans package.json
-npm run dev
-
-# Créer un nouveau projet
-npm create vite@latest
+# Vérifier npm
+npm --version
+# Exemple : 10.2.3
 ```
 
 ### Comment fonctionne npm ?
 
-Chaque projet a un fichier `package.json` qui liste :
+Chaque projet Node.js a un fichier **`package.json`** qui liste toutes les bibliothèques nécessaires :
 
 ```json
 {
@@ -141,7 +113,7 @@ Chaque projet a un fichier `package.json` qui liste :
 1. npm lit `package.json`
 2. Télécharge toutes les bibliothèques listées
 3. Les place dans un dossier `node_modules/`
-4. Crée un fichier `package-lock.json` (verrouille les versions exactes)
+4. Crée `package-lock.json` (verrouille les versions exactes)
 
 <Callout type="warning" title="node_modules est énorme !">
 Le dossier `node_modules/` peut contenir des milliers de fichiers et peser plusieurs centaines de Mo.
@@ -154,204 +126,118 @@ npm install  # Réinstalle tout depuis package.json
 ```
 </Callout>
 
-### Vérifier que npm fonctionne
+## Commandes npm essentielles
 
-```bash
-# Version de npm
-npm --version
-# Exemple : 10.2.3
-
-# Aide
-npm help
-
-# Liste des paquets installés globalement
-npm list -g --depth=0
-```
-
----
-
-## Alternatives à npm
-
-Il existe plusieurs gestionnaires de paquets, tous compatibles avec l'écosystème JavaScript :
-
-### pnpm - Performant et économe 🚀
-
-**Avantages :**
-- Beaucoup plus rapide que npm
-- Économise de l'espace disque (stockage partagé)
-- Gestion stricte des dépendances
-
-```bash
-# Installer pnpm
-npm install -g pnpm
-
-# Utilisation (identique à npm)
-pnpm install
-pnpm add react
-pnpm run dev
-```
-
-<Callout type="tip" title="pnpm est recommandé !">
-Si vous travaillez sur plusieurs projets, **pnpm** peut vous faire gagner beaucoup d'espace disque et de temps.
-
-Site : [pnpm.io](https://pnpm.io/)
-</Callout>
-
-### Yarn - L'alternative historique
-
-Créé par Facebook, très populaire mais moins rapide que pnpm.
-
-```bash
-# Installer Yarn
-npm install -g yarn
-
-# Utilisation
-yarn install
-yarn add react
-yarn dev
-```
-
-### Bun - Le plus rapide (nouveau)
-
-Bun inclut son propre gestionnaire de paquets ultra-rapide.
-
-```bash
-# Installation avec Bun
-bun install
-bun add react
-bun run dev
-```
-
-### Comparaison rapide
-
-| Outil  | Vitesse       | Espace disque | Popularité |
-|--------|---------------|---------------|------------|
-| npm    | Moyen         | ⚠️ Élevé      | ⭐⭐⭐⭐⭐   |
-| pnpm   | 🚀 Rapide     | ✅ Économe    | ⭐⭐⭐⭐     |
-| Yarn   | Rapide        | Moyen         | ⭐⭐⭐⭐     |
-| Bun    | 🚀🚀 Ultra    | ✅ Économe    | ⭐⭐⭐       |
-
-<Callout type="info" title="Pour ce cours">
-Tous les exemples utilisent **npm** car c'est installé par défaut avec Node.js.
-
-Mais vous pouvez utiliser **pnpm** ou **bun** si vous préférez - les commandes sont identiques !
-</Callout>
-
----
-
-## Commandes essentielles npm
-
-Voici les commandes que vous utiliserez le plus souvent :
-
-### Installation de paquets
+Voici les commandes que vous utiliserez quotidiennement :
 
 ```bash
 # Installer toutes les dépendances d'un projet
 npm install
 # Raccourci : npm i
 
-# Installer une bibliothèque
-npm install react
+# Installer une nouvelle bibliothèque
 npm install react-router-dom
 
-# Installer en dépendance de développement (pas nécessaire en production)
-npm install --save-dev eslint
-# Raccourci : npm i -D eslint
+# Lancer le serveur de développement
+npm run dev
 
-# Installer globalement (accessible partout sur votre machine)
-npm install -g create-vite
-```
+# Créer le build de production
+npm run build
 
-### Exécution de scripts
-
-```bash
-# Lancer un script défini dans package.json
-npm run dev        # Serveur de développement
-npm run build      # Build de production
-npm run test       # Tests
-
-# Certains scripts ont des raccourcis
-npm start          # Équivaut à npm run start
-npm test           # Équivaut à npm run test
-```
-
-### Gestion de projet
-
-```bash
-# Créer un nouveau package.json
-npm init
-npm init -y  # Avec valeurs par défaut
-
-# Mettre à jour les dépendances
-npm update
-
-# Désinstaller un paquet
-npm uninstall react-router-dom
-
-# Lister les paquets installés
-npm list
-npm list --depth=0  # Seulement le niveau racine
-```
-
-### Utilitaires npx
-
-**npx** permet d'exécuter des paquets npm sans les installer globalement :
-
-```bash
-# Créer un projet Vite (sans installer create-vite)
+# Créer un nouveau projet
 npm create vite@latest
-# Équivaut à : npx create-vite@latest
-
-# Exécuter un outil temporairement
-npx eslint .
-npx prettier --write .
 ```
 
----
+<Callout type="tip" title="npm run vs npm">
+- `npm install`, `npm test` → Commandes natives npm
+- `npm run dev`, `npm run build` → Scripts définis dans `package.json`
 
-## Liste de vérification : Environnement prêt
+Les scripts sont définis dans la section `"scripts"` du `package.json`.
+</Callout>
 
-Avant de continuer avec React, vérifiez que tout est installé :
+<QuickCheck
+  question="Que fait la commande 'npm install' dans un projet React existant ?"
+  options={[
+    "Crée un nouveau projet React",
+    "Lance le serveur de développement",
+    "Télécharge toutes les dépendances listées dans package.json",
+    "Met à jour React vers la dernière version"
+  ]}
+  correctAnswer={2}
+  explanation="npm install lit le fichier package.json et télécharge toutes les bibliothèques listées dans la section dependencies. C'est la première commande à exécuter quand vous clonez un projet."
+/>
 
-<Callout type="success" title="Checklist">
-- [ ] Node.js installé (`node --version` affiche une version &ge; 18)
-- [ ] npm installé (`npm --version` fonctionne)
-- [ ] Vous comprenez à quoi sert Node.js (exécuter JS hors du navigateur)
-- [ ] Vous comprenez à quoi sert npm (installer des bibliothèques)
+## Alternatives à npm
+
+Il existe d'autres gestionnaires de paquets compatibles avec Node.js :
+
+**pnpm** - Plus rapide et économe en espace disque que npm. Utilise un système de liens symboliques pour partager les dépendances entre projets.
+
+```bash
+pnpm install
+pnpm run dev
+```
+
+**Yarn** - Alternative créée par Facebook, syntaxe légèrement différente. Moins d'avantages par rapport à npm moderne qu'auparavant.
+
+<Callout type="info" title="Pour ce cours">
+Tous les exemples utilisent **npm** car c'est installé par défaut avec Node.js. Si vous connaissez déjà **pnpm**, vous pouvez l'utiliser - les commandes sont identiques.
+
+**Note :** Bun est un runtime JavaScript complet (alternative à Node.js), pas juste un gestionnaire de paquets. Il n'est pas couvert dans ce cours.
+</Callout>
+
+## Checklist : Environnement prêt
+
+Avant de continuer, vérifiez que tout fonctionne :
+
+<Callout type="success" title="Vérifications">
+- [ ] `node --version` affiche une version ≥ 18
+- [ ] `npm --version` fonctionne
+- [ ] Vous comprenez que Node.js exécute JavaScript hors du navigateur
+- [ ] Vous comprenez que npm installe des bibliothèques JavaScript
 - [ ] Vous savez ouvrir un terminal/invite de commandes
-- [ ] (Optionnel) pnpm ou bun installé si vous voulez les utiliser
 </Callout>
 
----
+## Résumé
 
-## En résumé
-
-<Callout type="info" title="Ce que vous devez retenir">
-**Node.js :**
-- Runtime JavaScript qui tourne hors du navigateur
+<Callout type="info" title="À retenir">
+**Node.js**
+- Runtime JavaScript qui s'exécute hors du navigateur
 - Nécessaire pour utiliser npm et les outils de build
-- Pas nécessaire en production (seulement pour le développement)
+- Utilisé pendant le développement, pas en production
 
-**npm :**
+**npm**
 - Gestionnaire de paquets (installé avec Node.js)
-- Permet d'installer React et toutes les bibliothèques JavaScript
+- Installe React et toutes les bibliothèques JavaScript
 - Gère les dépendances via `package.json`
+- Commandes essentielles : `npm install`, `npm run dev`, `npm run build`
 
-**Alternatives :**
-- **pnpm** : Plus rapide et économe que npm
-- **Yarn** : Alternative populaire
-- **Bun** : Le plus récent et rapide, inclut tout (runtime + package manager)
-
-**Commandes de base :**
-- `npm install` : Installer les dépendances
-- `npm run dev` : Lancer le serveur de développement
-- `npm run build` : Créer le build de production
+**node_modules**
+- Dossier contenant toutes les bibliothèques installées
+- Peut être très volumineux (plusieurs centaines de Mo)
+- Ne jamais committer sur Git
+- Se recrée avec `npm install`
 </Callout>
 
----
+## Ressources
 
-## Prochaine étape
-
-Maintenant que votre environnement est prêt, nous allons créer notre premier projet React avec **Vite** ! 🚀
-
-Rendez-vous à la page suivante : **JSX Syntax**
+<Resources resources={[
+  {
+    title: "Node.js Documentation",
+    description: "Documentation officielle de Node.js",
+    url: "https://nodejs.org/docs/latest/api/",
+    type: "doc"
+  },
+  {
+    title: "npm Documentation",
+    description: "Guide complet de npm",
+    url: "https://docs.npmjs.com/",
+    type: "doc"
+  },
+  {
+    title: "pnpm",
+    description: "Alternative rapide et économe à npm",
+    url: "https://pnpm.io/",
+    type: "website"
+  }
+]} />

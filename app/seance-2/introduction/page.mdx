@@ -1,309 +1,195 @@
 # Introduction à React - Séance 2
 
-Bienvenue dans le monde de **React** ! Cette séance marque le début de votre apprentissage de la bibliothèque frontend la plus populaire au monde.
+Bienvenue dans la **Séance 2** ! Maintenant que vous maîtrisez les fondamentaux JavaScript, il est temps de les mettre en pratique avec **React**, la bibliothèque frontend la plus populaire au monde.
 
-## Qu'est-ce que React ?
+## De JavaScript à React
 
-React est une **bibliothèque JavaScript** créée par Facebook (Meta) en 2013 pour construire des interfaces utilisateur interactives.
+En Séance 1, vous avez appris les fondamentaux JavaScript. React s'appuie sur ces bases pour créer des interfaces utilisateur interactives.
 
-<Callout type="info" title="Bibliothèque vs Framework">
-**React est une bibliothèque, pas un framework :**
-
-- **Bibliothèque** : Se concentre sur une tâche spécifique (ici, l'UI)
-- **Framework** : Solution complète avec routage, gestion d'état, etc.
-
-React fait **une chose** mais la fait très bien : gérer l'interface utilisateur.
+<Callout type="success" title="Vous êtes prêt !">
+Les concepts JavaScript de la Séance 1 (`.map()`, destructuration, spread operator, arrow functions, TypeScript) sont directement utilisés dans React.
 </Callout>
 
-### Les concepts clés
+## Ce que vous allez apprendre
 
-**1. Architecture basée sur les composants**
+Cette séance se concentre sur les **fondamentaux de React** :
 
-React divise l'interface en petits morceaux réutilisables appelés **composants**.
+<Callout type="info" title="Objectifs de la Séance 2">
+À la fin de cette séance, vous serez capable de :
 
-```jsx
-// Un composant simple
-function Welcome() {
-  return <h1>Bienvenue sur mon site !</h1>;
-}
+- **Comprendre React** : Architecture à composants, Virtual DOM, programmation déclarative
+- **Créer un projet** : Installer Node.js/npm, créer un projet avec Vite
+- **Écrire du JSX** : Syntaxe JSX, différences avec HTML
+- **Créer des composants** : Composants fonctionnels réutilisables
+- **Passer des données** : Props, destructuration, validation
+- **Afficher des listes** : Utiliser `.map()` et gérer les keys
+- **Rendu conditionnel** : if/else, ternaire, && dans JSX
+- **TypeScript avec React** : Typer les props de composants
+- **Composer des interfaces** : Assembler des composants pour créer des applications complexes
+</Callout>
+
+## Comment cette séance fonctionne
+
+### Structure du parcours
+
+Cette séance suit une progression logique :
+
+1. **Concepts de base** : Qu'est-ce que React, pourquoi l'utiliser
+2. **Environnement** : Installation et configuration des outils
+3. **Syntaxe JSX** : Apprendre à écrire du JSX
+4. **Composants** : Créer vos propres composants
+5. **Props** : Faire communiquer les composants
+6. **Listes et conditions** : Affichage dynamique
+7. **TypeScript** : Ajouter le typage à vos composants
+8. **Pratique** : Exercices et quiz de validation
+
+### Même philosophie qu'en Séance 1
+
+<Callout type="warning" title="Comprendre, pas mémoriser">
+**L'objectif n'est toujours PAS de tout mémoriser !**
+
+Votre vrai objectif reste de :
+- **Lire et comprendre du code React**
+- **Valider le code généré par l'IA**
+- **Adapter et corriger** le code quand nécessaire
+- **Reconnaître les patterns** pour savoir quoi chercher
+
+**Avec l'IA, vous allez générer du code React rapidement. Mais vous devez comprendre ce code pour le valider et l'adapter à vos besoins.**
+</Callout>
+
+## Ce que React apporte
+
+### Pourquoi apprendre React ?
+
+React n'est pas juste une bibliothèque - c'est une **façon de penser** la construction d'interfaces.
+
+#### Avant React (vanilla JavaScript)
+
+```javascript
+// Manipulation impérative du DOM
+const button = document.createElement('button');
+button.textContent = 'Cliquer';
+button.onclick = () => {
+  const counter = document.getElementById('counter');
+  counter.textContent = parseInt(counter.textContent) + 1;
+};
+document.body.appendChild(button);
 ```
 
-**2. Le Virtual DOM**
+#### Avec React
 
-React utilise une copie virtuelle du DOM pour optimiser les mises à jour.
+```tsx
+// Approche déclarative
+function Counter() {
+  const [count, setCount] = useState(0);
 
-<Callout type="tip" title="Comment ça marche ?">
-1. React garde une copie du DOM en mémoire (Virtual DOM)
-2. Quand les données changent, React compare l'ancien et le nouveau Virtual DOM
-3. Il met à jour **uniquement** ce qui a changé dans le vrai DOM
-
-**Résultat :** Des applications ultra-rapides !
-</Callout>
-
-**3. Programmation déclarative**
-
-Vous décrivez **ce que** vous voulez afficher, pas **comment** le faire.
-
-```jsx
-// ❌ Approche impérative (vanilla JS)
-const button = document.createElement('button');
-button.textContent = 'Cliquez-moi';
-button.addEventListener('click', () => {
-  alert('Cliqué !');
-});
-document.body.appendChild(button);
-
-// ✅ Approche déclarative (React)
-function Button() {
   return (
-    <button onClick={() => alert('Cliqué !')}>
-      Cliquez-moi
+    <button onClick={() => setCount(count + 1)}>
+      Cliqué {count} fois
     </button>
   );
 }
 ```
 
-## Pourquoi React ?
+React vous permet de **décrire ce que vous voulez**, pas comment le faire. C'est plus simple, plus lisible, et plus maintenable.
 
-<Callout type="success" title="Les avantages de React">
-**Popularité et écosystème**
-- Utilisé par Facebook, Netflix, Instagram, Airbnb, etc.
-- Énorme communauté et ressources
-- Milliers de bibliothèques et outils
+<Callout type="tip" title="Applications réelles">
+React est utilisé par les plus grandes entreprises du monde :
 
-**Performance**
-- Virtual DOM = mises à jour optimisées
-- Rendu rapide même pour les grandes applications
-
-**Réutilisabilité**
-- Les composants se réutilisent facilement
-- Code plus maintenable et organisé
-
-**Demande du marché**
-- Compétence très recherchée par les employeurs
-- Salaires attractifs pour les développeurs React
-</Callout>
-
-### React dans le monde réel
-
-Quelques applications célèbres construites avec React :
-
-- **Facebook** - Le créateur de React
-- **Instagram** - Interface web
-- **Netflix** - Plateforme de streaming
-- **WhatsApp Web** - Client web de messagerie
+- **Facebook/Instagram** - Créateur de React
+- **Netflix** - Interface de streaming
 - **Airbnb** - Plateforme de réservation
-- **Discord** - Application de communication
+- **Discord** - Application de messagerie
+- **Uber** - Applications web
+- Et des milliers d'autres...
 
-## Mise en place d'un projet React
-
-### Vite : L'outil moderne ⭐
-
-Vite est l'outil moderne le plus rapide pour créer un projet React.
-
-```bash
-# Créer un nouveau projet React avec TypeScript
-npm create vite@latest mon-app -- --template react-ts
-
-# Entrer dans le dossier
-cd mon-app
-
-# Installer les dépendances
-npm install
-
-# Lancer le serveur de développement
-npm run dev
-```
-
-<Callout type="tip" title="Pourquoi Vite ?">
-**Vite est ultra-rapide !**
-
-- Démarrage instantané du serveur
-- Hot Module Replacement (HMR) en millisecondes
-- Build de production optimisé
-- Configuration minimale
-
-Vite utilise **ESBuild** (écrit en Go) au lieu de Webpack, ce qui le rend 10 à 100 fois plus rapide.
-
-**Note :** Nous utilisons le template `react-ts` (TypeScript) car c'est le standard professionnel. Vous verrez les détails dans la section [React avec TypeScript](/seance-2/typescript).
+**C'est une compétence très recherchée sur le marché du travail !**
 </Callout>
 
-<Callout type="warning" title="Et Create React App ?">
-**Create React App (CRA) est obsolète et n'est plus maintenu.**
+## Architecture de la séance
 
-Autrefois l'outil officiel de Facebook pour créer des projets React, il a été abandonné. N'utilisez plus CRA pour vos nouveaux projets. **Vite est le nouveau standard.**
+Cette séance est divisée en pages thématiques. Chaque page se concentre sur un concept spécifique avec :
+
+- **Explications claires** - Pourquoi et comment
+- **Exemples de code** - Code commenté et testé
+- **QuickCheck** - Questions pour valider votre compréhension
+- **Callouts** - Points importants et pièges à éviter
+- **Ressources** - Liens pour aller plus loin
+
+### Pages principales
+
+Voici le parcours recommandé :
+
+<div className="grid grid-cols-1 md:grid-cols-2 gap-4 my-6">
+  <a href="/seance-2/getting-started" className="block p-4 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg hover:border-cyan-500 dark:hover:border-cyan-500 transition-colors">
+    <h3 className="font-semibold text-gray-900 dark:text-gray-100 mb-2">Débuter avec React</h3>
+    <p className="text-sm text-gray-600 dark:text-gray-400">Qu'est-ce que React et comment créer son premier projet</p>
+  </a>
+
+  <a href="/seance-2/jsx" className="block p-4 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg hover:border-cyan-500 dark:hover:border-cyan-500 transition-colors">
+    <h3 className="font-semibold text-gray-900 dark:text-gray-100 mb-2">JSX</h3>
+    <p className="text-sm text-gray-600 dark:text-gray-400">La syntaxe pour écrire des composants React</p>
+  </a>
+
+  <a href="/seance-2/components" className="block p-4 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg hover:border-cyan-500 dark:hover:border-cyan-500 transition-colors">
+    <h3 className="font-semibold text-gray-900 dark:text-gray-100 mb-2">Composants</h3>
+    <p className="text-sm text-gray-600 dark:text-gray-400">Créer des composants fonctionnels réutilisables</p>
+  </a>
+
+  <a href="/seance-2/props" className="block p-4 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg hover:border-cyan-500 dark:hover:border-cyan-500 transition-colors">
+    <h3 className="font-semibold text-gray-900 dark:text-gray-100 mb-2">Props</h3>
+    <p className="text-sm text-gray-600 dark:text-gray-400">Passer des données entre composants</p>
+  </a>
+</div>
+
+## Prérequis
+
+<Callout type="warning" title="Avant de commencer">
+**Assurez-vous d'avoir validé la Séance 1 !**
+
+Cette séance suppose que vous maîtrisez :
+- Les variables (`let`, `const`)
+- Les fonctions (arrow functions)
+- Les tableaux (`.map()`, `.filter()`)
+- Les objets (création, manipulation)
+- La destructuration
+- Le spread operator
+- Les bases de TypeScript
+
+**Si ces concepts ne sont pas clairs, retournez en Séance 1 !** React utilise tous ces concepts quotidiennement.
 </Callout>
 
-## Structure d'un projet React
+## Outils et environnement
 
-Voici à quoi ressemble un projet Vite + React + TypeScript :
+Pour suivre cette séance, vous aurez besoin de :
 
-```
-mon-app/
-├── node_modules/      # Dépendances installées
-├── public/            # Fichiers statiques
-│   └── vite.svg      # Icônes, images, etc.
-├── src/              # Code source
-│   ├── App.tsx       # Composant principal (.tsx pour TypeScript + JSX)
-│   ├── App.css       # Styles du composant
-│   ├── main.tsx      # Point d'entrée
-│   ├── vite-env.d.ts # Déclarations TypeScript
-│   └── index.css     # Styles globaux
-├── index.html        # Page HTML de base
-├── package.json      # Configuration npm
-├── tsconfig.json     # Configuration TypeScript
-└── vite.config.ts    # Configuration Vite
-```
+1. **Node.js et npm** - Déjà installés sur les machines de l'IUT
+2. **Un éditeur de code** - WebStorm (IUT) ou autre éditeur de votre choix
+3. **Un navigateur moderne** - Chrome, Firefox ou Edge
 
-### Fichiers importants
+**Optionnel :** React DevTools (extension navigateur pour déboguer React)
 
-**`index.html`** - Point d'entrée HTML
+**À l'IUT :** Tout est déjà configuré sur les postes. Si vous travaillez sur votre machine personnelle, consultez la section [Node.js & npm](/seance-2/environment) pour l'installation.
 
-```html
-<!DOCTYPE html>
-<html lang="fr">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Mon App React</title>
-  </head>
-  <body>
-    <div id="root"></div>
-    <script type="module" src="/src/main.tsx"></script>
-  </body>
-</html>
-```
+## Ressources
 
-**`src/main.tsx`** - Point d'entrée TypeScript
-
-```tsx
-import React from 'react'
-import ReactDOM from 'react-dom/client'
-import App from './App.tsx'
-import './index.css'
-
-ReactDOM.createRoot(document.getElementById('root')!).render(
-  <React.StrictMode>
-    <App />
-  </React.StrictMode>,
-)
-```
-
-<Callout type="info" title="Que fait ce code ?">
-1. `ReactDOM.createRoot()` crée un point de montage React
-2. Il cible l'élément avec l'id `root` dans le HTML
-3. `.render()` affiche le composant `<App />` à cet endroit
-4. `<React.StrictMode>` active des vérifications supplémentaires en développement
-
-**Note TypeScript :** Le `!` après `getElementById('root')` indique à TypeScript que cet élément existe forcément.
-</Callout>
-
-**`src/App.tsx`** - Votre premier composant
-
-```tsx
-function App() {
-  return (
-    <div className="App">
-      <h1>Bonjour React !</h1>
-      <p>Mon premier composant fonctionne.</p>
-    </div>
-  )
-}
-
-export default App
-```
-
-## Le serveur de développement
-
-Quand vous lancez `npm run dev`, Vite démarre un serveur local.
-
-**Fonctionnalités :**
-
-- **Hot Module Replacement (HMR)** : Les modifications apparaissent instantanément sans recharger la page
-- **Messages d'erreur clairs** : Affichage des erreurs directement dans le navigateur
-- **Support TypeScript** : Pas de configuration nécessaire
-- **Optimisation automatique** : Vite optimise votre code à la volée
-
-```bash
-# Lancer le serveur
-npm run dev
-
-# Ouvrir automatiquement le navigateur
-npm run dev -- --open
-
-# Changer le port
-npm run dev -- --port 3000
-```
-
-<Callout type="tip" title="Raccourci pratique">
-Dans le terminal du serveur de développement :
-- Appuyez sur `o` pour ouvrir le navigateur
-- Appuyez sur `r` pour redémarrer le serveur
-- Appuyez sur `q` pour quitter
-</Callout>
-
-## Premiers pas avec React
-
-### Modifier App.jsx
-
-Ouvrez `src/App.jsx` et remplacez le contenu :
-
-```jsx
-function App() {
-  const name = 'Alice';
-  const age = 25;
-
-  return (
-    <div>
-      <h1>Bonjour {name} !</h1>
-      <p>Tu as {age} ans.</p>
-      <p>L'année prochaine, tu auras {age + 1} ans.</p>
-    </div>
-  );
-}
-
-export default App;
-```
-
-**Sauvegardez** et regardez le navigateur se mettre à jour automatiquement !
-
-<Callout type="success" title="Bravo !">
-Vous venez d'écrire votre premier code React interactif. Remarquez comment on peut insérer des **expressions JavaScript** dans le JSX avec `{}`.
-</Callout>
-
-## Outils de développement
-
-### React Developer Tools
-
-Extension de navigateur **indispensable** pour déboguer React.
-
-**Installation :**
-- [Chrome](https://chrome.google.com/webstore/detail/react-developer-tools/fmkadmapgofadopljbjfkapdkoienihi)
-- [Firefox](https://addons.mozilla.org/fr/firefox/addon/react-devtools/)
-- [Edge](https://microsoftedge.microsoft.com/addons/detail/react-developer-tools/gpphkfbcpidddadnkolkpfckpihlkkil)
-
-**Fonctionnalités :**
-- Inspecter l'arbre des composants
-- Voir les props et l'état de chaque composant
-- Profiler les performances
-- Déboguer les hooks
-
-<Callout type="tip" title="Astuce">
-Ouvrez les DevTools (F12), puis allez dans l'onglet **Components** ou **Profiler** pour voir vos composants React en action.
-</Callout>
-
-## Récapitulatif
-
-<Callout type="info" title="Ce que vous avez appris">
-À ce stade, vous savez :
-
-- ✅ Ce qu'est React et pourquoi l'utiliser
-- ✅ La différence entre bibliothèque et framework
-- ✅ Comment le Virtual DOM optimise les performances
-- ✅ Créer un projet React avec Vite
-- ✅ Comprendre la structure d'un projet React
-- ✅ Lancer le serveur de développement
-- ✅ Modifier votre premier composant
-
-**Prochaine étape :** Apprendre la syntaxe JSX en détail !
-</Callout>
+<Resources resources={[
+  {
+    title: "React Documentation",
+    description: "Documentation officielle de React (version 2024)",
+    url: "https://react.dev",
+    type: "doc"
+  },
+  {
+    title: "Vite Documentation",
+    description: "Outil de build pour créer des projets React",
+    url: "https://vitejs.dev",
+    type: "doc"
+  },
+  {
+    title: "TypeScript Documentation",
+    description: "Documentation officielle de TypeScript",
+    url: "https://www.typescriptlang.org/docs/",
+    type: "doc"
+  }
+]} />

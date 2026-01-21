@@ -83,10 +83,32 @@ export default function Seance2Page() {
                 </div>
                 <div>
                   <h3 className="font-semibold text-gray-900 dark:text-gray-100 group-hover:text-cyan-600 dark:group-hover:text-cyan-400 transition-colors">
-                    Introduction à React
+                    Introduction
                   </h3>
                   <p className="text-sm text-gray-600 dark:text-gray-400">
-                    Qu'est-ce que React, pourquoi l'utiliser, et comment créer un projet
+                    Présentation de la séance, objectifs et philosophie d'apprentissage
+                  </p>
+                </div>
+              </div>
+              <FiArrowRight className="w-5 h-5 text-gray-400 group-hover:text-cyan-600 dark:group-hover:text-cyan-400 transition-colors" />
+            </div>
+          </Link>
+
+          <Link
+            href="/seance-2/getting-started"
+            className="group block p-4 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg hover:border-cyan-500 dark:hover:border-cyan-500 transition-colors"
+          >
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-lg bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center">
+                  <FiCode className="w-5 h-5 text-blue-600 dark:text-blue-400" />
+                </div>
+                <div>
+                  <h3 className="font-semibold text-gray-900 dark:text-gray-100 group-hover:text-cyan-600 dark:group-hover:text-cyan-400 transition-colors">
+                    Débuter avec React
+                  </h3>
+                  <p className="text-sm text-gray-600 dark:text-gray-400">
+                    Qu'est-ce que React, Vite, et créer son premier projet
                   </p>
                 </div>
               </div>

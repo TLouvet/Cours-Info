@@ -1,0 +1,342 @@
+# Débuter avec React
+
+Maintenant que vous comprenez JavaScript, il est temps de découvrir React et de créer votre premier projet !
+
+## Qu'est-ce que React ?
+
+React est une **bibliothèque JavaScript** créée par Facebook (Meta) en 2013 pour construire des interfaces utilisateur interactives.
+
+<Callout type="info" title="Bibliothèque vs Framework">
+**React est une bibliothèque, pas un framework :**
+
+- **Bibliothèque** : Se concentre sur une tâche spécifique (ici, l'UI)
+- **Framework** : Solution complète avec routage, gestion d'état, etc.
+
+React fait **une chose** mais la fait très bien : gérer l'interface utilisateur.
+</Callout>
+
+### Les concepts clés
+
+**1. Architecture basée sur les composants**
+
+React divise l'interface en petits morceaux réutilisables appelés **composants**.
+
+```jsx
+// Un composant simple
+function Welcome() {
+  return <h1>Bienvenue sur mon site !</h1>;
+}
+```
+
+**2. Le Virtual DOM**
+
+React utilise une copie virtuelle du DOM pour optimiser les mises à jour.
+
+<Callout type="tip" title="Comment ça marche ?">
+1. React garde une copie du DOM en mémoire (Virtual DOM)
+2. Quand les données changent, React compare l'ancien et le nouveau Virtual DOM
+3. Il met à jour **uniquement** ce qui a changé dans le vrai DOM
+
+**Résultat :** Des applications ultra-rapides !
+</Callout>
+
+**3. Programmation déclarative**
+
+Vous décrivez **ce que** vous voulez afficher, pas **comment** le faire.
+
+```jsx
+// ❌ Approche impérative (vanilla JS)
+const button = document.createElement('button');
+button.textContent = 'Cliquez-moi';
+button.addEventListener('click', () => {
+  alert('Cliqué !');
+});
+document.body.appendChild(button);
+
+// ✅ Approche déclarative (React)
+function Button() {
+  return (
+    <button onClick={() => alert('Cliqué !')}>
+      Cliquez-moi
+    </button>
+  );
+}
+```
+
+## Pourquoi React ?
+
+<Callout type="success" title="Les avantages de React">
+**Popularité et écosystème**
+- Utilisé par Facebook, Netflix, Instagram, Airbnb, etc.
+- Énorme communauté et ressources
+- Milliers de bibliothèques et outils
+
+**Performance**
+- Virtual DOM = mises à jour optimisées
+- Rendu rapide même pour les grandes applications
+
+**Réutilisabilité**
+- Les composants se réutilisent facilement
+- Code plus maintenable et organisé
+
+**Demande du marché**
+- Compétence très recherchée par les employeurs
+- Salaires attractifs pour les développeurs React
+</Callout>
+
+### React dans le monde réel
+
+Quelques applications célèbres construites avec React :
+
+- **Facebook** - Le créateur de React
+- **Instagram** - Interface web
+- **Netflix** - Plateforme de streaming
+- **WhatsApp Web** - Client web de messagerie
+- **Airbnb** - Plateforme de réservation
+- **Discord** - Application de communication
+
+<QuickCheck
+  question="Quelle est la principale différence entre React et un framework complet comme Angular ?"
+  options={[
+    "React est plus rapide",
+    "React se concentre uniquement sur l'UI",
+    "React ne peut pas faire de routing",
+    "React est plus facile à apprendre"
+  ]}
+  correctAnswer={1}
+  explanation="React est une bibliothèque qui se concentre sur l'interface utilisateur. Pour d'autres fonctionnalités (routing, gestion d'état globale, etc.), vous devez ajouter d'autres bibliothèques. C'est ce qui le distingue d'un framework complet comme Angular qui inclut tout dès le départ."
+/>
+
+## Mise en place d'un projet React
+
+### Vite : L'outil recommandé
+
+Vite est l'outil le plus rapide pour créer un projet React.
+
+```bash
+# Créer un nouveau projet React avec TypeScript
+npm create vite@latest mon-app -- --template react-ts
+
+# Entrer dans le dossier
+cd mon-app
+
+# Installer les dépendances
+npm install
+
+# Lancer le serveur de développement
+npm run dev
+```
+
+<Callout type="tip" title="Pourquoi Vite ?">
+**Vite est ultra-rapide !**
+
+- Démarrage instantané du serveur
+- Hot Module Replacement (HMR) en millisecondes
+- Build de production optimisé
+- Configuration minimale
+
+Vite utilise **ESBuild** (écrit en Go) au lieu de Webpack, ce qui le rend 10 à 100 fois plus rapide.
+
+**Note :** Nous utilisons le template `react-ts` (TypeScript) car c'est le standard professionnel. Vous verrez les détails dans la section [React avec TypeScript](/seance-2/typescript).
+</Callout>
+
+<Callout type="warning" title="Et Create React App ?">
+**Create React App (CRA) est obsolète et n'est plus maintenu.**
+
+Autrefois l'outil officiel de Facebook pour créer des projets React, il a été abandonné. N'utilisez plus CRA pour vos nouveaux projets. **Vite est le nouveau standard.**
+</Callout>
+
+## Structure d'un projet React
+
+Voici à quoi ressemble un projet Vite + React + TypeScript :
+
+```
+mon-app/
+├── node_modules/      # Dépendances installées
+├── public/            # Fichiers statiques
+│   └── vite.svg      # Icônes, images, etc.
+├── src/              # Code source
+│   ├── App.tsx       # Composant principal (.tsx pour TypeScript + JSX)
+│   ├── App.css       # Styles du composant
+│   ├── main.tsx      # Point d'entrée
+│   ├── vite-env.d.ts # Déclarations TypeScript
+│   └── index.css     # Styles globaux
+├── index.html        # Page HTML de base
+├── package.json      # Configuration npm
+├── tsconfig.json     # Configuration TypeScript
+└── vite.config.ts    # Configuration Vite
+```
+
+### Fichiers importants
+
+**`index.html`** - Point d'entrée HTML
+
+```html
+<!DOCTYPE html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Mon App React</title>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>
+```
+
+**`src/main.tsx`** - Point d'entrée TypeScript
+
+```tsx
+import React from 'react'
+import ReactDOM from 'react-dom/client'
+import App from './App.tsx'
+import './index.css'
+
+ReactDOM.createRoot(document.getElementById('root')!).render(
+  <React.StrictMode>
+    <App />
+  </React.StrictMode>,
+)
+```
+
+<Callout type="info" title="Que fait ce code ?">
+1. `ReactDOM.createRoot()` crée un point de montage React
+2. Il cible l'élément avec l'id `root` dans le HTML
+3. `.render()` affiche le composant `<App />` à cet endroit
+4. `<React.StrictMode>` active des vérifications supplémentaires en développement
+
+**Note TypeScript :** Le `!` après `getElementById('root')` indique à TypeScript que cet élément existe forcément.
+</Callout>
+
+**`src/App.tsx`** - Votre premier composant
+
+```tsx
+function App() {
+  return (
+    <div className="App">
+      <h1>Bonjour React !</h1>
+      <p>Mon premier composant fonctionne.</p>
+    </div>
+  )
+}
+
+export default App
+```
+
+## Le serveur de développement
+
+Quand vous lancez `npm run dev`, Vite démarre un serveur local.
+
+**Fonctionnalités :**
+
+- **Hot Module Replacement (HMR)** : Les modifications apparaissent instantanément sans recharger la page
+- **Messages d'erreur clairs** : Affichage des erreurs directement dans le navigateur
+- **Support TypeScript** : Pas de configuration nécessaire
+- **Optimisation automatique** : Vite optimise votre code à la volée
+
+```bash
+# Lancer le serveur
+npm run dev
+
+# Ouvrir automatiquement le navigateur
+npm run dev -- --open
+
+# Changer le port
+npm run dev -- --port 3000
+```
+
+<Callout type="tip" title="Raccourci pratique">
+Dans le terminal du serveur de développement :
+- Appuyez sur `o` pour ouvrir le navigateur
+- Appuyez sur `r` pour redémarrer le serveur
+- Appuyez sur `q` pour quitter
+</Callout>
+
+## Votre premier composant React
+
+### Modifier App.tsx
+
+Ouvrez `src/App.tsx` et remplacez le contenu :
+
+```tsx
+function App() {
+  const name = 'Alice';
+  const age = 25;
+
+  return (
+    <div>
+      <h1>Bonjour {name} !</h1>
+      <p>Tu as {age} ans.</p>
+      <p>L'année prochaine, tu auras {age + 1} ans.</p>
+    </div>
+  );
+}
+
+export default App;
+```
+
+**Sauvegardez** et regardez le navigateur se mettre à jour automatiquement !
+
+<Callout type="success" title="Bravo !">
+Vous venez d'écrire votre premier code React interactif. Remarquez comment on peut insérer des **expressions JavaScript** dans le JSX avec `{}`.
+
+Tous les concepts JavaScript que vous avez appris en Séance 1 (variables, template literals, expressions) sont directement utilisables dans React !
+</Callout>
+
+## Outils de développement
+
+### React Developer Tools
+
+Extension de navigateur **indispensable** pour déboguer React.
+
+**Installation :**
+- [Chrome](https://chrome.google.com/webstore/detail/react-developer-tools/fmkadmapgofadopljbjfkapdkoienihi)
+- [Firefox](https://addons.mozilla.org/fr/firefox/addon/react-devtools/)
+- [Edge](https://microsoftedge.microsoft.com/addons/detail/react-developer-tools/gpphkfbcpidddadnkolkpfckpihlkkil)
+
+**Fonctionnalités :**
+- Inspecter l'arbre des composants
+- Voir les props et l'état de chaque composant
+- Profiler les performances
+- Déboguer les hooks
+
+<Callout type="tip" title="Astuce">
+Ouvrez les DevTools (F12), puis allez dans l'onglet **Components** ou **Profiler** pour voir vos composants React en action.
+</Callout>
+
+## Ressources
+
+<Resources resources={[
+  {
+    title: "Documentation React",
+    description: "Documentation officielle de React (nouvelle version)",
+    url: "https://react.dev",
+    type: "doc"
+  },
+  {
+    title: "Vite Documentation",
+    description: "Documentation complète de Vite",
+    url: "https://vitejs.dev",
+    type: "doc"
+  },
+  {
+    title: "React DevTools Guide",
+    description: "Guide d'utilisation des React Developer Tools",
+    url: "https://react.dev/learn/react-developer-tools",
+    type: "doc"
+  }
+]} />
+
+<QuickCheck
+  question="Quel outil est recommandé pour créer un nouveau projet React en 2026 ?"
+  options={[
+    "Create React App (CRA)",
+    "Webpack",
+    "Vite",
+    "Parcel"
+  ]}
+  correctAnswer={2}
+  explanation="Vite est l'outil recommandé pour créer des projets React. Create React App est obsolète et n'est plus maintenu. Vite offre des performances bien supérieures grâce à ESBuild."
+/>

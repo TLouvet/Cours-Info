@@ -63,7 +63,6 @@ En JSX, **toutes** les balises doivent être fermées.
 // ❌ Ne fonctionne pas
 <img src="photo.jpg">
 <input type="text">
-<br>
 
 // ✅ Correct
 <img src="photo.jpg" />
@@ -71,9 +70,9 @@ En JSX, **toutes** les balises doivent être fermées.
 <br />
 ```
 
-### 4. camelCase pour les attributs
+### 4. camelCase pour les événements
 
-Les attributs utilisent la notation camelCase.
+Les événements utilisent la notation camelCase.
 
 ```jsx
 // ❌ HTML
@@ -83,11 +82,19 @@ Les attributs utilisent la notation camelCase.
 <button onClick={handleClick}>Cliquez</button>
 ```
 
-**Exemples courants :**
-- `onclick` → `onClick`
-- `onchange` → `onChange`
-- `tabindex` → `tabIndex`
-- `maxlength` → `maxLength`
+**Exemples courants :** `onclick` → `onClick`, `onchange` → `onChange`, `onsubmit` → `onSubmit`
+
+<QuickCheck
+  question="Quelle est la syntaxe correcte pour ajouter une classe CSS en JSX ?"
+  options={[
+    '<div class=\"container\">',
+    '<div className=\"container\">',
+    '<div css=\"container\">',
+    '<div style=\"container\">'
+  ]}
+  correctAnswer={1}
+  explanation="En JSX, on utilise className au lieu de class car 'class' est un mot réservé en JavaScript. C'est l'une des différences principales entre HTML et JSX."
+/>
 
 ## Les règles essentielles du JSX
 
@@ -131,13 +138,13 @@ function App() {
 Les fragments permettent de grouper des éléments **sans ajouter de nœud supplémentaire** dans le DOM.
 
 ```jsx
-// ✅ Sans Fragment (ajoute une div dans le DOM)
+// Ajoute une div dans le DOM
 <div>
   <h1>Titre</h1>
   <p>Texte</p>
 </div>
 
-// ✅ Avec Fragment (pas de nœud supplémentaire)
+// Pas de nœud supplémentaire
 <>
   <h1>Titre</h1>
   <p>Texte</p>
@@ -167,10 +174,8 @@ function Greeting() {
 **Ce qui fonctionne dans `{}` :**
 
 ```jsx
-// ✅ Variables
+// ✅ Variables et expressions
 <p>{name}</p>
-
-// ✅ Expressions
 <p>{2 + 2}</p>
 <p>{user.firstName + ' ' + user.lastName}</p>
 
@@ -187,11 +192,15 @@ function Greeting() {
 **Ce qui ne fonctionne PAS :**
 
 ```jsx
-// ❌ Déclarations (if, for, while, etc.)
+// ❌ Déclarations (if, for, while)
 <p>{if (isLoggedIn) { 'Connecté' }}</p>
 
-// ❌ Objets directement (sauf React elements)
-<p>{{name: 'Alice'}}</p>
+// ❌ Objets directement
+const user = { name: 'Alice' };
+<p>{user}</p>  // Erreur!
+
+// ✅ Afficher une propriété
+<p>{user.name}</p>
 ```
 
 <Callout type="warning" title="Erreur courante">
@@ -206,7 +215,7 @@ const user = { name: 'Alice', age: 25 };
 // ✅ Correct : Afficher une propriété
 <p>{user.name}</p>
 
-// ✅ Correct : Convertir en string
+// ✅ Correct : Convertir en string (pour debug)
 <p>{JSON.stringify(user)}</p>
 ```
 </Callout>
@@ -233,9 +242,7 @@ const buttonStyle = {
   backgroundColor: 'blue',
   color: 'white',
   padding: '10px 20px',
-  border: 'none',
-  borderRadius: '5px',
-  cursor: 'pointer'
+  borderRadius: '5px'
 };
 
 function Button() {
@@ -255,6 +262,18 @@ Pour des raisons de performance et de maintenabilité, privilégiez les classes 
 ```
 </Callout>
 
+<QuickCheck
+  question="Que se passe-t-il si vous essayez d'afficher directement un objet en JSX ?"
+  options={[
+    "L'objet s'affiche sous forme de texte [object Object]",
+    "React génère une erreur",
+    "L'objet est automatiquement converti en JSON",
+    "Seule la première propriété de l'objet s'affiche"
+  ]}
+  correctAnswer={1}
+  explanation="React génère une erreur 'Objects are not valid as a React child'. Vous devez afficher une propriété spécifique de l'objet (user.name) ou le convertir en string avec JSON.stringify()."
+/>
+
 ## Commentaires en JSX
 
 Les commentaires dans JSX utilisent `{/* */}`.
@@ -268,30 +287,13 @@ function App() {
 
       {/*
         Commentaire
-        sur plusieurs
-        lignes
+        sur plusieurs lignes
       */}
       <p>Paragraphe</p>
     </div>
   );
 }
 ```
-
-<Callout type="warning" title="Attention">
-```jsx
-// ❌ Ne fonctionne pas
-<div>
-  // Ceci n'est pas un commentaire
-  <h1>Titre</h1>
-</div>
-
-// ✅ Correct
-<div>
-  {/* Ceci est un commentaire */}
-  <h1>Titre</h1>
-</div>
-```
-</Callout>
 
 ## Attributs dynamiques
 
@@ -320,7 +322,7 @@ function UserCard({ user }) {
 Vous pouvez passer plusieurs attributs d'un coup avec le spread operator.
 
 ```jsx
-function Input(props) {
+function Input() {
   const inputProps = {
     type: 'text',
     placeholder: 'Entrez votre nom',
@@ -329,50 +331,9 @@ function Input(props) {
 
   return <input {...inputProps} />;
 }
-
-// Équivalent à :
-// <input type="text" placeholder="Entrez votre nom" className="input-field" />
 ```
 
-## JSX et les listes
-
-Pour afficher des listes, utilisez `.map()`.
-
-```jsx
-function UserList() {
-  const users = ['Alice', 'Bob', 'Charlie'];
-
-  return (
-    <ul>
-      {users.map(user => (
-        <li key={user}>{user}</li>
-      ))}
-    </ul>
-  );
-}
-```
-
-<Callout type="warning" title="La prop key est obligatoire">
-Chaque élément d'une liste **doit** avoir une prop `key` unique.
-
-```jsx
-// ❌ Warning : Each child should have a unique "key" prop
-<ul>
-  {users.map(user => <li>{user}</li>)}
-</ul>
-
-// ✅ Correct
-<ul>
-  {users.map(user => <li key={user.id}>{user.name}</li>)}
-</ul>
-```
-
-**Pourquoi ?** React utilise les keys pour identifier quels éléments ont changé, afin d'optimiser le rendu.
-</Callout>
-
-## Exemples pratiques
-
-### Exemple 1 : Carte de profil
+## Exemple pratique : Carte de profil
 
 ```jsx
 function ProfileCard() {
@@ -389,116 +350,52 @@ function ProfileCard() {
       <h2>{user.name}</h2>
       <p>{user.bio}</p>
       <span className={user.isOnline ? 'online' : 'offline'}>
-        {user.isOnline ? '🟢 En ligne' : '⚫ Hors ligne'}
+        {user.isOnline ? 'En ligne' : 'Hors ligne'}
       </span>
     </div>
   );
 }
 ```
 
-### Exemple 2 : Liste de produits
+Cet exemple montre l'utilisation de variables, expressions conditionnelles (ternaire), et attributs dynamiques en JSX.
 
-```jsx
-function ProductList() {
-  const products = [
-    { id: 1, name: 'Laptop', price: 999 },
-    { id: 2, name: 'Souris', price: 25 },
-    { id: 3, name: 'Clavier', price: 75 }
-  ];
+## Résumé
 
-  return (
-    <div>
-      <h2>Nos produits</h2>
-      <ul>
-        {products.map(product => (
-          <li key={product.id}>
-            {product.name} - {product.price}€
-          </li>
-        ))}
-      </ul>
-    </div>
-  );
-}
-```
+<Callout type="info" title="À retenir">
+**JSX = JavaScript + XML**
+- Syntaxe qui ressemble à HTML mais avec des différences importantes
+- `className` au lieu de `class`, `htmlFor` au lieu de `for`
+- Balises auto-fermantes obligatoires : `<img />`, `<input />`
+- Événements en camelCase : `onClick`, `onChange`
 
-### Exemple 3 : Conditionnel avec ternaire
+**Règles essentielles**
+- Un seul élément parent (ou utiliser des fragments `<>...</>`)
+- Expressions JavaScript avec `{}` : variables, calculs, ternaires
+- Style inline avec objet JavaScript : `style={{ color: 'red' }}`
+- Objets ne peuvent pas être affichés directement
 
-```jsx
-function WelcomeMessage({ isLoggedIn, username }) {
-  return (
-    <div>
-      {isLoggedIn ? (
-        <h1>Bienvenue, {username} !</h1>
-      ) : (
-        <h1>Veuillez vous connecter</h1>
-      )}
-    </div>
-  );
-}
-```
-
-## Pièges courants
-
-<Callout type="error" title="Erreurs fréquentes">
-**1. Oublier de fermer les balises**
-```jsx
-// ❌ Erreur
-<img src="photo.jpg">
-
-// ✅ Correct
-<img src="photo.jpg" />
-```
-
-**2. Utiliser `class` au lieu de `className`**
-```jsx
-// ❌ Erreur
-<div class="container">
-
-// ✅ Correct
-<div className="container">
-```
-
-**3. Oublier les accolades pour les expressions**
-```jsx
-// ❌ Affiche littéralement "name"
-<p>name</p>
-
-// ✅ Affiche la valeur de name
-<p>{name}</p>
-```
-
-**4. Retourner plusieurs éléments sans parent**
-```jsx
-// ❌ Erreur
-return (
-  <h1>Titre</h1>
-  <p>Texte</p>
-);
-
-// ✅ Correct
-return (
-  <>
-    <h1>Titre</h1>
-    <p>Texte</p>
-  </>
-);
-```
+JSX est au cœur de React. Une fois ces règles maîtrisées, écrire des composants devient naturel !
 </Callout>
 
-## Récapitulatif
+## Ressources
 
-<Callout type="success" title="Ce que vous avez appris">
-Vous maîtrisez maintenant :
-
-- ✅ Ce qu'est JSX et comment il fonctionne
-- ✅ Les différences entre JSX et HTML
-- ✅ Les règles essentielles du JSX
-- ✅ Comment insérer des expressions avec `{}`
-- ✅ Les fragments pour éviter les div inutiles
-- ✅ Le style inline avec des objets JavaScript
-- ✅ Les commentaires en JSX
-- ✅ Les attributs dynamiques
-- ✅ Afficher des listes avec `.map()`
-
-**Prochaine étape :** Créer vos propres composants React !
-</Callout>
+<Resources resources={[
+  {
+    title: "JSX in React",
+    description: "Documentation officielle React sur JSX",
+    url: "https://react.dev/learn/writing-markup-with-jsx",
+    type: "doc"
+  },
+  {
+    title: "JavaScript in JSX with Curly Braces",
+    description: "Guide complet sur l'utilisation de {} en JSX",
+    url: "https://react.dev/learn/javascript-in-jsx-with-curly-braces",
+    type: "doc"
+  },
+  {
+    title: "Rendering Lists",
+    description: "Comment afficher des listes en React",
+    url: "https://react.dev/learn/rendering-lists",
+    type: "doc"
+  }
+]} />

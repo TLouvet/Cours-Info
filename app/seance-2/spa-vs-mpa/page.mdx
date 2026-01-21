@@ -1,8 +1,6 @@
-# SPA vs MPA : Architecture des applications web
+# SPA vs MPA
 
-Avant de plonger dans React, il est essentiel de comprendre **quel type d'application** vous allez construire. React est principalement utilisé pour créer des **SPA** (Single Page Applications).
-
----
+Avant de plonger dans React, il est important de comprendre **quel type d'application** vous allez construire. React est principalement utilisé pour créer des **SPA** (Single Page Applications).
 
 ## Qu'est-ce qu'une SPA ?
 
@@ -10,44 +8,54 @@ Avant de plonger dans React, il est essentiel de comprendre **quel type d'applic
 
 Une SPA est une application web qui **charge une seule page HTML** au départ, puis met à jour dynamiquement le contenu **sans recharger la page complète**.
 
-### Fonctionnement d'une SPA
+### Fonctionnement
 
-```
-┌─────────────────────────────────────────────┐
-│  Première visite                            │
-│  ────────────────                           │
-│  1. Navigateur demande index.html          │
-│  2. Serveur envoie HTML + JavaScript       │
-│  3. JavaScript s'exécute                    │
-│  4. Application React prend le contrôle    │
-└─────────────────────────────────────────────┘
+**Première visite :**
+1. Le navigateur demande `index.html`
+2. Le serveur envoie HTML + JavaScript
+3. JavaScript s'exécute et React prend le contrôle
+4. Le contenu s'affiche
 
-┌─────────────────────────────────────────────┐
-│  Navigation suivante (ex: clic sur un lien)│
-│  ──────────────────────────────────────────│
-│  1. JavaScript intercepte le clic          │
-│  2. Met à jour l'URL (sans recharger)      │
-│  3. Récupère les données (API si besoin)   │
-│  4. Re-render les composants React         │
-│  → Pas de rechargement de page !           │
-└─────────────────────────────────────────────┘
-```
+**Navigation suivante :**
+1. JavaScript intercepte les clics sur les liens
+2. L'URL change (sans rechargement de page)
+3. React met à jour uniquement le contenu nécessaire
+4. **Pas de rechargement de page !**
 
-### Exemple concret
-
-Imaginez Gmail :
-- Vous chargez Gmail **une seule fois**
+<Callout type="info" title="Exemple concret : Gmail">
+Quand vous utilisez Gmail :
+- Vous chargez l'application **une seule fois**
 - Quand vous cliquez sur un email, **seul le contenu change**
 - La page ne se recharge **jamais**
-- L'URL peut changer (`/inbox` → `/sent`) mais sans rechargement
+- L'URL peut changer mais sans rechargement
 
-<Callout type="info" title="React = SPA par défaut">
-Quand vous créez une application avec **React seul** (avec Vite), vous créez une **SPA**.
-
-Le serveur envoie un fichier HTML quasi-vide, puis React génère tout le contenu côté client (dans le navigateur).
+C'est ça, une SPA !
 </Callout>
 
----
+### Caractéristiques d'une SPA
+
+**✅ Avantages**
+- Navigation fluide et rapide (pas de rechargement)
+- Expérience utilisateur similaire à une application native
+- Séparation claire frontend/backend (API)
+- Interactions riches possibles
+
+**❌ Inconvénients**
+- Chargement initial plus lent (tout le JavaScript à télécharger)
+- SEO difficile (contenu généré par JavaScript)
+- JavaScript obligatoire (ne fonctionne pas sans JS)
+
+<QuickCheck
+  question="Que se passe-t-il quand vous cliquez sur un lien dans une SPA ?"
+  options={[
+    "La page se recharge complètement",
+    "Le serveur envoie une nouvelle page HTML",
+    "JavaScript met à jour le contenu sans recharger la page",
+    "L'application redémarre"
+  ]}
+  correctAnswer={2}
+  explanation="Dans une SPA, JavaScript intercepte les clics et met à jour uniquement le contenu nécessaire sans recharger toute la page. C'est ce qui rend la navigation instantanée et fluide."
+/>
 
 ## Qu'est-ce qu'une MPA ?
 
@@ -55,128 +63,141 @@ Le serveur envoie un fichier HTML quasi-vide, puis React génère tout le conten
 
 Une MPA est une application web **traditionnelle** où chaque navigation charge une **nouvelle page HTML complète** depuis le serveur.
 
-### Fonctionnement d'une MPA
+### Fonctionnement
 
-```
-┌─────────────────────────────────────────────┐
-│  Chaque navigation                          │
-│  ─────────────────                          │
-│  1. Utilisateur clique sur un lien         │
-│  2. Navigateur fait une requête au serveur │
-│  3. Serveur génère une nouvelle page HTML  │
-│  4. Navigateur charge et affiche la page   │
-│  → Écran blanc pendant le chargement       │
-└─────────────────────────────────────────────┘
-```
+**Chaque navigation :**
+1. L'utilisateur clique sur un lien
+2. Le navigateur fait une requête au serveur
+3. Le serveur génère une nouvelle page HTML
+4. Le navigateur charge et affiche la page complète
+5. **L'écran devient blanc pendant le chargement**
 
-### Exemple concret
+<Callout type="tip" title="MPA = Architecture traditionnelle du web">
+Les MPA existent depuis les débuts du web. Sites classiques comme WordPress, blogs, forums sont des MPA.
 
-Sites web classiques (WordPress, forums, etc.) :
-- Vous visitez `/accueil` → Le serveur envoie `accueil.html`
-- Vous cliquez sur `/contact` → Le serveur envoie `contact.html`
-- À chaque clic, **la page se recharge complètement**
-- L'écran devient blanc pendant le chargement
-
-<Callout type="tip" title="MPA = Architecture traditionnelle">
-Les MPA existent depuis les débuts du web. C'est l'approche classique où le **serveur génère le HTML**.
-
-Exemples : PHP, WordPress, Ruby on Rails (sans JS), Django, etc.
+À chaque clic, vous voyez un flash blanc pendant que la nouvelle page se charge.
 </Callout>
 
----
+### Caractéristiques d'une MPA
+
+**✅ Avantages**
+- Chargement initial rapide
+- SEO facile (HTML complet envoyé par le serveur)
+- Fonctionne sans JavaScript
+- Plus simple à développer
+
+**❌ Inconvénients**
+- Navigation plus lente (rechargement complet)
+- Flash blanc entre les pages
+- Moins fluide pour l'utilisateur
+- État perdu à chaque navigation
+- Requêtes serveur à chaque page
 
 ## Comparaison SPA vs MPA
 
-| Critère | SPA | MPA |
-|---------|-----|-----|
-| **Chargement initial** | Plus lent (tout le JS à charger) | Plus rapide (seulement le HTML) |
-| **Navigation** | ⚡ Instantanée (pas de rechargement) | 🐢 Plus lente (rechargement complet) |
-| **Expérience utilisateur** | Fluide, app-like | Saccadée (flash blanc) |
-| **SEO** | ⚠️ Difficile (contenu généré en JS) | ✅ Facile (HTML prêt) |
-| **Complexité** | Plus complexe (routing client, état) | Plus simple (serveur fait tout) |
-| **Backend** | Séparé (API REST/GraphQL) | Intégré (génère le HTML) |
-| **Offline** | Possible (avec cache) | Impossible |
-| **Exemple** | Gmail, Twitter, Spotify Web | WordPress, Forums, Sites vitrines |
+<div className="overflow-x-auto">
+  <table className="min-w-full border-collapse border border-gray-300 dark:border-gray-700">
+    <thead>
+      <tr className="bg-gray-100 dark:bg-gray-800">
+        <th className="border border-gray-300 dark:border-gray-700 px-4 py-2 text-left">Critère</th>
+        <th className="border border-gray-300 dark:border-gray-700 px-4 py-2 text-left">SPA</th>
+        <th className="border border-gray-300 dark:border-gray-700 px-4 py-2 text-left">MPA</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td className="border border-gray-300 dark:border-gray-700 px-4 py-2 font-semibold">Chargement initial</td>
+        <td className="border border-gray-300 dark:border-gray-700 px-4 py-2">Plus lent</td>
+        <td className="border border-gray-300 dark:border-gray-700 px-4 py-2">Plus rapide</td>
+      </tr>
+      <tr className="bg-gray-50 dark:bg-gray-900/50">
+        <td className="border border-gray-300 dark:border-gray-700 px-4 py-2 font-semibold">Navigation</td>
+        <td className="border border-gray-300 dark:border-gray-700 px-4 py-2">Instantanée</td>
+        <td className="border border-gray-300 dark:border-gray-700 px-4 py-2">Rechargement complet</td>
+      </tr>
+      <tr>
+        <td className="border border-gray-300 dark:border-gray-700 px-4 py-2 font-semibold">Expérience utilisateur</td>
+        <td className="border border-gray-300 dark:border-gray-700 px-4 py-2">Fluide, app-like</td>
+        <td className="border border-gray-300 dark:border-gray-700 px-4 py-2">Saccadée (flash blanc)</td>
+      </tr>
+      <tr className="bg-gray-50 dark:bg-gray-900/50">
+        <td className="border border-gray-300 dark:border-gray-700 px-4 py-2 font-semibold">SEO</td>
+        <td className="border border-gray-300 dark:border-gray-700 px-4 py-2">Difficile</td>
+        <td className="border border-gray-300 dark:border-gray-700 px-4 py-2">Facile</td>
+      </tr>
+      <tr>
+        <td className="border border-gray-300 dark:border-gray-700 px-4 py-2 font-semibold">Complexité</td>
+        <td className="border border-gray-300 dark:border-gray-700 px-4 py-2">État, routing, cache côté client</td>
+        <td className="border border-gray-300 dark:border-gray-700 px-4 py-2">Serveur gère tout</td>
+      </tr>
+      <tr className="bg-gray-50 dark:bg-gray-900/50">
+        <td className="border border-gray-300 dark:border-gray-700 px-4 py-2 font-semibold">JavaScript</td>
+        <td className="border border-gray-300 dark:border-gray-700 px-4 py-2">Obligatoire</td>
+        <td className="border border-gray-300 dark:border-gray-700 px-4 py-2">Optionnel</td>
+      </tr>
+      <tr>
+        <td className="border border-gray-300 dark:border-gray-700 px-4 py-2 font-semibold">Exemple</td>
+        <td className="border border-gray-300 dark:border-gray-700 px-4 py-2">Gmail, Spotify Web</td>
+        <td className="border border-gray-300 dark:border-gray-700 px-4 py-2">WordPress, forums</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
 
----
+<QuickCheck
+  question="Quel est l'avantage principal d'une MPA par rapport à une SPA ?"
+  options={[
+    "Navigation plus rapide",
+    "Expérience utilisateur plus fluide",
+    "SEO facile et chargement initial rapide",
+    "Peut fonctionner offline"
+  ]}
+  correctAnswer={2}
+  explanation="Les MPA ont un meilleur SEO car le serveur envoie du HTML complet que Google peut lire facilement. Le chargement initial est aussi plus rapide car on ne charge pas tout le JavaScript d'un coup. Cependant, la navigation entre pages est plus lente."
+/>
 
-## Avantages des SPA
+## Quand utiliser une SPA ?
 
-### ✅ Expérience utilisateur fluide
+### ✅ Bon choix pour :
 
-**Navigation instantanée :**
-```
-Utilisateur clique sur "Profil"
-→ Pas de rechargement
-→ Transition animée
-→ Contenu apparaît immédiatement
-```
+**Applications web complexes**
+- Dashboards d'administration
+- Outils de productivité (Google Docs, Notion)
+- Applications de gestion (CRM, ERP)
+- Réseaux sociaux
+- Applications de messagerie
 
-C'est ce qui donne l'impression d'une **vraie application** (comme sur mobile).
+**Caractéristiques communes :**
+- Beaucoup d'interactions utilisateur
+- Navigation fréquente
+- Utilisateurs connectés (SEO moins important)
+- Expérience fluide cruciale
 
-### ✅ Séparation frontend/backend
+**Exemples :** Gmail, Figma, Trello, Spotify Web
 
-```
-┌──────────────┐         API          ┌──────────────┐
-│   Frontend   │ ◄────────────────► │   Backend    │
-│   (React)    │   JSON uniquement   │   (Node.js)  │
-└──────────────┘                      └──────────────┘
-```
+### ❌ Mauvais choix pour :
 
-- Frontend et backend sont **complètement séparés**
-- Même API pour le web, mobile, desktop
-- Équipes peuvent travailler indépendamment
+**Sites vitrines / blogs / e-commerce**
+- Site vitrine d'entreprise
+- Blog
+- Documentation
+- Landing pages
+- Sites où le SEO est crucial
 
-### ✅ Interactions riches
+**Pourquoi ?**
+- SEO essentiel (Google doit voir le contenu)
+- Peu d'interactions
+- Contenu principalement statique
+- Performance initiale importante
 
-Possible de créer des UI complexes :
-- Drag & drop
-- Animations fluides
-- Mises à jour en temps réel (WebSockets)
-- Formulaires multi-étapes avec validation instantanée
+## React et les SPA
 
-### ✅ Réutilisation de composants
+<Callout type="info" title="React = SPA par défaut">
+Quand vous créez une application avec **React seul** (avec Vite), vous créez une **SPA**.
 
-```tsx
-// Un composant Button utilisable partout
-<Button variant="primary">Envoyer</Button>
-<Button variant="secondary">Annuler</Button>
-```
-
-React encourage la **réutilisation** et la **composition**.
-
----
-
-## Inconvénients des SPA
-
-### ❌ Chargement initial lent
-
-```
-Première visite d'une SPA :
-1. Télécharger HTML (petit)
-2. Télécharger JavaScript (gros !) ← Peut être lent
-3. Exécuter le JavaScript
-4. Enfin afficher le contenu
-```
-
-Si votre bundle JavaScript fait 500 KB, l'utilisateur doit attendre tout ça.
-
-<Callout type="warning" title="Performance initiale">
-**Problème :** L'utilisateur voit un écran blanc pendant le chargement du JS.
-
-**Solutions :**
-- Code splitting (charger seulement ce qui est nécessaire)
-- Lazy loading (charger à la demande)
-- Optimisation du bundle
-- → Ou utiliser un framework hybride (Next.js)
-</Callout>
-
-### ❌ SEO difficile
-
-**Le problème :**
+Le serveur envoie un fichier HTML quasi-vide :
 
 ```html
-<!-- Ce que le serveur envoie (SPA) -->
 <html>
   <body>
     <div id="root"></div>
@@ -185,286 +206,115 @@ Si votre bundle JavaScript fait 500 KB, l'utilisateur doit attendre tout ça.
 </html>
 ```
 
-Google et les moteurs de recherche voient un **HTML vide** !
+Puis React génère tout le contenu dans le navigateur.
+</Callout>
 
-Le contenu est généré par JavaScript, mais les crawlers peuvent avoir du mal à l'exécuter correctement.
+### Le problème du SEO
+
+Les moteurs de recherche (Google) voient un HTML vide. Le contenu généré par JavaScript peut ne pas être indexé correctement.
 
 **Solutions :**
-- Server-Side Rendering (SSR) avec Next.js
+- Utiliser Next.js (framework hybride)
+- Server-Side Rendering (SSR)
 - Static Site Generation (SSG)
-- Pre-rendering
 
-### ❌ Complexité accrue
+## Frameworks hybrides
 
-Les SPA nécessitent de gérer :
-- Routing côté client (React Router)
-- Gestion d'état complexe (Redux, Zustand)
-- Cache des données
-- Gestion d'erreurs
-- Loading states partout
+### Next.js et autres
 
-C'est plus complexe qu'une MPA où le serveur gère tout ça.
+Des frameworks comme **Next.js**, **Remix**, ou **Gatsby** combinent les avantages des SPA et MPA :
 
-### ❌ JavaScript obligatoire
+**Première visite (comme une MPA) :**
+- Le serveur génère le HTML complet
+- Meilleur SEO (contenu indexable)
+- Contenu visible immédiatement
 
-Si JavaScript est désactivé (ou échoue à charger), **l'application ne fonctionne pas du tout**.
-
-Les MPA peuvent fonctionner sans JS (même si moins interactives).
-
----
-
-## Quand utiliser une SPA ?
-
-### ✅ Utilisez une SPA pour :
-
-**Applications web complexes :**
-- Dashboards d'administration
-- Outils de productivité (type Google Docs)
-- Applications de gestion (CRM, ERP)
-- Réseaux sociaux
-- Applications de messagerie
-
-**Caractéristiques :**
-- Beaucoup d'interactions
-- Utilisateurs connectés (pas besoin de SEO)
-- Expérience fluide importante
-- Navigation fréquente entre les pages
-
-**Exemples :**
-- Gmail
-- Figma
-- Notion
-- Trello
-- Spotify Web
-
-### ❌ N'utilisez PAS une SPA pour :
-
-**Sites vitrines / blogs / e-commerce :**
-- Site vitrine d'entreprise
-- Blog
-- Documentation
-- Site e-commerce (sauf si hybride)
-- Landing pages
-
-**Pourquoi ?**
-- SEO crucial (Google doit voir le contenu)
-- Peu d'interactions
-- Performance initiale importante
-- Contenu essentiellement statique
-
-**Meilleure option :** MPA ou framework hybride (Next.js, Remix)
-
----
-
-## Les frameworks hybrides : le meilleur des deux mondes
-
-### Next.js, Remix, SvelteKit, etc.
-
-Ces frameworks offrent **SPA + MPA** :
-
-```
-┌─────────────────────────────────────────┐
-│  Première visite (MPA-like)             │
-│  ───────────────────────                │
-│  → Serveur génère le HTML complet      │
-│  → SEO parfait                          │
-│  → Contenu visible immédiatement        │
-└─────────────────────────────────────────┘
-
-┌─────────────────────────────────────────┐
-│  Navigation suivante (SPA-like)         │
-│  ───────────────────────                │
-│  → JavaScript prend le relais           │
-│  → Navigation instantanée               │
-│  → Pas de rechargement                  │
-└─────────────────────────────────────────┘
-```
-
-<Callout type="info" title="Next.js = React avec superpowers">
-**Next.js** est le framework React le plus populaire. Il ajoute :
-
-- **SSR** (Server-Side Rendering) : Le serveur génère le HTML
-- **SSG** (Static Site Generation) : Pages pré-générées
-- **Routing** automatique (basé sur les fichiers)
-- **API routes** (backend intégré)
-- **Optimisations** automatiques
-
-**Résultat :** SEO parfait + Expérience SPA fluide
-
-Vous apprendrez Next.js après avoir maîtrisé React !
-</Callout>
+**Navigation suivante (comme une SPA) :**
+- JavaScript prend le relais
+- Navigation instantanée
+- Pas de rechargement
 
 ### Approches de rendu
 
-| Approche | Description | Cas d'usage |
-|----------|-------------|-------------|
-| **CSR** (Client-Side Rendering) | Tout rendu dans le navigateur (SPA classique) | Dashboards, apps privées |
-| **SSR** (Server-Side Rendering) | HTML généré à chaque requête | Pages dynamiques avec SEO |
-| **SSG** (Static Site Generation) | HTML pré-généré au build | Blogs, docs, sites statiques |
-| **ISR** (Incremental Static Regeneration) | SSG avec mise à jour périodique | E-commerce, actualités |
+<div className="overflow-x-auto">
+  <table className="min-w-full border-collapse border border-gray-300 dark:border-gray-700">
+    <thead>
+      <tr className="bg-gray-100 dark:bg-gray-800">
+        <th className="border border-gray-300 dark:border-gray-700 px-4 py-2 text-left">Approche</th>
+        <th className="border border-gray-300 dark:border-gray-700 px-4 py-2 text-left">Description</th>
+        <th className="border border-gray-300 dark:border-gray-700 px-4 py-2 text-left">Quand l'utiliser</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td className="border border-gray-300 dark:border-gray-700 px-4 py-2 font-semibold">CSR (Client-Side Rendering)</td>
+        <td className="border border-gray-300 dark:border-gray-700 px-4 py-2">Tout rendu dans le navigateur</td>
+        <td className="border border-gray-300 dark:border-gray-700 px-4 py-2">Dashboards, apps privées</td>
+      </tr>
+      <tr className="bg-gray-50 dark:bg-gray-900/50">
+        <td className="border border-gray-300 dark:border-gray-700 px-4 py-2 font-semibold">SSR (Server-Side Rendering)</td>
+        <td className="border border-gray-300 dark:border-gray-700 px-4 py-2">HTML généré à chaque requête</td>
+        <td className="border border-gray-300 dark:border-gray-700 px-4 py-2">Pages dynamiques avec SEO</td>
+      </tr>
+      <tr>
+        <td className="border border-gray-300 dark:border-gray-700 px-4 py-2 font-semibold">SSG (Static Site Generation)</td>
+        <td className="border border-gray-300 dark:border-gray-700 px-4 py-2">HTML pré-généré au build</td>
+        <td className="border border-gray-300 dark:border-gray-700 px-4 py-2">Blogs, docs, sites statiques</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
 
-**React seul = CSR uniquement**
-**Next.js = CSR + SSR + SSG + ISR**
-
----
-
-## Architecture d'une SPA React
-
-### Structure classique
-
-```
-┌──────────────────────────────────────────┐
-│          Navigateur (Client)             │
-│  ┌────────────────────────────────────┐  │
-│  │       Application React            │  │
-│  │  ┌──────────────────────────────┐  │  │
-│  │  │   Composants React           │  │  │
-│  │  │   (UI, logique)              │  │  │
-│  │  └──────────────────────────────┘  │  │
-│  │  ┌──────────────────────────────┐  │  │
-│  │  │   React Router               │  │  │
-│  │  │   (navigation)               │  │  │
-│  │  └──────────────────────────────┘  │  │
-│  │  ┌──────────────────────────────┐  │  │
-│  │  │   State Management           │  │  │
-│  │  │   (useState, Context, etc.)  │  │  │
-│  │  └──────────────────────────────┘  │  │
-│  └────────────────────────────────────┘  │
-└──────────────────────────────────────────┘
-                    ↕ HTTP (JSON)
-┌──────────────────────────────────────────┐
-│             Serveur (Backend)            │
-│  ┌────────────────────────────────────┐  │
-│  │        API REST / GraphQL          │  │
-│  │   (Node.js, Python, Java, etc.)    │  │
-│  └────────────────────────────────────┘  │
-│  ┌────────────────────────────────────┐  │
-│  │          Base de données           │  │
-│  └────────────────────────────────────┘  │
-└──────────────────────────────────────────┘
-```
-
-### Communication Frontend ↔ Backend
-
-```tsx
-// Frontend React (SPA)
-function UserList() {
-  const [users, setUsers] = useState([]);
-
-  useEffect(() => {
-    // Appel API au backend
-    fetch('https://api.monapp.com/users')
-      .then(res => res.json())
-      .then(data => setUsers(data));
-  }, []);
-
-  return (
-    <ul>
-      {users.map(user => (
-        <li key={user.id}>{user.name}</li>
-      ))}
-    </ul>
-  );
-}
-```
-
-Le frontend **ne parle qu'avec l'API** (JSON uniquement).
-
----
-
-## Exemples pratiques
-
-### SPA : Application de gestion de tâches
-
-```tsx
-// Tout se passe côté client
-function TodoApp() {
-  const [todos, setTodos] = useState([]);
-
-  // Ajouter une tâche (pas de rechargement)
-  const addTodo = (text) => {
-    setTodos([...todos, { id: Date.now(), text }]);
-  };
-
-  // Supprimer une tâche (pas de rechargement)
-  const deleteTodo = (id) => {
-    setTodos(todos.filter(t => t.id !== id));
-  };
-
-  return (
-    <div>
-      <TodoForm onAdd={addTodo} />
-      <TodoList todos={todos} onDelete={deleteTodo} />
-    </div>
-  );
-}
-
-// Navigation sans rechargement
-<Link to="/todos">Mes tâches</Link>
-<Link to="/profile">Profil</Link>
-```
-
-### MPA : Site vitrine traditionnel
-
-```php
-<!-- page-accueil.php -->
-<?php include 'header.php'; ?>
-<h1>Accueil</h1>
-<p>Bienvenue sur notre site</p>
-<a href="contact.php">Contactez-nous</a> <!-- Rechargement complet -->
-<?php include 'footer.php'; ?>
-
-<!-- contact.php -->
-<?php include 'header.php'; ?>
-<h1>Contact</h1>
-<form method="POST">...</form> <!-- Rechargement au submit -->
-<?php include 'footer.php'; ?>
-```
-
-Chaque page = fichier séparé, rechargement complet.
-
----
+<div className="mt-4">
+  <p><strong>React seul = CSR uniquement</strong></p>
+  <p><strong>Next.js = CSR + SSR + SSG</strong></p>
+</div>
 
 ## Résumé
 
-<Callout type="success" title="Ce qu'il faut retenir">
-**SPA (Single Page Application) :**
+<Callout type="info" title="À retenir">
+**SPA (Single Page Application)**
 - Une seule page HTML, tout le reste en JavaScript
 - Navigation fluide sans rechargement
 - React crée des SPA par défaut
-- ✅ Parfait pour : apps complexes, dashboards, outils
-- ❌ Problèmes : SEO, chargement initial
+- Idéal pour les applications complexes
+- Problèmes : SEO difficile, chargement initial lent
 
-**MPA (Multi-Page Application) :**
-- Chaque page = requête serveur + rechargement
+**MPA (Multi-Page Application)**
+- Chaque page = nouvelle requête serveur
 - Architecture traditionnelle du web
-- ✅ Parfait pour : sites vitrines, blogs, SEO
-- ❌ Problème : navigation moins fluide
+- Bon SEO et chargement initial rapide
+- Idéal pour sites vitrines, blogs
 
-**Frameworks hybrides (Next.js) :**
+**Frameworks hybrides (Next.js)**
 - Combinent SPA + MPA
-- SEO parfait + Navigation fluide
 - Le meilleur des deux mondes
+- Vous les apprendrez après React
 
-**Pour ce cours :**
-- Vous apprendrez d'abord React pur (SPA)
-- Vous découvrirez Next.js plus tard (hybride)
+**Pour ce cours**
+- Vous apprenez React pur (SPA)
+- C'est la base pour comprendre Next.js ensuite
 </Callout>
 
----
+## Ressources
 
-## Pour aller plus loin
-
-### Articles recommandés
-- [Single-page application - MDN](https://developer.mozilla.org/en-US/docs/Glossary/SPA)
-- [React vs Next.js](https://nextjs.org/learn/foundations/how-nextjs-works)
-
-### Frameworks à explorer
-- **Next.js** - React avec SSR/SSG (le plus populaire)
-- **Remix** - React avec focus sur les standards web
-- **Gatsby** - React pour sites statiques
-- **Astro** - Multi-framework avec îlots d'interactivité
-
----
-
-**Prochaine étape :** Maintenant que vous comprenez ce qu'est une SPA, plongeons dans **JSX**, la syntaxe qui vous permettra de créer vos composants React ! 🚀
+<Resources resources={[
+  {
+    title: "Single-page application - MDN",
+    description: "Définition et concepts des SPA",
+    url: "https://developer.mozilla.org/en-US/docs/Glossary/SPA",
+    type: "doc"
+  },
+  {
+    title: "Next.js Documentation",
+    description: "Framework React hybride le plus populaire",
+    url: "https://nextjs.org/docs",
+    type: "doc"
+  },
+  {
+    title: "How Next.js Works",
+    description: "Comprendre les différences React vs Next.js",
+    url: "https://nextjs.org/learn/foundations/how-nextjs-works",
+    type: "tutorial"
+  }
+]} />

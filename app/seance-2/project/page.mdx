@@ -1,0 +1,333 @@
+# Projet Fil Rouge - Application d'apprentissage du japonais
+
+Bienvenue dans le projet fil rouge qui vous accompagnera de la Séance 2 à la Séance 5 !
+
+<Callout type="info" title="À propos de ce projet">
+Ce projet **évolue à chaque séance** en ajoutant de nouvelles fonctionnalités au fur et à mesure que vous apprenez de nouveaux concepts React.
+
+- **Séance 2** : Affichage des tables de caractères (composants, props, listes)
+- **Séance 3** : Interactivité et quiz (useState, événements)
+- **Séance 4** : Navigation entre les modes (routing)
+- **Séance 5** : Finalisation et déploiement (hooks avancés, optimisations)
+
+**Rendu final :** Fin de la Séance 5 sur Moodle
+</Callout>
+
+---
+
+## Vision du projet
+
+Vous allez créer une **application web d'apprentissage des hiragana et katakana** (les deux alphabets syllabaires japonais).
+
+Le projet évoluera sur plusieurs séances pour inclure :
+- Tables de caractères pour apprendre
+- Quiz interactifs pour tester vos connaissances
+- Navigation entre différents modes
+
+Les fonctionnalités seront ajoutées progressivement à chaque séance.
+
+---
+
+## Séance 2 : Affichage des tables de caractères
+
+<Callout type="warning" title="Ce que vous devez faire maintenant">
+Pour cette séance, vous allez créer l'**affichage des tables de caractères** (mode Apprentissage) sans interactivité.
+
+**Concepts React utilisés :**
+- Composants avec props
+- Listes avec `.map()`
+- Rendu conditionnel
+- TypeScript
+
+**Temps estimé :** 1 heure
+</Callout>
+
+### Exigences fonctionnelles
+
+**1. Créer un nouveau projet Vite**
+```bash
+npm create vite@latest kana-app -- --template react-ts
+cd kana-app
+npm install
+npm run dev
+```
+
+**2. Structure des composants**
+
+Créez les composants suivants :
+
+**`CharacterCard`**
+- Affiche un caractère japonais (hiragana ou katakana)
+- Affiche le rōmaji (prononciation)
+- Props : `character` (string), `romanji` (string)
+
+**`CharacterGrid`**
+- Affiche une grille de CharacterCard
+- Props : `characters` (tableau), `title` (string)
+- Utilise `.map()` pour générer les cartes
+
+**`App`**
+- Affiche deux CharacterGrid : un pour hiragana, un pour katakana
+- Titre principal de l'application
+
+### Structure visuelle attendue
+
+**En-tête de l'application**
+- Titre : "Apprentissage du Japonais - Kana"
+
+**Section Hiragana**
+- Titre : "Hiragana"
+- Grille de cartes (5 colonnes) :
+  - Ligne 1 : あ (a), い (i), う (u), え (e), お (o)
+  - Ligne 2 : か (ka), き (ki), く (ku), け (ke), こ (ko)
+  - Ligne 3 : さ (sa), し (shi), す (su), せ (se), そ (so)
+  - ... toutes les autres lignes
+- Chaque carte affiche : caractère japonais (grand) + rōmaji (petit en dessous)
+
+**Section Katakana**
+- Titre : "Katakana"
+- Grille de cartes (5 colonnes) :
+  - Ligne 1 : ア (a), イ (i), ウ (u), エ (e), オ (o)
+  - Ligne 2 : カ (ka), キ (ki), ク (ku), ケ (ke), コ (ko)
+  - ... toutes les autres lignes
+- Même format de carte que pour les hiragana
+
+<Callout type="tip" title="Layout suggéré">
+Utilisez CSS Grid avec 5 colonnes pour afficher les caractères. Chaque carte doit être centrée avec le caractère japonais bien visible et le rōmaji en dessous.
+</Callout>
+
+### Règles métier
+
+**Organisation des caractères**
+
+Les caractères japonais suivent un ordre précis appelé **gojūon (五十音)** :
+
+**Lignes de base :**
+1. **a** : a, i, u, e, o (あいうえお)
+2. **ka** : ka, ki, ku, ke, ko (かきくけこ)
+3. **sa** : sa, shi, su, se, so (さしすせそ)
+4. **ta** : ta, chi, tsu, te, to (たちつてと)
+5. **na** : na, ni, nu, ne, no (なにぬねの)
+6. **ha** : ha, hi, fu, he, ho (はひふへほ)
+7. **ma** : ma, mi, mu, me, mo (まみむめも)
+8. **ya** : ya, yu, yo (やゆよ) - seulement 3 caractères
+9. **ra** : ra, ri, ru, re, ro (らりるれろ)
+10. **wa** : wa, wo (わを) - seulement 2 caractères
+11. **n** : n (ん) - un seul caractère
+
+**Lignes avec dakuten (゛) :**
+12. **ga** : ga, gi, gu, ge, go (がぎぐげご)
+13. **za** : za, ji, zu, ze, zo (ざじずぜぞ)
+14. **da** : da, ji, zu, de, do (だぢづでど)
+15. **ba** : ba, bi, bu, be, bo (ばびぶべぼ)
+
+**Lignes avec handakuten (゜) :**
+16. **pa** : pa, pi, pu, pe, po (ぱぴぷぺぽ)
+
+**Important :**
+- Chaque ligne doit être affichée dans l'ordre
+- Hiragana et Katakana ont les MÊMES rōmaji
+- Un caractère = une syllabe (sauf "n")
+
+### Données complètes
+
+Copiez ces données dans votre projet :
+
+<CodeBlock language="tsx">{`// data/kana.ts
+export interface Kana {
+  hiragana: string;
+  katakana: string;
+  romanji: string;
+  row: string;
+}
+
+export const kanaData: Kana[] = [
+  // Ligne a
+  { hiragana: 'あ', katakana: 'ア', romanji: 'a', row: 'a' },
+  { hiragana: 'い', katakana: 'イ', romanji: 'i', row: 'a' },
+  { hiragana: 'う', katakana: 'ウ', romanji: 'u', row: 'a' },
+  { hiragana: 'え', katakana: 'エ', romanji: 'e', row: 'a' },
+  { hiragana: 'お', katakana: 'オ', romanji: 'o', row: 'a' },
+
+  // Ligne ka
+  { hiragana: 'か', katakana: 'カ', romanji: 'ka', row: 'ka' },
+  { hiragana: 'き', katakana: 'キ', romanji: 'ki', row: 'ka' },
+  { hiragana: 'く', katakana: 'ク', romanji: 'ku', row: 'ka' },
+  { hiragana: 'け', katakana: 'ケ', romanji: 'ke', row: 'ka' },
+  { hiragana: 'こ', katakana: 'コ', romanji: 'ko', row: 'ka' },
+
+  // Ligne sa
+  { hiragana: 'さ', katakana: 'サ', romanji: 'sa', row: 'sa' },
+  { hiragana: 'し', katakana: 'シ', romanji: 'shi', row: 'sa' },
+  { hiragana: 'す', katakana: 'ス', romanji: 'su', row: 'sa' },
+  { hiragana: 'せ', katakana: 'セ', romanji: 'se', row: 'sa' },
+  { hiragana: 'そ', katakana: 'ソ', romanji: 'so', row: 'sa' },
+
+  // Ligne ta
+  { hiragana: 'た', katakana: 'タ', romanji: 'ta', row: 'ta' },
+  { hiragana: 'ち', katakana: 'チ', romanji: 'chi', row: 'ta' },
+  { hiragana: 'つ', katakana: 'ツ', romanji: 'tsu', row: 'ta' },
+  { hiragana: 'て', katakana: 'テ', romanji: 'te', row: 'ta' },
+  { hiragana: 'と', katakana: 'ト', romanji: 'to', row: 'ta' },
+
+  // Ligne na
+  { hiragana: 'な', katakana: 'ナ', romanji: 'na', row: 'na' },
+  { hiragana: 'に', katakana: 'ニ', romanji: 'ni', row: 'na' },
+  { hiragana: 'ぬ', katakana: 'ヌ', romanji: 'nu', row: 'na' },
+  { hiragana: 'ね', katakana: 'ネ', romanji: 'ne', row: 'na' },
+  { hiragana: 'の', katakana: 'ノ', romanji: 'no', row: 'na' },
+
+  // Ligne ha
+  { hiragana: 'は', katakana: 'ハ', romanji: 'ha', row: 'ha' },
+  { hiragana: 'ひ', katakana: 'ヒ', romanji: 'hi', row: 'ha' },
+  { hiragana: 'ふ', katakana: 'フ', romanji: 'fu', row: 'ha' },
+  { hiragana: 'へ', katakana: 'ヘ', romanji: 'he', row: 'ha' },
+  { hiragana: 'ほ', katakana: 'ホ', romanji: 'ho', row: 'ha' },
+
+  // Ligne ma
+  { hiragana: 'ま', katakana: 'マ', romanji: 'ma', row: 'ma' },
+  { hiragana: 'み', katakana: 'ミ', romanji: 'mi', row: 'ma' },
+  { hiragana: 'む', katakana: 'ム', romanji: 'mu', row: 'ma' },
+  { hiragana: 'め', katakana: 'メ', romanji: 'me', row: 'ma' },
+  { hiragana: 'も', katakana: 'モ', romanji: 'mo', row: 'ma' },
+
+  // Ligne ya
+  { hiragana: 'や', katakana: 'ヤ', romanji: 'ya', row: 'ya' },
+  { hiragana: 'ゆ', katakana: 'ユ', romanji: 'yu', row: 'ya' },
+  { hiragana: 'よ', katakana: 'ヨ', romanji: 'yo', row: 'ya' },
+
+  // Ligne ra
+  { hiragana: 'ら', katakana: 'ラ', romanji: 'ra', row: 'ra' },
+  { hiragana: 'り', katakana: 'リ', romanji: 'ri', row: 'ra' },
+  { hiragana: 'る', katakana: 'ル', romanji: 'ru', row: 'ra' },
+  { hiragana: 'れ', katakana: 'レ', romanji: 're', row: 'ra' },
+  { hiragana: 'ろ', katakana: 'ロ', romanji: 'ro', row: 'ra' },
+
+  // Ligne wa
+  { hiragana: 'わ', katakana: 'ワ', romanji: 'wa', row: 'wa' },
+  { hiragana: 'を', katakana: 'ヲ', romanji: 'wo', row: 'wa' },
+
+  // n
+  { hiragana: 'ん', katakana: 'ン', romanji: 'n', row: 'n' },
+
+  // Ligne ga (dakuten)
+  { hiragana: 'が', katakana: 'ガ', romanji: 'ga', row: 'ga' },
+  { hiragana: 'ぎ', katakana: 'ギ', romanji: 'gi', row: 'ga' },
+  { hiragana: 'ぐ', katakana: 'グ', romanji: 'gu', row: 'ga' },
+  { hiragana: 'げ', katakana: 'ゲ', romanji: 'ge', row: 'ga' },
+  { hiragana: 'ご', katakana: 'ゴ', romanji: 'go', row: 'ga' },
+
+  // Ligne za (dakuten)
+  { hiragana: 'ざ', katakana: 'ザ', romanji: 'za', row: 'za' },
+  { hiragana: 'じ', katakana: 'ジ', romanji: 'ji', row: 'za' },
+  { hiragana: 'ず', katakana: 'ズ', romanji: 'zu', row: 'za' },
+  { hiragana: 'ぜ', katakana: 'ゼ', romanji: 'ze', row: 'za' },
+  { hiragana: 'ぞ', katakana: 'ゾ', romanji: 'zo', row: 'za' },
+
+  // Ligne da (dakuten)
+  { hiragana: 'だ', katakana: 'ダ', romanji: 'da', row: 'da' },
+  { hiragana: 'ぢ', katakana: 'ヂ', romanji: 'ji', row: 'da' },
+  { hiragana: 'づ', katakana: 'ヅ', romanji: 'zu', row: 'da' },
+  { hiragana: 'で', katakana: 'デ', romanji: 'de', row: 'da' },
+  { hiragana: 'ど', katakana: 'ド', romanji: 'do', row: 'da' },
+
+  // Ligne ba (dakuten)
+  { hiragana: 'ば', katakana: 'バ', romanji: 'ba', row: 'ba' },
+  { hiragana: 'び', katakana: 'ビ', romanji: 'bi', row: 'ba' },
+  { hiragana: 'ぶ', katakana: 'ブ', romanji: 'bu', row: 'ba' },
+  { hiragana: 'べ', katakana: 'ベ', romanji: 'be', row: 'ba' },
+  { hiragana: 'ぼ', katakana: 'ボ', romanji: 'bo', row: 'ba' },
+
+  // Ligne pa (handakuten)
+  { hiragana: 'ぱ', katakana: 'パ', romanji: 'pa', row: 'pa' },
+  { hiragana: 'ぴ', katakana: 'ピ', romanji: 'pi', row: 'pa' },
+  { hiragana: 'ぷ', katakana: 'プ', romanji: 'pu', row: 'pa' },
+  { hiragana: 'ぺ', katakana: 'ペ', romanji: 'pe', row: 'pa' },
+  { hiragana: 'ぽ', katakana: 'ポ', romanji: 'po', row: 'pa' },
+];`}</CodeBlock>
+
+### Ce qui est attendu
+
+**Composants**
+- CharacterCard créé avec props typées TypeScript
+- CharacterGrid créé
+- App compose les composants correctement
+
+**Affichage des données**
+- Tous les hiragana sont affichés dans le bon ordre
+- Tous les katakana sont affichés dans le bon ordre
+- Chaque caractère affiche le symbole et le rōmaji
+
+**Code quality**
+- TypeScript utilisé correctement (interfaces, props)
+- Composants bien organisés (un fichier par composant)
+- Pas d'erreurs dans la console
+
+**Styling**
+- Utiliser CSS (vanilla, Tailwind, ou autre)
+- Grille pour afficher les caractères
+
+---
+
+## Conseils
+
+<Callout type="tip" title="Comment réussir ce projet">
+**Commencez simple**
+- Créez d'abord CharacterCard avec UN SEUL caractère en dur
+- Puis ajoutez CharacterGrid avec 5 caractères
+- Ensuite utilisez toutes les données
+
+**Testez régulièrement**
+- Vérifiez après chaque composant créé
+- Utilisez React DevTools pour inspecter les props
+
+**Organisation**
+- Un fichier par composant
+- Mettez les données dans `data/kana.ts`
+- Mettez les types dans `types/kana.ts` ou au début de chaque fichier
+
+**Ressources**
+- Revoyez les sections du cours sur les composants, props, et listes
+- Les exercices 1 et 2 sont très similaires à ce projet
+
+**Utilisez l'IA intelligemment**
+- Donnez des prompts précis : "Crée un composant CharacterCard qui affiche un caractère japonais et son rōmaji"
+- Vérifiez le code généré : est-ce que les props sont bien typées ? Les keys sont-elles présentes ?
+- Comprenez chaque ligne avant de l'utiliser
+</Callout>
+
+## Questions fréquentes
+
+**Q : Comment organiser les caractères par ligne (a, ka, sa...) ?**
+
+R : Vous pouvez filtrer le tableau `kanaData` par la propriété `row` :
+
+```tsx
+const aRow = kanaData.filter(k => k.row === 'a');
+const kaRow = kanaData.filter(k => k.row === 'ka');
+// etc.
+```
+
+Ou créer une fonction qui groupe les caractères :
+
+```tsx
+const groupByRow = (kanas: Kana[]) => {
+  // Retourne un objet { 'a': [...], 'ka': [...], ... }
+};
+```
+
+**Q : Faut-il afficher hiragana et katakana sur la même page ?**
+
+R : Oui, pour la Séance 2, affichez les deux tables sur la même page (une en haut, une en bas). En Séance 4, vous ajouterez la navigation.
+
+**Q : Puis-je utiliser une bibliothèque CSS ?**
+
+R : Oui ! Tailwind CSS est déjà configuré dans le template Vite, ou vous pouvez utiliser du CSS vanilla.
+
+**Q : Les caractères japonais ne s'affichent pas correctement**
+
+R : Assurez-vous que votre fichier est encodé en UTF-8 et que vous utilisez une police qui supporte les caractères japonais (la plupart des polices système le font).
+
+---
+
+**Bon courage ! 頑張って (ganbatte) !**

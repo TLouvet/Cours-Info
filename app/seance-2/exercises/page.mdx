@@ -1,363 +1,285 @@
-# Exercices - Séance 2
+# Exercices - React Fondamentaux
 
-Mettez en pratique ce que vous avez appris sur React : composants, props, listes et rendu conditionnel !
+Mettez en pratique ce que vous avez appris : composants, props, listes et rendu conditionnel !
 
-<Callout type="info" title="Instructions">
-Ces exercices progressent en difficulté. Commencez par le premier et avancez à votre rythme.
+<Callout type="tip" title="Comment travailler efficacement">
+- **Créez un projet Vite** : `npm create vite@latest react-exercises -- --template react-ts`
+- **Testez régulièrement** : Lancez `npm run dev` et vérifiez dans le navigateur
+- **Utilisez React DevTools** : Installez l'extension pour déboguer
+- **Essayez d'abord** : Tentez de résoudre avant de regarder la solution
+- **Comprenez le code** : L'objectif est de comprendre, pas de copier !
 
-**Conseils :**
-- Testez votre code régulièrement
-- Utilisez React DevTools pour déboguer
-- N'hésitez pas à revoir les sections du cours
-- L'IA peut vous aider, mais assurez-vous de comprendre le code !
+💡 **Temps estimé** : 1h30 pour les 4 exercices
 </Callout>
 
-## Exercice 1 : Carte de profil (Facile)
+## Exercice 1 : Composant avec props
 
-**Objectif :** Créer un composant de carte de profil réutilisable.
+<Exercise
+  title="Carte de profil utilisateur"
+  difficulty="easy"
+  solution={
+    <CodeBlock language="tsx">{`// ProfileCard.tsx
+interface ProfileCardProps {
+  name: string;
+  bio: string;
+  avatarUrl: string;
+  isOnline?: boolean;
+}
 
-### Consignes
+function ProfileCard({ name, bio, avatarUrl, isOnline = false }: ProfileCardProps) {
+  return (
+    <div className="profile-card">
+      <img src={avatarUrl} alt={name} width={80} height={80} />
+      <h3>{name}</h3>
+      <p>{bio}</p>
+      {isOnline && <span className="badge">🟢 En ligne</span>}
+    </div>
+  );
+}
 
-Créez un composant `ProfileCard` qui affiche :
-- Une photo de profil (avatar)
-- Un nom
-- Une biographie
-- Un lien vers le profil
+export default ProfileCard;
 
-**Props attendues :**
+// App.tsx
+import ProfileCard from './ProfileCard';
+
+function App() {
+  return (
+    <div>
+      <h1>Équipe</h1>
+      <ProfileCard
+        name="Alice Dupont"
+        bio="Développeuse frontend passionnée par React"
+        avatarUrl="https://i.pravatar.cc/150?img=1"
+        isOnline={true}
+      />
+      <ProfileCard
+        name="Bob Martin"
+        bio="Designer UI/UX et expert en accessibilité"
+        avatarUrl="https://i.pravatar.cc/150?img=3"
+        isOnline={false}
+      />
+      <ProfileCard
+        name="Claire Rousseau"
+        bio="Chef de projet et Scrum Master certifiée"
+        avatarUrl="https://i.pravatar.cc/150?img=5"
+        isOnline={true}
+      />
+    </div>
+  );
+}`}</CodeBlock>
+  }
+>
+Créez un composant `ProfileCard` qui affiche une carte de profil utilisateur.
+
+**Props attendues (avec TypeScript) :**
 - `name` : string (requis)
 - `bio` : string (requis)
 - `avatarUrl` : string (requis)
-- `profileUrl` : string (optionnel)
+- `isOnline` : boolean (optionnel, par défaut false)
 
-### Exemple d'utilisation
+**Affichage :**
+- Image de profil (80x80px)
+- Nom en titre
+- Biographie
+- Badge "🟢 En ligne" uniquement si `isOnline` est true
 
-```jsx
-<ProfileCard
+**Utilisation :**
+
+<CodeBlock language="tsx">{`<ProfileCard
   name="Alice Dupont"
-  bio="Développeuse frontend passionnée par React"
+  bio="Développeuse frontend"
   avatarUrl="https://i.pravatar.cc/150?img=1"
-  profileUrl="/profile/alice"
-/>
-```
+  isOnline={true}
+/>`}</CodeBlock>
 
-### Points à vérifier
+**Dans App.tsx :** Créez 3 cartes de profil différentes
 
-- [ ] Le composant affiche toutes les informations
-- [ ] L'avatar a une taille raisonnable (ex: 80x80px)
-- [ ] Le lien du profil ne s'affiche que si `profileUrl` est fourni
-- [ ] Le composant est réutilisable avec différentes données
+<Callout type="tip" title="Rappel">
+Utilisez l'opérateur `&&` pour afficher conditionnellement le badge :
 
-<Callout type="tip" title="Astuce">
-Utilisez l'opérateur `&&` pour afficher conditionnellement le lien du profil :
-
-```jsx
-{profileUrl && <a href={profileUrl}>Voir le profil</a>}
+```tsx
+{isOnline && <span>🟢 En ligne</span>}
 ```
 </Callout>
+</Exercise>
 
-### Bonus
+## Exercice 2 : Listes et keys
 
-- Ajoutez un style CSS pour rendre la carte attrayante
-- Ajoutez une prop `isOnline` pour afficher un badge "En ligne"
-- Créez 3 cartes différentes dans `App.jsx`
+<Exercise
+  title="Liste de produits avec filtrage"
+  difficulty="medium"
+  solution={
+    <CodeBlock language="tsx">{`// types.ts
+export interface Product {
+  id: number;
+  name: string;
+  price: number;
+  category: 'electronics' | 'clothing' | 'books';
+}
 
----
+// ProductCard.tsx
+import { Product } from './types';
 
-## Exercice 2 : Liste de produits avec filtrage (Moyen)
+interface ProductCardProps {
+  product: Product;
+}
 
-**Objectif :** Créer une liste de produits avec filtrage par catégorie.
+function ProductCard({ product }: ProductCardProps) {
+  return (
+    <div className="product-card">
+      <h3>{product.name}</h3>
+      <p className="price">{product.price}€</p>
+      <span className="category">{product.category}</span>
+    </div>
+  );
+}
 
-### Consignes
+export default ProductCard;
 
-Créez deux composants :
+// ProductList.tsx
+import { Product } from './types';
+import ProductCard from './ProductCard';
+
+interface ProductListProps {
+  products: Product[];
+  category?: string;
+}
+
+function ProductList({ products, category }: ProductListProps) {
+  // Filtrer par catégorie si fournie
+  const filteredProducts = category
+    ? products.filter(p => p.category === category)
+    : products;
+
+  // Afficher un message si vide
+  if (filteredProducts.length === 0) {
+    return <p className="empty">Aucun produit trouvé</p>;
+  }
+
+  return (
+    <div className="product-list">
+      {filteredProducts.map(product => (
+        <ProductCard key={product.id} product={product} />
+      ))}
+    </div>
+  );
+}
+
+export default ProductList;
+
+// App.tsx
+import { Product } from './types';
+import ProductList from './ProductList';
+
+const products: Product[] = [
+  { id: 1, name: 'Laptop', price: 999, category: 'electronics' },
+  { id: 2, name: 'T-shirt', price: 29, category: 'clothing' },
+  { id: 3, name: 'Smartphone', price: 699, category: 'electronics' },
+  { id: 4, name: 'Roman', price: 15, category: 'books' },
+  { id: 5, name: 'Casque audio', price: 149, category: 'electronics' }
+];
+
+function App() {
+  return (
+    <div>
+      <h1>Catalogue</h1>
+
+      <h2>Tous les produits</h2>
+      <ProductList products={products} />
+
+      <h2>Électronique</h2>
+      <ProductList products={products} category="electronics" />
+
+      <h2>Vêtements</h2>
+      <ProductList products={products} category="clothing" />
+    </div>
+  );
+}`}</CodeBlock>
+  }
+>
+Créez un système d'affichage de produits avec filtrage par catégorie.
+
+**Données de test :**
+
+<CodeBlock language="tsx">{`interface Product {
+  id: number;
+  name: string;
+  price: number;
+  category: 'electronics' | 'clothing' | 'books';
+}
+
+const products: Product[] = [
+  { id: 1, name: 'Laptop', price: 999, category: 'electronics' },
+  { id: 2, name: 'T-shirt', price: 29, category: 'clothing' },
+  { id: 3, name: 'Smartphone', price: 699, category: 'electronics' },
+  { id: 4, name: 'Roman', price: 15, category: 'books' },
+  { id: 5, name: 'Casque audio', price: 149, category: 'electronics' }
+];`}</CodeBlock>
+
+**Composants à créer :**
 
 **1. `ProductCard`**
-- Affiche un produit (nom, prix, image, catégorie)
-- Props : `product` (objet avec id, name, price, image, category)
+- Props : `product` (objet Product)
+- Affiche : nom, prix, catégorie
 
 **2. `ProductList`**
-- Affiche une liste de produits
-- Props : `products` (tableau), `category` (string ou null)
-- Filtre les produits par catégorie si fournie
-- Affiche "Aucun produit trouvé" si la liste est vide
+- Props : `products` (tableau), `category` (string optionnel)
+- Filtre par catégorie si fournie
+- Affiche "Aucun produit trouvé" si la liste filtrée est vide
+- Utilise `.map()` pour afficher les ProductCard
+- **N'oubliez pas les keys !**
 
-### Données de test
+**Utilisation :**
 
-```jsx
-const products = [
-  {
-    id: 1,
-    name: 'Laptop',
-    price: 999,
-    image: 'https://via.placeholder.com/150',
-    category: 'electronics'
-  },
-  {
-    id: 2,
-    name: 'T-shirt',
-    price: 29,
-    image: 'https://via.placeholder.com/150',
-    category: 'clothing'
-  },
-  {
-    id: 3,
-    name: 'Smartphone',
-    price: 699,
-    image: 'https://via.placeholder.com/150',
-    category: 'electronics'
-  },
-  {
-    id: 4,
-    name: 'Chaussures',
-    price: 89,
-    image: 'https://via.placeholder.com/150',
-    category: 'clothing'
-  },
-  {
-    id: 5,
-    name: 'Casque audio',
-    price: 149,
-    image: 'https://via.placeholder.com/150',
-    category: 'electronics'
-  }
-];
-```
-
-### Exemple d'utilisation
-
-```jsx
-// Tous les produits
+<CodeBlock language="tsx">{`// Tous les produits
 <ProductList products={products} />
 
 // Uniquement l'électronique
 <ProductList products={products} category="electronics" />
 
 // Uniquement les vêtements
-<ProductList products={products} category="clothing" />
-```
+<ProductList products={products} category="clothing" />`}</CodeBlock>
 
-### Points à vérifier
-
-- [ ] `ProductCard` affiche toutes les informations du produit
-- [ ] Chaque carte de produit a une `key` unique
-- [ ] Le filtrage fonctionne correctement
-- [ ] Un message s'affiche si aucun produit n'est trouvé
-- [ ] Le prix est formaté correctement (ex: "999€")
+**Points importants :**
+- ✅ Chaque `ProductCard` doit avoir une `key` unique (utilisez `product.id`)
+- ✅ Le filtrage doit fonctionner correctement
+- ✅ Gérer le cas de liste vide
 
 <Callout type="tip" title="Astuce pour le filtrage">
-Utilisez `.filter()` avant `.map()` :
+Utilisez l'opérateur ternaire pour filtrer conditionnellement :
 
-```jsx
+```tsx
 const filteredProducts = category
   ? products.filter(p => p.category === category)
   : products;
-
-return (
-  <div>
-    {filteredProducts.map(product => (
-      <ProductCard key={product.id} product={product} />
-    ))}
-  </div>
-);
 ```
+
+Puis utilisez `.map()` sur `filteredProducts`
 </Callout>
+</Exercise>
 
-### Bonus
+## Exercice 3 : Rendu conditionnel
 
-- Ajoutez des boutons pour changer la catégorie active
-- Ajoutez un compteur : "5 produits trouvés"
-- Ajoutez un bouton "Ajouter au panier" (avec console.log)
-- Triez les produits par prix (croissant/décroissant)
-
----
-
-## Exercice 3 : Composition de composants - Layout (Moyen)
-
-**Objectif :** Créer un système de layout réutilisable avec composition.
-
-### Consignes
-
-Créez les composants suivants :
-
-**1. `Header`**
-- Affiche le titre de l'application
-- Props : `title` (string)
-
-**2. `Footer`**
-- Affiche un copyright
-- Props : `year` (number), `company` (string)
-
-**3. `Sidebar`**
-- Affiche une liste de liens
-- Props : `links` (array d'objets `{ title, url }`)
-
-**4. `MainContent`**
-- Zone de contenu principal
-- Props : `children`
-
-**5. `Layout`**
-- Compose Header, Sidebar, MainContent, Footer
-- Props : `title`, `children`
-
-### Structure attendue
-
-```jsx
-function Layout({ title, children }) {
-  const navLinks = [
-    { title: 'Accueil', url: '/' },
-    { title: 'Produits', url: '/products' },
-    { title: 'Contact', url: '/contact' }
-  ];
-
-  return (
-    <div className="layout">
-      <Header title={title} />
-      <div className="container">
-        <Sidebar links={navLinks} />
-        <MainContent>
-          {children}
-        </MainContent>
-      </div>
-      <Footer year={2024} company="Mon Entreprise" />
-    </div>
-  );
+<Exercise
+  title="Dashboard avec états de chargement"
+  difficulty="medium"
+  solution={
+    <CodeBlock language="tsx">{`// types.ts
+export interface Stat {
+  id: number;
+  title: string;
+  value: number;
+  trend: string;
 }
-```
 
-### Exemple d'utilisation
+// StatCard.tsx
+import { Stat } from './types';
 
-```jsx
-function App() {
-  return (
-    <Layout title="Mon Application React">
-      <h1>Page d'accueil</h1>
-      <p>Bienvenue sur mon site !</p>
-    </Layout>
-  );
+interface StatCardProps {
+  stat: Stat;
 }
-```
 
-### Points à vérifier
-
-- [ ] Tous les composants sont créés et exportés
-- [ ] Le layout compose correctement tous les éléments
-- [ ] La prop `children` fonctionne correctement
-- [ ] La sidebar affiche tous les liens
-- [ ] Le footer affiche l'année et le nom de l'entreprise
-
-<Callout type="tip" title="Astuce pour la Sidebar">
-Utilisez `.map()` pour afficher les liens :
-
-```jsx
-function Sidebar({ links }) {
-  return (
-    <nav className="sidebar">
-      <ul>
-        {links.map((link, index) => (
-          <li key={index}>
-            <a href={link.url}>{link.title}</a>
-          </li>
-        ))}
-      </ul>
-    </nav>
-  );
-}
-```
-</Callout>
-
-### Bonus
-
-- Ajoutez du CSS pour un layout en grille
-- Ajoutez un composant `Button` réutilisable
-- Créez plusieurs pages utilisant le même Layout
-- Ajoutez un dark mode toggle dans le Header
-
----
-
-## Exercice 4 : Dashboard avec statuts (Avancé)
-
-**Objectif :** Créer un dashboard avec gestion d'états de chargement et d'erreur.
-
-### Consignes
-
-Créez un composant `Dashboard` qui simule le chargement de données et affiche :
-
-**États possibles :**
-1. **Loading** : Affiche un spinner ou message "Chargement..."
-2. **Error** : Affiche un message d'erreur avec bouton "Réessayer"
-3. **Empty** : Affiche "Aucune donnée disponible"
-4. **Success** : Affiche les données sous forme de cartes
-
-**Props :**
-- `loading` : boolean
-- `error` : string | null
-- `data` : array | null
-
-### Données de test
-
-```jsx
-const mockData = [
-  { id: 1, title: 'Ventes', value: 1234, trend: '+12%' },
-  { id: 2, title: 'Utilisateurs', value: 567, trend: '+8%' },
-  { id: 3, title: 'Revenus', value: 8910, trend: '-3%' }
-];
-```
-
-### Structure du composant
-
-```jsx
-function Dashboard({ loading, error, data }) {
-  // 1. État Loading
-  if (loading) {
-    return (
-      <div className="dashboard-loading">
-        <p>Chargement des données...</p>
-      </div>
-    );
-  }
-
-  // 2. État Error
-  if (error) {
-    return (
-      <div className="dashboard-error">
-        <p>❌ Erreur : {error}</p>
-        <button onClick={() => window.location.reload()}>
-          Réessayer
-        </button>
-      </div>
-    );
-  }
-
-  // 3. État Empty
-  if (!data || data.length === 0) {
-    return (
-      <div className="dashboard-empty">
-        <p>Aucune donnée disponible</p>
-      </div>
-    );
-  }
-
-  // 4. État Success
-  return (
-    <div className="dashboard">
-      <h1>Tableau de bord</h1>
-      <div className="stats-grid">
-        {data.map(stat => (
-          <StatCard key={stat.id} stat={stat} />
-        ))}
-      </div>
-    </div>
-  );
-}
-```
-
-### Composant StatCard
-
-Créez également un composant `StatCard` :
-
-```jsx
-function StatCard({ stat }) {
+function StatCard({ stat }: StatCardProps) {
   const isPositive = stat.trend.startsWith('+');
 
   return (
@@ -370,258 +292,541 @@ function StatCard({ stat }) {
     </div>
   );
 }
-```
 
-### Tester les différents états
+export default StatCard;
 
-```jsx
-function App() {
+// Dashboard.tsx
+import { Stat } from './types';
+import StatCard from './StatCard';
+
+interface DashboardProps {
+  loading: boolean;
+  error: string | null;
+  data: Stat[] | null;
+}
+
+function Dashboard({ loading, error, data }: DashboardProps) {
   // État 1 : Loading
-  return <Dashboard loading={true} error={null} data={null} />;
+  if (loading) {
+    return (
+      <div className="dashboard-loading">
+        <p>⏳ Chargement des données...</p>
+      </div>
+    );
+  }
 
   // État 2 : Error
-  return <Dashboard loading={false} error="Impossible de charger les données" data={null} />;
+  if (error) {
+    return (
+      <div className="dashboard-error">
+        <p>❌ Erreur : {error}</p>
+        <button onClick={() => window.location.reload()}>
+          Réessayer
+        </button>
+      </div>
+    );
+  }
 
   // État 3 : Empty
-  return <Dashboard loading={false} error={null} data={[]} />;
+  if (!data || data.length === 0) {
+    return (
+      <div className="dashboard-empty">
+        <p>📭 Aucune donnée disponible</p>
+      </div>
+    );
+  }
+
+  // État 4 : Success
+  return (
+    <div className="dashboard">
+      <h1>Tableau de bord</h1>
+      <div className="stats-grid">
+        {data.map(stat => (
+          <StatCard key={stat.id} stat={stat} />
+        ))}
+      </div>
+    </div>
+  );
+}
+
+export default Dashboard;
+
+// App.tsx
+import { Stat } from './types';
+import Dashboard from './Dashboard';
+
+const mockData: Stat[] = [
+  { id: 1, title: 'Ventes', value: 1234, trend: '+12%' },
+  { id: 2, title: 'Utilisateurs', value: 567, trend: '+8%' },
+  { id: 3, title: 'Revenus', value: 8910, trend: '-3%' }
+];
+
+function App() {
+  // Testez les 4 états différents (décommentez un seul à la fois)
+
+  // État 1 : Loading
+  // return <Dashboard loading={true} error={null} data={null} />;
+
+  // État 2 : Error
+  // return <Dashboard loading={false} error="Connexion au serveur impossible" data={null} />;
+
+  // État 3 : Empty
+  // return <Dashboard loading={false} error={null} data={[]} />;
 
   // État 4 : Success
   return <Dashboard loading={false} error={null} data={mockData} />;
+}`}</CodeBlock>
+  }
+>
+Créez un dashboard qui gère 4 états différents : loading, error, empty, et success.
+
+**Données de test :**
+
+<CodeBlock language="tsx">{`interface Stat {
+  id: number;
+  title: string;
+  value: number;
+  trend: string;
+}
+
+const mockData: Stat[] = [
+  { id: 1, title: 'Ventes', value: 1234, trend: '+12%' },
+  { id: 2, title: 'Utilisateurs', value: 567, trend: '+8%' },
+  { id: 3, title: 'Revenus', value: 8910, trend: '-3%' }
+];`}</CodeBlock>
+
+**Composants à créer :**
+
+**1. `StatCard`**
+- Props : `stat` (objet Stat)
+- Affiche : titre, valeur, tendance
+- Colore la tendance en vert si positive (+), rouge si négative (-)
+
+**2. `Dashboard`**
+- Props : `loading` (boolean), `error` (string | null), `data` (Stat[] | null)
+- Gère 4 états avec des **early returns** :
+
+**États à gérer :**
+1. **Loading** (`loading === true`) → Affiche "⏳ Chargement des données..."
+2. **Error** (`error !== null`) → Affiche "❌ Erreur : [message]" + bouton "Réessayer"
+3. **Empty** (`data === null` ou `data.length === 0`) → Affiche "📭 Aucune donnée disponible"
+4. **Success** (sinon) → Affiche le titre + grille de StatCard
+
+**Tester les 4 états :**
+
+<CodeBlock language="tsx">{`// État 1 : Loading
+<Dashboard loading={true} error={null} data={null} />
+
+// État 2 : Error
+<Dashboard loading={false} error="Connexion impossible" data={null} />
+
+// État 3 : Empty
+<Dashboard loading={false} error={null} data={[]} />
+
+// État 4 : Success
+<Dashboard loading={false} error={null} data={mockData} />`}</CodeBlock>
+
+<Callout type="tip" title="Pattern des early returns">
+Utilisez des `if` avec `return` pour simplifier la logique :
+
+```tsx
+function Dashboard({ loading, error, data }) {
+  if (loading) return <LoadingView />;
+  if (error) return <ErrorView error={error} />;
+  if (!data || data.length === 0) return <EmptyView />;
+
+  // État success
+  return <SuccessView data={data} />;
 }
 ```
 
-### Points à vérifier
+Ce pattern évite les ternaires imbriqués et rend le code plus lisible !
+</Callout>
+</Exercise>
 
-- [ ] Les 4 états s'affichent correctement
-- [ ] Le composant StatCard affiche toutes les informations
-- [ ] Les tendances positives et négatives ont des styles différents
-- [ ] Le bouton "Réessayer" fonctionne
-- [ ] Les early returns simplifient la logique
+## Exercice 4 : Lecture et validation de code
 
-### Bonus
+<Callout type="warning" title="Compétence essentielle">
+Savoir **lire et valider** du code React est crucial quand vous travaillez avec l'IA. Vous devez pouvoir **détecter les erreurs**, **comprendre les bugs**, et **corriger les mauvaises pratiques**.
+</Callout>
 
-- Ajoutez un vrai spinner avec une animation CSS
-- Ajoutez des icônes pour chaque statistique
-- Ajoutez un bouton "Rafraîchir" dans l'état Success
-- Créez un composant `LoadingSpinner` réutilisable
-- Ajoutez des graphiques (avec une bibliothèque ou en CSS)
+<Exercise
+  title="Trouver les bugs dans le code React"
+  difficulty="medium"
+  solution={
+    <div className="space-y-4">
+      <div>
+        <p className="font-semibold mb-2">Code 1 - Problème : Keys manquantes</p>
+        <CodeBlock language="tsx">{`// ❌ MAUVAIS : Pas de key prop
+const users = ['Alice', 'Bob', 'Charlie'];
 
----
+return (
+  <ul>
+    {users.map(user => (
+      <li>{user}</li>  // ❌ Warning: Each child should have a unique "key"
+    ))}
+  </ul>
+);
 
-## Exercice 5 : Application de tâches (Projet complet)
+// ✅ CORRECT : Avec key unique
+// Si pas d'ID unique, utilisez l'index EN DERNIER RECOURS
+return (
+  <ul>
+    {users.map((user, index) => (
+      <li key={index}>{user}</li>  // ✅ Mais mieux avec un vrai ID !
+    ))}
+  </ul>
+);
 
-**Objectif :** Créer une application de gestion de tâches complète.
-
-### Fonctionnalités
-
-1. **Afficher une liste de tâches**
-2. **Marquer une tâche comme complétée**
-3. **Supprimer une tâche**
-4. **Filtrer les tâches** (Toutes / Actives / Complétées)
-5. **Compter les tâches** restantes
-
-### Structure des données
-
-```jsx
-const initialTasks = [
-  { id: 1, text: 'Apprendre React', completed: true },
-  { id: 2, text: 'Faire les exercices', completed: false },
-  { id: 3, text: 'Créer un projet', completed: false }
+// ✅ MEILLEUR : Avec ID unique
+const users = [
+  { id: 1, name: 'Alice' },
+  { id: 2, name: 'Bob' },
+  { id: 3, name: 'Charlie' }
 ];
-```
 
-### Composants à créer
+return (
+  <ul>
+    {users.map(user => (
+      <li key={user.id}>{user.name}</li>  // ✅ ID unique stable
+    ))}
+  </ul>
+);`}</CodeBlock>
+      </div>
 
-**1. `TaskItem`**
-```jsx
-function TaskItem({ task, onToggle, onDelete }) {
+      <div>
+        <p className="font-semibold mb-2">Code 2 - Problème : Mauvaise utilisation de .map()</p>
+        <CodeBlock language="tsx">{`// ❌ MAUVAIS : .map() avec condition retourne undefined
+const users = [
+  { name: 'Alice', age: 25 },
+  { name: 'Bob', age: 17 },
+  { name: 'Charlie', age: 30 }
+];
+
+const adults = users.map(user => {
+  if (user.age >= 18) return <div>{user.name}</div>;
+});
+// adults = [<div>Alice</div>, undefined, <div>Charlie</div>]
+// React affiche un trou vide ! ❌
+
+// ✅ CORRECT : Filtrer d'abord, puis mapper
+const adults = users
+  .filter(user => user.age >= 18)
+  .map(user => <div key={user.name}>{user.name}</div>);
+// adults = [<div>Alice</div>, <div>Charlie</div>] ✅`}</CodeBlock>
+      </div>
+
+      <div>
+        <p className="font-semibold mb-2">Code 3 - Problème : Utiliser l'index comme key sur liste dynamique</p>
+        <CodeBlock language="tsx">{`// ❌ MAUVAIS : Index comme key sur liste qui change
+const [tasks, setTasks] = useState([
+  { text: 'Apprendre React' },
+  { text: 'Faire les exercices' },
+  { text: 'Créer un projet' }
+]);
+
+// Si on supprime "Faire les exercices", React perd la trace !
+return (
+  <ul>
+    {tasks.map((task, index) => (
+      <li key={index}>{task.text}</li>  // ❌ Index change si liste modifiée
+    ))}
+  </ul>
+);
+
+// ✅ CORRECT : ID unique stable
+const [tasks, setTasks] = useState([
+  { id: 1, text: 'Apprendre React' },
+  { id: 2, text: 'Faire les exercices' },
+  { id: 3, text: 'Créer un projet' }
+]);
+
+return (
+  <ul>
+    {tasks.map(task => (
+      <li key={task.id}>{task.text}</li>  // ✅ ID ne change jamais
+    ))}
+  </ul>
+);`}</CodeBlock>
+      </div>
+
+      <div>
+        <p className="font-semibold mb-2">Code 4 - Problème : Oublier le return dans .map()</p>
+        <CodeBlock language="tsx">{`// ❌ MAUVAIS : Accolades sans return
+const numbers = [1, 2, 3, 4, 5];
+
+return (
+  <ul>
+    {numbers.map(n => {
+      <li>{n}</li>  // ❌ Oublié le return ! Affiche rien
+    })}
+  </ul>
+);
+
+// ✅ CORRECT : Avec return explicite
+return (
+  <ul>
+    {numbers.map(n => {
+      return <li key={n}>{n}</li>;  // ✅ Return explicite
+    })}
+  </ul>
+);
+
+// ✅ MEILLEUR : Return implicite (sans accolades)
+return (
+  <ul>
+    {numbers.map(n => (
+      <li key={n}>{n}</li>  // ✅ Parenthèses = return implicite
+    ))}
+  </ul>
+);`}</CodeBlock>
+      </div>
+
+      <div>
+        <p className="font-semibold mb-2">Code 5 - Problème : Props mal typées en TypeScript</p>
+        <CodeBlock language="tsx">{`// ❌ MAUVAIS : Props non typées
+function UserCard(props) {  // ❌ Pas de types
   return (
-    <div className={`task ${task.completed ? 'completed' : ''}`}>
-      <input
-        type="checkbox"
-        checked={task.completed}
-        onChange={() => onToggle(task.id)}
-      />
-      <span>{task.text}</span>
-      <button onClick={() => onDelete(task.id)}>🗑️</button>
+    <div>
+      <h3>{props.name}</h3>
+      <p>{props.age}</p>
     </div>
   );
 }
-```
 
-**2. `TaskList`**
-```jsx
-function TaskList({ tasks, onToggle, onDelete }) {
-  if (tasks.length === 0) {
-    return <p className="empty">Aucune tâche à afficher</p>;
+// App.tsx
+<UserCard name="Alice" age="25" />  // ❌ age est un string au lieu de number
+
+// ✅ CORRECT : Avec interface TypeScript
+interface UserCardProps {
+  name: string;
+  age: number;
+}
+
+function UserCard({ name, age }: UserCardProps) {
+  return (
+    <div>
+      <h3>{name}</h3>
+      <p>{age} ans</p>
+    </div>
+  );
+}
+
+// App.tsx
+<UserCard name="Alice" age={25} />  // ✅ TypeScript vérifie le type !
+// <UserCard name="Alice" age="25" />  // ❌ Erreur de compilation détectée`}</CodeBlock>
+      </div>
+
+      <div>
+        <p className="font-semibold mb-2">Code 6 - Problème : Condition avec 0 et l'opérateur &&</p>
+        <CodeBlock language="tsx">{`// ❌ MAUVAIS : Affiche "0" à l'écran si count === 0
+const count = 0;
+
+return (
+  <div>
+    {count && <p>Vous avez {count} message(s)</p>}
+  </div>
+);
+// Affiche : 0  (React affiche le nombre 0 !) ❌
+
+// ✅ CORRECT : Comparaison explicite
+return (
+  <div>
+    {count > 0 && <p>Vous avez {count} message(s)</p>}
+  </div>
+);
+// N'affiche rien si count === 0 ✅
+
+// ✅ ALTERNATIF : Opérateur ternaire
+return (
+  <div>
+    {count > 0 ? <p>Vous avez {count} message(s)</p> : null}
+  </div>
+);`}</CodeBlock>
+      </div>
+    </div>
   }
+>
+Lisez attentivement les 6 codes suivants. **Chacun contient un bug ou une mauvaise pratique React.**
 
-  return (
-    <div className="task-list">
-      {tasks.map(task => (
-        <TaskItem
-          key={task.id}
-          task={task}
-          onToggle={onToggle}
-          onDelete={onDelete}
-        />
-      ))}
-    </div>
-  );
-}
-```
+Pour chaque code :
+1. **Identifiez le problème**
+2. **Expliquez pourquoi c'est un bug**
+3. **Proposez la correction**
 
-**3. `FilterButtons`**
-```jsx
-function FilterButtons({ currentFilter, onFilterChange }) {
-  const filters = ['all', 'active', 'completed'];
+### Code 1 : Liste sans keys
 
-  return (
-    <div className="filters">
-      {filters.map(filter => (
-        <button
-          key={filter}
-          className={currentFilter === filter ? 'active' : ''}
-          onClick={() => onFilterChange(filter)}
-        >
-          {filter === 'all' ? 'Toutes' : filter === 'active' ? 'Actives' : 'Complétées'}
-        </button>
-      ))}
-    </div>
-  );
-}
-```
+<CodeBlock language="tsx">{`const users = ['Alice', 'Bob', 'Charlie'];
 
-**4. `TaskStats`**
-```jsx
-function TaskStats({ total, completed }) {
-  const remaining = total - completed;
+return (
+  <ul>
+    {users.map(user => (
+      <li>{user}</li>
+    ))}
+  </ul>
+);`}</CodeBlock>
 
-  return (
-    <div className="stats">
-      <p>{remaining} tâche(s) restante(s)</p>
-      <p>{completed} complétée(s) sur {total}</p>
-    </div>
-  );
-}
-```
-
-### Logique de filtrage
-
-```jsx
-function App() {
-  const [tasks, setTasks] = useState(initialTasks);
-  const [filter, setFilter] = useState('all');
-
-  // Filtrer les tâches
-  const filteredTasks = tasks.filter(task => {
-    if (filter === 'active') return !task.completed;
-    if (filter === 'completed') return task.completed;
-    return true; // 'all'
-  });
-
-  // Calculer les stats
-  const totalTasks = tasks.length;
-  const completedTasks = tasks.filter(t => t.completed).length;
-
-  // Handlers (à implémenter)
-  function handleToggle(id) {
-    console.log('Toggle task:', id);
-    // TODO: Inverser task.completed
-  }
-
-  function handleDelete(id) {
-    console.log('Delete task:', id);
-    // TODO: Supprimer la tâche
-  }
-
-  return (
-    <div className="app">
-      <h1>Mes Tâches</h1>
-      <TaskStats total={totalTasks} completed={completedTasks} />
-      <FilterButtons currentFilter={filter} onFilterChange={setFilter} />
-      <TaskList
-        tasks={filteredTasks}
-        onToggle={handleToggle}
-        onDelete={handleDelete}
-      />
-    </div>
-  );
-}
-```
-
-### Points à vérifier
-
-- [ ] Toutes les tâches s'affichent correctement
-- [ ] Le filtrage fonctionne (Toutes / Actives / Complétées)
-- [ ] Les statistiques sont justes
-- [ ] L'état "completed" change visuellement une tâche
-- [ ] Le bouton de filtre actif a un style différent
-
-<Callout type="warning" title="Note importante">
-Pour cet exercice, vous avez besoin de **useState** que vous verrez dans la prochaine séance.
-
-**Pour l'instant :**
-- Créez les composants avec les props
-- Testez avec des données statiques
-- Utilisez `console.log()` dans les handlers
-
-**Prochaine séance :**
-- Vous ajouterez `useState` pour rendre l'app interactive
-- Vous implémenterez les fonctions `handleToggle` et `handleDelete`
-</Callout>
-
-### Bonus
-
-- Ajoutez un champ pour créer de nouvelles tâches
-- Ajoutez un bouton "Tout effacer"
-- Ajoutez la possibilité de modifier le texte d'une tâche
-- Sauvegardez les tâches dans localStorage
-- Ajoutez des animations CSS pour les transitions
+**Questions :**
+- Quelle erreur s'affiche dans la console ?
+- Pourquoi React a-t-il besoin de keys ?
+- Comment corriger ce code ?
 
 ---
 
-## Ressources supplémentaires
+### Code 2 : Filtrage avec .map()
 
-<Callout type="info" title="Pour aller plus loin">
-**Documentation officielle :**
-- [React Docs - Composants et Props](https://react.dev/learn/passing-props-to-a-component)
-- [React Docs - Rendu de listes](https://react.dev/learn/rendering-lists)
-- [React Docs - Rendu conditionnel](https://react.dev/learn/conditional-rendering)
+<CodeBlock language="tsx">{`const users = [
+  { name: 'Alice', age: 25 },
+  { name: 'Bob', age: 17 },
+  { name: 'Charlie', age: 30 }
+];
 
-**Outils utiles :**
-- [React DevTools](https://react.dev/learn/react-developer-tools)
-- [CodeSandbox](https://codesandbox.io/) - Pour tester rapidement
-- [Placeholder images](https://placeholder.com/) - Images de test
+const adults = users.map(user => {
+  if (user.age >= 18) return <div>{user.name}</div>;
+});
 
-**Pratique supplémentaire :**
-- [React Tutorial](https://react.dev/learn/tutorial-tic-tac-toe) - Jeu de Tic-Tac-Toe officiel
-- [FreeCodeCamp React](https://www.freecodecamp.org/learn/front-end-development-libraries/#react) - Exercices supplémentaires
+return <div>{adults}</div>;`}</CodeBlock>
+
+**Questions :**
+- Que contient exactement le tableau `adults` ?
+- Quel est le problème avec cette approche ?
+- Quelle méthode devrait être utilisée avant `.map()` ?
+
+---
+
+### Code 3 : Index comme key
+
+<CodeBlock language="tsx">{`const tasks = [
+  { text: 'Apprendre React' },
+  { text: 'Faire les exercices' },
+  { text: 'Créer un projet' }
+];
+
+return (
+  <ul>
+    {tasks.map((task, index) => (
+      <li key={index}>{task.text}</li>
+    ))}
+  </ul>
+);`}</CodeBlock>
+
+**Questions :**
+- Pourquoi utiliser l'index comme key est problématique ?
+- Que se passe-t-il si on supprime le 2ème élément ?
+- Quelle est la bonne solution ?
+
+---
+
+### Code 4 : Oubli du return
+
+<CodeBlock language="tsx">{`const numbers = [1, 2, 3, 4, 5];
+
+return (
+  <ul>
+    {numbers.map(n => {
+      <li>{n}</li>
+    })}
+  </ul>
+);`}</CodeBlock>
+
+**Questions :**
+- Qu'affiche ce code à l'écran ?
+- Quelle est l'erreur ?
+- Comment corriger (deux solutions) ?
+
+---
+
+### Code 5 : Props non typées
+
+<CodeBlock language="tsx">{`function UserCard(props) {
+  return (
+    <div>
+      <h3>{props.name}</h3>
+      <p>{props.age} ans</p>
+    </div>
+  );
+}
+
+// Utilisation
+<UserCard name="Alice" age="25" />`}</CodeBlock>
+
+**Questions :**
+- Quel est le problème avec `age="25"` ?
+- Comment TypeScript peut-il nous aider ?
+- Écrivez l'interface correcte pour les props
+
+---
+
+### Code 6 : Condition avec 0
+
+<CodeBlock language="tsx">{`const count = 0;
+
+return (
+  <div>
+    <h1>Messages</h1>
+    {count && <p>Vous avez {count} message(s)</p>}
+  </div>
+);`}</CodeBlock>
+
+**Questions :**
+- Qu'affiche ce code à l'écran quand `count === 0` ?
+- Pourquoi React affiche-t-il `0` ?
+- Comment corriger ce problème ?
+
+---
+
+<Callout type="tip" title="Pourquoi cet exercice est important">
+Quand vous utilisez l'IA pour générer du code React :
+- **L'IA peut faire ces erreurs** (keys manquantes, index, types incorrects)
+- **Vous devez pouvoir les détecter** avant d'utiliser le code
+- **Comprendre le code** est plus important que le copier-coller
+- **TypeScript aide** mais ne détecte pas tout (comme les keys)
+
+Cet exercice vous entraîne à **lire, analyser et valider** du code React généré.
+</Callout>
+</Exercise>
+
+---
+
+## Récapitulatif
+
+<Callout type="info" title="Ce que vous avez pratiqué">
+**Exercice 1 :** Créer des composants avec props typées (TypeScript)
+
+**Exercice 2 :** Afficher des listes avec `.map()`, gérer les keys, filtrer
+
+**Exercice 3 :** Gérer plusieurs états avec rendu conditionnel (early returns)
+
+**Exercice 4 :** Lire et valider du code React, détecter les bugs courants
+
+**Temps total :** ~1h30
+
+**Prochaine étape :** Le projet fil rouge (application d'apprentissage du japonais)
 </Callout>
 
-## Soumission
-
-<Callout type="success" title="Comment soumettre vos exercices">
-**Sur Moodle :**
-1. Créez un projet Vite avec tous vos exercices
-2. Testez que tout fonctionne
-3. Poussez votre code sur GitHub
-4. Soumettez le lien du repository
-
-**OU sur CodeSandbox :**
-1. Créez un sandbox React
-2. Complétez les exercices
-3. Partagez le lien du sandbox
-
-**Date limite :** Voir Moodle
-
-**Barème :**
-- Exercice 1 : 3 points
-- Exercice 2 : 4 points
-- Exercice 3 : 4 points
-- Exercice 4 : 4 points
-- Exercice 5 : 5 points
-- **Bonus :** Jusqu'à 5 points supplémentaires
-
-**Total :** 20 points + bonus
-</Callout>
+<Resources resources={[
+  {
+    title: "React Docs - Composants et Props",
+    description: "Guide officiel sur les composants et les props",
+    url: "https://react.dev/learn/passing-props-to-a-component",
+    type: "doc"
+  },
+  {
+    title: "React Docs - Rendu de listes",
+    description: "Tout sur .map(), keys et listes React",
+    url: "https://react.dev/learn/rendering-lists",
+    type: "doc"
+  },
+  {
+    title: "React Docs - Rendu conditionnel",
+    description: "Les différentes méthodes de rendu conditionnel",
+    url: "https://react.dev/learn/conditional-rendering",
+    type: "doc"
+  },
+  {
+    title: "React DevTools",
+    description: "Extension Chrome/Firefox pour déboguer React",
+    url: "https://react.dev/learn/react-developer-tools",
+    type: "tool"
+  }
+]} />

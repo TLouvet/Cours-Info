@@ -86,116 +86,82 @@ React compare par **identité** : "user-1", "user-2"
 **Résultat :** Meilleures performances et moins de bugs !
 </Callout>
 
-## Utiliser des keys correctement
+## Choisir la bonne key
 
-### ✅ Bon : Utiliser un ID unique
+<Callout type="tip" title="Règle d'or">
+Utilisez une valeur **unique** et **stable** qui identifie chaque élément de façon permanente.
+</Callout>
+
+### ✅ Option 1 : ID unique (recommandé)
+
+La meilleure solution : un identifiant unique fourni par vos données.
 
 ```jsx
-function UserList() {
-  const users = [
-    { id: 1, name: 'Alice' },
-    { id: 2, name: 'Bob' },
-    { id: 3, name: 'Charlie' }
-  ];
+const users = [
+  { id: 1, name: 'Alice' },
+  { id: 2, name: 'Bob' },
+  { id: 3, name: 'Charlie' }
+];
 
-  return (
-    <ul>
-      {users.map(user => (
-        <li key={user.id}>{user.name}</li>
-      ))}
-    </ul>
-  );
-}
+return (
+  <ul>
+    {users.map(user => (
+      <li key={user.id}>{user.name}</li>
+    ))}
+  </ul>
+);
 ```
 
-### ⚠️ Acceptable : Utiliser une propriété unique
+### ✅ Option 2 : Propriété unique
 
 Si vos données n'ont pas d'ID, utilisez une autre propriété **unique et stable**.
 
 ```jsx
-const emails = [
+const users = [
   { email: 'alice@example.com', name: 'Alice' },
   { email: 'bob@example.com', name: 'Bob' }
 ];
 
 return (
   <ul>
-    {emails.map(item => (
-      <li key={item.email}>{item.name}</li>
+    {users.map(user => (
+      <li key={user.email}>{user.name}</li>
     ))}
   </ul>
 );
 ```
 
-### ❌ Mauvais : Utiliser l'index
+### ❌ À éviter : L'index
 
-**Ne jamais utiliser l'index comme key** si la liste peut changer (ajout, suppression, tri).
+N'utilisez **jamais** l'index si la liste peut changer (ajout, suppression, tri).
 
 ```jsx
-// ❌ Évitez ceci
+// ❌ Interdit pour les listes dynamiques
 users.map((user, index) => (
   <li key={index}>{user.name}</li>
 ))
 ```
 
-<Callout type="error" title="Pourquoi éviter l'index ?">
-**Problème 1 : Performance**
+<Callout type="error" title="Pourquoi l'index pose problème">
+L'index change quand la liste est modifiée, ce qui trompe React :
 
-Si vous supprimez "Bob" (index 1) :
 ```jsx
-// Avant
+// Avant : 3 utilisateurs
 <li key={0}>Alice</li>
 <li key={1}>Bob</li>
 <li key={2}>Charlie</li>
 
-// Après suppression
-<li key={0}>Alice</li>   {/* Même key, même contenu ✅ */}
-<li key={1}>Charlie</li> {/* Même key, mais contenu différent ❌ */}
+// Après suppression de Bob
+<li key={0}>Alice</li>   {/* ✅ Même key, même personne */}
+<li key={1}>Charlie</li> {/* ❌ Même key, mais personne différente ! */}
 ```
 
-React pense que "Charlie" a remplacé "Bob", et re-rend l'élément inutilement.
+**Conséquences :**
+- React pense que "Charlie" a remplacé "Bob" → re-render inutile
+- Si vos éléments ont un état (input, checkbox), l'état se retrouve sur le mauvais élément
 
-**Problème 2 : Bugs avec l'état local**
-
-Si vos éléments ont un état (input, checkbox), l'état peut se retrouver sur le mauvais élément après un tri ou une suppression.
-
-**Exception :** Si la liste est **statique** (ne change jamais), l'index est acceptable.
+**Exception :** Liste **statique** qui ne change jamais → index acceptable
 </Callout>
-
-## Générer des IDs uniques
-
-Si vos données n'ont pas d'ID, vous pouvez en générer.
-
-### Option 1 : crypto.randomUUID()
-
-```jsx
-const users = [
-  { id: crypto.randomUUID(), name: 'Alice' },
-  { id: crypto.randomUUID(), name: 'Bob' }
-];
-```
-
-### Option 2 : Bibliothèque `uuid`
-
-```bash
-npm install uuid
-```
-
-```jsx
-import { v4 as uuidv4 } from 'uuid';
-
-const users = [
-  { id: uuidv4(), name: 'Alice' },
-  { id: uuidv4(), name: 'Bob' }
-];
-```
-
-### Option 3 : ID basé sur les données
-
-```jsx
-// Combine plusieurs propriétés pour créer un ID unique
-const id = `${user.firstName}-${user.lastName}-${user.email}`;
-```
 
 ## Exemples pratiques
 
@@ -227,29 +193,7 @@ const products = [
 <ProductList products={products} />
 ```
 
-### Exemple 2 : Commentaires
-
-```jsx
-function CommentList({ comments }) {
-  return (
-    <div className="comments">
-      <h2>Commentaires ({comments.length})</h2>
-      {comments.map(comment => (
-        <div key={comment.id} className="comment">
-          <div className="comment-header">
-            <img src={comment.avatar} alt={comment.author} />
-            <span className="author">{comment.author}</span>
-            <span className="date">{comment.date}</span>
-          </div>
-          <p className="comment-text">{comment.text}</p>
-        </div>
-      ))}
-    </div>
-  );
-}
-```
-
-### Exemple 3 : Tableau de données
+### Exemple 2 : Tableau de données
 
 ```jsx
 function UserTable({ users }) {
@@ -375,7 +319,7 @@ products.sort((a, b) => a.price - b.price)
 
 Affichez un message si la liste est vide.
 
-### Méthode 1 : Conditionnel avant le map
+### Méthode 1 : Early return (recommandé)
 
 ```jsx
 function UserList({ users }) {
@@ -393,27 +337,7 @@ function UserList({ users }) {
 }
 ```
 
-### Méthode 2 : Opérateur ternaire
-
-```jsx
-function UserList({ users }) {
-  return (
-    <div>
-      {users.length === 0 ? (
-        <p>Aucun utilisateur trouvé.</p>
-      ) : (
-        <ul>
-          {users.map(user => (
-            <li key={user.id}>{user.name}</li>
-          ))}
-        </ul>
-      )}
-    </div>
-  );
-}
-```
-
-### Méthode 3 : Opérateur &&
+### Méthode 2 : Opérateur &&
 
 ```jsx
 function UserList({ users }) {
@@ -494,6 +418,18 @@ Chaque niveau de `.map()` doit avoir ses propres keys :
 Les keys doivent être uniques **parmi les frères et sœurs**, pas globalement.
 </Callout>
 
+<QuickCheck
+  question="Quelle est la meilleure key pour une liste d'utilisateurs provenant d'une API ?"
+  options={[
+    "L'index du tableau (0, 1, 2...)",
+    "Le nom d'utilisateur (peut avoir des doublons)",
+    "L'ID unique fourni par l'API",
+    "Un nombre aléatoire généré à chaque render"
+  ]}
+  correctAnswer={2}
+  explanation="L'ID unique fourni par l'API est la meilleure option car il est stable, unique et ne change pas entre les renders. L'index peut causer des bugs lors de modifications de la liste, le nom peut avoir des doublons, et un nombre aléatoire changerait à chaque render."
+/>
+
 ## Extraire en composant
 
 Pour plus de lisibilité, extrayez les éléments de liste en composants.
@@ -542,7 +478,7 @@ function ProductList({ products }) {
 }
 ```
 
-<Callout type="success" title="Avantages">
+<Callout type="tip" title="Avantages">
 **Lisibilité :** Le code est plus clair et organisé
 
 **Réutilisabilité :** `ProductCard` peut être utilisé ailleurs
@@ -552,65 +488,30 @@ function ProductList({ products }) {
 **Important :** La `key` reste sur le composant dans le `.map()`, pas à l'intérieur !
 </Callout>
 
-## Performance : React.memo
-
-Pour les grandes listes, utilisez `React.memo` pour éviter les re-renders inutiles.
-
-```jsx
-import { memo } from 'react';
-
-const ProductCard = memo(function ProductCard({ product }) {
-  return (
-    <div className="product">
-      <h3>{product.name}</h3>
-      <p>{product.price}€</p>
-    </div>
-  );
-});
-
-function ProductList({ products }) {
-  return (
-    <div>
-      {products.map(product => (
-        <ProductCard key={product.id} product={product} />
-      ))}
-    </div>
-  );
-}
-```
-
-<Callout type="info" title="Qu'est-ce que React.memo ?">
-`React.memo` mémorise le résultat d'un composant.
-
-**Sans memo :** Si le parent re-render, tous les enfants re-render aussi.
-
-**Avec memo :** Les enfants ne re-render que si leurs props changent.
-
-**Quand l'utiliser ?**
-- Listes avec beaucoup d'éléments (&gt;100)
-- Composants avec des calculs coûteux
-- Optimisations de performance
-
-**Quand ne PAS l'utiliser ?**
-- Par défaut (optimisation prématurée)
-- Petites listes (&lt;50 éléments)
-- Si les props changent souvent de toute façon
-</Callout>
+<QuickCheck
+  question="Où doit se trouver la prop 'key' quand vous extrayez un élément de liste en composant ?"
+  options={[
+    "À l'intérieur du composant extrait",
+    "Sur le composant dans le .map()",
+    "Les deux endroits en même temps",
+    "La key n'est plus nécessaire avec un composant séparé"
+  ]}
+  correctAnswer={1}
+  explanation="La key doit rester sur le composant dans le .map(), pas à l'intérieur du composant extrait. React a besoin de la key à l'endroit où la liste est créée, c'est-à-dire dans le .map() du composant parent."
+/>
 
 ## Récapitulatif
 
-<Callout type="success" title="Ce que vous avez appris">
+<Callout type="info" title="Ce que vous avez appris">
 Vous savez maintenant :
 
 - ✅ Utiliser `.map()` pour afficher des listes
 - ✅ Comprendre pourquoi les keys sont essentielles
 - ✅ Choisir de bonnes keys (ID unique > propriété unique > index)
-- ✅ Générer des IDs si nécessaire
 - ✅ Filtrer et trier des listes
 - ✅ Gérer les listes vides
 - ✅ Créer des listes imbriquées
 - ✅ Extraire des éléments en composants
-- ✅ Optimiser les performances avec React.memo
 
 **Prochaine étape :** Afficher du contenu **conditionnel** !
 </Callout>

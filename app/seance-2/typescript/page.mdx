@@ -5,9 +5,9 @@ Maintenant que vous connaissez les bases de TypeScript (vues en [Séance 1](/sea
 <Callout type="warning" title="TypeScript est obligatoire pour ce cours">
 **Dans ce cours, vous utiliserez TypeScript avec React.**
 
-Pourquoi ? Parce que **90% des projets professionnels React utilisent TypeScript**. En apprenant React directement avec TypeScript, vous serez prêts pour le monde du travail et vos futurs stages/alternances.
+Pourquoi ? Parce que **90% des projets professionnels React utilisent TypeScript**. En apprenant React directement avec TypeScript, vous serez prêts pour le monde professionnel et vos futurs stages.
 
-Même si React fonctionne très bien en JavaScript, TypeScript est devenu le **standard de l'industrie**.
+TypeScript est devenu le **standard de l'industrie** pour les applications React.
 </Callout>
 
 ---
@@ -26,9 +26,13 @@ npm run dev
 ```
 
 Le template `react-ts` configure automatiquement :
-- TypeScript
+- TypeScript avec compilation rapide
 - Les types pour React (`@types/react`, `@types/react-dom`)
-- `tsconfig.json` pré-configuré
+- `tsconfig.json` pré-configuré pour React
+
+<Callout type="tip" title="Vérification en temps réel">
+Avec TypeScript, votre éditeur VS Code détecte les erreurs **avant même d'exécuter le code**. Plus besoin d'attendre de voir une erreur dans le navigateur !
+</Callout>
 
 ### Structure du projet
 
@@ -45,7 +49,7 @@ src/
 
 **`.tsx`** = TypeScript + JSX (au lieu de `.jsx`)
 
-<Callout type="tip" title="Fichier de config">
+<Callout type="info" title="Fichier de config">
 Le fichier `tsconfig.json` est créé automatiquement par Vite. Vous n'avez généralement pas besoin d'y toucher !
 </Callout>
 
@@ -53,10 +57,14 @@ Le fichier `tsconfig.json` est créé automatiquement par Vite. Vous n'avez gén
 
 ## Typer les props d'un composant
 
+<Callout type="info" title="Props : les paramètres d'un composant">
+En React, les **props** (propriétés) sont les données passées à un composant, comme les paramètres d'une fonction. Avec TypeScript, vous définissez explicitement quelles props un composant attend et leur type.
+</Callout>
+
 ### Composant simple
 
 **JavaScript :**
-```jsx
+```tsx
 function Welcome({ name }) {
   return <h1>Bonjour, {name} !</h1>;
 }
@@ -85,6 +93,18 @@ function Welcome({ name }: WelcomeProps) {
 
 C'est plus lisible et réutilisable. Les types inline conviennent pour les composants très simples.
 </Callout>
+
+<QuickCheck
+  question="Quelle est la méthode recommandée pour typer les props d'un composant React ?"
+  options={[
+    "Type inline directement dans les paramètres",
+    "Interface définie avant le composant",
+    "Type alias avec le mot-clé type",
+    "Aucun typage n'est nécessaire"
+  ]}
+  correctAnswer={1}
+  explanation="L'interface définie avant le composant est recommandée car elle est plus lisible, réutilisable, et permet d'étendre facilement les props. C'est la convention dans la majorité des projets React + TypeScript."
+/>
 
 ### Props avec plusieurs types
 
@@ -163,95 +183,30 @@ function Button({
 }
 ```
 
----
+### Props avec fonctions
 
-## Typer les fonctions (callbacks)
-
-### Fonction simple (pas de paramètre)
-
-```tsx
-interface ButtonProps {
-  label: string;
-  onClick: () => void;  // Fonction sans paramètre, sans retour
-}
-
-function Button({ label, onClick }: ButtonProps) {
-  return <button onClick={onClick}>{label}</button>;
-}
-
-// Utilisation
-<Button
-  label="Cliquer"
-  onClick={() => console.log('Cliqué !')}
-/>
-```
-
-### Fonction avec paramètre
+Les fonctions passées en props se tapent avec leur signature :
 
 ```tsx
 interface SearchBarProps {
-  onSearch: (query: string) => void;
+  onSearch: (query: string) => void;  // Fonction avec paramètre
+  onClear: () => void;                 // Fonction sans paramètre
 }
 
-function SearchBar({ onSearch }: SearchBarProps) {
+function SearchBar({ onSearch, onClear }: SearchBarProps) {
   const [value, setValue] = useState('');
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    onSearch(value);
-  };
-
   return (
-    <form onSubmit={handleSubmit}>
+    <div>
       <input
         value={value}
         onChange={(e) => setValue(e.target.value)}
       />
-      <button type="submit">🔍</button>
-    </form>
-  );
-}
-
-// Utilisation
-<SearchBar onSearch={(query) => console.log('Recherche:', query)} />
-```
-
-### Fonction avec retour
-
-```tsx
-interface Product {
-  id: number;
-  name: string;
-  price: number;
-}
-
-interface ProductListProps {
-  products: Product[];
-  renderItem: (product: Product) => React.ReactNode;  // Retourne du JSX
-}
-
-function ProductList({ products, renderItem }: ProductListProps) {
-  return (
-    <ul>
-      {products.map((product) => (
-        <li key={product.id}>{renderItem(product)}</li>
-      ))}
-    </ul>
-  );
-}
-
-// Utilisation
-<ProductList
-  products={[
-    { id: 1, name: 'Laptop', price: 999 },
-    { id: 2, name: 'Phone', price: 599 }
-  ]}
-  renderItem={(product) => (
-    <div>
-      <strong>{product.name}</strong> - {product.price}€
+      <button onClick={() => onSearch(value)}>🔍</button>
+      <button onClick={onClear}>✖️</button>
     </div>
-  )}
-/>
+  );
+}
 ```
 
 ---
@@ -300,13 +255,14 @@ C'est le type le plus permissif pour `children`.
 
 ## Typer les événements
 
-### Événements courants
+Pour les événements React, TypeScript fournit des types spécifiques :
 
 ```tsx
-function EventExamples() {
-  // Clic sur un bouton
-  const handleClick = (e: React.MouseEvent<HTMLButtonElement>) => {
-    console.log('Bouton cliqué', e.currentTarget);
+function LoginForm() {
+  // Soumission de formulaire
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    console.log('Formulaire soumis');
   };
 
   // Changement d'input
@@ -314,47 +270,33 @@ function EventExamples() {
     console.log('Valeur:', e.target.value);
   };
 
-  // Soumission de formulaire
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    console.log('Formulaire soumis');
-  };
-
   return (
     <form onSubmit={handleSubmit}>
-      <input onChange={handleChange} />
-      <button onClick={handleClick}>Envoyer</button>
+      <input onChange={handleChange} placeholder="Email" />
+      <button type="submit">Connexion</button>
     </form>
   );
 }
 ```
 
-### Types d'événements React
-
-| Événement | Type TypeScript |
-|-----------|----------------|
-| `onClick` (button) | `React.MouseEvent<HTMLButtonElement>` |
-| `onClick` (div) | `React.MouseEvent<HTMLDivElement>` |
-| `onChange` (input) | `React.ChangeEvent<HTMLInputElement>` |
-| `onChange` (select) | `React.ChangeEvent<HTMLSelectElement>` |
-| `onChange` (textarea) | `React.ChangeEvent<HTMLTextAreaElement>` |
-| `onSubmit` (form) | `React.FormEvent<HTMLFormElement>` |
-| `onKeyDown` | `React.KeyboardEvent` |
-| `onFocus` | `React.FocusEvent` |
-
 <Callout type="tip" title="Laisser TypeScript inférer">
-Pour les gestionnaires inline, TypeScript peut deviner le type :
+Pour les gestionnaires inline, vous n'avez pas besoin de typer :
 
 ```tsx
-// Pas besoin de typer e !
 <input onChange={(e) => console.log(e.target.value)} />
-<button onClick={(e) => e.currentTarget.blur()}>Cliquer</button>
+<button onClick={(e) => console.log('Cliqué')}>Cliquer</button>
 ```
+
+TypeScript devine automatiquement le type de `e`.
 </Callout>
 
 ---
 
 ## Typer `useState`
+
+<Callout type="info" title="useState : le hook d'état">
+`useState` est le hook React qui permet de gérer l'état local d'un composant. TypeScript peut souvent deviner le type automatiquement, mais parfois vous devez l'indiquer explicitement.
+</Callout>
 
 ### Inférence automatique
 
@@ -439,321 +381,133 @@ function Form() {
 }
 ```
 
----
-
-## Patterns courants
-
-### Spread props avec types HTML
-
-Accepter tous les attributs HTML standards :
-
-```tsx
-interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
-  variant?: 'primary' | 'secondary';
-}
-
-function Button({ variant = 'primary', children, ...props }: ButtonProps) {
-  return (
-    <button className={`btn-${variant}`} {...props}>
-      {children}
-    </button>
-  );
-}
-
-// Accepte disabled, type, onClick, etc.
-<Button variant="primary" disabled onClick={() => {}}>
-  Cliquer
-</Button>
-```
-
-### Props optionnelles avec défaut
-
-```tsx
-interface CardProps {
-  title: string;
-  subtitle?: string;
-  footer?: React.ReactNode;
-  variant?: 'default' | 'highlighted';
-}
-
-function Card({
-  title,
-  subtitle,
-  footer,
-  variant = 'default'
-}: CardProps) {
-  return (
-    <div className={`card card-${variant}`}>
-      <h2>{title}</h2>
-      {subtitle && <p>{subtitle}</p>}
-      {footer && <div className="footer">{footer}</div>}
-    </div>
-  );
-}
-```
-
-### Typer un tableau de données
-
-```tsx
-interface Product {
-  id: number;
-  name: string;
-  price: number;
-  category: string;
-}
-
-interface ProductListProps {
-  products: Product[];
-  onSelect: (product: Product) => void;
-}
-
-function ProductList({ products, onSelect }: ProductListProps) {
-  return (
-    <ul>
-      {products.map((product) => (
-        <li key={product.id} onClick={() => onSelect(product)}>
-          {product.name} - {product.price}€
-        </li>
-      ))}
-    </ul>
-  );
-}
-```
+<QuickCheck
+  question="Quand devez-vous spécifier explicitement le type dans useState ?"
+  options={[
+    "Toujours, TypeScript ne peut jamais deviner le type",
+    "Jamais, TypeScript devine toujours le type correctement",
+    "Quand la valeur initiale est null, undefined, ou un tableau vide",
+    "Seulement pour les nombres et les chaînes de caractères"
+  ]}
+  correctAnswer={2}
+  explanation="Vous devez spécifier le type explicitement quand TypeScript ne peut pas le deviner correctement : avec null/undefined (useState<User | null>(null)), avec des tableaux vides (useState<User[]>([])), ou des objets complexes. Pour les valeurs simples, TypeScript infère le type automatiquement."
+/>
 
 ---
 
-## Erreurs courantes et solutions
+## Erreurs courantes
 
-### ❌ Erreur : Property 'X' is missing
-
+**Erreur : Property 'X' is missing**
 ```tsx
-interface ButtonProps {
-  label: string;
-  onClick: () => void;
-}
-
-// ❌ Erreur : onClick est requis
+// ❌ Prop requise manquante
 <Button label="Cliquer" />
 
-// ✅ Solution 1 : Fournir la prop
+// ✅ Ajoutez la prop ou rendez-la optionnelle (?)
 <Button label="Cliquer" onClick={() => {}} />
-
-// ✅ Solution 2 : Rendre optionnelle
-interface ButtonProps {
-  label: string;
-  onClick?: () => void;
-}
 ```
 
-### ❌ Erreur : Type 'X' is not assignable to type 'Y'
-
+**Erreur : Type 'string' is not assignable to type 'number'**
 ```tsx
-interface UserProps {
-  age: number;
-}
-
-// ❌ Erreur : "25" est un string, pas un number
+// ❌ Type incorrect
 <User age="25" />
 
-// ✅ Solution : Convertir en number
+// ✅ Utilisez le bon type
 <User age={25} />
 ```
 
-### ❌ Erreur : Object is possibly 'null'
-
+**Erreur : Object is possibly 'null'**
 ```tsx
-const [user, setUser] = useState<User | null>(null);
+// ❌ Accès sans vérification
+const name = user.name;
 
-// ❌ Erreur : user peut être null
-const name: string = user.name;
-
-// ✅ Solution 1 : Optional chaining
+// ✅ Optional chaining
 const name = user?.name;
-
-// ✅ Solution 2 : Vérifier null
-if (user) {
-  const name: string = user.name;  // OK ici
-}
 ```
 
 ---
 
-## Type vs Interface (rappel)
+## Interface vs Type
 
-Pour les props React, `interface` est recommandé :
+Pour les props React, utilisez `interface` (plus lisible) :
 
 ```tsx
-// ✅ Recommandé : interface
+// ✅ Recommandé pour les props
 interface ButtonProps {
   label: string;
   onClick: () => void;
 }
 
-// ✅ Aussi valide : type
-type ButtonProps = {
-  label: string;
-  onClick: () => void;
-};
+// ✅ Pour les unions
+type Status = 'loading' | 'success' | 'error';
 ```
 
-**Différence principale :** Les interfaces peuvent être étendues plus facilement.
-
-```tsx
-interface BaseProps {
-  id: string;
-  className?: string;
-}
-
-// Étendre une interface
-interface ButtonProps extends BaseProps {
-  label: string;
-  onClick: () => void;
-}
-
-// Intersection avec type
-type ButtonProps = BaseProps & {
-  label: string;
-  onClick: () => void;
-};
-```
-
-<Callout type="info" title="Convention">
-Dans le code React :
-- **`interface`** pour les props et objets
-- **`type`** pour les unions et types complexes
-
-```tsx
-interface UserProps { ... }           // Props
-type Status = 'loading' | 'success';  // Union
-```
-</Callout>
+Vous avez vu les détails en [Séance 1](/seance-1/typescript-intro).
 
 ---
 
 ## Résumé
 
-<Callout type="success" title="Ce qu'il faut retenir">
-**Créer un projet React + TS :**
+<Callout type="info" title="Ce que vous savez maintenant">
+**Créer un projet React + TypeScript :**
 ```bash
 npm create vite@latest mon-app -- --template react-ts
 ```
 
-**Typer les props :**
+**Typer les props avec interface :**
 ```tsx
-interface ComponentProps {
-  name: string;
-  age: number;
-  onAction: () => void;
+interface ButtonProps {
+  label: string;
+  onClick: () => void;
+  disabled?: boolean;  // Optionnel avec ?
 }
 
-function Component({ name, age, onAction }: ComponentProps) {
-  return <div>...</div>;
+function Button({ label, onClick, disabled = false }: ButtonProps) {
+  return <button onClick={onClick} disabled={disabled}>{label}</button>;
 }
 ```
 
-**Types React importants :**
-- `React.ReactNode` - Contenu JSX (children)
-- `React.MouseEvent` - Événement de clic
-- `React.ChangeEvent` - Événement d'input
-- `React.FormEvent` - Événement de formulaire
+**Types React essentiels :**
+- `React.ReactNode` → Pour `children`
+- `React.FormEvent` → Pour `onSubmit`
+- `React.ChangeEvent<HTMLInputElement>` → Pour `onChange`
 
 **useState avec types :**
 ```tsx
 const [user, setUser] = useState<User | null>(null);
-const [items, setItems] = useState<Item[]>([]);
+const [users, setUsers] = useState<User[]>([]);
 ```
 
-**Extension des props HTML :**
-```tsx
-interface Props extends React.ButtonHTMLAttributes<HTMLButtonElement> {
-  variant: 'primary' | 'secondary';
-}
-```
+**Conventions :**
+- `interface` pour les props
+- `type` pour les unions (`'loading' | 'success'`)
+- Fichiers React : `.tsx` (TypeScript + JSX)
 </Callout>
 
 ---
 
-## Exercice pratique
+## Ressources complémentaires
 
-Convertir ce composant JavaScript en TypeScript :
-
-```jsx
-function ProductCard({ product, onAddToCart, onRemove, showActions }) {
-  return (
-    <div className="product-card">
-      <h3>{product.name}</h3>
-      <p>{product.price}€</p>
-      {product.description && <p>{product.description}</p>}
-      {showActions && (
-        <div>
-          <button onClick={() => onAddToCart(product)}>
-            Ajouter
-          </button>
-          {onRemove && (
-            <button onClick={() => onRemove(product.id)}>
-              Retirer
-            </button>
-          )}
-        </div>
-      )}
-    </div>
-  );
-}
-```
-
-**À faire :**
-1. Créer l'interface `Product` (id, name, price, description optionnelle)
-2. Créer l'interface `ProductCardProps`
-3. Typer toutes les props correctement
-4. Identifier les props optionnelles
-
-<details>
-<summary>Voir la solution</summary>
-
-```tsx
-interface Product {
-  id: number;
-  name: string;
-  price: number;
-  description?: string;
-}
-
-interface ProductCardProps {
-  product: Product;
-  onAddToCart: (product: Product) => void;
-  onRemove?: (productId: number) => void;
-  showActions?: boolean;
-}
-
-function ProductCard({
-  product,
-  onAddToCart,
-  onRemove,
-  showActions = true
-}: ProductCardProps) {
-  return (
-    <div className="product-card">
-      <h3>{product.name}</h3>
-      <p>{product.price}€</p>
-      {product.description && <p>{product.description}</p>}
-      {showActions && (
-        <div>
-          <button onClick={() => onAddToCart(product)}>
-            Ajouter
-          </button>
-          {onRemove && (
-            <button onClick={() => onRemove(product.id)}>
-              Retirer
-            </button>
-          )}
-        </div>
-      )}
-    </div>
-  );
-}
-```
-</details>
+<Resources resources={[
+  {
+    title: "React TypeScript Cheatsheet",
+    description: "Guide de référence complet pour React avec TypeScript",
+    url: "https://react-typescript-cheatsheet.netlify.app/",
+    type: "doc"
+  },
+  {
+    title: "Documentation officielle TypeScript",
+    description: "Guide TypeScript pour React",
+    url: "https://www.typescriptlang.org/docs/handbook/react.html",
+    type: "doc"
+  },
+  {
+    title: "Total TypeScript - React with TypeScript",
+    description: "Tutoriel interactif gratuit par Matt Pocock",
+    url: "https://www.totaltypescript.com/tutorials/react-with-typescript",
+    type: "tutorial"
+  }
+]} />
 
 ---
 
-**Prochaine étape :** Passez aux exercices pour mettre en pratique tous les concepts React ! 🚀
+**Prochaine étape :** Passez aux exercices pour mettre en pratique tous les concepts React !

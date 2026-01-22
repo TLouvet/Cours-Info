@@ -1,6 +1,6 @@
 # Composants Fonctionnels
 
-Les composants sont les **blocs de construction** fondamentaux de toute application React. Apprenons à les créer et les utiliser !
+Les composants sont les **blocs de construction** fondamentaux de toute application React. Un composant est une fonction JavaScript qui retourne du JSX et représente une partie réutilisable de votre interface utilisateur.
 
 ## Qu'est-ce qu'un composant ?
 
@@ -120,15 +120,15 @@ class Welcome extends React.Component {
 ```
 
 <Callout type="tip" title="Pourquoi les fonctions ?">
-**Les composants fonctionnels sont meilleurs :**
+**Les composants fonctionnels sont la norme depuis React 16.8 (2019) :**
 
 - Plus simple et concis
 - Moins de code à écrire
 - Compatible avec les Hooks React
 - Meilleures performances
-- C'est la **norme** depuis 2019
+- Support complet de TypeScript
 
-Vous ne devriez utiliser que des composants fonctionnels.
+Vous ne devriez utiliser que des composants fonctionnels dans vos projets.
 </Callout>
 
 <QuickCheck
@@ -170,7 +170,7 @@ export default function UserCard() {
 import UserCard from './UserCard';
 ```
 
-Quand vous importez un export par défaut, vous pouvez choisir le nom que vous voulez (mais gardez le même nom par convention).
+Techniquement, vous pouvez renommer un export par défaut lors de l'import, mais gardez toujours le même nom par convention pour maintenir la cohérence.
 
 ### Export nommé
 
@@ -274,9 +274,9 @@ function App() {
 - La structure est claire
 </Callout>
 
-## La prop `children`
+## La prop children
 
-`children` est une prop **spéciale** qui représente tout ce qui est placé entre les balises ouvrante et fermante d'un composant.
+`children` est une prop **spéciale** qui représente tout le contenu placé entre les balises ouvrante et fermante d'un composant.
 
 ### Exemple de base
 
@@ -432,19 +432,19 @@ export function LinkButton() { /* ... */ }
 - Export par défaut (un composant par fichier) ou export nommé (plusieurs composants liés)
 
 **Composition**
-- Assembler des petits composants pour en créer de plus grands
-- Chaque composant a une seule responsabilité
-- Réutiliser les composants partout où nécessaire
+- Assemblez des petits composants pour en créer de plus grands
+- Chaque composant doit avoir une seule responsabilité
+- Réutilisez les composants partout où c'est nécessaire
 
 **Prop children**
-- Représente le contenu entre les balises d'un composant
-- Parfait pour layouts, wrappers, et UI components génériques
+- Représente le contenu placé entre les balises d'un composant
+- Idéale pour les layouts, wrappers et composants UI génériques
 
 **Organisation**
 - Un fichier par composant (nom du fichier = nom du composant)
 - Dossiers séparés : components, pages, layouts
 
-Les composants sont la base de React. Maîtriser leur création et leur composition est essentiel pour construire des applications maintenables.
+Vous maîtrisez maintenant les bases des composants React. La composition et la réutilisabilité sont les clés pour construire des applications maintenables.
 </Callout>
 
 ## Ressources

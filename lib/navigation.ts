@@ -44,8 +44,8 @@ export const navigation: NavSession[] = [
     href: '/seance-2',
     sections: [
       { id: 's2-intro', title: 'Introduction', href: '/seance-2/introduction' },
+      { id: 's2-getting-started', title: 'Débuter avec React', href: '/seance-2/getting-started' },
       { id: 's2-env', title: 'Node.js & npm', href: '/seance-2/environment' },
-      { id: 's2-modules', title: 'Modules ES6', href: '/seance-2/modules' },
       { id: 's2-spa', title: 'SPA vs MPA', href: '/seance-2/spa-vs-mpa' },
       { id: 's2-jsx', title: 'JSX Syntax', href: '/seance-2/jsx' },
       { id: 's2-components', title: 'Composants', href: '/seance-2/components' },
@@ -55,6 +55,7 @@ export const navigation: NavSession[] = [
       { id: 's2-typescript', title: 'React avec TypeScript', href: '/seance-2/typescript' },
       { id: 's2-conclusion', title: 'Conclusion', href: '/seance-2/conclusion' },
       { id: 's2-exercises', title: 'Exercices', href: '/seance-2/exercises' },
+      { id: 's2-project', title: 'Projet Fil Rouge', href: '/seance-2/project' },
       { id: 's2-quiz', title: 'Quiz de validation', href: '/seance-2/quiz' },
     ],
   },

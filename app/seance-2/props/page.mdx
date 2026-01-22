@@ -130,30 +130,6 @@ function Greeting({ name, age }) {
 - Plus court et lisible
 - Vous voyez immédiatement quelles props sont utilisées
 - Auto-complétion plus facile dans votre éditeur
-
-```jsx
-// ❌ Répétitif
-function UserCard(props) {
-  return (
-    <div>
-      <h2>{props.name}</h2>
-      <p>{props.email}</p>
-      <p>{props.bio}</p>
-    </div>
-  );
-}
-
-// ✅ Clair et concis
-function UserCard({ name, email, bio }) {
-  return (
-    <div>
-      <h2>{name}</h2>
-      <p>{email}</p>
-      <p>{bio}</p>
-    </div>
-  );
-}
-```
 </Callout>
 
 ## Valeurs par défaut
@@ -279,39 +255,7 @@ function handleChange() { /* ... */ }
 ```
 </Callout>
 
-## Spread des props
-
-L'opérateur **spread** (`...`) permet de passer toutes les props d'un coup.
-
-```jsx
-function Input(props) {
-  return <input {...props} />;
-}
-
-// Utilisation
-<Input type="text" placeholder="Nom" required />
-// Équivalent à :
-// <input type="text" placeholder="Nom" required />
-```
-
-### Combiner spread et props spécifiques
-
-```jsx
-function Button({ variant = 'primary', ...rest }) {
-  const className = `btn btn-${variant}`;
-
-  return <button className={className} {...rest} />;
-}
-
-// Utilisation
-<Button variant="danger" onClick={handleClick} disabled>
-  Supprimer
-</Button>
-```
-
-## Validation des props
-
-### Avec TypeScript (recommandé)
+## Validation des props avec TypeScript
 
 TypeScript offre une vérification à la compilation et une excellente auto-complétion.
 
@@ -333,44 +277,14 @@ function UserCard({ name, age, email }: UserCardProps) {
 }
 ```
 
+<Callout type="info" title="Pourquoi TypeScript ?">
+**Avantages :**
+- Erreurs détectées avant même de lancer l'app
+- Auto-complétion parfaite dans votre éditeur
+- Documentation implicite de vos composants
+- Plus de sécurité et moins de bugs
+
 Vous verrez TypeScript en détail dans la section dédiée.
-
-### Avec PropTypes
-
-PropTypes permet une validation à l'exécution (moins puissant que TypeScript).
-
-```jsx
-import PropTypes from 'prop-types';
-
-function UserCard({ name, age, email }) {
-  return (
-    <div>
-      <h2>{name}</h2>
-      <p>{age} ans</p>
-      <p>{email}</p>
-    </div>
-  );
-}
-
-UserCard.propTypes = {
-  name: PropTypes.string.isRequired,
-  age: PropTypes.number.isRequired,
-  email: PropTypes.string
-};
-```
-
-<Callout type="info" title="TypeScript vs PropTypes">
-**TypeScript** : Vérification à la compilation
-- Erreurs avant même de lancer l'app
-- Auto-complétion parfaite
-- Plus de sécurité
-
-**PropTypes** : Vérification à l'exécution
-- Warnings dans la console en développement
-- Plus simple à ajouter à un projet existant
-- Pas de vérification en production
-
-**Recommandation :** Utilisez **TypeScript** pour de nouveaux projets.
 </Callout>
 
 ## Exemple pratique : Carte de produit
@@ -464,13 +378,10 @@ function Component({ value }) {
 - Ne jamais modifier les props reçues
 - Les fonctions peuvent être passées en props (conventions : `onClick`, `handleClick`)
 
-**Spread operator**
-- Passer toutes les props : `<input {...props} />`
-- Combiner avec props spécifiques : `{ variant, ...rest }`
-
-**Validation**
-- TypeScript (recommandé) : typage à la compilation
-- PropTypes : validation à l'exécution
+**Validation avec TypeScript**
+- Typage à la compilation
+- Auto-complétion et détection d'erreurs
+- Documentation implicite des composants
 
 Les props sont essentielles pour créer des composants réutilisables et flexibles !
 </Callout>
@@ -488,12 +399,6 @@ Les props sont essentielles pour créer des composants réutilisables et flexibl
     title: "TypeScript with React",
     description: "Utiliser TypeScript pour typer les props",
     url: "https://react.dev/learn/typescript",
-    type: "doc"
-  },
-  {
-    title: "PropTypes",
-    description: "Documentation de la bibliothèque PropTypes",
-    url: "https://www.npmjs.com/package/prop-types",
     type: "doc"
   }
 ]} />

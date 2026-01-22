@@ -82,6 +82,18 @@ function Component({ data, loading, error }) {
 ```
 </Callout>
 
+<QuickCheck
+  question="Pourquoi utilise-t-on des early returns dans cet exemple ?"
+  options={[
+    "Pour améliorer les performances de React",
+    "Pour éviter les conditions imbriquées et rendre le code plus lisible",
+    "Parce que React l'exige",
+    "Pour éviter les erreurs de compilation"
+  ]}
+  correctAnswer={1}
+  explanation="Les early returns permettent de traiter chaque cas (loading, error, no data) séparément et de sortir de la fonction immédiatement. Cela évite les if/else imbriqués et rend le code beaucoup plus lisible et facile à maintenir."
+/>
+
 ## Méthode 2 : Opérateur ternaire `? :`
 
 Pour des conditions simples **dans le JSX**.
@@ -251,101 +263,17 @@ Attention avec les **nombres** et l'opérateur `&&` :
 **Solution :** Utilisez une comparaison explicite (`> 0`, `!== 0`, `!== ''`)
 </Callout>
 
-## Méthode 4 : Variable intermédiaire
-
-Pour des logiques complexes, stockez le résultat dans une **variable**.
-
-```jsx
-function Dashboard({ user }) {
-  let content;
-
-  if (!user) {
-    content = <p>Chargement...</p>;
-  } else if (user.role === 'admin') {
-    content = <AdminPanel />;
-  } else if (user.role === 'moderator') {
-    content = <ModeratorPanel />;
-  } else {
-    content = <UserPanel />;
-  }
-
-  return (
-    <div className="dashboard">
-      <h1>Tableau de bord</h1>
-      {content}
-    </div>
-  );
-}
-```
-
-### Avec switch
-
-```jsx
-function StatusMessage({ status }) {
-  let message;
-
-  switch (status) {
-    case 'loading':
-      message = <Spinner />;
-      break;
-    case 'success':
-      message = <SuccessIcon />;
-      break;
-    case 'error':
-      message = <ErrorIcon />;
-      break;
-    default:
-      message = null;
-  }
-
-  return <div className="status">{message}</div>;
-}
-```
-
-## Méthode 5 : IIFE (Immediately Invoked Function Expression)
-
-Pour des conditions complexes **directement dans le JSX**.
-
-```jsx
-function UserCard({ user }) {
-  return (
-    <div className="user-card">
-      <h2>{user.name}</h2>
-      {(() => {
-        if (user.role === 'admin') {
-          return <span className="badge admin">Admin</span>;
-        }
-        if (user.role === 'moderator') {
-          return <span className="badge mod">Modérateur</span>;
-        }
-        return <span className="badge user">Utilisateur</span>;
-      })()}
-    </div>
-  );
-}
-```
-
-<Callout type="tip" title="Quand utiliser une IIFE ?">
-**Utilisez une IIFE** quand :
-- Vous avez besoin de logique complexe dans le JSX
-- Vous voulez éviter d'extraire un composant
-
-**Sinon, préférez :**
-- Variables intermédiaires (plus lisible)
-- Extraction en composant séparé (meilleure organisation)
-
-```jsx
-// ⚠️ IIFE (fonctionne mais verbeux)
-{(() => {
-  if (condition) return <A />;
-  return <B />;
-})()}
-
-// ✅ Mieux : Variable
-const content = condition ? <A /> : <B />;
-return <div>{content}</div>;
-```
-</Callout>
+<QuickCheck
+  question="Quelle est la meilleure méthode pour afficher un spinner de chargement ?"
+  options={[
+    "Opérateur ternaire : {loading ? <Spinner /> : null}",
+    "Opérateur && : {loading && <Spinner />}",
+    "if/else avant le return avec plusieurs conditions",
+    "return null dans tous les cas"
+  ]}
+  correctAnswer={1}
+  explanation="L'opérateur && est parfait ici car on veut simplement afficher le spinner SI loading est true, sans alternative. C'est concis et lisible : {loading && <Spinner />}. Le ternaire fonctionnerait aussi mais est plus verbeux pour ce cas."
+/>
 
 ## Rendu de null
 
@@ -365,94 +293,13 @@ function WarningBanner({ showWarning }) {
 }
 ```
 
-### Avec l'opérateur &&
-
-```jsx
-function AdminPanel({ isAdmin }) {
-  return (
-    <>
-      {isAdmin && (
-        <div className="admin-panel">
-          Configuration administrative
-        </div>
-      )}
-    </>
-  );
-}
-```
+<Callout type="info">
+**Astuce :** Vous pouvez aussi utiliser l'opérateur `&&` pour le même résultat, mais `return null` est plus explicite pour les cas complexes.
+</Callout>
 
 ## Exemples complets
 
-### Exemple 1 : Formulaire de connexion
-
-```jsx
-function LoginForm() {
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [username, setUsername] = useState('');
-
-  if (isLoggedIn) {
-    return (
-      <div className="welcome">
-        <h1>Bienvenue, {username} !</h1>
-        <button onClick={() => setIsLoggedIn(false)}>
-          Se déconnecter
-        </button>
-      </div>
-    );
-  }
-
-  return (
-    <div className="login-form">
-      <h1>Connexion</h1>
-      <input
-        type="text"
-        placeholder="Nom d'utilisateur"
-        onChange={(e) => setUsername(e.target.value)}
-      />
-      <button onClick={() => setIsLoggedIn(true)}>
-        Se connecter
-      </button>
-    </div>
-  );
-}
-```
-
-### Exemple 2 : Chargement de données
-
-```jsx
-function UserProfile({ userId }) {
-  const [user, setUser] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-
-  // Early returns pour chaque état
-  if (loading) {
-    return <div className="spinner">Chargement...</div>;
-  }
-
-  if (error) {
-    return (
-      <div className="error">
-        ❌ Erreur : {error}
-        <button onClick={retry}>Réessayer</button>
-      </div>
-    );
-  }
-
-  if (!user) {
-    return <div>Utilisateur introuvable</div>;
-  }
-
-  return (
-    <div className="user-profile">
-      <h1>{user.name}</h1>
-      <p>{user.bio}</p>
-    </div>
-  );
-}
-```
-
-### Exemple 3 : Liste avec états
+### Exemple 1 : Liste avec états
 
 ```jsx
 function ProductList({ products, loading, error }) {
@@ -487,7 +334,7 @@ function ProductList({ products, loading, error }) {
 }
 ```
 
-### Exemple 4 : Permissions utilisateur
+### Exemple 2 : Permissions utilisateur
 
 ```jsx
 function Dashboard({ user }) {
@@ -519,7 +366,7 @@ function Dashboard({ user }) {
 }
 ```
 
-### Exemple 5 : Modal conditionnel
+### Exemple 3 : Modal conditionnel
 
 ```jsx
 function App() {
@@ -560,25 +407,21 @@ function App() {
 - Logique complexe avec plusieurs conditions
 - Early returns pour simplifier le code
 - Différents rendus complets
+- Plusieurs états à gérer (loading, error, success)
 
 **Opérateur ternaire `? :`**
 - Choix simple entre deux options
 - Dans le JSX
 - Une ligne suffit
+- Alternative claire (A ou B)
 
 **Opérateur logique `&&`**
 - Afficher OU cacher un élément
 - Condition simple
 - Pas de "sinon"
+- Éléments optionnels (badges, notifications)
 
-**Variable intermédiaire**
-- Logique complexe
-- Plusieurs conditions (switch)
-- Besoin de lisibilité
-
-**IIFE**
-- Dernier recours pour logique dans JSX
-- Évitez si possible (moins lisible)
+**En cas de doute :** Utilisez `if/else` avant le return - c'est le plus lisible !
 </Callout>
 
 ## Bonnes pratiques
@@ -631,17 +474,33 @@ return <>{canEdit && <EditButton />}</>;
 
 ## Récapitulatif
 
-<Callout type="success" title="Ce que vous avez appris">
-Vous maîtrisez maintenant :
+<Callout type="info" title="Ce que vous avez appris">
+Vous savez maintenant :
 
-- ✅ Les 5 méthodes de rendu conditionnel
+- ✅ Les 3 méthodes principales de rendu conditionnel
 - ✅ `if/else` pour des logiques complexes
 - ✅ Opérateur ternaire pour des choix simples
 - ✅ Opérateur `&&` pour afficher conditionnellement
-- ✅ Variables intermédiaires pour plus de clarté
 - ✅ Retourner `null` pour ne rien afficher
 - ✅ Early returns pour simplifier le code
 - ✅ Éviter les pièges courants (0, '', etc.)
 
 **Prochaine étape :** Mettre tout ça en pratique avec des **exercices** !
 </Callout>
+
+## Ressources
+
+<Resources resources={[
+  {
+    title: "Conditional Rendering - React Docs",
+    description: "Documentation officielle React sur le rendu conditionnel",
+    url: "https://react.dev/learn/conditional-rendering",
+    type: "doc"
+  },
+  {
+    title: "Logical AND (&&) - MDN",
+    description: "Explication détaillée de l'opérateur logique &&",
+    url: "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Logical_AND",
+    type: "doc"
+  }
+]} />

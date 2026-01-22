@@ -57,11 +57,7 @@ export default function Seance2Page() {
           </li>
           <li className="flex items-start gap-2">
             <span className="text-cyan-600 dark:text-cyan-400">•</span>
-            <span>Découvrir TypeScript avec React (typage des props, différences avec JS)</span>
-          </li>
-          <li className="flex items-start gap-2">
-            <span className="text-cyan-600 dark:text-cyan-400">•</span>
-            <span>Composer des composants pour créer des interfaces complexes</span>
+            <span>Utiliser TypeScript avec React pour typer les props, événements et état</span>
           </li>
         </ul>
       </div>
@@ -240,7 +236,7 @@ export default function Seance2Page() {
                     Listes et Keys
                   </h3>
                   <p className="text-sm text-gray-600 dark:text-gray-400">
-                    Afficher des listes avec .map(), keys, et optimisation
+                    Afficher des listes avec .map(), keys, filtrage et tri
                   </p>
                 </div>
               </div>
@@ -262,7 +258,7 @@ export default function Seance2Page() {
                     Rendu Conditionnel
                   </h3>
                   <p className="text-sm text-gray-600 dark:text-gray-400">
-                    if/else, ternaire, &&, et patterns avancés
+                    if/else, ternaire, &&, et early returns
                   </p>
                 </div>
               </div>
@@ -284,7 +280,7 @@ export default function Seance2Page() {
                     React avec TypeScript
                   </h3>
                   <p className="text-sm text-gray-600 dark:text-gray-400">
-                    Introduction à TypeScript, typer les props, et différences avec JS
+                    Typer les props, children, événements et useState
                   </p>
                 </div>
               </div>
@@ -329,6 +325,28 @@ export default function Seance2Page() {
                   </h3>
                   <p className="text-sm text-gray-600 dark:text-gray-400">
                     Mettez en pratique vos nouvelles compétences React
+                  </p>
+                </div>
+              </div>
+              <FiArrowRight className="w-5 h-5 text-gray-400 group-hover:text-cyan-600 dark:group-hover:text-cyan-400 transition-colors" />
+            </div>
+          </Link>
+
+          <Link
+            href="/seance-2/project"
+            className="group block p-4 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg hover:border-cyan-500 dark:hover:border-cyan-500 transition-colors"
+          >
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-lg bg-indigo-100 dark:bg-indigo-900/30 flex items-center justify-center">
+                  <FiPackage className="w-5 h-5 text-indigo-600 dark:text-indigo-400" />
+                </div>
+                <div>
+                  <h3 className="font-semibold text-gray-900 dark:text-gray-100 group-hover:text-cyan-600 dark:group-hover:text-cyan-400 transition-colors">
+                    Projet Fil Rouge
+                  </h3>
+                  <p className="text-sm text-gray-600 dark:text-gray-400">
+                    Application d'apprentissage du japonais (Séances 2 à 5)
                   </p>
                 </div>
               </div>

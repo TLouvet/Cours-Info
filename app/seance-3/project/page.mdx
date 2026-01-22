@@ -1,0 +1,382 @@
+# Projet Fil Rouge - Séance 3
+
+Application d'apprentissage du japonais : ajout de l'interactivité
+
+<Callout type="info" title="Suite du projet">
+Ce projet continue celui de la Séance 2. Vous allez maintenant ajouter de l'**interactivité** et des **formulaires** à votre application.
+</Callout>
+
+## Objectifs de la Séance 3
+
+Ajouter l'interactivité à votre application en utilisant **useState**, **événements**, et **formulaires contrôlés**.
+
+### Ce que vous allez implémenter
+
+1. **Mode de visualisation** : Basculer entre hiragana et katakana
+2. **Mode quiz** : Tester ses connaissances de façon interactive
+3. **Gestion de score** : Comptabiliser les bonnes/mauvaises réponses
+4. **Validation** : Vérifier les réponses de l'utilisateur
+
+## Fonctionnalités requises
+
+### 1. Sélection du script (hiragana/katakana)
+
+Ajoutez un système pour choisir quel script afficher.
+
+**Options d'implémentation** :
+- Boutons radio pour choisir entre Hiragana et Katakana
+- Bouton toggle pour basculer entre les deux
+- Onglets (tabs) pour naviguer entre les vues
+
+<Callout type="tip" title="useState pour le mode">
+```tsx
+const [script, setScript] = useState<'hiragana' | 'katakana'>('hiragana');
+```
+
+Utilisez cet état pour filtrer/afficher les bonnes données.
+</Callout>
+
+### 2. Mode quiz interactif
+
+Créez un mode quiz où l'utilisateur peut tester ses connaissances.
+
+**Fonctionnement** :
+- Afficher un caractère aléatoire (hiragana ou katakana)
+- L'utilisateur saisit la romanisation (rōmaji) dans un input
+- Valider la réponse
+- Afficher si c'est correct ou incorrect
+- Passer au caractère suivant
+
+**États à gérer** :
+```tsx
+const [quizMode, setQuizMode] = useState(false);
+const [currentCharacter, setCurrentCharacter] = useState<Kana | null>(null);
+const [userAnswer, setUserAnswer] = useState('');
+const [score, setScore] = useState({ correct: 0, total: 0 });
+```
+
+### 3. Validation des réponses
+
+Vérifier la réponse de l'utilisateur et donner un feedback.
+
+**Logique de validation** :
+- Comparer la réponse avec `currentCharacter.romanji`
+- Ignorer la casse (majuscules/minuscules)
+- Supprimer les espaces avant/après
+- Afficher un message de succès ou d'échec
+
+<Callout type="tip" title="Validation simple">
+```tsx
+const isCorrect = userAnswer.toLowerCase().trim() ===
+                  currentCharacter.romanji.toLowerCase();
+```
+</Callout>
+
+### 4. Gestion du score
+
+Comptabiliser les bonnes et mauvaises réponses.
+
+**Affichage du score** :
+- Nombre de bonnes réponses
+- Nombre total de questions
+- Pourcentage de réussite (optionnel)
+
+### 5. Navigation entre les modes
+
+Permettre de basculer entre :
+- **Mode étude** : visualiser tous les caractères
+- **Mode quiz** : tester ses connaissances
+
+## Structure suggérée
+
+```tsx
+function KanaApp() {
+  // États
+  const [script, setScript] = useState<'hiragana' | 'katakana'>('hiragana');
+  const [mode, setMode] = useState<'study' | 'quiz'>('study');
+  const [quizState, setQuizState] = useState({
+    currentIndex: 0,
+    userAnswer: '',
+    score: { correct: 0, total: 0 }
+  });
+
+  // Fonctions
+  const switchMode = (newMode: 'study' | 'quiz') => {
+    setMode(newMode);
+    // Réinitialiser le quiz si nécessaire
+  };
+
+  const handleAnswerSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    // Vérifier la réponse
+    // Mettre à jour le score
+    // Passer à la question suivante
+  };
+
+  return (
+    <div>
+      {/* Navigation mode */}
+      <nav>
+        <button onClick={() => switchMode('study')}>Étude</button>
+        <button onClick={() => switchMode('quiz')}>Quiz</button>
+      </nav>
+
+      {/* Sélection script (hiragana/katakana) */}
+      {mode === 'study' && (
+        <div>
+          <label>
+            <input
+              type="radio"
+              checked={script === 'hiragana'}
+              onChange={() => setScript('hiragana')}
+            />
+            Hiragana
+          </label>
+          <label>
+            <input
+              type="radio"
+              checked={script === 'katakana'}
+              onChange={() => setScript('katakana')}
+            />
+            Katakana
+          </label>
+        </div>
+      )}
+
+      {/* Affichage conditionnel */}
+      {mode === 'study' && <StudyMode script={script} kanaData={kanaData} />}
+      {mode === 'quiz' && <QuizMode ... />}
+    </div>
+  );
+}
+```
+
+## Composants suggérés
+
+### StudyMode (mode étude)
+
+```tsx
+interface StudyModeProps {
+  script: 'hiragana' | 'katakana';
+  kanaData: Kana[];
+}
+
+function StudyMode({ script, kanaData }: StudyModeProps) {
+  return (
+    <div className="grid">
+      {kanaData.map(kana => (
+        <CharacterCard
+          key={kana.romanji}
+          character={script === 'hiragana' ? kana.hiragana : kana.katakana}
+          romanji={kana.romanji}
+        />
+      ))}
+    </div>
+  );
+}
+```
+
+### QuizMode (mode quiz)
+
+```tsx
+interface QuizModeProps {
+  script: 'hiragana' | 'katakana';
+  kanaData: Kana[];
+}
+
+function QuizMode({ script, kanaData }: QuizModeProps) {
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const [userAnswer, setUserAnswer] = useState('');
+  const [score, setScore] = useState({ correct: 0, total: 0 });
+  const [feedback, setFeedback] = useState('');
+
+  const currentKana = kanaData[currentIndex];
+  const displayChar = script === 'hiragana'
+    ? currentKana.hiragana
+    : currentKana.katakana;
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+
+    const isCorrect = userAnswer.toLowerCase().trim() ===
+                      currentKana.romanji.toLowerCase();
+
+    setScore({
+      correct: score.correct + (isCorrect ? 1 : 0),
+      total: score.total + 1
+    });
+
+    setFeedback(isCorrect ? 'Correct !' : `Incorrect. C'était ${currentKana.romanji}`);
+    setUserAnswer('');
+
+    // Passer au suivant après un délai
+    setTimeout(() => {
+      setCurrentIndex((currentIndex + 1) % kanaData.length);
+      setFeedback('');
+    }, 1500);
+  };
+
+  return (
+    <div>
+      <div className="score">
+        Score : {score.correct} / {score.total}
+      </div>
+
+      <div className="quiz-character">
+        <h2>{displayChar}</h2>
+      </div>
+
+      <form onSubmit={handleSubmit}>
+        <input
+          type="text"
+          value={userAnswer}
+          onChange={e => setUserAnswer(e.target.value)}
+          placeholder="Romanji..."
+          autoFocus
+        />
+        <button type="submit">Valider</button>
+      </form>
+
+      {feedback && <div className="feedback">{feedback}</div>}
+    </div>
+  );
+}
+```
+
+## Expectations pour Seance 3
+
+<Callout type="success" title="Ce qui est attendu">
+
+**Interactivité**
+- Mode étude avec sélection hiragana/katakana fonctionnel
+- Mode quiz avec questions aléatoires
+- Navigation entre les modes
+
+**Formulaires et État**
+- Input contrôlé pour les réponses du quiz
+- useState pour gérer tous les états (mode, script, réponses, score)
+- Validation des réponses avec feedback visuel
+
+**Code quality**
+- Props typées avec TypeScript
+- Composants bien organisés
+- Pas d'erreurs dans la console
+
+</Callout>
+
+## Fonctionnalités optionnelles (bonus)
+
+<Callout type="tip" title="Pour aller plus loin">
+
+**Quiz avancé**
+- Choisir le nombre de questions
+- Afficher un récapitulatif final avec les erreurs
+- Timer pour chaque question
+- Mode "inverse" : afficher le rōmaji, deviner le caractère
+
+**Personnalisation**
+- Sélectionner les lignes à inclure dans le quiz (ex: seulement a, ka, sa)
+- Choix de difficulté (voyelles seules, puis avec consonnes)
+- Mode apprentissage : montrer la réponse après 3 secondes
+
+**Statistiques**
+- Sauvegarder les scores dans localStorage
+- Afficher l'historique des sessions
+- Identifier les caractères les plus difficiles
+
+</Callout>
+
+## Questions fréquentes
+
+<details>
+<summary>**Comment choisir un caractère aléatoire pour le quiz ?**</summary>
+
+```tsx
+const getRandomCharacter = () => {
+  const randomIndex = Math.floor(Math.random() * kanaData.length);
+  return kanaData[randomIndex];
+};
+```
+
+Ou pour éviter les répétitions, mélangez le tableau au début :
+```tsx
+const [shuffledKana] = useState(() =>
+  [...kanaData].sort(() => Math.random() - 0.5)
+);
+```
+</details>
+
+<details>
+<summary>**Comment afficher le feedback pendant 1.5 secondes puis passer au suivant ?**</summary>
+
+Utilisez `setTimeout` :
+```tsx
+const handleSubmit = (e: React.FormEvent) => {
+  e.preventDefault();
+  // Vérifier réponse, mettre à jour score, afficher feedback
+
+  setTimeout(() => {
+    setCurrentIndex(prev => prev + 1);
+    setFeedback('');
+    setUserAnswer('');
+  }, 1500);
+};
+```
+
+N'oubliez pas de nettoyer le timeout si le composant est démonté !
+</details>
+
+<details>
+<summary>**Comment empêcher de soumettre une réponse vide ?**</summary>
+
+Désactivez le bouton si l'input est vide :
+```tsx
+<button
+  type="submit"
+  disabled={userAnswer.trim() === ''}
+>
+  Valider
+</button>
+```
+</details>
+
+## Conseils
+
+<Callout type="warning" title="Points d'attention">
+
+**1. État local vs props**
+- Le mode (study/quiz) et le script (hiragana/katakana) sont des états locaux
+- Les données kanaData sont passées en props
+
+**2. Réinitialisation du quiz**
+- Quand on passe en mode quiz, réinitialisez le score
+- Quand on revient en mode étude, pas besoin de réinitialiser
+
+**3. Validation des réponses**
+- Ignorez la casse : `toLowerCase()`
+- Supprimez les espaces : `trim()`
+- Certains caractères peuvent avoir plusieurs romanisations (ex: し = shi ou si)
+
+**4. Formulaires contrôlés**
+- N'oubliez pas `e.preventDefault()` sur onSubmit
+- Réinitialisez l'input après chaque réponse
+
+</Callout>
+
+## Prochaines étapes (Séance 4)
+
+À la Séance 4, vous ajouterez :
+- **useEffect** pour des effets de bord
+- **React Router** pour la navigation entre pages
+- **Data fetching** si vous voulez charger des données externes
+- Routes pour séparer le mode étude et le mode quiz
+
+<Callout type="info">
+Pour l'instant, concentrez-vous sur l'interactivité avec useState et les formulaires contrôlés. Vous construisez les fondations de votre application !
+</Callout>
+
+## Ressources
+
+- [React Docs - useState](https://react.dev/reference/react/useState)
+- [React Docs - Forms](https://react.dev/learn/reacting-to-input-with-state)
+- [TypeScript Handbook - Narrowing](https://www.typescriptlang.org/docs/handbook/2/narrowing.html)

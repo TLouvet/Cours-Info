@@ -2,49 +2,29 @@
 
 Félicitations ! Vous avez maîtrisé l'interactivité en React et la gestion des formulaires.
 
-## Ce que vous avez appris
+## Ce que vous maîtrisez maintenant
 
-<div className="grid grid-cols-1 md:grid-cols-2 gap-4 my-6">
-  <div className="p-4 bg-cyan-50 dark:bg-cyan-900/20 border border-cyan-200 dark:border-cyan-800 rounded-lg">
-    <h3 className="font-semibold text-gray-900 dark:text-gray-100 mb-2">✅ Événements React</h3>
-    <p className="text-sm text-gray-600 dark:text-gray-400">onClick, onChange, onSubmit, event.target, event.preventDefault()</p>
-  </div>
+<Callout type="info">
+Vous avez acquis les **compétences pour créer des applications interactives avec React**. Chaque concept vous permettra de gérer l'état, capturer les événements utilisateur et valider des formulaires.
+</Callout>
 
-  <div className="p-4 bg-cyan-50 dark:bg-cyan-900/20 border border-cyan-200 dark:border-cyan-800 rounded-lg">
-    <h3 className="font-semibold text-gray-900 dark:text-gray-100 mb-2">✅ Hook useState</h3>
-    <p className="text-sm text-gray-600 dark:text-gray-400">Ajouter de la mémoire aux composants, gérer l'état local</p>
-  </div>
+### Interactivité
 
-  <div className="p-4 bg-cyan-50 dark:bg-cyan-900/20 border border-cyan-200 dark:border-cyan-800 rounded-lg">
-    <h3 className="font-semibold text-gray-900 dark:text-gray-100 mb-2">✅ State vs Props</h3>
-    <p className="text-sm text-gray-600 dark:text-gray-400">Comprendre la différence et quand utiliser l'un ou l'autre</p>
-  </div>
+- **Événements React** : onClick, onChange, onSubmit, event.target, event.preventDefault()
+- **Hook useState** : Ajouter de la mémoire aux composants, gérer l'état local
+- **State vs Props** : Comprendre la différence et quand utiliser l'un ou l'autre
+- **Flux de données unidirectionnel** : Props descendent, événements remontent
 
-  <div className="p-4 bg-cyan-50 dark:bg-cyan-900/20 border border-cyan-200 dark:border-cyan-800 rounded-lg">
-    <h3 className="font-semibold text-gray-900 dark:text-gray-100 mb-2">✅ Formulaires Contrôlés</h3>
-    <p className="text-sm text-gray-600 dark:text-gray-400">Input, textarea, select, checkbox, radio - tous contrôlés par React</p>
-  </div>
+### Formulaires
 
-  <div className="p-4 bg-cyan-50 dark:bg-cyan-900/20 border border-cyan-200 dark:border-cyan-800 rounded-lg">
-    <h3 className="font-semibold text-gray-900 dark:text-gray-100 mb-2">✅ Validation Manuelle</h3>
-    <p className="text-sm text-gray-600 dark:text-gray-400">Vérifier les champs requis, formats, longueurs avec regex</p>
-  </div>
+- **Composants contrôlés** : Input, textarea, select, checkbox, radio - tous contrôlés par React avec le pattern value + onChange
+- **Validation manuelle** : Vérifier les champs requis, formats, longueurs avec regex
+- **Validation avec Zod** : Type-safe validation, schémas, inférence de types, messages d'erreur clairs
 
-  <div className="p-4 bg-cyan-50 dark:bg-cyan-900/20 border border-cyan-200 dark:border-cyan-800 rounded-lg">
-    <h3 className="font-semibold text-gray-900 dark:text-gray-100 mb-2">✅ Validation avec Zod</h3>
-    <p className="text-sm text-gray-600 dark:text-gray-400">Type-safe validation, schémas, inférence de types, messages d'erreur</p>
-  </div>
+### Architecture
 
-  <div className="p-4 bg-cyan-50 dark:bg-cyan-900/20 border border-cyan-200 dark:border-cyan-800 rounded-lg">
-    <h3 className="font-semibold text-gray-900 dark:text-gray-100 mb-2">✅ Lifting State Up</h3>
-    <p className="text-sm text-gray-600 dark:text-gray-400">Partager l'état entre composants via le parent commun</p>
-  </div>
-
-  <div className="p-4 bg-cyan-50 dark:bg-cyan-900/20 border border-cyan-200 dark:border-cyan-800 rounded-lg">
-    <h3 className="font-semibold text-gray-900 dark:text-gray-100 mb-2">✅ Flux de Données Unidirectionnel</h3>
-    <p className="text-sm text-gray-600 dark:text-gray-400">Props descendent, événements remontent</p>
-  </div>
-</div>
+- **Lifting State Up** : Partager l'état entre composants via le parent commun
+- **State placement** : Placer l'état au niveau le plus bas possible, mais aussi haut que nécessaire
 
 ## Pourquoi ces concepts sont essentiels
 
@@ -226,36 +206,6 @@ C'est **le** standard de l'industrie pour la validation TypeScript !
   </div>
 </div>
 
-## La différence avec et sans connaissances
-
-<div className="grid grid-cols-1 md:grid-cols-2 gap-6 my-8">
-  <div className="p-6 bg-red-50 dark:bg-red-900/20 border-2 border-red-200 dark:border-red-800 rounded-lg">
-    <h3 className="text-xl font-bold text-red-900 dark:text-red-100 mb-4">❌ Sans connaissances React</h3>
-    <ul className="space-y-3 text-sm text-gray-700 dark:text-gray-300">
-      <li>✗ Vous ne savez pas utiliser useState correctement</li>
-      <li>✗ Vous mélangez state et props</li>
-      <li>✗ Vous ne comprenez pas les composants contrôlés</li>
-      <li>✗ Vous copiez des formulaires sans comprendre</li>
-      <li>✗ Vous ne savez pas valider proprement</li>
-      <li>✗ Vous ne pouvez pas partager l'état entre composants</li>
-      <li>✗ Vous êtes bloqué(e) dès qu'il y a une interaction</li>
-    </ul>
-  </div>
-
-  <div className="p-6 bg-green-50 dark:bg-green-900/20 border-2 border-green-200 dark:border-green-800 rounded-lg">
-    <h3 className="text-xl font-bold text-green-900 dark:text-green-100 mb-4">✅ Avec connaissances React</h3>
-    <ul className="space-y-3 text-sm text-gray-700 dark:text-gray-300">
-      <li>✓ Vous maîtrisez useState et le state management</li>
-      <li>✓ Vous comprenez la distinction state/props</li>
-      <li>✓ Vous créez des formulaires contrôlés facilement</li>
-      <li>✓ Vous validez avec Zod comme un pro</li>
-      <li>✓ Vous savez remonter l'état quand nécessaire</li>
-      <li>✓ Vous comprenez le flux de données unidirectionnel</li>
-      <li>✓ Vous construisez des UIs interactives complexes</li>
-    </ul>
-  </div>
-</div>
-
 ## Validation des compétences
 
 Avant de passer à la Séance 4 (useEffect & Routing), assurez-vous de maîtriser ces concepts clés :
@@ -387,7 +337,7 @@ Maintenant que vous maîtrisez l'interactivité et les formulaires, vous êtes p
 
 <div className="my-8 p-6 bg-gradient-to-r from-cyan-50 to-blue-50 dark:from-cyan-900/20 dark:to-blue-900/20 border-2 border-cyan-200 dark:border-cyan-800 rounded-lg text-center">
   <h3 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-2">
-    Bravo ! 🎉
+    Bravo !
   </h3>
   <div className="text-lg text-gray-700 dark:text-gray-300 mb-4">
     Vous avez maîtrisé l'interactivité et les formulaires en React

@@ -95,19 +95,16 @@ const schema = z.string()
   .email({ message: 'Email invalide' })
   .url({ message: 'URL invalide' })
   .regex(/^[a-z]+$/, { message: 'Seulement des lettres minuscules' })
-  .trim() // Supprime les espaces
-  .toLowerCase(); // Convertit en minuscules
+  .trim(); // Supprime les espaces
 ```
 
-**Validations spéciales :**
+**Validations courantes :**
 
 ```tsx
 z.string().email();           // Email valide
 z.string().url();             // URL valide
-z.string().uuid();            // UUID valide
-z.string().cuid();            // CUID valide
-z.string().datetime();        // ISO 8601 datetime
-z.string().ip();              // Adresse IP (v4 ou v6)
+z.string().min(5);            // Minimum 5 caractères
+z.string().max(100);          // Maximum 100 caractères
 ```
 
 ### Numbers
@@ -117,120 +114,68 @@ const schema = z.number()
   .min(0, { message: 'Doit être positif' })
   .max(100, { message: 'Maximum 100' })
   .int({ message: 'Doit être un entier' })
-  .positive({ message: 'Doit être positif' })
-  .nonnegative({ message: 'Doit être >= 0' })
-  .multipleOf(5, { message: 'Doit être un multiple de 5' });
+  .positive({ message: 'Doit être positif' });
 ```
 
-### Booleans
+### Booleans, Dates et Enums
 
 ```tsx
-const schema = z.boolean();
-```
+// Boolean
+z.boolean();
 
-### Dates
+// Date
+z.date()
+  .min(new Date('2024-01-01'))
+  .max(new Date('2025-12-31'));
 
-```tsx
-const schema = z.date()
-  .min(new Date('2024-01-01'), { message: 'Date trop ancienne' })
-  .max(new Date('2025-12-31'), { message: 'Date trop récente' });
-```
-
-### Enums
-
-```tsx
+// Enum (valeurs limitées)
 const roleSchema = z.enum(['admin', 'user', 'guest']);
-
 type Role = z.infer<typeof roleSchema>; // 'admin' | 'user' | 'guest'
 ```
 
-### Arrays
+### Arrays et Objects
 
 ```tsx
+// Array
 const tagsSchema = z.array(z.string())
   .min(1, { message: 'Au moins un tag' })
   .max(5, { message: 'Maximum 5 tags' });
 
-const numbersSchema = z.array(z.number()).nonempty();
-```
-
-### Objects
-
-```tsx
-const addressSchema = z.object({
-  street: z.string(),
-  city: z.string(),
-  zipCode: z.string().regex(/^\d{5}$/),
-  country: z.string().default('France')
+// Object
+const userSchema = z.object({
+  name: z.string(),
+  email: z.string().email(),
+  age: z.number().min(18)
 });
 ```
 
 ## Validation avancée
 
-### Champs optionnels
+### Champs optionnels et valeurs par défaut
 
 ```tsx
 const userSchema = z.object({
   name: z.string(),
   email: z.string().email(),
-  age: z.number().optional(), // Peut être undefined
-  bio: z.string().nullable(), // Peut être null
-  phone: z.string().nullish() // Peut être null ou undefined
+  age: z.number().optional(),        // Peut être undefined
+  bio: z.string().nullable(),        // Peut être null
+  theme: z.string().default('light') // Valeur par défaut
 });
 ```
 
-### Valeurs par défaut
+### Validation personnalisée avec refine()
+
+Utilisez `.refine()` pour des règles de validation personnalisées.
 
 ```tsx
-const configSchema = z.object({
-  theme: z.string().default('light'),
-  language: z.string().default('fr'),
-  notifications: z.boolean().default(true)
-});
-
-const config = configSchema.parse({});
-// { theme: 'light', language: 'fr', notifications: true }
-```
-
-### Validation conditionnelle
-
-```tsx
-const formSchema = z.object({
-  type: z.enum(['email', 'phone']),
-  contact: z.string()
-}).refine(data => {
-  if (data.type === 'email') {
-    return z.string().email().safeParse(data.contact).success;
-  }
-  if (data.type === 'phone') {
-    return /^\d{10}$/.test(data.contact);
-  }
-  return true;
-}, {
-  message: 'Format de contact invalide',
-  path: ['contact']
-});
-```
-
-### Validation personnalisée
-
-```tsx
+// Validation d'un seul champ
 const passwordSchema = z.string()
   .min(8)
   .refine(password => /[A-Z]/.test(password), {
     message: 'Doit contenir au moins une majuscule'
-  })
-  .refine(password => /[a-z]/.test(password), {
-    message: 'Doit contenir au moins une minuscule'
-  })
-  .refine(password => /\d/.test(password), {
-    message: 'Doit contenir au moins un chiffre'
   });
-```
 
-### Comparaison entre champs
-
-```tsx
+// Comparaison entre champs
 const signupSchema = z.object({
   password: z.string().min(8),
   confirmPassword: z.string()
@@ -243,6 +188,8 @@ const signupSchema = z.object({
 ## Utilisation avec React
 
 ### Formulaire de connexion avec Zod
+
+Voici un exemple complet d'utilisation de Zod dans un formulaire React.
 
 ```tsx
 import { useState } from 'react';
@@ -265,14 +212,10 @@ function LoginForm() {
     email: '',
     password: ''
   });
-
   const [errors, setErrors] = useState<Record<string, string>>({});
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value
-    });
+    setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -296,36 +239,27 @@ function LoginForm() {
     // 4. Données validées et type-safe !
     console.log('Données valides:', result.data);
     setErrors({});
-    // Envoyer au serveur...
   };
 
   return (
     <form onSubmit={handleSubmit}>
-      <div>
-        <input
-          type="email"
-          name="email"
-          value={formData.email}
-          onChange={handleChange}
-          placeholder="Email"
-        />
-        {errors.email && (
-          <span className="error">{errors.email}</span>
-        )}
-      </div>
+      <input
+        type="email"
+        name="email"
+        value={formData.email}
+        onChange={handleChange}
+        placeholder="Email"
+      />
+      {errors.email && <span className="error">{errors.email}</span>}
 
-      <div>
-        <input
-          type="password"
-          name="password"
-          value={formData.password}
-          onChange={handleChange}
-          placeholder="Mot de passe"
-        />
-        {errors.password && (
-          <span className="error">{errors.password}</span>
-        )}
-      </div>
+      <input
+        type="password"
+        name="password"
+        value={formData.password}
+        onChange={handleChange}
+        placeholder="Mot de passe"
+      />
+      {errors.password && <span className="error">{errors.password}</span>}
 
       <button type="submit">Se connecter</button>
     </form>
@@ -333,39 +267,19 @@ function LoginForm() {
 }
 ```
 
-### Formulaire d'inscription complet
+### Exemple : Schéma d'inscription plus complexe
 
 ```tsx
-import { z } from 'zod';
-
 const signupSchema = z.object({
   username: z.string()
     .min(3, { message: 'Au moins 3 caractères' })
-    .max(20, { message: 'Maximum 20 caractères' })
-    .regex(/^[a-zA-Z0-9_]+$/, {
-      message: 'Lettres, chiffres et _ uniquement'
-    }),
-
-  email: z.string()
-    .email({ message: 'Email invalide' }),
-
+    .max(20, { message: 'Maximum 20 caractères' }),
+  email: z.string().email({ message: 'Email invalide' }),
   password: z.string()
     .min(8, { message: 'Au moins 8 caractères' })
-    .regex(/[A-Z]/, { message: 'Au moins une majuscule' })
-    .regex(/[a-z]/, { message: 'Au moins une minuscule' })
-    .regex(/\d/, { message: 'Au moins un chiffre' }),
-
+    .regex(/[A-Z]/, { message: 'Au moins une majuscule' }),
   confirmPassword: z.string(),
-
-  age: z.number()
-    .int()
-    .min(13, { message: 'Vous devez avoir au moins 13 ans' })
-    .max(120, { message: 'Âge invalide' }),
-
-  terms: z.boolean()
-    .refine(val => val === true, {
-      message: 'Vous devez accepter les conditions'
-    })
+  age: z.number().int().min(13)
 }).refine(data => data.password === data.confirmPassword, {
   message: 'Les mots de passe ne correspondent pas',
   path: ['confirmPassword']
@@ -374,36 +288,12 @@ const signupSchema = z.object({
 type SignupForm = z.infer<typeof signupSchema>;
 ```
 
-### Validation en temps réel
 
-```tsx
-function Form() {
-  const [email, setEmail] = useState('');
-  const [emailError, setEmailError] = useState('');
+## Zod + React Hook Form (Optionnel)
 
-  const emailSchema = z.string().email();
-
-  const handleEmailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value;
-    setEmail(value);
-
-    // Validation en temps réel
-    const result = emailSchema.safeParse(value);
-    setEmailError(result.success ? '' : 'Email invalide');
-  };
-
-  return (
-    <input
-      type="email"
-      value={email}
-      onChange={handleEmailChange}
-      className={emailError ? 'invalid' : 'valid'}
-    />
-  );
-}
-```
-
-## Zod + React Hook Form
+<Callout type="warning" title="Section avancée">
+Cette section est **optionnelle** pour les débutants. Vous pouvez d'abord maîtriser Zod avec `useState` avant d'explorer React Hook Form.
+</Callout>
 
 React Hook Form s'intègre parfaitement avec Zod via `@hookform/resolvers`.
 
@@ -457,60 +347,43 @@ function LoginForm() {
 Ensemble, ils forment la **meilleure solution** pour les formulaires complexes en React !
 </Callout>
 
-## Comparaison : Manuel vs Zod
+## Pourquoi utiliser Zod ?
 
-### Validation manuelle (vue précédemment)
+<Callout type="success" title="Avantages de Zod par rapport à la validation manuelle">
+**Validation manuelle** : Code répétitif, regex manuelles, pas de types automatiques
 
 ```tsx
-// ❌ Code répétitif et verbeux
-const validate = () => {
-  const errors: Record<string, string> = {};
-
-  if (!email) {
-    errors.email = 'Email requis';
-  } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-    errors.email = 'Email invalide';
-  }
-
-  if (!password) {
-    errors.password = 'Mot de passe requis';
-  } else if (password.length < 8) {
-    errors.password = 'Au moins 8 caractères';
-  }
-
-  return errors;
-};
-
-// ❌ Pas de types TypeScript automatiques
-// ❌ Difficile à maintenir
-// ❌ Regex à écrire manuellement
+// ❌ Validation manuelle
+if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+  errors.email = 'Email invalide';
+}
 ```
 
-### Avec Zod
+**Avec Zod** : Concis, type-safe, facile à maintenir
 
 ```tsx
-// ✅ Concis et déclaratif
+// ✅ Avec Zod
 const schema = z.object({
-  email: z.string()
-    .min(1, 'Email requis')
-    .email('Email invalide'),
-  password: z.string()
-    .min(8, 'Au moins 8 caractères')
+  email: z.string().email('Email invalide'),
+  password: z.string().min(8)
 });
 
-// ✅ Types TypeScript automatiques
-type Form = z.infer<typeof schema>;
-
-// ✅ Validation en une ligne
+type Form = z.infer<typeof schema>; // Types automatiques !
 const result = schema.safeParse(formData);
-
-// ✅ Facile à maintenir et à étendre
-// ✅ Messages d'erreur structurés
 ```
+
+**Avantages clés :**
+- ✅ Moins de code
+- ✅ Types TypeScript automatiques
+- ✅ Messages d'erreur structurés
+- ✅ Facile à maintenir
+</Callout>
 
 ## Cas d'usage réels
 
-### API : Valider les données reçues
+### Valider les données d'une API
+
+Zod est idéal pour valider les réponses d'API et garantir la sécurité des types.
 
 ```tsx
 const apiResponseSchema = z.object({
@@ -536,66 +409,22 @@ if (!result.success) {
 const users = result.data.users;
 ```
 
-### Variables d'environnement
-
-```tsx
-const envSchema = z.object({
-  DATABASE_URL: z.string().url(),
-  API_KEY: z.string().min(1),
-  PORT: z.string().regex(/^\d+$/).transform(Number)
-});
-
-const env = envSchema.parse(process.env);
-// env.PORT est maintenant un number !
-```
-
-### Configuration utilisateur
-
-```tsx
-const settingsSchema = z.object({
-  theme: z.enum(['light', 'dark', 'auto']).default('light'),
-  language: z.enum(['fr', 'en', 'es']).default('fr'),
-  notifications: z.object({
-    email: z.boolean().default(true),
-    push: z.boolean().default(false)
-  })
-});
-
-const userSettings = settingsSchema.parse(savedSettings);
-```
-
 ## Alternatives à Zod
 
 <Callout type="info" title="Autres bibliothèques de validation">
-**Zod** n'est pas la seule option. Voici les alternatives principales :
+**Zod** n'est pas la seule option. L'alternative principale est :
 
 **Yup** (https://github.com/jquense/yup)
 - Très populaire, existe depuis longtemps
 - Syntaxe similaire à Zod
 - Moins bon support TypeScript
-- Utilisé avec Formik
+- Souvent utilisé avec Formik
 
-**Joi** (https://github.com/hapijs/joi)
-- Principalement pour Node.js (backend)
-- Très puissant et flexible
-- Pas conçu pour TypeScript
-
-**Valibot** (https://valibot.dev/)
-- Nouveau challenger, très léger (~1kb)
-- Syntaxe proche de Zod
-- Bonne alternative moderne
-
-**React Hook Form (intégré)**
-- Validation simple intégrée
-- Suffit pour des cas basiques
-- Peut s'intégrer avec Zod ou Yup
-
-**Pourquoi Zod est recommandé ?**
+**Pourquoi choisir Zod ?**
 - ✅ Type-safe avec TypeScript
 - ✅ Zero-dependency
-- ✅ Excellent écosystème (tRPC, Prisma, etc.)
-- ✅ Très populaire et bien maintenu
-- ✅ Parfait pour frontend et backend
+- ✅ Excellent écosystème (tRPC, Prisma, Vercel)
+- ✅ Standard moderne pour React + TypeScript
 </Callout>
 
 ## Bonnes pratiques
@@ -626,16 +455,7 @@ const userSchema = z.object({
 });
 ```
 
-**3. Centraliser les schémas**
-
-```tsx
-// schemas/user.ts
-export const loginSchema = z.object({ ... });
-export const signupSchema = z.object({ ... });
-export const updateProfileSchema = z.object({ ... });
-```
-
-**4. Messages d'erreur personnalisés**
+**3. Messages d'erreur personnalisés**
 
 ```tsx
 const schema = z.string().min(3, {
@@ -643,14 +463,14 @@ const schema = z.string().min(3, {
 });
 ```
 
-**5. Valider côté client ET serveur**
+**4. Utiliser `safeParse()` au lieu de `parse()`**
 
 ```tsx
-// schemas/user.ts - partagé entre frontend et backend !
-export const userSchema = z.object({ ... });
+// ✅ Recommandé : safeParse ne lance pas d'exception
+const result = schema.safeParse(data);
 
-// Frontend : validation avant envoi
-// Backend : validation à la réception
+// ❌ Éviter : parse lance une exception
+const data = schema.parse(input);
 ```
 </Callout>
 

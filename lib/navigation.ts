@@ -74,6 +74,7 @@ export const navigation: NavSession[] = [
       { id: 's3-lifting', title: 'Lifting State', href: '/seance-3/lifting-state' },
       { id: 's3-conclusion', title: 'Conclusion', href: '/seance-3/conclusion' },
       { id: 's3-exercises', title: 'Exercices', href: '/seance-3/exercises' },
+      { id: 's3-project', title: 'Projet Fil Rouge', href: '/seance-3/project' },
       { id: 's3-quiz', title: 'Quiz de validation', href: '/seance-3/quiz' },
     ],
   },

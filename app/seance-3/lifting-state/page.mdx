@@ -21,6 +21,18 @@ function SearchBar() {
 
 **Les composants ne peuvent pas partager directement leur état.**
 
+<QuickCheck
+  question="Pourquoi deux composants frères (siblings) ne peuvent-ils pas partager directement leur état ?"
+  options={[
+    "Chaque composant a son propre état local isolé",
+    "React interdit l'accès aux états des autres composants",
+    "Les composants frères ne peuvent pas communiquer en React",
+    "Il faut toujours utiliser Redux pour partager l'état"
+  ]}
+  correctAnswer={0}
+  explanation="✅ Correct. Chaque composant a son propre état local (useState) qui est isolé. Pour partager des données, il faut remonter l'état dans le parent commun. ❌ React ne partage pas automatiquement l'état entre composants, il faut explicitement le passer via props."
+/>
+
 ## La solution : remonter l'état
 
 **Principe** : placer l'état dans le **composant parent commun** et le passer aux enfants via les props.
@@ -103,6 +115,18 @@ Enfant (nouveau rendu)
 
 - **Props** : descendent (parent → enfant)
 - **Callbacks** : remontent (enfant → parent)
+
+<QuickCheck
+  question="Dans le flux de données unidirectionnel de React, dans quel sens circulent les données et les événements ?"
+  options={[
+    "Les données descendent via props, les événements remontent via callbacks",
+    "Les données remontent via callbacks, les événements descendent via props",
+    "Les données et événements circulent dans les deux sens",
+    "Les données et événements remontent toujours vers le parent"
+  ]}
+  correctAnswer={0}
+  explanation="✅ Correct. Le flux est unidirectionnel : les données (state) descendent du parent vers les enfants via props, et les événements remontent des enfants vers le parent via des fonctions callbacks (onAction). ❌ Les données ne remontent jamais, seuls les événements remontent."
+/>
 
 <Callout type="warning" title="On ne peut pas modifier les props !">
 ```jsx
@@ -356,6 +380,18 @@ function Parent() {
 
 Si l'état doit traverser plusieurs niveaux, envisagez Context API (Séance 5).
 
+<QuickCheck
+  question="Où devez-vous placer l'état partagé entre plusieurs composants ?"
+  options={[
+    "Dans le composant parent commun le plus proche",
+    "Toujours dans le composant App (racine)",
+    "Dans chaque composant qui en a besoin",
+    "Dans un fichier séparé pour l'état global"
+  ]}
+  correctAnswer={0}
+  explanation="✅ Correct. La règle d'or est de placer l'état au niveau le plus bas possible où il est partagé, c'est-à-dire dans le parent commun le plus proche des composants qui en ont besoin. ❌ Placer l'état trop haut (dans App) crée du props drilling inutile. Placer l'état dans chaque composant crée des doublons non synchronisés."
+/>
+
 ```jsx
 // ⚠️ Props drilling (à éviter si trop profond)
 function App() {
@@ -443,6 +479,18 @@ function UncontrolledInput() {
 - **Contrôlé** : quand vous devez partager ou synchroniser l'état
 - **Non-contrôlé** : quand l'état est purement local au composant
 </Callout>
+
+<QuickCheck
+  question="Quelle est la différence entre un composant contrôlé et non-contrôlé ?"
+  options={[
+    "Contrôlé : l'état est géré par le parent. Non-contrôlé : l'état est géré par le composant lui-même",
+    "Contrôlé : utilise useState. Non-contrôlé : utilise des refs",
+    "Contrôlé : peut être réutilisé. Non-contrôlé : est spécifique à un usage",
+    "Contrôlé : utilise des props. Non-contrôlé : n'utilise pas de props"
+  ]}
+  correctAnswer={0}
+  explanation="✅ Correct. Un composant contrôlé reçoit sa valeur et sa fonction de mise à jour via props depuis le parent (le parent contrôle l'état). Un composant non-contrôlé gère son propre état localement avec useState. ❌ Les deux peuvent utiliser useState et props, la différence est où vit l'état."
+/>
 
 ## Callbacks : passer des fonctions
 

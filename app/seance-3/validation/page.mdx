@@ -16,6 +16,18 @@ La validation garantit que les données saisies par l'utilisateur sont **correct
 - ⚠️ **Validation client ≠ sécurité** : toujours valider côté serveur aussi !
 </Callout>
 
+<QuickCheck
+  question="Pourquoi faut-il valider les données à la fois côté client ET côté serveur ?"
+  options={[
+    "Pour doubler la sécurité : validation client + serveur = deux fois plus sûr",
+    "Client pour l'UX (feedback immédiat), serveur pour la sécurité (toujours vérifier)",
+    "Uniquement pour la performance : répartir la charge entre client et serveur",
+    "C'est une redondance inutile, on peut choisir l'un ou l'autre"
+  ]}
+  correctAnswer={1}
+  explanation="✅ La validation client offre une meilleure expérience utilisateur (feedback immédiat, pas d'appels API inutiles) mais n'est PAS sécurisée car un attaquant peut contourner le navigateur. La validation serveur est OBLIGATOIRE pour la sécurité : ne jamais faire confiance aux données venant du client. ❌ Ce n'est pas une question de doubler la sécurité ou de performance, mais deux objectifs différents (UX vs sécurité)."
+/>
+
 ## Types de validation
 
 ### 1. Validation de champs requis
@@ -134,6 +146,18 @@ function validate() {
 /^[a-zA-ZÀ-ÿ\s]+$/
 ```
 </Callout>
+
+<QuickCheck
+  question="Quel regex valide un numéro de téléphone français (10 chiffres commençant par 0) ?"
+  options={[
+    "/^[0-9]{10}$/",
+    "/^0[1-9]\\d{8}$/",
+    "/^\\d{10}$/",
+    "/^0\\d{9}$/"
+  ]}
+  correctAnswer={1}
+  explanation="✅ /^0[1-9]\\d{8}$/ est correct : ^ = début, 0 = commence par 0, [1-9] = deuxième chiffre de 1 à 9, \\d{8} = 8 chiffres suivants, $ = fin. Total = 10 chiffres. ❌ /^[0-9]{10}$/ accepte n'importe quels 10 chiffres (ex: 0000000000). ❌ /^\\d{10}$/ pareil, et peut ne pas commencer par 0. ❌ /^0\\d{9}$/ accepte 00... ce qui n'est pas un téléphone français valide."
+/>
 
 ### 3. Validation de longueur
 
@@ -332,6 +356,18 @@ return (
 
 C'est le meilleur compromis entre UX et validation !
 </Callout>
+
+<QuickCheck
+  question="Quelle est la meilleure approche pour valider un champ email en termes d'expérience utilisateur ?"
+  options={[
+    "onChange uniquement : valider à chaque touche pour feedback immédiat",
+    "onSubmit uniquement : valider seulement à la soumission du formulaire",
+    "onBlur d'abord, puis onChange après que le champ a été touché",
+    "Désactiver le champ tant que l'email n'est pas valide"
+  ]}
+  correctAnswer={2}
+  explanation="✅ L'approche combinée (onBlur puis onChange) est optimale : elle évite d'afficher des erreurs avant que l'utilisateur ait fini de taper (frustrant), puis donne un feedback immédiat dès qu'il corrige. ❌ onChange seul est frustrant (affiche 'Email invalide' dès la première lettre). ❌ onSubmit seul retarde le feedback et force l'utilisateur à soumettre pour voir les erreurs. ❌ Bloquer la saisie nuit gravement à l'UX."
+/>
 
 ## Exemple complet : Formulaire de contact
 
@@ -573,6 +609,18 @@ input.valid {
   </div>
 )}
 ```
+
+<QuickCheck
+  question="Comment afficher les erreurs de validation de manière optimale pour l'UX ?"
+  options={[
+    "Alert() JavaScript pour chaque erreur détectée",
+    "Message d'erreur sous chaque champ concerné + bordure rouge sur le champ",
+    "Console.log() pour que le développeur puisse voir les erreurs",
+    "Liste de toutes les erreurs en haut du formulaire uniquement"
+  ]}
+  correctAnswer={1}
+  explanation="✅ Afficher l'erreur directement sous le champ concerné avec une bordure rouge est optimal : l'utilisateur voit immédiatement quel champ pose problème et pourquoi. ❌ alert() bloque l'interface et est très frustrant. ❌ console.log() n'aide que le développeur, pas l'utilisateur. ❌ Liste en haut peut marcher mais est moins direct : l'utilisateur doit chercher quel champ correspond à quelle erreur."
+/>
 
 ## Désactiver le bouton si invalide
 

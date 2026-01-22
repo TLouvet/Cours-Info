@@ -84,16 +84,55 @@ function Example() {
 Quand le détecteur capte un mouvement (clic), l'interrupteur change de position (état) et la lumière s'allume (nouveau rendu).
 </Callout>
 
+<QuickCheck
+  question="Qu'est-ce qui rend un composant React interactif ?"
+  options={[
+    "L'utilisation de balises HTML",
+    "La combinaison d'événements (onClick, onChange...) et d'état (useState)",
+    "L'import de React depuis 'react'",
+    "L'utilisation de props pour passer des données"
+  ]}
+  correctAnswer={1}
+  explanation="✅ Correct ! Un composant devient interactif quand il combine des événements (pour détecter les actions utilisateur) et de l'état (pour mémoriser et déclencher un nouveau rendu). ❌ Les props seules ne rendent pas un composant interactif, elles permettent juste de passer des données."
+/>
+
 ## State vs Props : quelle différence ?
 
 C'est une source de confusion fréquente pour les débutants. Voici la distinction :
 
-| | **Props** | **State** |
-|---|---|---|
-| **C'est quoi ?** | Arguments passés au composant | Mémoire interne du composant |
-| **Peut changer ?** | ❌ Non (immutable) | ✅ Oui (via setter) |
-| **Qui le contrôle ?** | Le composant parent | Le composant lui-même |
-| **Analogie** | Paramètres d'une fonction | Variables locales d'une fonction |
+<div className="overflow-x-auto my-6">
+  <table className="min-w-full border border-gray-200 dark:border-gray-700">
+    <thead className="bg-gray-50 dark:bg-gray-800">
+      <tr>
+        <th className="px-6 py-3 text-left text-sm font-semibold text-gray-900 dark:text-gray-100 border-b border-gray-200 dark:border-gray-700"></th>
+        <th className="px-6 py-3 text-left text-sm font-semibold text-gray-900 dark:text-gray-100 border-b border-gray-200 dark:border-gray-700">Props</th>
+        <th className="px-6 py-3 text-left text-sm font-semibold text-gray-900 dark:text-gray-100 border-b border-gray-200 dark:border-gray-700">State</th>
+      </tr>
+    </thead>
+    <tbody className="bg-white dark:bg-gray-900 divide-y divide-gray-200 dark:divide-gray-700">
+      <tr>
+        <td className="px-6 py-4 text-sm font-medium text-gray-900 dark:text-gray-100">C'est quoi ?</td>
+        <td className="px-6 py-4 text-sm text-gray-700 dark:text-gray-300">Arguments passés au composant</td>
+        <td className="px-6 py-4 text-sm text-gray-700 dark:text-gray-300">Mémoire interne du composant</td>
+      </tr>
+      <tr>
+        <td className="px-6 py-4 text-sm font-medium text-gray-900 dark:text-gray-100">Peut changer ?</td>
+        <td className="px-6 py-4 text-sm text-gray-700 dark:text-gray-300">❌ Non (immutable)</td>
+        <td className="px-6 py-4 text-sm text-gray-700 dark:text-gray-300">✅ Oui (via setter)</td>
+      </tr>
+      <tr>
+        <td className="px-6 py-4 text-sm font-medium text-gray-900 dark:text-gray-100">Qui le contrôle ?</td>
+        <td className="px-6 py-4 text-sm text-gray-700 dark:text-gray-300">Le composant parent</td>
+        <td className="px-6 py-4 text-sm text-gray-700 dark:text-gray-300">Le composant lui-même</td>
+      </tr>
+      <tr>
+        <td className="px-6 py-4 text-sm font-medium text-gray-900 dark:text-gray-100">Analogie</td>
+        <td className="px-6 py-4 text-sm text-gray-700 dark:text-gray-300">Paramètres d'une fonction</td>
+        <td className="px-6 py-4 text-sm text-gray-700 dark:text-gray-300">Variables locales d'une fonction</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
 
 ```jsx
 // Props = données reçues du parent
@@ -108,6 +147,18 @@ function Counter() {
   return <p>Compteur : {count}</p>;
 }
 ```
+
+<QuickCheck
+  question="Quelle est la principale différence entre props et state ?"
+  options={[
+    "Les props peuvent changer, le state est immutable",
+    "Le state est contrôlé par le composant parent, les props par le composant lui-même",
+    "Les props viennent du parent et sont immutables, le state est géré par le composant et peut changer",
+    "Il n'y a aucune différence, ce sont deux noms pour la même chose"
+  ]}
+  correctAnswer={2}
+  explanation="✅ Correct ! Les props sont des arguments passés par le composant parent (immutables), tandis que le state est la mémoire interne du composant (modifiable via setter). ❌ Les props ne peuvent PAS être modifiées par le composant enfant."
+/>
 
 <Callout type="warning" title="Erreur fréquente">
 **On ne peut pas modifier les props !**
@@ -164,6 +215,18 @@ function ProductList({ products }) {
   const count = products.length; // Toujours à jour !
 }
 ```
+
+<QuickCheck
+  question="Dans quel cas devez-vous utiliser useState ?"
+  options={[
+    "Pour afficher des données reçues du composant parent",
+    "Pour calculer la longueur d'une liste de produits",
+    "Pour mémoriser si un menu est ouvert ou fermé",
+    "Pour stocker des constantes qui ne changent jamais"
+  ]}
+  correctAnswer={2}
+  explanation="✅ Correct ! useState est nécessaire pour mémoriser une information qui change suite à une action utilisateur (menu ouvert/fermé, valeur d'input, etc.). ❌ Les données du parent sont déjà dans les props, les calculs se font directement, et les constantes n'ont pas besoin d'état."
+/>
 
 ## Le flux de données en React
 

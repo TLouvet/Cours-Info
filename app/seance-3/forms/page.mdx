@@ -48,6 +48,18 @@ function ControlledInput() {
 **La philosophie React** : React contrôle tout !
 </Callout>
 
+<QuickCheck
+  question="Dans un composant contrôlé, qui contrôle la valeur de l'input ?"
+  options={[
+    "Le DOM (comme en HTML classique)",
+    "Le state React",
+    "Le navigateur web",
+    "L'attribut defaultValue"
+  ]}
+  correctAnswer={1}
+  explanation="✅ Correct. Dans un composant contrôlé, c'est React qui contrôle la valeur via le state. ❌ Le DOM ne contrôle plus la valeur (ce serait un composant non-contrôlé). ❌ Le navigateur ne gère que l'affichage, pas la source de vérité. ❌ defaultValue est utilisé pour les composants non-contrôlés."
+/>
+
 ## Input texte contrôlé
 
 Le pattern de base pour tous les inputs texte :
@@ -188,6 +200,18 @@ function CheckboxExample() {
 ```
 </Callout>
 
+<QuickCheck
+  question="Pour un composant checkbox contrôlé, quel attribut devez-vous utiliser pour lier l'état ?"
+  options={[
+    "value={isChecked}",
+    "checked={isChecked}",
+    "selected={isChecked}",
+    "active={isChecked}"
+  ]}
+  correctAnswer={1}
+  explanation="✅ Correct. Les checkboxes utilisent l'attribut 'checked', pas 'value'. Dans onChange, on accède à e.target.checked. ❌ 'value' est utilisé pour les inputs texte, pas les checkboxes. ❌ 'selected' n'existe pas pour les checkboxes. ❌ 'active' n'est pas un attribut HTML valide."
+/>
+
 ### Radio buttons
 
 Pour les boutons radio, le state contient la **valeur sélectionnée** :
@@ -277,6 +301,18 @@ En React, utilisez l'attribut `value` :
 <textarea value={message} onChange={...} />
 ```
 </Callout>
+
+<QuickCheck
+  question="Quelle est la différence principale entre un textarea en HTML et en React ?"
+  options={[
+    "En React, on utilise des balises auto-fermantes <textarea />",
+    "En HTML, le contenu est entre les balises, en React on utilise l'attribut value",
+    "En React, on utilise l'attribut text au lieu de value",
+    "Il n'y a aucune différence"
+  ]}
+  correctAnswer={1}
+  explanation="✅ Correct. En HTML classique, le contenu du textarea est entre les balises (<textarea>Contenu</textarea>), mais en React on utilise l'attribut value comme pour un input (<textarea value={message} />). ❌ Les balises auto-fermantes sont optionnelles en JSX. ❌ L'attribut s'appelle bien 'value', pas 'text'. ❌ Il y a une différence importante dans la syntaxe."
+/>
 
 ## Formulaire complet avec plusieurs inputs
 
@@ -387,6 +423,18 @@ const handleChange = (e) => {
 
 **Avantage** : un seul gestionnaire pour tous les inputs !
 </Callout>
+
+<QuickCheck
+  question="Pourquoi utilise-t-on l'attribut 'name' dans le pattern avec un objet pour le formulaire ?"
+  options={[
+    "Pour identifier l'input dans le HTML uniquement",
+    "Pour permettre d'utiliser un seul gestionnaire onChange pour tous les inputs",
+    "Pour améliorer l'accessibilité du formulaire",
+    "C'est obligatoire en React mais optionnel en HTML"
+  ]}
+  correctAnswer={1}
+  explanation="✅ Correct. L'attribut 'name' permet d'utiliser [name] comme computed property name pour mettre à jour dynamiquement la bonne propriété dans l'objet formData, évitant ainsi de créer un gestionnaire onChange pour chaque input. ❌ Ce n'est pas juste pour le HTML. ❌ Même si c'est bon pour l'accessibilité, ce n'est pas la raison principale ici. ❌ Ce n'est pas obligatoire, c'est un pattern pratique."
+/>
 
 ## Gestion de la soumission
 
@@ -633,6 +681,18 @@ const handleSubmit = (e) => {
 };
 ```
 </Callout>
+
+<QuickCheck
+  question="Que se passe-t-il si vous oubliez e.preventDefault() dans le gestionnaire onSubmit ?"
+  options={[
+    "Le formulaire ne s'envoie pas",
+    "Une erreur JavaScript apparaît dans la console",
+    "La page recharge et l'état React est perdu",
+    "React affiche un avertissement mais tout fonctionne"
+  ]}
+  correctAnswer={2}
+  explanation="✅ Correct. Sans e.preventDefault(), le comportement par défaut du formulaire HTML se déclenche : la page recharge, ce qui réinitialise tout l'état React et empêche votre logique de s'exécuter correctement. ❌ Le formulaire s'envoie (comportement par défaut). ❌ Pas d'erreur JavaScript, juste un rechargement. ❌ React n'affiche pas d'avertissement pour cela."
+/>
 
 ## Récapitulatif
 

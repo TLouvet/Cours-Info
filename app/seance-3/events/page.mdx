@@ -36,6 +36,18 @@ function MyButton() {
 - **Performance** : React optimise la gestion des événements
 </Callout>
 
+<QuickCheck
+  question="Quelle est la syntaxe correcte pour gérer un événement de clic en React ?"
+  options={[
+    '<button onclick="handleClick()">Cliquer</button>',
+    '<button onClick={handleClick()}>Cliquer</button>',
+    '<button onClick={handleClick}>Cliquer</button>',
+    '<button click={handleClick}>Cliquer</button>'
+  ]}
+  correctAnswer={2}
+  explanation="✅ En React, on utilise onClick (camelCase) et on passe une fonction sans parenthèses : onClick={handleClick}. ❌ onclick (lowercase) est du JavaScript vanilla DOM. ❌ onClick={handleClick()} appellerait la fonction immédiatement au rendu. ❌ click n'existe pas comme prop d'événement."
+/>
+
 ## Les événements courants
 
 ### onClick - Détection de clic
@@ -95,6 +107,18 @@ function Input() {
 - `event.target.name` → attribut name de l'élément
 </Callout>
 
+<QuickCheck
+  question="Que contient event.target dans un gestionnaire d'événement ?"
+  options={[
+    "La valeur tapée par l'utilisateur",
+    "L'élément HTML qui a déclenché l'événement",
+    "Le type d'événement (click, change, etc.)",
+    "Le composant React parent"
+  ]}
+  correctAnswer={1}
+  explanation="✅ event.target contient l'élément HTML (DOM element) qui a déclenché l'événement. Vous pouvez ensuite accéder à ses propriétés comme event.target.value pour un input, event.target.checked pour une checkbox, etc. ❌ La valeur tapée est dans event.target.value, pas directement dans event.target. ❌ Le type d'événement est dans event.type. ❌ event.target ne donne pas accès au composant React, mais à l'élément DOM natif."
+/>
+
 ### onSubmit - Soumission de formulaire
 
 Pour gérer la soumission d'un formulaire.
@@ -127,6 +151,18 @@ const handleSubmit = (event) => {
 };
 ```
 </Callout>
+
+<QuickCheck
+  question="Pourquoi utilise-t-on event.preventDefault() dans un gestionnaire onSubmit ?"
+  options={[
+    "Pour empêcher l'utilisateur de soumettre le formulaire",
+    "Pour valider les données du formulaire",
+    "Pour empêcher le rechargement de la page par défaut",
+    "Pour arrêter la propagation de l'événement aux composants parents"
+  ]}
+  correctAnswer={2}
+  explanation="✅ event.preventDefault() empêche le comportement par défaut du navigateur, qui est de recharger la page lors de la soumission d'un formulaire. En React, on veut gérer la soumission nous-mêmes (validation, envoi API, etc.) sans rechargement. ❌ preventDefault() n'empêche pas la soumission, il empêche juste le rechargement. ❌ La validation doit être faite manuellement dans le code. ❌ Pour arrêter la propagation, on utilise event.stopPropagation()."
+/>
 
 ### Autres événements utiles
 
@@ -248,6 +284,18 @@ function ItemList() {
 <button onClick={handleClick.bind(null, item)}>Cliquer</button>
 ```
 </Callout>
+
+<QuickCheck
+  question="Comment passer un argument à un gestionnaire d'événement ?"
+  options={[
+    '<button onClick={handleClick(item)}>Cliquer</button>',
+    '<button onClick="handleClick(item)">Cliquer</button>',
+    '<button onClick={() => handleClick(item)}>Cliquer</button>',
+    '<button onClick={handleClick item}>Cliquer</button>'
+  ]}
+  correctAnswer={2}
+  explanation="✅ Pour passer un argument à un gestionnaire, utilisez une arrow function : onClick={() => handleClick(item)}. Cela crée une nouvelle fonction qui sera appelée au clic et qui appellera handleClick avec l'argument. ❌ onClick={handleClick(item)} appellerait handleClick immédiatement au rendu, pas au clic. ❌ Les guillemets sont du JavaScript vanilla DOM, pas du React. ❌ La syntaxe onClick={handleClick item} n'existe pas."
+/>
 
 ## Gestionnaires inline vs externes
 

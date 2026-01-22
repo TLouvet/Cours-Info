@@ -59,6 +59,18 @@ const [count, setCount] = useState(0);
 C'est juste du JavaScript ! Vous pouvez nommer les variables comme vous voulez.
 </Callout>
 
+<QuickCheck
+  question="Que retourne l'appel à useState(0) ?"
+  options={[
+    "Un objet avec les propriétés state et setState",
+    "Un tableau avec 2 éléments : [valeur, fonction]",
+    "Directement la valeur 0",
+    "Une fonction pour modifier l'état"
+  ]}
+  correctAnswer={1}
+  explanation="✅ useState retourne un tableau avec exactement 2 éléments : la valeur actuelle et une fonction pour la modifier. C'est pourquoi on utilise la déstructuration de tableau : const [count, setCount] = useState(0). ❌ Ce n'est pas un objet (pas de propriétés nommées)."
+/>
+
 ### Conventions de nommage
 
 ```jsx
@@ -167,6 +179,18 @@ const handleClick = () => {
 **Règle** : Si vous utilisez l'état précédent, passez une fonction !
 </Callout>
 
+<QuickCheck
+  question="Si count vaut 5, qu'affichera count après ces 3 appels consécutifs à setCount(count + 1) ?"
+  options={[
+    "8 (incremente 3 fois)",
+    "6 (incremente 1 fois seulement)",
+    "15 (multiplie par 3)",
+    "5 (ne change pas)"
+  ]}
+  correctAnswer={1}
+  explanation="✅ Avec setCount(count + 1), React utilise la même valeur de count (5) pour les 3 appels, donc 5+1 = 6. Pour incrémenter 3 fois, il faut utiliser la forme fonction : setCount(prev => prev + 1) qui utilise la valeur mise à jour à chaque appel. ❌ Sans la forme fonction, les mises à jour multiples ne s'accumulent pas."
+/>
+
 ## État avec des objets
 
 Pour mettre à jour un objet, vous devez créer un **nouvel objet** (immutabilité).
@@ -216,6 +240,18 @@ const updatedUser = {
 // updatedUser = { name: 'Alice', age: 26 }
 ```
 </Callout>
+
+<QuickCheck
+  question="Comment mettre à jour correctement le nom d'un utilisateur dans le state ?"
+  options={[
+    "user.name = 'Bob'; setUser(user);",
+    "setUser({ name: 'Bob' });",
+    "setUser({ ...user, name: 'Bob' });",
+    "setUser(user.name = 'Bob');"
+  ]}
+  correctAnswer={2}
+  explanation="✅ Il faut créer un NOUVEAU objet avec le spread operator (...user) pour copier les propriétés existantes, puis remplacer name. React détecte les changements par référence. ❌ Muter directement (user.name = 'Bob') ne déclenche pas de re-rendu. ❌ setUser({ name: 'Bob' }) perd toutes les autres propriétés (age, email, etc.)."
+/>
 
 ## État avec des tableaux
 
@@ -331,6 +367,18 @@ todos.map(...)             // Modification
 ```
 </Callout>
 
+<QuickCheck
+  question="Quelle méthode devez-vous utiliser pour ajouter un élément à un tableau dans le state ?"
+  options={[
+    "todos.push(newTodo); setTodos(todos);",
+    "setTodos(todos.push(newTodo));",
+    "setTodos([...todos, newTodo]);",
+    "setTodos(todos.concat(newTodo));"
+  ]}
+  correctAnswer={2}
+  explanation="✅ setTodos([...todos, newTodo]) crée un NOUVEAU tableau avec le spread operator, c'est la méthode la plus courante et lisible. ✅ concat() fonctionne aussi car il crée un nouveau tableau, mais le spread est plus idiomatique. ❌ push() mute le tableau original, ce qui viole le principe d'immutabilité et ne déclenche pas de re-rendu."
+/>
+
 ## Plusieurs variables d'état
 
 Vous pouvez appeler `useState` plusieurs fois dans un même composant :
@@ -388,6 +436,18 @@ const [user, setUser] = useState({ name: '', email: '' });
 const [isMenuOpen, setIsMenuOpen] = useState(false);
 ```
 </Callout>
+
+<QuickCheck
+  question="Quelle est la meilleure pratique pour organiser plusieurs données liées dans le state ?"
+  options={[
+    "Toujours créer un seul objet pour toutes les données",
+    "Toujours créer des states séparés pour chaque donnée",
+    "Regrouper les données liées ensemble, séparer les données indépendantes",
+    "Utiliser un tableau pour toutes les données"
+  ]}
+  correctAnswer={2}
+  explanation="✅ Regroupez les données qui changent ensemble (ex: nom, email, age d'un user) dans un objet, mais gardez séparées les données indépendantes (ex: isMenuOpen). Cela facilite les mises à jour et rend le code plus logique. ❌ Tout grouper ou tout séparer n'est pas optimal et complique les mises à jour."
+/>
 
 ## Patterns courants
 
@@ -519,6 +579,18 @@ function useCustomHook() {
 }
 ```
 </Callout>
+
+<QuickCheck
+  question="Où pouvez-vous appeler useState ?"
+  options={[
+    "N'importe où dans votre code JavaScript",
+    "Uniquement au niveau supérieur d'un composant React ou custom hook",
+    "Dans les boucles et conditions si nécessaire",
+    "Dans les fonctions événementielles comme onClick"
+  ]}
+  correctAnswer={1}
+  explanation="✅ useState doit être appelé au NIVEAU SUPÉRIEUR d'un composant fonctionnel ou d'un custom hook (nom commençant par 'use'). React utilise l'ordre des appels pour gérer l'état. ❌ Interdits : conditions, boucles, fonctions événementielles, fonctions normales. Ces règles garantissent que les Hooks sont appelés dans le même ordre à chaque rendu."
+/>
 
 ## Résumé
 

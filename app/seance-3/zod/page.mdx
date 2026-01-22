@@ -61,6 +61,19 @@ console.log(result2.error);   // ZodError avec détails
 `safeParse()` est plus sûr et plus facile à gérer dans React !
 </Callout>
 
+<QuickCheck
+  question="Quelle est la différence principale entre safeParse() et parse() ?"
+  options={[
+    "safeParse() retourne un objet avec success/error, parse() lance une exception",
+    "parse() est plus rapide que safeParse()",
+    "safeParse() ne valide pas les données, parse() si",
+    "Il n'y a aucune différence, ce sont des alias"
+  ]}
+  correctAnswer={0}
+  explanation="✅ Correct. safeParse() retourne toujours un objet { success: boolean, data?: T, error?: ZodError } ce qui permet une gestion d'erreur plus sûre. parse() lance une exception (throw) si la validation échoue, ce qui peut être problématique dans React. ❌ parse() et safeParse() ont la même performance et valident les données de la même manière, seule la gestion d'erreur diffère."
+/>
+
+
 ### Inférence de types TypeScript
 
 Zod peut automatiquement créer les types TypeScript à partir de vos schémas.
@@ -84,6 +97,19 @@ const user: User = {
 };
 ```
 
+<QuickCheck
+  question="Que fait z.infer<typeof userSchema> ?"
+  options={[
+    "Il crée automatiquement un type TypeScript à partir du schéma Zod",
+    "Il valide les données utilisateur",
+    "Il exécute le schéma sur des données",
+    "Il convertit le schéma en JSON"
+  ]}
+  correctAnswer={0}
+  explanation="✅ Correct. z.infer<typeof userSchema> génère automatiquement le type TypeScript correspondant au schéma Zod. Par exemple, z.object({ name: z.string(), age: z.number() }) devient { name: string; age: number }. Cela évite de définir les types manuellement et garantit que vos types TypeScript sont toujours synchronisés avec vos règles de validation. ❌ z.infer ne valide pas de données, c'est un utilitaire de type uniquement."
+/>
+
+
 ## Types de validation
 
 ### Strings
@@ -106,6 +132,19 @@ z.string().url();             // URL valide
 z.string().min(5);            // Minimum 5 caractères
 z.string().max(100);          // Maximum 100 caractères
 ```
+
+<QuickCheck
+  question="Comment personnaliser les messages d'erreur dans Zod ?"
+  options={[
+    "En passant un objet { message: '...' } aux validateurs",
+    "En utilisant .setErrorMessage('...')",
+    "Les messages ne peuvent pas être personnalisés",
+    "En créant une fonction errorHandler()"
+  ]}
+  correctAnswer={0}
+  explanation="✅ Correct. Vous pouvez passer un objet { message: '...' } à la plupart des validateurs Zod. Par exemple : z.string().min(3, { message: 'Au moins 3 caractères' }) ou z.string().email({ message: 'Email invalide' }). Cela permet d'avoir des messages d'erreur clairs et adaptés à votre application en français ou dans toute autre langue. ❌ Il n'y a pas de méthode .setErrorMessage() dans Zod."
+/>
+
 
 ### Numbers
 
@@ -162,6 +201,19 @@ const userSchema = z.object({
   theme: z.string().default('light') // Valeur par défaut
 });
 ```
+
+<QuickCheck
+  question="Quelle est la différence entre .optional() et .nullable() ?"
+  options={[
+    ".optional() accepte undefined, .nullable() accepte null",
+    ".optional() accepte null, .nullable() accepte undefined",
+    "Il n'y a aucune différence",
+    ".optional() rend le champ facultatif dans les formulaires uniquement"
+  ]}
+  correctAnswer={0}
+  explanation="✅ Correct. .optional() permet à la valeur d'être undefined (le champ peut être omis), tandis que .nullable() permet à la valeur d'être null (le champ doit être présent mais peut avoir la valeur null). Exemple : age?: number (optional) vs bio: string | null (nullable). Vous pouvez aussi combiner les deux avec .optional().nullable() pour accepter undefined ET null. ❌ Ce sont deux modificateurs différents avec des comportements distincts."
+/>
+
 
 ### Validation personnalisée avec refine()
 

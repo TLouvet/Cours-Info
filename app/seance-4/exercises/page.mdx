@@ -2,6 +2,16 @@
 
 Mettez en pratique vos connaissances sur `useEffect` et React Router avec ces exercices progressifs.
 
+<Callout type="tip" title="Comment travailler efficacement">
+- **Créez un projet Vite** : `npm create vite@latest react-exercises -- --template react-ts`
+- **Installez React Router** : `npm install react-router-dom`
+- **Testez régulièrement** : Lancez `npm run dev` et vérifiez dans le navigateur
+- **Essayez d'abord** : Tentez de résoudre avant de regarder les indices
+- **Comprenez le code** : L'objectif est de comprendre, pas de copier !
+
+**Temps estimé total :** 3-4 heures pour les 5 exercices
+</Callout>
+
 ## Exercice 1 : Simple Data Fetch
 
 <Callout type="info" title="Difficulté : Facile">
@@ -489,45 +499,45 @@ Avant de considérer un exercice terminé, vérifiez :
 
 ---
 
-## Ressources Additionnelles
+## Récapitulatif
 
-<Callout type="success" title="Pour Aller Plus Loin">
-**React Router Documentation**
-- [Tutorial officiel](https://reactrouter.com/en/main/start/tutorial)
-- [useParams](https://reactrouter.com/en/main/hooks/use-params)
-- [useNavigate](https://reactrouter.com/en/main/hooks/use-navigate)
+<Callout type="info" title="Ce que vous avez pratiqué">
+**Exercice 1 :** Fetch de données avec useEffect, gestion loading/error, bouton de rafraîchissement
 
-**React Documentation**
-- [useEffect](https://react.dev/reference/react/useEffect)
-- [Synchronizing with Effects](https://react.dev/learn/synchronizing-with-effects)
-- [You Might Not Need an Effect](https://react.dev/learn/you-might-not-need-an-effect)
+**Exercice 2 :** Application multi-pages avec React Router, routes statiques et dynamiques, fetch par paramètre d'URL
 
-**Fetch API**
-- [MDN - Using Fetch](https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API/Using_Fetch)
-- [MDN - AbortController](https://developer.mozilla.org/en-US/docs/Web/API/AbortController)
+**Exercice 3 :** Annuaire avec recherche en temps réel, fetch parallèle avec Promise.all, navigation entre pages liées
+
+**Exercice 4 :** Application météo complète avec navigation programmatique, localStorage, gestion d'erreurs avancée
+
+**Exercice 5 :** Dashboard avec routes imbriquées (nested routes), Outlet, NavLink avec style actif
 </Callout>
 
----
-
-## Soumission
-
-<Callout type="warning" title="À Rendre sur Moodle">
-**Format :** Lien vers CodeSandbox, StackBlitz, ou repository GitHub
-
-**Contenu minimum :**
-- Au moins 2 exercices complétés
-- Code commenté
-- README avec instructions
-
-**Bonus :**
-- Styling CSS propre
-- Responsive design
-- Fonctionnalités supplémentaires
-
-**Critères d'évaluation :**
-- Fonctionnalité (50%) - L'app fonctionne sans bugs
-- Code qualité (30%) - Propre, lisible, bonnes pratiques
-- UX (20%) - Navigation intuitive, états de chargement
-</Callout>
+<Resources resources={[
+  {
+    title: "React Docs - useEffect",
+    description: "La documentation officielle sur useEffect",
+    url: "https://react.dev/reference/react/useEffect",
+    type: "doc"
+  },
+  {
+    title: "React Router Tutorial",
+    description: "Tutorial officiel de React Router v6",
+    url: "https://reactrouter.com/en/main/start/tutorial",
+    type: "doc"
+  },
+  {
+    title: "MDN - Fetch API",
+    description: "Documentation complète de l'API Fetch",
+    url: "https://developer.mozilla.org/docs/Web/API/Fetch_API/Using_Fetch",
+    type: "doc"
+  },
+  {
+    title: "JSONPlaceholder",
+    description: "API gratuite pour tester vos fetch",
+    url: "https://jsonplaceholder.typicode.com",
+    type: "tool"
+  }
+]} />
 
 Bon courage ! N'hésitez pas à demander de l'aide si vous bloquez.

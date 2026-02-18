@@ -1,6 +1,6 @@
 # Bases du Routing
 
-Maintenant que vous comprenez le concept, voyons comment utiliser React Router concrètement.
+Maintenant que vous comprenez **pourquoi** le routing est nécessaire, voyons **comment** l'implémenter avec React Router.
 
 ## Setup Initial
 
@@ -9,6 +9,21 @@ Maintenant que vous comprenez le concept, voyons comment utiliser React Router c
 ```bash
 npm install react-router-dom
 ```
+
+<Callout type="info" title="React Router DOM">
+Il existe plusieurs versions de React Router :
+
+- **react-router-dom** → Pour le web (navigateur)
+- **react-router-native** → Pour React Native (mobile)
+
+Nous utilisons **react-router-dom** !
+</Callout>
+
+<Callout type="tip" title="Version">
+Ce cours utilise **React Router v6**.
+
+Si vous lisez des tutoriels plus anciens avec `<Switch>` ou `component=`, ils utilisent v5 (obsolète).
+</Callout>
 
 ### 2. Envelopper l'App avec BrowserRouter
 
@@ -47,7 +62,19 @@ function App() {
 }
 ```
 
-Les deux fonctionnent, mais Option 1 est plus propre !
+Les deux fonctionnent. Option 1 sépare la config du routing de l'app.
+</Callout>
+
+<Callout type="info" title="BrowserRouter vs HashRouter">
+**BrowserRouter** (recommandé)
+- URLs sans `#` : `/about`, `/products/123`
+- Nécessite configuration serveur en production
+
+**HashRouter**
+- URLs avec `#` : `/#/about`, `/#/products/123`
+- Fonctionne sans config serveur
+
+**Utilisez BrowserRouter** sauf contrainte spécifique !
 </Callout>
 
 ## Définir des Routes
@@ -95,6 +122,18 @@ export default App;
 <Route path="/" component={Home} /> // v5 syntax, obsolète
 ```
 </Callout>
+
+<QuickCheck
+  question="Quelle est la bonne syntaxe pour définir une route en React Router v6 ?"
+  options={[
+    "<Route path='/about' component={About} />",
+    "<Route path='/about' element={<About />} />",
+    "<Route url='/about'><About /></Route>",
+    "<Link path='/about' element={<About />} />"
+  ]}
+  correctAnswer={1}
+  explanation="En React Router v6, la syntaxe est <Route path='/about' element={<About />} />. Le prop 'element' prend un élément JSX (avec <>), pas un composant. 'component' était la syntaxe de v5 (obsolète). <Link> sert à naviguer, pas à définir des routes."
+/>
 
 ### Index Route
 
@@ -185,7 +224,7 @@ function Navigation() {
 // .active { color: blue; font-weight: bold; }
 ```
 
-**Syntaxe plus simple avec style inline :**
+**Avec style inline :**
 
 ```javascript
 <NavLink
@@ -217,6 +256,18 @@ function Navigation() {
 </p>
 ```
 </Callout>
+
+<QuickCheck
+  question="Quelle est la différence entre Link et NavLink ?"
+  options={[
+    "NavLink est plus rapide que Link",
+    "NavLink permet d'ajouter un style automatique au lien actif, Link non",
+    "Link est obsolète, il faut toujours utiliser NavLink",
+    "NavLink ne fonctionne qu'avec des routes dynamiques"
+  ]}
+  correctAnswer={1}
+  explanation="NavLink est identique à Link, mais avec la possibilité de styliser automatiquement le lien actif grâce à la prop className ou style qui reçoit { isActive }. Utilisez NavLink pour la navigation principale (menu, sidebar) et Link pour les liens dans le contenu."
+/>
 
 ## Navigation Programmatique
 
@@ -297,6 +348,18 @@ if (!isLoggedIn) {
 }
 ```
 </Callout>
+
+<QuickCheck
+  question="Quand utiliser navigate() plutôt que <Link> ?"
+  options={[
+    "Toujours, navigate() est plus moderne",
+    "Quand la navigation doit se faire depuis du code JavaScript (après un submit, une condition, etc.)",
+    "Uniquement pour les routes dynamiques",
+    "Jamais, <Link> est toujours préférable"
+  ]}
+  correctAnswer={1}
+  explanation="<Link> est pour les liens cliquables dans l'interface (éléments visuels). navigate() est pour la navigation programmatique : après soumission d'un formulaire, après une vérification d'authentification, ou toute situation où la navigation est déclenchée par de la logique JavaScript plutôt qu'un clic utilisateur."
+/>
 
 ## Layouts & Routes Imbriquées
 
@@ -392,6 +455,18 @@ function Layout() {
 
 C'est l'équivalent de `{children}` mais pour le routing !
 </Callout>
+
+<QuickCheck
+  question="Que fait <Outlet /> dans un composant Layout ?"
+  options={[
+    "Il affiche le Header et le Footer",
+    "Il affiche le composant de la route enfant correspondant à l'URL actuelle",
+    "Il redirige vers la page d'accueil",
+    "Il crée automatiquement toutes les routes"
+  ]}
+  correctAnswer={1}
+  explanation="<Outlet /> est un placeholder qui affiche le composant de la route enfant active. Si l'URL est /about et que About est une route enfant du Layout, alors <Outlet /> affichera <About />. C'est similaire à {children} mais spécifique au routing."
+/>
 
 ## Page 404 (Not Found)
 
@@ -557,34 +632,17 @@ src/
 
 ## Récapitulatif
 
-<Callout type="success" title="Ce qu'il faut retenir">
-**Setup :**
-```javascript
-<BrowserRouter>
-  <App />
-</BrowserRouter>
-```
+<Callout type="tip" title="Comprendre, pas mémoriser">
+**Ce qu'il faut retenir :**
 
-**Routes :**
-```javascript
-<Routes>
-  <Route path="/" element={<Home />} />
-  <Route path="/about" element={<About />} />
-  <Route path="*" element={<NotFound />} />
-</Routes>
-```
+- **`<Route path="/about" element={<About />} />`** → définir une route
+- **`<Link to="/about">`** → naviguer entre pages (pas `<a>`)
+- **`<NavLink>`** → liens avec style actif (navigation principale)
+- **`navigate()`** → navigation programmatique (après un submit, etc.)
+- **`<Outlet />`** → placeholder pour les routes enfants (layouts)
+- **`path="*"`** → route catch-all pour la page 404 (toujours en dernier)
 
-**Navigation :**
-- `<Link to="/about">` pour les liens cliquables
-- `<NavLink>` pour les liens avec style actif
-- `navigate()` pour la navigation programmatique
-
-**Layouts :**
-- Routes imbriquées avec `<Outlet />`
-- Partager Header/Footer entre pages
-
-**404 :**
-- `<Route path="*" element={<NotFound />} />` en dernier
+Avec la pratique, cette structure deviendra naturelle. Consultez la documentation React Router si vous avez un doute.
 </Callout>
 
 ## Prochaine Étape

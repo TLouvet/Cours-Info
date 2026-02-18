@@ -1,8 +1,10 @@
 # Asynchrone : Promises
 
-**Aperçu** - Vous verrez cela en détail à la Séance 4 (useEffect et appels API).
+## Pourquoi JavaScript est asynchrone ?
 
-JavaScript est **asynchrone** : certaines opérations prennent du temps (appels API, lecture de fichiers, timers) et ne bloquent pas l'exécution du code.
+Imaginez que vous commandez un plat au restaurant. Plutôt que de rester debout devant la cuisine en attendant que votre plat soit pret, vous retournez a votre table et continuez votre conversation. Le serveur viendra vous apporter le plat quand il sera pret. JavaScript fonctionne de la meme maniere : plutot que de **bloquer** tout le programme en attendant qu'une operation longue se termine (un appel reseau, une lecture de fichier...), il continue d'executer le reste du code et revient traiter le resultat quand il est disponible. C'est ce qu'on appelle l'**asynchronisme**.
+
+Certaines operations prennent du temps (appels API, lecture de fichiers, timers) et ne bloquent pas l'execution du code. Cette page recapitule les bases des Promises et de `async/await`, que vous utiliserez avec `useEffect` dans les sections suivantes.
 
 ## Qu'est-ce qu'une Promise ?
 
@@ -23,6 +25,18 @@ const promise = new Promise((resolve, reject) => {
 - **Pending** (en attente) : état initial
 - **Fulfilled** (résolue) : opération réussie
 - **Rejected** (rejetée) : opération échouée
+
+<QuickCheck
+  question="Qu'est-ce qu'une Promise en JavaScript ?"
+  options={[
+    "Une fonction qui s'exécute immédiatement",
+    "Un objet représentant une opération qui n'est pas encore terminée mais le sera dans le futur",
+    "Une variable qui contient toujours une valeur",
+    "Un type de boucle asynchrone"
+  ]}
+  correctAnswer={1}
+  explanation="Une Promise représente le résultat futur d'une opération asynchrone. Elle peut être en attente (pending), réussie (fulfilled) ou échouée (rejected). Les appels API avec fetch() retournent des Promises."
+/>
 
 ## .then() / .catch()
 
@@ -49,9 +63,9 @@ fetch('https://api.example.com/users/1')
   .catch(error => console.error(error));
 ```
 
-## async/await (plus lisible) ⭐
+## async/await
 
-Syntaxe moderne qui rend le code asynchrone plus lisible.
+Syntaxe recommandée pour le code asynchrone.
 
 ### Fonction async
 
@@ -112,6 +126,18 @@ const fetchData = async () => {
 ```
 </Callout>
 
+<QuickCheck
+  question="Quelle est la différence entre .then() et async/await ?"
+  options={[
+    ".then() est plus rapide que async/await",
+    "async/await ne fonctionne pas avec fetch()",
+    "Les deux font la même chose, mais async/await rend le code plus lisible",
+    ".then() est obsolète en JavaScript moderne"
+  ]}
+  correctAnswer={2}
+  explanation="async/await est du 'sucre syntaxique' au-dessus des Promises. Les deux produisent le même résultat, mais async/await rend le code asynchrone plus lisible en le faisant ressembler à du code synchrone. Les deux approches sont valides et utilisées en pratique."
+/>
+
 ## Gestion d'erreurs
 
 ### try/catch
@@ -149,62 +175,12 @@ const fetchData = async () => {
 };
 ```
 
-<Callout type="info" title="En React - Séance 4">
-Vous utiliserez `async/await` avec `useEffect` pour faire des appels API en React :
-
-```javascript
-import { useState, useEffect } from 'react';
-
-function UserProfile({ userId }) {
-  const [user, setUser] = useState(null);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    const fetchUser = async () => {
-      try {
-        const response = await fetch(\`/api/users/\${userId}\`);
-        const data = await response.json();
-        setUser(data);
-      } catch (error) {
-        console.error(error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchUser();
-  }, [userId]);
-
-  if (loading) return <div>Loading...</div>;
-  return <div>{user?.name}</div>;
-}
-```
-
-**Détails complets à la Séance 4 !**
+<Callout type="info" title="Et en React ?">
+Dans la section [Data Fetching](/seance-4/data-fetching), vous verrez comment utiliser `async/await` avec `useEffect` pour faire des appels API dans vos composants React.
 </Callout>
 
-## Promise.all()
-
-Attendre plusieurs Promises en parallèle.
-
-```javascript
-const fetchMultiple = async () => {
-  try {
-    const [users, posts, comments] = await Promise.all([
-      fetch('/api/users').then(r => r.json()),
-      fetch('/api/posts').then(r => r.json()),
-      fetch('/api/comments').then(r => r.json())
-    ]);
-
-    console.log(users, posts, comments);
-  } catch (error) {
-    console.error(error);
-  }
-};
-```
-
-<Callout type="tip">
-`Promise.all()` est plus rapide que d'attendre les Promises une par une, car elles s'exécutent en parallèle !
+<Callout type="success" title="Pour aller plus loin : Promise.all()">
+Quand vous serez a l'aise avec les Promises, sachez que `Promise.all()` permet d'attendre **plusieurs Promises en parallele**. C'est plus rapide que d'attendre les Promises une par une :
 
 ```javascript
 // ❌ Lent (séquentiel) - 3 secondes
@@ -219,6 +195,8 @@ const [users, posts, comments] = await Promise.all([
   fetch('/api/comments')
 ]);
 ```
+
+Vous verrez ce pattern en action dans la section [Combiner useEffect & Routing](/seance-4/combining).
 </Callout>
 
 ## setTimeout avec Promises
@@ -237,22 +215,51 @@ example();
 
 ## Résumé
 
-| Concept | Description |
-|---------|-------------|
-| **Promise** | Objet représentant une opération asynchrone |
-| **async** | Déclare une fonction asynchrone |
-| **await** | Attend qu'une Promise soit résolue |
-| **try/catch** | Gère les erreurs en async/await |
-| **.then()** | Méthode classique pour les Promises |
-| **.catch()** | Gère les erreurs avec .then() |
-| **Promise.all()** | Attend plusieurs Promises en parallèle |
+<div className="overflow-x-auto my-6">
+  <table className="min-w-full border-collapse border border-gray-300 dark:border-gray-700">
+    <thead>
+      <tr className="bg-gray-100 dark:bg-gray-800">
+        <th className="border border-gray-300 dark:border-gray-700 px-4 py-2 text-left">Concept</th>
+        <th className="border border-gray-300 dark:border-gray-700 px-4 py-2 text-left">Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td className="border border-gray-300 dark:border-gray-700 px-4 py-2 font-semibold">Promise</td>
+        <td className="border border-gray-300 dark:border-gray-700 px-4 py-2">Objet représentant une opération asynchrone</td>
+      </tr>
+      <tr className="bg-gray-50 dark:bg-gray-900/50">
+        <td className="border border-gray-300 dark:border-gray-700 px-4 py-2 font-semibold">async</td>
+        <td className="border border-gray-300 dark:border-gray-700 px-4 py-2">Déclare une fonction asynchrone</td>
+      </tr>
+      <tr>
+        <td className="border border-gray-300 dark:border-gray-700 px-4 py-2 font-semibold">await</td>
+        <td className="border border-gray-300 dark:border-gray-700 px-4 py-2">Attend qu'une Promise soit résolue</td>
+      </tr>
+      <tr className="bg-gray-50 dark:bg-gray-900/50">
+        <td className="border border-gray-300 dark:border-gray-700 px-4 py-2 font-semibold">try/catch</td>
+        <td className="border border-gray-300 dark:border-gray-700 px-4 py-2">Gère les erreurs en async/await</td>
+      </tr>
+      <tr>
+        <td className="border border-gray-300 dark:border-gray-700 px-4 py-2 font-semibold">.then()</td>
+        <td className="border border-gray-300 dark:border-gray-700 px-4 py-2">Méthode classique pour les Promises</td>
+      </tr>
+      <tr className="bg-gray-50 dark:bg-gray-900/50">
+        <td className="border border-gray-300 dark:border-gray-700 px-4 py-2 font-semibold">.catch()</td>
+        <td className="border border-gray-300 dark:border-gray-700 px-4 py-2">Gère les erreurs avec .then()</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
 
-<Callout type="tip" title="Pour la suite">
-Ne vous inquiétez pas si l'asynchrone n'est pas encore clair ! Vous pratiquerez beaucoup à la **Séance 4** avec `useEffect` et les appels API dans React.
+<Callout type="tip" title="Comprendre, pas mémoriser">
+**Ce qu'il faut retenir :**
 
-Pour l'instant, retenez juste :
-- `async/await` rend le code asynchrone plus lisible
-- Utilisez `try/catch` pour gérer les erreurs
-- Les appels API sont asynchrones
+- **Promise** → objet representant une operation asynchrone future
+- **async/await** → syntaxe lisible pour travailler avec les Promises
+- **try/catch** → gerer les erreurs en code asynchrone
+- **await** → met en pause jusqu'a ce que la Promise soit resolue
+
+Avec la pratique et `useEffect`, ces patterns deviendront naturels. Consultez MDN si vous avez un doute sur la syntaxe.
 </Callout>
 

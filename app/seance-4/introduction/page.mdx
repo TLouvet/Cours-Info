@@ -60,6 +60,18 @@ function BadComponent() {
 ```
 </Callout>
 
+<QuickCheck
+  question="Pourquoi le code ci-dessus crée-t-il une boucle infinie ?"
+  options={[
+    "Parce que fetch() est une fonction asynchrone",
+    "Parce que setData déclenche un re-render, qui relance le fetch, qui rappelle setData...",
+    "Parce que useState(null) est mal initialisé",
+    "Parce que .then() est appelé deux fois"
+  ]}
+  correctAnswer={1}
+  explanation="Le fetch est dans le corps du composant, donc il s'exécute à chaque rendu. Quand le fetch termine, setData() modifie l'état, ce qui déclenche un nouveau rendu, qui relance le fetch, et ainsi de suite. C'est pour cela qu'on utilise useEffect avec un tableau de dépendances pour contrôler quand le fetch s'exécute."
+/>
+
 ## Le Cycle de Vie d'un Composant
 
 Pour comprendre les side effects, il faut comprendre le cycle de vie.
@@ -67,13 +79,32 @@ Pour comprendre les side effects, il faut comprendre le cycle de vie.
 ### Les 3 Phases
 
 <div className="overflow-x-auto my-6">
-
-| Phase | Quand ? | Description |
-|-------|---------|-------------|
-| **Mount** | Première apparition | Le composant est créé et ajouté au DOM |
-| **Update** | À chaque changement | Le composant se re-render (état, props changent) |
-| **Unmount** | Disparition | Le composant est retiré du DOM |
-
+  <table className="min-w-full border-collapse border border-gray-300 dark:border-gray-700">
+    <thead>
+      <tr className="bg-gray-100 dark:bg-gray-800">
+        <th className="border border-gray-300 dark:border-gray-700 px-4 py-2 text-left">Phase</th>
+        <th className="border border-gray-300 dark:border-gray-700 px-4 py-2 text-left">Quand ?</th>
+        <th className="border border-gray-300 dark:border-gray-700 px-4 py-2 text-left">Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td className="border border-gray-300 dark:border-gray-700 px-4 py-2 font-semibold">Mount</td>
+        <td className="border border-gray-300 dark:border-gray-700 px-4 py-2">Première apparition</td>
+        <td className="border border-gray-300 dark:border-gray-700 px-4 py-2">Le composant est créé et ajouté au DOM</td>
+      </tr>
+      <tr className="bg-gray-50 dark:bg-gray-900/50">
+        <td className="border border-gray-300 dark:border-gray-700 px-4 py-2 font-semibold">Update</td>
+        <td className="border border-gray-300 dark:border-gray-700 px-4 py-2">À chaque changement</td>
+        <td className="border border-gray-300 dark:border-gray-700 px-4 py-2">Le composant se re-render (état, props changent)</td>
+      </tr>
+      <tr>
+        <td className="border border-gray-300 dark:border-gray-700 px-4 py-2 font-semibold">Unmount</td>
+        <td className="border border-gray-300 dark:border-gray-700 px-4 py-2">Disparition</td>
+        <td className="border border-gray-300 dark:border-gray-700 px-4 py-2">Le composant est retiré du DOM</td>
+      </tr>
+    </tbody>
+  </table>
 </div>
 
 ```javascript
@@ -93,6 +124,18 @@ function UserProfile({ userId }) {
 }
 ```
 
+<QuickCheck
+  question="Parmi ces opérations, laquelle N'EST PAS un side effect ?"
+  options={[
+    "Appeler une API avec fetch()",
+    "Modifier document.title",
+    "Calculer const doubled = count * 2 dans le corps du composant",
+    "Lancer un timer avec setInterval()"
+  ]}
+  correctAnswer={2}
+  explanation="Calculer une valeur dérivée (doubled = count * 2) fait partie du rendu : c'est une opération pure qui transforme des données en résultat. Les trois autres sont des side effects car ils interagissent avec le monde extérieur (API, DOM, timers)."
+/>
+
 <Callout type="tip" title="Mental Model">
 **Avant useEffect :** Les composants React étaient "purs" - juste des fonctions qui transforment données → JSX.
 
@@ -101,91 +144,14 @@ function UserProfile({ userId }) {
 **Pensez à useEffect comme :** "Quand [X] change, fais [Y]"
 </Callout>
 
-## Render vs Effect
+## Render vs Effect : L'Intuition
 
-Comprendre la différence entre le rendu et les effets est crucial.
+Avant de voir la syntaxe de `useEffect` (page suivante), comprenons l'idee :
 
-### Le Rendu (Rendering)
+- **Le rendu** (rendering) = la partie **pure** de votre composant : transformer des donnees en JSX. C'est synchrone et rapide.
+- **Les effets** (effects) = les operations qui interagissent avec le monde exterieur. Ils s'executent **apres** le rendu, une fois que React a mis a jour l'ecran.
 
-```javascript
-function Component() {
-  const [count, setCount] = useState(0);
-
-  // ✅ Ceci fait partie du RENDU
-  const doubled = count * 2;
-
-  // ✅ Le JSX fait partie du RENDU
-  return (
-    <div>
-      <p>Count: {count}</p>
-      <p>Doubled: {doubled}</p>
-    </div>
-  );
-}
-```
-
-**Caractéristiques du rendu :**
-- Doit être **pur** (pas de side effects)
-- Peut être appelé plusieurs fois
-- Synchrone et rapide
-- Retourne du JSX
-
-### Les Effets (Effects)
-
-```javascript
-function Component() {
-  const [count, setCount] = useState(0);
-
-  // ✅ Ceci est un EFFET
-  useEffect(() => {
-    document.title = `Count: ${count}`;
-  }, [count]);
-
-  return <div>Count: {count}</div>;
-}
-```
-
-**Caractéristiques des effets :**
-- S'exécutent **après** le rendu
-- Peuvent être asynchrones
-- Gèrent les side effects
-- Peuvent avoir un cleanup
-
-## Timeline d'Exécution
-
-Voici l'ordre d'exécution complet :
-
-```javascript
-function Example() {
-  console.log('1. Render : corps de la fonction');
-
-  const [count, setCount] = useState(0);
-
-  useEffect(() => {
-    console.log('3. Effect : après le rendu');
-
-    return () => {
-      console.log('4. Cleanup : avant le prochain effect ou unmount');
-    };
-  });
-
-  console.log('2. Render : avant le return');
-
-  return <div>Hello</div>;
-}
-
-// Ordre d'affichage :
-// 1. Render : corps de la fonction
-// 2. Render : avant le return
-// 3. Effect : après le rendu
-// (si re-render)
-// 1. Render : corps de la fonction
-// 2. Render : avant le return
-// 4. Cleanup : avant le prochain effect
-// 3. Effect : après le rendu
-```
-
-<Callout type="info" title="Schéma Mental">
+<Callout type="info" title="Schema Mental">
 ```
 User Interaction → State Change → Re-Render
                                      ↓
@@ -194,80 +160,33 @@ User Interaction → State Change → Re-Render
                              useEffect s'exécute
 ```
 
-**Le composant ne "bloque" jamais sur un effect.** L'effet se lance après que React a mis à jour l'écran.
+**Le composant ne "bloque" jamais sur un effect.** L'effet se lance apres que React a mis a jour l'ecran.
 </Callout>
 
-## Pourquoi un Hook Spécial ?
+## Pourquoi un Hook Special ?
 
-Pourquoi React a créé `useEffect` au lieu de simplement laisser faire les side effects ?
+Pourquoi React a cree `useEffect` au lieu de simplement laisser faire les side effects ?
 
-### Raison 1 : Contrôle d'Exécution
+1. **Controle d'execution** : Sans `useEffect`, le code s'execute a chaque rendu. Avec `useEffect`, vous choisissez **quand** l'effet se declenche (une seule fois, quand une valeur change, etc.).
 
-```javascript
-// ❌ Sans useEffect : à chaque rendu
-function Bad() {
-  console.log('Je m\'exécute à CHAQUE rendu');
-  return <div>Hello</div>;
-}
+2. **Cleanup automatique** : `useEffect` permet de "nettoyer" un effet (arreter un timer, se desabonner) quand le composant disparait ou quand l'effet se relance. Sans cela, vous auriez des fuites memoire.
 
-// ✅ Avec useEffect : une seule fois au mount
-function Good() {
-  useEffect(() => {
-    console.log('Je m\'exécute UNE FOIS');
-  }, []);
+3. **Synchronisation avec l'etat** : Vous pouvez re-executer un effet automatiquement quand une valeur change (par exemple, relancer une recherche quand le terme de recherche est modifie).
 
-  return <div>Hello</div>;
-}
-```
-
-### Raison 2 : Cleanup Automatique
-
-```javascript
-// ✅ Avec useEffect : cleanup garanti
-function Timer() {
-  useEffect(() => {
-    const id = setInterval(() => {
-      console.log('Tick');
-    }, 1000);
-
-    // Ce cleanup sera TOUJOURS appelé au bon moment
-    return () => clearInterval(id);
-  }, []);
-
-  return <div>Timer running...</div>;
-}
-```
-
-### Raison 3 : Synchronisation avec l'État
-
-```javascript
-// ✅ Re-exécute l'effet quand searchTerm change
-function SearchResults() {
-  const [searchTerm, setSearchTerm] = useState('');
-  const [results, setResults] = useState([]);
-
-  useEffect(() => {
-    // Fetch automatiquement quand searchTerm change
-    fetch(`/api/search?q=${searchTerm}`)
-      .then(res => res.json())
-      .then(data => setResults(data));
-  }, [searchTerm]); // 👈 Dépendance
-
-  return <div>{/* Afficher results */}</div>;
-}
-```
+Vous verrez la syntaxe concrete de `useEffect` dans la [page suivante](/seance-4/useEffect).
 
 ## Récapitulatif
 
-<Callout type="success" title="Ce qu'il faut retenir">
-- **Side effect** = interaction avec le monde extérieur (API, DOM, timers, etc.)
-- **useEffect** = le Hook pour gérer les side effects de manière sûre
+<Callout type="tip" title="Comprendre, pas memoriser">
+**Ce qu'il faut retenir :**
+
+- **Side effect** = interaction avec le monde exterieur (API, DOM, timers, etc.)
 - **Lifecycle** = Mount → Update → Unmount
 - **Render** = pur, synchrone, retourne du JSX
-- **Effect** = impur, asynchrone, s'exécute après le rendu
-- **Cleanup** = nettoyage automatique avant le prochain effect ou unmount
+- **Effect** = s'execute apres le rendu, gere les side effects
+- **useEffect** = le Hook pour gerer les side effects de maniere sure
 
-Dans les prochaines sections, nous verrons comment utiliser `useEffect` concrètement !
+Dans les prochaines sections, nous verrons comment utiliser `useEffect` concretement !
 </Callout>
 
 ## Prochaines Étapes

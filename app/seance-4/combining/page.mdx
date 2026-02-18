@@ -1,35 +1,47 @@
 # Combiner useEffect & Routing
 
-Le vrai pouvoir vient de la combinaison de `useEffect` et du routing pour créer des applications multi-pages avec données dynamiques.
+Le vrai pouvoir vient de la combinaison de `useEffect` et du routing pour creer des applications multi-pages avec donnees dynamiques.
 
-## Pattern Principal : Fetch Basé sur les Routes
+<Callout type="info" title="L'idee cle">
+Les **dependances de `useEffect`** peuvent venir de `useParams()` ou `useSearchParams()`. Quand l'URL change, React met a jour ces valeurs, ce qui re-declenche automatiquement vos effets.
 
-Le pattern le plus courant : récupérer des données différentes selon l'URL.
+```javascript
+const { userId } = useParams();
+
+useEffect(() => {
+  // Ce code se re-execute automatiquement quand l'URL change !
+  fetch(`/api/users/${userId}`);
+}, [userId]);
+```
+</Callout>
+
+## Pattern Principal : Fetch Base sur les Params d'URL
+
+Le pattern le plus courant : recuperer des donnees differentes selon l'URL.
 
 ```javascript
 import { useParams } from 'react-router-dom';
 import { useState, useEffect } from 'react';
 
 function UserProfile() {
-  const { userId } = useParams(); // Récupérer l'ID depuis l'URL
+  const { userId } = useParams();
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     async function fetchUser() {
       setLoading(true);
-
+      // Pour la clarte, error handling omis - voir section Data Fetching
       const response = await fetch(
         `https://jsonplaceholder.typicode.com/users/${userId}`
       );
       const data = await response.json();
-
       setUser(data);
       setLoading(false);
     }
 
     fetchUser();
-  }, [userId]); // 👈 Re-fetch quand userId change
+  }, [userId]); // Re-fetch quand userId change
 
   if (loading) return <div>Chargement...</div>;
 
@@ -49,19 +61,17 @@ function UserProfile() {
 ```
 1. User navigue vers /users/1
    → useParams() retourne { userId: "1" }
-   → useEffect se déclenche
+   → useEffect se declenche
    → Fetch user 1
-   → Affiche user 1
 
 2. User navigue vers /users/2
    → useParams() retourne { userId: "2" }
-   → userId a changé → useEffect se re-déclenche
+   → userId a change → useEffect se re-declenche
    → Fetch user 2
-   → Affiche user 2
 ```
 
-<Callout type="tip" title="Dépendance critique">
-**Toujours mettre les params d'URL dans les dépendances de useEffect !**
+<Callout type="tip" title="Dependance critique">
+**Toujours mettre les params d'URL dans les dependances de useEffect !**
 
 ```javascript
 // ✅ Bon : re-fetch si userId change
@@ -76,7 +86,85 @@ useEffect(() => {
 ```
 </Callout>
 
+<QuickCheck
+  question="Pourquoi faut-il mettre userId dans les dependances de useEffect quand on fetch des donnees basees sur l'URL ?"
+  options={[
+    "C'est juste une convention, ce n'est pas obligatoire",
+    "Pour que l'effet se re-execute et recupere les nouvelles donnees quand l'URL change",
+    "Pour empecher le fetch de s'executer",
+    "Pour que React puisse afficher un spinner de chargement"
+  ]}
+  correctAnswer={1}
+  explanation="Si userId n'est pas dans les dependances, l'effet ne se re-execute PAS quand on navigue vers un autre utilisateur (/users/1 → /users/2). Le composant afficherait les donnees de l'ancien utilisateur. Avec [userId] dans les dependances, React re-lance l'effet des que userId change."
+/>
+
+## Pattern : Fetch avec Search Params
+
+Les search params (`?page=2&sort=name`) peuvent aussi servir de dependances pour `useEffect`. Utile pour la **pagination** :
+
+```javascript
+import { useSearchParams } from 'react-router-dom';
+
+function PostList() {
+  const [searchParams, setSearchParams] = useSearchParams();
+  const [posts, setPosts] = useState([]);
+
+  const page = parseInt(searchParams.get('page') || '1', 10);
+  const limit = 10;
+
+  useEffect(() => {
+    async function fetchPosts() {
+      const start = (page - 1) * limit;
+      // Pour la clarte, error handling omis - voir section Data Fetching
+      const response = await fetch(
+        `https://jsonplaceholder.typicode.com/posts?_start=${start}&_limit=${limit}`
+      );
+      const data = await response.json();
+      setPosts(data);
+    }
+
+    fetchPosts();
+  }, [page]); // Re-fetch quand la page change
+
+  return (
+    <div>
+      <h1>Posts - Page {page}</h1>
+
+      <ul>
+        {posts.map(post => (
+          <li key={post.id}>{post.title}</li>
+        ))}
+      </ul>
+
+      <div>
+        <button
+          onClick={() => page > 1 && setSearchParams({ page: page - 1 })}
+          disabled={page === 1}
+        >
+          Precedent
+        </button>
+
+        <span>Page {page}</span>
+
+        <button onClick={() => setSearchParams({ page: page + 1 })}>
+          Suivant
+        </button>
+      </div>
+    </div>
+  );
+}
+```
+
+**URLs :**
+```
+/posts → Page 1
+/posts?page=2 → Page 2
+/posts?page=3 → Page 3
+```
+
 ## Exemple Complet : Annuaire Utilisateurs
+
+Voici un exemple qui combine tout : routing, fetch avec `useParams`, et `Promise.all` pour la performance.
 
 ```javascript
 import { Routes, Route, Link, useParams } from 'react-router-dom';
@@ -89,6 +177,7 @@ function UserList() {
 
   useEffect(() => {
     async function fetchUsers() {
+      // Pour la clarte, error handling omis - voir section Data Fetching
       const response = await fetch('https://jsonplaceholder.typicode.com/users');
       const data = await response.json();
       setUsers(data);
@@ -127,7 +216,7 @@ function UserProfile() {
     async function fetchUserData() {
       setLoading(true);
 
-      // Fetch en parallèle
+      // Fetch en parallele avec Promise.all
       const [userResponse, postsResponse] = await Promise.all([
         fetch(`https://jsonplaceholder.typicode.com/users/${userId}`),
         fetch(`https://jsonplaceholder.typicode.com/posts?userId=${userId}`)
@@ -148,21 +237,15 @@ function UserProfile() {
 
   return (
     <div>
-      <Link to="/users">← Retour à la liste</Link>
+      <Link to="/users">← Retour a la liste</Link>
 
       <h1>{user.name}</h1>
       <p>Email : {user.email}</p>
-      <p>Téléphone : {user.phone}</p>
-      <p>Site web : {user.website}</p>
 
       <h2>Articles de {user.name}</h2>
       <ul>
         {posts.map(post => (
-          <li key={post.id}>
-            <Link to={`/posts/${post.id}`}>
-              {post.title}
-            </Link>
-          </li>
+          <li key={post.id}>{post.title}</li>
         ))}
       </ul>
     </div>
@@ -180,477 +263,35 @@ function App() {
 }
 ```
 
-<Callout type="success" title="Promise.all pour Performance">
-Au lieu de faire 2 fetch séquentiels :
+<QuickCheck
+  question="Que se passe-t-il quand on navigue de /users/1 a /users/2 avec le meme composant UserProfile ?"
+  options={[
+    "Le composant se demonte et se remonte completement",
+    "React recharge toute la page",
+    "Le composant reste monte, seules les props/params changent, et useEffect se re-declenche si userId est dans les dependances",
+    "L'URL change mais le composant ne reagit pas"
+  ]}
+  correctAnswer={2}
+  explanation="Si c'est le MEME composant (UserProfile), React ne le demonte pas. Il met juste a jour les params d'URL. Si userId est dans les dependances de useEffect, l'effet se re-declenche pour fetch les nouvelles donnees. C'est pourquoi les dependances sont cruciales !"
+/>
 
-```javascript
-// ❌ Lent : 2 requêtes séquentielles
-const userRes = await fetch(`/users/${userId}`);
-const user = await userRes.json();
-
-const postsRes = await fetch(`/posts?userId=${userId}`);
-const posts = await postsRes.json();
-
-// ✅ Rapide : 2 requêtes en parallèle
-const [userRes, postsRes] = await Promise.all([
-  fetch(`/users/${userId}`),
-  fetch(`/posts?userId=${userId}`)
-]);
-
-const user = await userRes.json();
-const posts = await postsRes.json();
-```
-
-`Promise.all` lance toutes les requêtes en même temps !
+<Callout type="info" title="Eviter les race conditions">
+Quand l'utilisateur change de page rapidement, les anciennes requetes peuvent arriver apres les nouvelles et causer des affichages incorrects. Utilisez le pattern **AbortController** vu dans la section [Data Fetching](/seance-4/data-fetching) pour annuler les requetes obsoletes dans le cleanup de `useEffect`.
 </Callout>
 
-## Pattern : Liste → Détail
+## Recapitulatif
 
-Le pattern le plus courant en React Router + useEffect.
+<Callout type="tip" title="Comprendre, pas memoriser">
+**Ce qu'il faut retenir :**
 
-```javascript
-// Routes
-<Routes>
-  <Route path="/products" element={<ProductList />} />
-  <Route path="/products/:id" element={<ProductDetail />} />
-</Routes>
+- **Dependances depuis l'URL** → `useParams()` et `useSearchParams()` fournissent des valeurs reactives pour `useEffect`
+- **Fetch + params** → `useEffect([id])` re-fetch automatiquement quand l'URL change
+- **Pagination** → `useSearchParams()` + `useEffect([page])` pour naviguer entre les pages
+- **Promise.all** → lancer plusieurs fetch en parallele pour la performance
 
-// Page Liste
-function ProductList() {
-  const [products, setProducts] = useState([]);
-
-  useEffect(() => {
-    fetch('/api/products')
-      .then(res => res.json())
-      .then(data => setProducts(data));
-  }, []);
-
-  return (
-    <ul>
-      {products.map(product => (
-        <li key={product.id}>
-          <Link to={`/products/${product.id}`}>
-            {product.name}
-          </Link>
-        </li>
-      ))}
-    </ul>
-  );
-}
-
-// Page Détail
-function ProductDetail() {
-  const { id } = useParams();
-  const [product, setProduct] = useState(null);
-
-  useEffect(() => {
-    fetch(`/api/products/${id}`)
-      .then(res => res.json())
-      .then(data => setProduct(data));
-  }, [id]);
-
-  if (!product) return <div>Chargement...</div>;
-
-  return (
-    <div>
-      <Link to="/products">← Retour</Link>
-      <h1>{product.name}</h1>
-      <p>{product.description}</p>
-      <p>Prix : {product.price}€</p>
-    </div>
-  );
-}
-```
-
-## Pattern : Recherche avec Search Params
-
-Utiliser les search params pour des filtres dynamiques.
-
-```javascript
-import { useSearchParams } from 'react-router-dom';
-
-function ProductList() {
-  const [searchParams, setSearchParams] = useSearchParams();
-  const [products, setProducts] = useState([]);
-
-  const category = searchParams.get('category') || 'all';
-  const sort = searchParams.get('sort') || 'name';
-
-  useEffect(() => {
-    async function fetchProducts() {
-      // Fetch avec filtres
-      const response = await fetch(
-        `/api/products?category=${category}&sort=${sort}`
-      );
-      const data = await response.json();
-      setProducts(data);
-    }
-
-    fetchProducts();
-  }, [category, sort]); // Re-fetch si les filtres changent
-
-  return (
-    <div>
-      <h1>Produits</h1>
-
-      {/* Filtres */}
-      <div>
-        <select
-          value={category}
-          onChange={(e) => setSearchParams({ category: e.target.value, sort })}
-        >
-          <option value="all">Toutes</option>
-          <option value="electronics">Électronique</option>
-          <option value="books">Livres</option>
-        </select>
-
-        <select
-          value={sort}
-          onChange={(e) => setSearchParams({ category, sort: e.target.value })}
-        >
-          <option value="name">Nom</option>
-          <option value="price">Prix</option>
-        </select>
-      </div>
-
-      {/* Liste */}
-      <ul>
-        {products.map(product => (
-          <li key={product.id}>{product.name}</li>
-        ))}
-      </ul>
-    </div>
-  );
-}
-```
-
-**URLs générées :**
-```
-/products → Tous, tri par nom
-/products?category=books → Livres, tri par nom
-/products?category=electronics&sort=price → Électronique, tri par prix
-```
-
-## Pattern : Pagination
-
-```javascript
-function PostList() {
-  const [searchParams, setSearchParams] = useSearchParams();
-  const [posts, setPosts] = useState([]);
-
-  const page = parseInt(searchParams.get('page') || '1', 10);
-  const limit = 10;
-
-  useEffect(() => {
-    async function fetchPosts() {
-      const start = (page - 1) * limit;
-      const response = await fetch(
-        `https://jsonplaceholder.typicode.com/posts?_start=${start}&_limit=${limit}`
-      );
-      const data = await response.json();
-      setPosts(data);
-    }
-
-    fetchPosts();
-  }, [page]);
-
-  function nextPage() {
-    setSearchParams({ page: page + 1 });
-  }
-
-  function prevPage() {
-    if (page > 1) {
-      setSearchParams({ page: page - 1 });
-    }
-  }
-
-  return (
-    <div>
-      <h1>Posts - Page {page}</h1>
-
-      <ul>
-        {posts.map(post => (
-          <li key={post.id}>{post.title}</li>
-        ))}
-      </ul>
-
-      <div>
-        <button onClick={prevPage} disabled={page === 1}>
-          ← Précédent
-        </button>
-
-        <span>Page {page}</span>
-
-        <button onClick={nextPage}>
-          Suivant →
-        </button>
-      </div>
-    </div>
-  );
-}
-```
-
-**URLs :**
-```
-/posts → Page 1
-/posts?page=2 → Page 2
-/posts?page=3 → Page 3
-```
-
-## Pattern : Redirect Conditionnel
-
-Rediriger basé sur des données fetchées.
-
-```javascript
-import { useNavigate } from 'react-router-dom';
-
-function ProtectedPage() {
-  const navigate = useNavigate();
-  const [user, setUser] = useState(null);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    async function checkAuth() {
-      try {
-        const response = await fetch('/api/me');
-
-        if (!response.ok) {
-          // Pas connecté → rediriger vers login
-          navigate('/login');
-          return;
-        }
-
-        const data = await response.json();
-        setUser(data);
-
-      } catch (error) {
-        navigate('/login');
-      } finally {
-        setLoading(false);
-      }
-    }
-
-    checkAuth();
-  }, [navigate]);
-
-  if (loading) return <div>Vérification...</div>;
-
-  return (
-    <div>
-      <h1>Bienvenue {user.name}</h1>
-    </div>
-  );
-}
-```
-
-## Pattern : Breadcrumbs Dynamiques
-
-Afficher le fil d'Ariane avec données fetchées.
-
-```javascript
-function ProductDetail() {
-  const { categoryId, productId } = useParams();
-  const [category, setCategory] = useState(null);
-  const [product, setProduct] = useState(null);
-
-  useEffect(() => {
-    async function fetchData() {
-      const [catRes, prodRes] = await Promise.all([
-        fetch(`/api/categories/${categoryId}`),
-        fetch(`/api/products/${productId}`)
-      ]);
-
-      setCategory(await catRes.json());
-      setProduct(await prodRes.json());
-    }
-
-    fetchData();
-  }, [categoryId, productId]);
-
-  if (!category || !product) return <div>Chargement...</div>;
-
-  return (
-    <div>
-      {/* Breadcrumbs avec noms réels */}
-      <nav>
-        <Link to="/">Accueil</Link> /
-        <Link to="/categories">Catégories</Link> /
-        <Link to={`/categories/${categoryId}`}>{category.name}</Link> /
-        <span>{product.name}</span>
-      </nav>
-
-      <h1>{product.name}</h1>
-      <p>{product.description}</p>
-    </div>
-  );
-}
-```
-
-## Gérer les Erreurs 404
-
-Vérifier si la ressource existe et afficher une 404 sinon.
-
-```javascript
-function UserProfile() {
-  const { userId } = useParams();
-  const [user, setUser] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [notFound, setNotFound] = useState(false);
-
-  useEffect(() => {
-    async function fetchUser() {
-      try {
-        setLoading(true);
-        setNotFound(false);
-
-        const response = await fetch(
-          `https://jsonplaceholder.typicode.com/users/${userId}`
-        );
-
-        if (!response.ok) {
-          setNotFound(true);
-          return;
-        }
-
-        const data = await response.json();
-
-        // API retourne {} pour un user inexistant
-        if (!data.id) {
-          setNotFound(true);
-          return;
-        }
-
-        setUser(data);
-
-      } catch (error) {
-        setNotFound(true);
-      } finally {
-        setLoading(false);
-      }
-    }
-
-    fetchUser();
-  }, [userId]);
-
-  if (loading) return <div>Chargement...</div>;
-
-  if (notFound) {
-    return (
-      <div>
-        <h1>Utilisateur non trouvé</h1>
-        <Link to="/users">← Retour à la liste</Link>
-      </div>
-    );
-  }
-
-  return (
-    <div>
-      <h1>{user.name}</h1>
-    </div>
-  );
-}
-```
-
-## Cleanup avec AbortController
-
-Annuler les fetch si l'utilisateur change de page rapidement.
-
-```javascript
-function ProductDetail() {
-  const { productId } = useParams();
-  const [product, setProduct] = useState(null);
-
-  useEffect(() => {
-    const controller = new AbortController();
-
-    async function fetchProduct() {
-      try {
-        const response = await fetch(
-          `/api/products/${productId}`,
-          { signal: controller.signal }
-        );
-
-        const data = await response.json();
-        setProduct(data);
-
-      } catch (error) {
-        if (error.name !== 'AbortError') {
-          console.error('Error:', error);
-        }
-      }
-    }
-
-    fetchProduct();
-
-    return () => {
-      controller.abort(); // Annuler le fetch si on change de page
-    };
-  }, [productId]);
-
-  if (!product) return <div>Chargement...</div>;
-
-  return <div>{product.name}</div>;
-}
-```
-
-<Callout type="warning" title="Pourquoi c'est important ?">
-Sans AbortController :
-
-```
-User clique produit 1 → Fetch produit 1 (lent)
-User clique produit 2 → Fetch produit 2 (rapide)
-
-Réponse produit 2 arrive → Affiche produit 2 ✅
-Réponse produit 1 arrive → Affiche produit 1 ❌ Mauvais !
-```
-
-L'AbortController annule la requête du produit 1 quand on navigue vers le produit 2.
+C'est en combinant useEffect et routing que vous creez des applications React completes !
 </Callout>
 
-## Récapitulatif
+## Prochaine Etape
 
-<Callout type="success" title="Patterns Essentiels">
-**1. Fetch basé sur params :**
-```javascript
-const { id } = useParams();
-useEffect(() => {
-  fetch(`/api/items/${id}`);
-}, [id]);
-```
-
-**2. Liste → Détail :**
-```javascript
-// Liste : fetch tous
-// Détail : fetch un seul basé sur l'URL
-```
-
-**3. Search params pour filtres :**
-```javascript
-const [searchParams] = useSearchParams();
-const filter = searchParams.get('category');
-useEffect(() => {
-  fetch(`/api/items?category=${filter}`);
-}, [filter]);
-```
-
-**4. Promise.all pour parallélisme :**
-```javascript
-const [data1, data2] = await Promise.all([
-  fetch(url1),
-  fetch(url2)
-]);
-```
-
-**5. AbortController pour cleanup :**
-```javascript
-useEffect(() => {
-  const controller = new AbortController();
-  fetch(url, { signal: controller.signal });
-  return () => controller.abort();
-}, [url]);
-```
-</Callout>
-
-## Prochaine Étape
-
-Vous maîtrisez maintenant `useEffect` et le routing ! Passons à la **pratique avec des exercices concrets** pour consolider vos connaissances.
+Vous maitrisez maintenant `useEffect` et le routing ! Passons a la **pratique avec des exercices concrets** pour consolider vos connaissances.

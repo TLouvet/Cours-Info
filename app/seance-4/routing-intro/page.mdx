@@ -22,8 +22,7 @@ Le routing JavaScript change le contenu affiché **sans rechargement** !
 
 **Avantages :**
 - Navigation instantanée
-- Pas de perte d'état
-- Meilleure expérience utilisateur
+- Pas de perte d'état entre les pages
 </Callout>
 
 ## Pourquoi Utiliser le Routing ?
@@ -59,6 +58,18 @@ function App() {
 - Impossible de partager un lien direct
 - Pas d'historique de navigation
 
+<QuickCheck
+  question="Quel est le principal problème d'une SPA sans routing ?"
+  options={[
+    "L'application est plus lente",
+    "Le code est plus difficile à écrire",
+    "Pas de bouton retour, pas de bookmarks, pas de partage de liens",
+    "Le CSS ne fonctionne pas correctement"
+  ]}
+  correctAnswer={2}
+  explanation="Sans routing, l'URL reste toujours la même (ex: /). L'utilisateur ne peut pas bookmarker une page spécifique, partager un lien direct, ou utiliser les boutons retour/avancer du navigateur. Le routing résout tous ces problèmes en associant chaque 'page' à une URL unique."
+/>
+
 ### 2. URLs Bookmarkables
 
 ```javascript
@@ -87,7 +98,7 @@ User clique "Retour" :
 
 ### 4. SEO (Référencement)
 
-Chaque page a sa propre URL → meilleur référencement Google.
+Chaque page a une URL distincte, ce qui permet aux moteurs de recherche de les indexer.
 
 ```javascript
 // ✅ Bon pour le SEO
@@ -99,314 +110,78 @@ https://blog.com/contact
 https://blog.com/ (tout sur une page)
 ```
 
-## React Router : La Solution
+## React Router : Une Solution Populaire
 
-**React Router** est la librairie standard pour le routing en React.
+**React Router** est l'une des librairies de routing les plus populaires pour React. D'autres solutions existent (TanStack Router, Wouter, etc.), mais React Router reste très largement utilisée et bien documentée.
 
-<Callout type="info" title="React Router DOM">
-Il existe plusieurs versions de React Router :
+### Les Outils Principaux
 
-- **react-router-dom** → Pour le web (navigateur)
-- **react-router-native** → Pour React Native (mobile)
+React Router nous fournit plusieurs composants pour gérer le routing :
 
-Nous utilisons **react-router-dom** !
-</Callout>
+- **`BrowserRouter`** → Active le routing dans l'application
+- **`Routes` et `Route`** → Définissent quelle URL affiche quel composant
+- **`Link`** → Permet de naviguer entre les pages sans rechargement
 
-### Installation
-
-```bash
-npm install react-router-dom
+**Exemple conceptuel :**
+```
+URL: /about    →  React Router  →  Affiche <About />
+URL: /contact  →  React Router  →  Affiche <Contact />
 ```
 
-<Callout type="tip" title="Version">
-Ce cours utilise **React Router v6** (la version moderne).
-
-Si vous lisez des tutoriels plus anciens avec `<Switch>` ou `component=`, ils utilisent v5 (obsolète).
-</Callout>
-
-## Concepts Clés
-
-### 1. Router
-
-Le composant racine qui active le routing.
-
-```javascript
-import { BrowserRouter } from 'react-router-dom';
-
-function App() {
-  return (
-    <BrowserRouter>
-      {/* Votre app ici */}
-    </BrowserRouter>
-  );
-}
-```
-
-<Callout type="info" title="BrowserRouter vs HashRouter">
-**BrowserRouter** (recommandé)
-- URLs propres : `/about`, `/products/123`
-- Nécessite configuration serveur en production
-
-**HashRouter**
-- URLs avec # : `/#/about`, `/#/products/123`
-- Fonctionne sans config serveur
-- Moins propre visuellement
-
-**Utilisez BrowserRouter** sauf contrainte spécifique !
-</Callout>
-
-### 2. Routes & Route
-
-Définir quelles URLs affichent quels composants.
-
-```javascript
-import { Routes, Route } from 'react-router-dom';
-
-function App() {
-  return (
-    <BrowserRouter>
-      <Routes>
-        <Route path="/" element={<Home />} />
-        <Route path="/about" element={<About />} />
-        <Route path="/contact" element={<Contact />} />
-      </Routes>
-    </BrowserRouter>
-  );
-}
-```
-
-### 3. Link
-
-Pour naviguer entre les pages (remplace `<a>`).
-
-```javascript
-import { Link } from 'react-router-dom';
-
-function Navigation() {
-  return (
-    <nav>
-      <Link to="/">Home</Link>
-      <Link to="/about">About</Link>
-      <Link to="/contact">Contact</Link>
-    </nav>
-  );
-}
-```
-
-<Callout type="warning" title="Link vs <a>">
-**❌ N'utilisez PAS `<a href="...">` :**
-```javascript
-<a href="/about">About</a>
-// → Recharge toute la page !
-```
-
-**✅ Utilisez `<Link to="...">` :**
-```javascript
-<Link to="/about">About</Link>
-// → Navigation instantanée sans rechargement !
-```
-
-`<Link>` est compilé en `<a>` mais avec des event listeners pour intercepter le clic.
-</Callout>
-
-## Premier Exemple Complet
-
-```javascript
-// App.js
-import { BrowserRouter, Routes, Route, Link } from 'react-router-dom';
-
-function Home() {
-  return <h1>Page d'accueil</h1>;
-}
-
-function About() {
-  return <h1>À propos</h1>;
-}
-
-function Contact() {
-  return <h1>Contact</h1>;
-}
-
-function App() {
-  return (
-    <BrowserRouter>
-      {/* Navigation commune à toutes les pages */}
-      <nav>
-        <Link to="/">Home</Link>
-        <Link to="/about">About</Link>
-        <Link to="/contact">Contact</Link>
-      </nav>
-
-      {/* Routes : quelle URL affiche quel composant */}
-      <Routes>
-        <Route path="/" element={<Home />} />
-        <Route path="/about" element={<About />} />
-        <Route path="/contact" element={<Contact />} />
-      </Routes>
-    </BrowserRouter>
-  );
-}
-
-export default App;
-```
-
-**Rendu :**
-```
-/ → Affiche Navigation + Home
-/about → Affiche Navigation + About
-/contact → Affiche Navigation + Contact
-```
-
-<Callout type="success" title="Ça marche !">
-- Cliquer sur les liens change l'URL
-- Le composant correspondant s'affiche
-- Pas de rechargement de page
-- Les boutons Retour/Avancer du navigateur fonctionnent
-</Callout>
-
-## Structure Typique d'une App avec Routing
-
-```javascript
-function App() {
-  return (
-    <BrowserRouter>
-      <div className="app">
-        {/* Header : commun à toutes les pages */}
-        <Header>
-          <Navigation />
-        </Header>
-
-        {/* Main : contenu qui change selon l'URL */}
-        <main>
-          <Routes>
-            <Route path="/" element={<Home />} />
-            <Route path="/about" element={<About />} />
-            <Route path="/blog" element={<BlogList />} />
-            <Route path="/blog/:id" element={<BlogPost />} />
-            <Route path="/contact" element={<Contact />} />
-            <Route path="*" element={<NotFound />} />
-          </Routes>
-        </main>
-
-        {/* Footer : commun à toutes les pages */}
-        <Footer />
-      </div>
-    </BrowserRouter>
-  );
-}
-```
-
-<Callout type="info" title="Layout Pattern">
-Tout ce qui est **à l'extérieur** de `<Routes>` est affiché sur **toutes les pages**.
-
-Tout ce qui est **à l'intérieur** d'un `<Route>` est affiché uniquement sur **cette page**.
-
-```javascript
-<BrowserRouter>
-  <Header /> {/* Partout */}
-
-  <Routes>
-    <Route path="/" element={<Home />} /> {/* Seulement sur / */}
-    <Route path="/about" element={<About />} /> {/* Seulement sur /about */}
-  </Routes>
-
-  <Footer /> {/* Partout */}
-</BrowserRouter>
-```
-</Callout>
-
-## Comparaison : Avant vs Après
-
-### Sans Routing
-
-```javascript
-function App() {
-  const [page, setPage] = useState('home');
-
-  return (
-    <div>
-      <button onClick={() => setPage('home')}>Home</button>
-      <button onClick={() => setPage('about')}>About</button>
-
-      {page === 'home' && <Home />}
-      {page === 'about' && <About />}
-    </div>
-  );
-}
-
-// ❌ Problèmes :
-// - Toujours la même URL (/)
-// - Pas de bouton retour
-// - Impossible de bookmarker
-// - Pas de partage de lien
-```
-
-### Avec Routing
-
-```javascript
-import { BrowserRouter, Routes, Route, Link } from 'react-router-dom';
-
-function App() {
-  return (
-    <BrowserRouter>
-      <Link to="/">Home</Link>
-      <Link to="/about">About</Link>
-
-      <Routes>
-        <Route path="/" element={<Home />} />
-        <Route path="/about" element={<About />} />
-      </Routes>
-    </BrowserRouter>
-  );
-}
-
-// ✅ Avantages :
-// - URLs propres : /, /about
-// - Bouton retour fonctionne
-// - Bookmarks possibles
-// - Partage de liens ✅
-```
+Nous allons voir comment utiliser ces outils en pratique dans la page suivante.
 
 ## Cas d'Usage du Routing
 
 <div className="overflow-x-auto my-6">
-
-| Type d'App | Exemple de Routes | Use Case |
-|------------|-------------------|----------|
-| **Blog** | `/`, `/posts`, `/posts/123` | Articles, détails |
-| **E-commerce** | `/`, `/products`, `/products/abc`, `/cart` | Catalogue, produit, panier |
-| **Dashboard** | `/dashboard`, `/profile`, `/settings` | Sections admin |
-| **Documentation** | `/docs/intro`, `/docs/api`, `/docs/faq` | Guide utilisateur |
-| **Portfolio** | `/`, `/projects`, `/projects/xyz`, `/contact` | Projets, détail |
-
+  <table className="min-w-full border-collapse border border-gray-300 dark:border-gray-700">
+    <thead>
+      <tr className="bg-gray-100 dark:bg-gray-800">
+        <th className="border border-gray-300 dark:border-gray-700 px-4 py-2 text-left">Type d'App</th>
+        <th className="border border-gray-300 dark:border-gray-700 px-4 py-2 text-left">Exemple de Routes</th>
+        <th className="border border-gray-300 dark:border-gray-700 px-4 py-2 text-left">Use Case</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td className="border border-gray-300 dark:border-gray-700 px-4 py-2 font-semibold">Blog</td>
+        <td className="border border-gray-300 dark:border-gray-700 px-4 py-2"><code>/</code>, <code>/posts</code>, <code>/posts/123</code></td>
+        <td className="border border-gray-300 dark:border-gray-700 px-4 py-2">Articles, détails</td>
+      </tr>
+      <tr className="bg-gray-50 dark:bg-gray-900/50">
+        <td className="border border-gray-300 dark:border-gray-700 px-4 py-2 font-semibold">E-commerce</td>
+        <td className="border border-gray-300 dark:border-gray-700 px-4 py-2"><code>/</code>, <code>/products</code>, <code>/products/abc</code>, <code>/cart</code></td>
+        <td className="border border-gray-300 dark:border-gray-700 px-4 py-2">Catalogue, produit, panier</td>
+      </tr>
+      <tr>
+        <td className="border border-gray-300 dark:border-gray-700 px-4 py-2 font-semibold">Dashboard</td>
+        <td className="border border-gray-300 dark:border-gray-700 px-4 py-2"><code>/dashboard</code>, <code>/profile</code>, <code>/settings</code></td>
+        <td className="border border-gray-300 dark:border-gray-700 px-4 py-2">Sections admin</td>
+      </tr>
+      <tr className="bg-gray-50 dark:bg-gray-900/50">
+        <td className="border border-gray-300 dark:border-gray-700 px-4 py-2 font-semibold">Documentation</td>
+        <td className="border border-gray-300 dark:border-gray-700 px-4 py-2"><code>/docs/intro</code>, <code>/docs/api</code>, <code>/docs/faq</code></td>
+        <td className="border border-gray-300 dark:border-gray-700 px-4 py-2">Guide utilisateur</td>
+      </tr>
+      <tr>
+        <td className="border border-gray-300 dark:border-gray-700 px-4 py-2 font-semibold">Portfolio</td>
+        <td className="border border-gray-300 dark:border-gray-700 px-4 py-2"><code>/</code>, <code>/projects</code>, <code>/projects/xyz</code>, <code>/contact</code></td>
+        <td className="border border-gray-300 dark:border-gray-700 px-4 py-2">Projets, détail</td>
+      </tr>
+    </tbody>
+  </table>
 </div>
 
 ## Récapitulatif
 
-<Callout type="success" title="Ce qu'il faut retenir">
-**Pourquoi le routing ?**
-- URLs propres et bookmarkables
-- Navigation avec historique du navigateur
-- Meilleur SEO
-- Partage de liens directs
+<Callout type="tip" title="Comprendre, pas mémoriser">
+**Ce qu'il faut retenir :**
 
-**React Router DOM :**
-- `<BrowserRouter>` : Active le routing
-- `<Routes>` + `<Route>` : Définir les routes
-- `<Link>` : Naviguer entre pages
-- Pas de rechargement de page
+- **Routing** → associer des URLs à des composants
+- **SPA** → navigation sans rechargement de page
+- **React Router** → librairie populaire pour gérer le routing
+- **Avantages** → bouton retour, bookmarks, partage de liens, SEO
 
-**Structure :**
-```javascript
-<BrowserRouter>
-  <Nav /> {/* Partout */}
-  <Routes>
-    <Route path="/" element={<Home />} />
-    <Route path="/about" element={<About />} />
-  </Routes>
-  <Footer /> {/* Partout */}
-</BrowserRouter>
-```
+La page suivante vous montrera comment mettre tout cela en pratique avec le code.
 </Callout>
 
 ## Prochaine Étape

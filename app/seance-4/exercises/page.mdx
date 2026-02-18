@@ -253,13 +253,30 @@ Créez une application météo avec les pages suivantes :
 - Bouton "Nouvelle recherche" → retour vers `/`
 - Gérer les villes inexistantes (404)
 
-### APIs Météo Suggérées
+### APIs Meteo Suggerees
 
-#### Option 1 : OpenWeatherMap (Gratuit, inscription requise)
+#### Option 1 : wttr.in (Recommande - Pas d'API key)
+
+```javascript
+// Pas d'inscription necessaire - pret a utiliser !
+
+const city = 'Paris';
+
+fetch(`https://wttr.in/${city}?format=j1`)
+  .then(res => res.json())
+  .then(data => {
+    console.log(data.current_condition[0].temp_C); // Temperature
+    console.log(data.current_condition[0].weatherDesc[0].value); // Description
+    console.log(data.current_condition[0].humidity); // Humidite
+    console.log(data.current_condition[0].windspeedKmph); // Vent
+  });
+```
+
+#### Option 2 (Bonus) : OpenWeatherMap (Inscription requise)
 
 ```javascript
 // Inscription : https://openweathermap.org/api
-// API Key gratuite
+// API Key gratuite mais necessite un compte
 
 const API_KEY = 'YOUR_API_KEY';
 const city = 'Paris';
@@ -269,22 +286,13 @@ fetch(`https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${API_KEY
   .then(data => {
     console.log(data.name); // "Paris"
     console.log(data.main.temp); // 15.5
-    console.log(data.weather[0].description); // "ciel dégagé"
+    console.log(data.weather[0].description); // "ciel degage"
   });
 ```
 
-#### Option 2 : wttr.in (Pas d'API key)
-
-```javascript
-// Pas d'inscription nécessaire
-
-fetch(`https://wttr.in/${city}?format=j1`)
-  .then(res => res.json())
-  .then(data => {
-    console.log(data.current_condition[0].temp_C); // Température
-    console.log(data.current_condition[0].weatherDesc[0].value); // Description
-  });
-```
+<Callout type="tip" title="Conseil">
+Commencez avec **wttr.in** pour eviter la friction de creer un compte API. Si vous voulez aller plus loin, OpenWeatherMap offre des donnees plus detaillees (icones meteo, previsions, etc.).
+</Callout>
 
 ### Fonctionnalités Avancées
 

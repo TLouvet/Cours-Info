@@ -23,10 +23,56 @@ useEffect(callback, dependencies);
 ```
 
 - **callback** : La fonction contenant votre effet
-- **dependencies** : Tableau de dépendances (optionnel mais important !)
+- **dependencies** : Tableau de dependances (optionnel mais important !)
 </Callout>
 
-## Les Trois Patterns de Dépendances
+## Timeline d'Execution
+
+Voici l'ordre d'execution complet d'un composant avec `useEffect` :
+
+```javascript
+function Example() {
+  console.log('1. Render : corps de la fonction');
+
+  const [count, setCount] = useState(0);
+
+  useEffect(() => {
+    console.log('3. Effect : apres le rendu');
+
+    return () => {
+      console.log('4. Cleanup : avant le prochain effect ou unmount');
+    };
+  });
+
+  console.log('2. Render : avant le return');
+
+  return <div>Hello</div>;
+}
+
+// Ordre d'affichage :
+// 1. Render : corps de la fonction
+// 2. Render : avant le return
+// 3. Effect : apres le rendu
+// (si re-render)
+// 1. Render : corps de la fonction
+// 2. Render : avant le return
+// 4. Cleanup : avant le prochain effect
+// 3. Effect : apres le rendu
+```
+
+<QuickCheck
+  question="Dans quel ordre s'executent le rendu et l'effet ?"
+  options={[
+    "L'effet s'execute avant le rendu",
+    "L'effet s'execute pendant le rendu",
+    "L'effet s'execute apres le rendu (une fois le DOM mis a jour)",
+    "L'ordre est aleatoire"
+  ]}
+  correctAnswer={2}
+  explanation="useEffect s'execute APRES le rendu. React execute d'abord le corps de la fonction (rendu), met a jour le DOM, puis lance les effets. Cela garantit que l'utilisateur voit le resultat du rendu avant que les effets ne se declenchent."
+/>
+
+## Les Trois Patterns de Dependances
 
 Le tableau de dépendances contrôle **quand** l'effet s'exécute.
 
@@ -49,6 +95,18 @@ function Component() {
 **Rarement utilisé !** Peut causer des problèmes de performance.
 </Callout>
 
+<QuickCheck
+  question="Que se passe-t-il avec useEffect(() => { console.log('Hello') }) sans deuxième argument ?"
+  options={[
+    "S'exécute une seule fois au mount",
+    "S'exécute après chaque rendu (mount + updates)",
+    "Ne s'exécute jamais",
+    "Provoque une erreur de syntaxe"
+  ]}
+  correctAnswer={1}
+  explanation="Sans tableau de dépendances, useEffect s'exécute après CHAQUE rendu du composant. Pour s'exécuter une seule fois, il faut un tableau vide []. Pour réagir à des changements spécifiques, mettez les dépendances dans le tableau."
+/>
+
 ### 2. Tableau Vide : Une Seule Fois (Mount)
 
 ```javascript
@@ -56,7 +114,7 @@ function Component() {
   // ✅ S'exécute UNE FOIS au montage
   useEffect(() => {
     console.log('Composant monté !');
-  }, []); // 👈 Tableau vide
+  }, []); // Tableau vide = une seule fois
 
   return <div>Hello</div>;
 }
@@ -93,7 +151,7 @@ function SearchResults() {
   useEffect(() => {
     console.log(`Recherche pour : ${searchTerm}`);
     // Faire le fetch...
-  }, [searchTerm]); // 👈 Re-exécute si searchTerm change
+  }, [searchTerm]); // Re-exécute si searchTerm change
 
   return (
     <div>
@@ -124,6 +182,18 @@ useEffect(() => {
 
 React vous avertira dans la console si vous oubliez des dépendances !
 </Callout>
+
+<QuickCheck
+  question="Que fait useEffect(() => { fetch(url) }, []) ?"
+  options={[
+    "Fetch à chaque rendu",
+    "Fetch une seule fois au mount du composant",
+    "Fetch quand url change",
+    "Ne fait rien car le tableau est vide"
+  ]}
+  correctAnswer={1}
+  explanation="Le tableau vide [] signifie 'aucune dépendance'. L'effet s'exécute UNE SEULE FOIS au montage du composant. Pour re-fetch quand url change, il faudrait écrire [url] dans les dépendances."
+/>
 
 ## Fonction de Cleanup
 
@@ -177,6 +247,18 @@ useEffect(() => {
 }, []);
 ```
 </Callout>
+
+<QuickCheck
+  question="Que retourne la fonction de cleanup dans useEffect ?"
+  options={[
+    "undefined",
+    "Une Promise",
+    "Une fonction qui sera appelée avant le prochain effect ou au unmount",
+    "Le résultat du fetch"
+  ]}
+  correctAnswer={2}
+  explanation="Le cleanup est une fonction retournée par le callback de useEffect : return () => { clearInterval(id); }. Cette fonction est appelée avant le prochain effect (si les dépendances changent) ou quand le composant est retiré du DOM (unmount). Elle sert à nettoyer les ressources (timers, abonnements, etc.)."
+/>
 
 ### Exemple : Event Listener
 
@@ -256,6 +338,18 @@ Le cleanup s'exécute :
 Jamais au premier mount !
 </Callout>
 
+<QuickCheck
+  question="Quand le cleanup s'exécute-t-il ?"
+  options={[
+    "Avant chaque rendu du composant",
+    "Uniquement quand le composant est monté",
+    "Avant le prochain effect (si dépendances changent) et au unmount du composant",
+    "Seulement quand on appelle manuellement cleanup()"
+  ]}
+  correctAnswer={2}
+  explanation="Le cleanup s'exécute dans deux cas : (1) avant le prochain effect si les dépendances ont changé, et (2) quand le composant est retiré du DOM (unmount). Il ne s'exécute jamais au premier mount. C'est React qui l'appelle automatiquement, pas vous."
+/>
+
 ## Patterns Courants
 
 ### Pattern 1 : Mettre à Jour le Titre
@@ -305,41 +399,6 @@ function FormWithPersistence() {
     <input
       value={name}
       onChange={(e) => setName(e.target.value)}
-    />
-  );
-}
-```
-
-### Pattern 4 : Debounce
-
-```javascript
-function SearchInput() {
-  const [searchTerm, setSearchTerm] = useState('');
-  const [debouncedTerm, setDebouncedTerm] = useState('');
-
-  // Debounce : attendre 500ms après le dernier changement
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      setDebouncedTerm(searchTerm);
-    }, 500);
-
-    // Cleanup : annuler le timer si searchTerm change
-    return () => clearTimeout(timer);
-  }, [searchTerm]);
-
-  // Fetch avec le terme debounced
-  useEffect(() => {
-    if (debouncedTerm) {
-      console.log('Recherche pour :', debouncedTerm);
-      // Faire le fetch...
-    }
-  }, [debouncedTerm]);
-
-  return (
-    <input
-      value={searchTerm}
-      onChange={(e) => setSearchTerm(e.target.value)}
-      placeholder="Rechercher..."
     />
   );
 }
@@ -470,29 +529,75 @@ useEffect(() => {
 ```
 </Callout>
 
+<QuickCheck
+  question="Pourquoi ne peut-on pas écrire useEffect(async () => { ... }) ?"
+  options={[
+    "Parce que async n'existe pas en JavaScript",
+    "Parce que useEffect doit retourner undefined ou une fonction de cleanup, pas une Promise",
+    "Parce que useEffect n'accepte pas de callback",
+    "Parce que await ne fonctionne pas dans les composants React"
+  ]}
+  correctAnswer={1}
+  explanation="Une fonction async retourne automatiquement une Promise. Or, useEffect attend soit undefined (pas de return), soit une fonction de cleanup (return () => {...}). La solution : créer une fonction async interne et l'appeler immédiatement."
+/>
+
 ## Quand Utiliser useEffect ?
 
 <div className="overflow-x-auto my-6">
-
-| Cas d'Usage | Exemple | Dépendances |
-|-------------|---------|-------------|
-| **Mount uniquement** | Fetch initial, init | `[]` |
-| **Sur changement** | Fetch quand ID change | `[id]` |
-| **Sync avec props/state** | Update document.title | `[title]` |
-| **Timer/Interval** | Horloge, countdown | `[]` avec cleanup |
-| **Event listener** | Resize, scroll | `[]` avec cleanup |
-| **Abonnement** | WebSocket, chat | `[roomId]` avec cleanup |
-
+  <table className="min-w-full border-collapse border border-gray-300 dark:border-gray-700">
+    <thead>
+      <tr className="bg-gray-100 dark:bg-gray-800">
+        <th className="border border-gray-300 dark:border-gray-700 px-4 py-2 text-left">Cas d'Usage</th>
+        <th className="border border-gray-300 dark:border-gray-700 px-4 py-2 text-left">Exemple</th>
+        <th className="border border-gray-300 dark:border-gray-700 px-4 py-2 text-left">Dépendances</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td className="border border-gray-300 dark:border-gray-700 px-4 py-2 font-semibold">Mount uniquement</td>
+        <td className="border border-gray-300 dark:border-gray-700 px-4 py-2">Fetch initial, init</td>
+        <td className="border border-gray-300 dark:border-gray-700 px-4 py-2"><code>[]</code></td>
+      </tr>
+      <tr className="bg-gray-50 dark:bg-gray-900/50">
+        <td className="border border-gray-300 dark:border-gray-700 px-4 py-2 font-semibold">Sur changement</td>
+        <td className="border border-gray-300 dark:border-gray-700 px-4 py-2">Fetch quand ID change</td>
+        <td className="border border-gray-300 dark:border-gray-700 px-4 py-2"><code>[id]</code></td>
+      </tr>
+      <tr>
+        <td className="border border-gray-300 dark:border-gray-700 px-4 py-2 font-semibold">Sync avec props/state</td>
+        <td className="border border-gray-300 dark:border-gray-700 px-4 py-2">Update document.title</td>
+        <td className="border border-gray-300 dark:border-gray-700 px-4 py-2"><code>[title]</code></td>
+      </tr>
+      <tr className="bg-gray-50 dark:bg-gray-900/50">
+        <td className="border border-gray-300 dark:border-gray-700 px-4 py-2 font-semibold">Timer/Interval</td>
+        <td className="border border-gray-300 dark:border-gray-700 px-4 py-2">Horloge, countdown</td>
+        <td className="border border-gray-300 dark:border-gray-700 px-4 py-2"><code>[]</code> avec cleanup</td>
+      </tr>
+      <tr>
+        <td className="border border-gray-300 dark:border-gray-700 px-4 py-2 font-semibold">Event listener</td>
+        <td className="border border-gray-300 dark:border-gray-700 px-4 py-2">Resize, scroll</td>
+        <td className="border border-gray-300 dark:border-gray-700 px-4 py-2"><code>[]</code> avec cleanup</td>
+      </tr>
+      <tr className="bg-gray-50 dark:bg-gray-900/50">
+        <td className="border border-gray-300 dark:border-gray-700 px-4 py-2 font-semibold">Abonnement</td>
+        <td className="border border-gray-300 dark:border-gray-700 px-4 py-2">WebSocket, chat</td>
+        <td className="border border-gray-300 dark:border-gray-700 px-4 py-2"><code>[roomId]</code> avec cleanup</td>
+      </tr>
+    </tbody>
+  </table>
 </div>
 
-<Callout type="success" title="Récapitulatif">
-- **useEffect** = pour les side effects
-- **Dépendances** = contrôlent quand l'effet s'exécute
-- **`[]`** = une fois au mount
-- **`[value]`** = quand value change
-- **Cleanup** = retour d'une fonction pour nettoyer
-- **Pas async direct** = créer une fonction async interne
-- **Toutes les dépendances** = règle d'or pour éviter les bugs
+<Callout type="tip" title="Comprendre, pas mémoriser">
+**Ce qu'il faut retenir :**
+
+- **useEffect** → pour les side effects (API, timers, DOM)
+- **`[]`** → une fois au mount
+- **`[value]`** → quand value change
+- **Cleanup** → retour d'une fonction pour nettoyer (timers, abonnements)
+- **Pas async direct** → créer une fonction async interne
+- **Règle d'or** → toutes les variables utilisées dans l'effet doivent être dans les dépendances
+
+Avec la pratique, ces patterns deviendront naturels. Consultez la documentation React si vous avez un doute sur la syntaxe.
 </Callout>
 
 ## Prochaine Étape

@@ -13,14 +13,14 @@ export default function Seance5Page() {
           Projet Pratique & AI-Assisted Development
         </h1>
         <p className="text-xl text-gray-600 dark:text-gray-400">
-          Construisez une application React complète avec les meilleures pratiques et l'aide de l'IA
+          Construisez une application React complete avec les pratiques du cours et l'aide de l'IA
         </p>
       </div>
 
       {/* Overview */}
       <div className="p-6 bg-gradient-to-br from-cyan-50 to-blue-50 dark:from-cyan-900/20 dark:to-blue-900/20 rounded-xl border border-cyan-200 dark:border-cyan-800">
         <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-3">
-          📚 Ce que vous allez apprendre
+          Ce que vous allez apprendre
         </h2>
         <ul className="space-y-2 text-gray-700 dark:text-gray-300">
           <li className="flex items-start gap-2">
@@ -29,11 +29,11 @@ export default function Seance5Page() {
           </li>
           <li className="flex items-start gap-2">
             <span className="text-cyan-600 dark:text-cyan-400">•</span>
-            <span>Appliquer les meilleures pratiques React dans vos projets</span>
+            <span>Appliquer les pratiques React dans vos projets</span>
           </li>
           <li className="flex items-start gap-2">
             <span className="text-cyan-600 dark:text-cyan-400">•</span>
-            <span>Organiser et structurer une application React professionnellement</span>
+            <span>Organiser et structurer une application React</span>
           </li>
           <li className="flex items-start gap-2">
             <span className="text-cyan-600 dark:text-cyan-400">•</span>
@@ -115,7 +115,7 @@ export default function Seance5Page() {
                 </div>
                 <div>
                   <h3 className="font-semibold text-gray-900 dark:text-gray-100 group-hover:text-cyan-600 dark:group-hover:text-cyan-400 transition-colors">
-                    Meilleures Pratiques React
+                    Pratiques React
                   </h3>
                   <p className="text-sm text-gray-600 dark:text-gray-400">
                     Design de composants et conventions de code
@@ -140,7 +140,7 @@ export default function Seance5Page() {
                     Structure de Projet
                   </h3>
                   <p className="text-sm text-gray-600 dark:text-gray-400">
-                    Organiser vos fichiers et dossiers professionnellement
+                    Organiser vos fichiers et dossiers
                   </p>
                 </div>
               </div>
@@ -237,7 +237,7 @@ export default function Seance5Page() {
           </Link>
 
           <Link
-            href="/seance-5/guided-project"
+            href="/seance-5/ai-collaboration"
             className="group block p-4 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg hover:border-cyan-500 dark:hover:border-cyan-500 transition-colors"
           >
             <div className="flex items-center justify-between">
@@ -247,10 +247,10 @@ export default function Seance5Page() {
                 </div>
                 <div>
                   <h3 className="font-semibold text-gray-900 dark:text-gray-100 group-hover:text-cyan-600 dark:group-hover:text-cyan-400 transition-colors">
-                    Projet Guidé
+                    Collaboration avec l'IA
                   </h3>
                   <p className="text-sm text-gray-600 dark:text-gray-400">
-                    Construire une application complète étape par étape
+                    Valider et améliorer le code généré par l'IA
                   </p>
                 </div>
               </div>

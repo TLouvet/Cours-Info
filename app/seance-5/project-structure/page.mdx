@@ -1,13 +1,13 @@
 # Structure de Projet React
 
-Une bonne organisation de projet est essentielle pour la maintenabilité et la scalabilité de votre application.
+Une bonne organisation de projet facilite la navigation dans le code, la collaboration en equipe et l'ajout de nouvelles fonctionnalites.
 
 <Callout type="info">
-**Un projet bien organisé :**
-- Facilite la navigation dans le code
-- Améliore la collaboration en équipe
-- Simplifie l'ajout de nouvelles fonctionnalités
-- Rend le code plus maintenable
+**Un projet bien organise :**
+- Les fichiers sont faciles a trouver
+- Les responsabilites sont claires
+- L'ajout de fonctionnalites ne cree pas de desordre
+- Le code reste maintenable quand le projet grandit
 </Callout>
 
 ## Structure de base (petit projet)
@@ -45,7 +45,19 @@ my-react-app/
 - **App.jsx** - Composant racine
 - **main.jsx** - Point d'entrée de l'application
 
-## Structure avancée (projet moyen/grand)
+<QuickCheck
+  question="Ou placer les composants reutilisables dans un projet React ?"
+  options={[
+    "Directement dans src/ avec tout le reste",
+    "Dans node_modules/",
+    "Dans src/components/",
+    "Dans public/"
+  ]}
+  correctAnswer={2}
+  explanation="Les composants reutilisables vont dans src/components/. Le dossier public/ est pour les fichiers statiques (images, favicon). node_modules/ contient les dependances externes. Melanger tout dans src/ rend le projet difficile a naviguer."
+/>
+
+## Structure avancee (projet moyen/grand)
 
 Pour un projet plus complexe avec plus de fonctionnalités :
 
@@ -137,8 +149,20 @@ src/
 ```
 
 <Callout type="tip">
-**Avantage :** Tout ce qui concerne une fonctionnalité est regroupé au même endroit. Facile à trouver et à maintenir.
+**Avantage :** Tout ce qui concerne une fonctionnalite est regroupe au meme endroit. Cette approche convient aux grands projets, mais commencez par la structure de base.
 </Callout>
+
+<QuickCheck
+  question="Quelle est une bonne structure de dossiers pour un projet React de taille moyenne ?"
+  options={[
+    "Tout dans un seul dossier",
+    "src/ avec components/, hooks/, utils/, pages/",
+    "Un dossier par ligne de code",
+    "Pas besoin de structure, fichiers en vrac"
+  ]}
+  correctAnswer={1}
+  explanation="Une structure claire separe les responsabilites : components/ pour les composants reutilisables, hooks/ pour les custom hooks, utils/ pour les fonctions utilitaires, pages/ pour les vues principales. Cela rend le code facile a trouver et a maintenir."
+/>
 
 ## Le fichier index.js
 
@@ -164,7 +188,7 @@ export { default as Input } from './Input/Input';
 
 **Utilisation**
 ```javascript
-// ✅ Import propre et concis
+// ✅ Import concis
 import { Button, Card, Input } from './components/ui';
 ```
 
@@ -216,6 +240,18 @@ pages/
 ├── AboutPage.jsx
 └── ProductsPage.jsx
 ```
+
+<QuickCheck
+  question="Quelle convention de nommage utiliser pour les fichiers de custom hooks ?"
+  options={[
+    "PascalCase (ex: Fetch.js)",
+    "camelCase avec prefixe 'use' (ex: useFetch.js)",
+    "kebab-case (ex: use-fetch.js)",
+    "snake_case (ex: use_fetch.js)"
+  ]}
+  correctAnswer={1}
+  explanation="Les hooks suivent la convention camelCase avec le prefixe obligatoire 'use' : useFetch.js, useLocalStorage.js, useAuth.js. Le prefixe 'use' permet a React d'appliquer les regles des hooks automatiquement."
+/>
 
 ## Organisation d'un composant
 
@@ -450,10 +486,22 @@ export default defineConfig({
 import Button from '../../../components/ui/Button';
 import useFetch from '../../../hooks/useFetch';
 
-// ✅ Imports absolus propres
+// ✅ Imports absolus
 import Button from '@components/ui/Button';
 import useFetch from '@hooks/useFetch';
 ```
+
+<QuickCheck
+  question="Pourquoi eviter les structures de dossiers trop profondes ?"
+  options={[
+    "React ne supporte pas plus de 3 niveaux",
+    "Les imports deviennent longs et la navigation difficile",
+    "Le build echoue avec trop de niveaux",
+    "Les fichiers deviennent plus lents a lire"
+  ]}
+  correctAnswer={1}
+  explanation="Des structures trop profondes (ex: src/components/features/products/list/items/card/ProductCard.jsx) rendent les imports tres longs et la navigation dans le projet difficile. Limitez a 3-4 niveaux maximum. Vous pouvez aussi configurer des imports absolus avec un alias @ pour simplifier."
+/>
 
 ## Exemple complet : Todo App
 

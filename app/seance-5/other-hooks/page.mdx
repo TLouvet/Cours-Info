@@ -51,7 +51,7 @@ function VideoPlayer() {
 
 ### Cas d'usage 2 : Stocker des valeurs mutables
 
-useRef est parfait pour stocker des valeurs qui **ne doivent pas déclencher de re-render**.
+useRef est adapte pour stocker des valeurs qui **ne doivent pas déclencher de re-render**.
 
 ```jsx
 function Timer() {
@@ -87,15 +87,27 @@ function Timer() {
 
 ### useRef vs useState
 
-<Callout type="warning" title="Différence importante">
+<Callout type="warning" title="Difference importante">
 **useState :**
-- Déclenche un re-render quand la valeur change
-- Pour les données affichées dans l'UI
+- Declenche un re-render quand la valeur change
+- Pour les donnees affichees dans l'UI
 
 **useRef :**
-- NE déclenche PAS de re-render
-- Pour les valeurs techniques (timers, références DOM, etc.)
+- NE declenche PAS de re-render
+- Pour les valeurs techniques (timers, references DOM, etc.)
 </Callout>
+
+<QuickCheck
+  question="Quelle est la difference entre useRef et useState ?"
+  options={[
+    "Aucune difference",
+    "useRef est plus rapide",
+    "useRef ne declenche pas de re-render, useState oui",
+    "useState est obsolete"
+  ]}
+  correctAnswer={2}
+  explanation="La difference cle : useState declenche un re-render quand la valeur change, useRef ne declenche JAMAIS de re-render. Utilisez useState pour les donnees affichees dans l'UI, useRef pour les valeurs techniques (timers, references DOM, valeurs precedentes)."
+/>
 
 **Exemple comparatif :**
 
@@ -163,8 +175,20 @@ Utilisez useMemo seulement quand :
 - Le calcul est **vraiment coûteux** (filtrage/tri de grandes listes, calculs complexes)
 - Vous avez identifié un **problème de performance**
 
-**Ne l'utilisez pas par défaut !** C'est une optimisation prématurée.
+**Ne l'utilisez pas par defaut !** C'est une optimisation prematuree.
 </Callout>
+
+<QuickCheck
+  question="Quand utiliser useMemo ?"
+  options={[
+    "Pour tous les calculs, toujours",
+    "Pour creer des etats",
+    "Pour memoriser le resultat d'un calcul couteux, seulement si necessaire",
+    "Pour faire des appels API"
+  ]}
+  correctAnswer={2}
+  explanation="useMemo memorise le resultat d'un calcul couteux pour eviter de le recalculer a chaque render. Utilisez-le seulement si le calcul est vraiment lourd (filtrage/tri de grandes listes). Ne l'utilisez pas partout par defaut : cela ajoute de la complexite sans benefice pour les calculs rapides."
+/>
 
 ### Exemple sans useMemo
 
@@ -331,9 +355,21 @@ function SearchComponent() {
 }
 ```
 
+<QuickCheck
+  question="A quoi sert useCallback ?"
+  options={[
+    "Creer des fonctions asynchrones",
+    "Remplacer useState",
+    "Memoriser une fonction pour eviter de la recreer a chaque render",
+    "Faire des appels API"
+  ]}
+  correctAnswer={2}
+  explanation="useCallback memorise une fonction pour qu'elle garde la meme reference entre les renders. C'est utile quand vous passez des callbacks a des composants enfants memorises avec React.memo, pour eviter des re-renders inutiles. Comme useMemo, utilisez-le seulement si necessaire."
+/>
+
 ## Quand utiliser ces hooks ?
 
-<Callout type="warning" title="N'optimisez pas trop tôt">
+<Callout type="warning" title="N'optimisez pas trop tot">
 **Règle générale :** Commencez sans optimisation, optimisez seulement si nécessaire.
 
 Ces hooks ajoutent de la complexité. Ne les utilisez que si vous avez un **vrai problème de performance**.
@@ -359,7 +395,19 @@ Ces hooks ajoutent de la complexité. Ne les utilisez que si vous avez un **vrai
 - ✅ Dépendances dans useEffect
 - ✅ Performance identifiée comme problème
 - ❌ Par défaut sur toutes les fonctions
-- ❌ Si le composant enfant n'est pas mémorisé
+- ❌ Si le composant enfant n'est pas memorise
+
+<QuickCheck
+  question="A quoi sert useRef avec un element DOM ?"
+  options={[
+    "A afficher l'element dans la console",
+    "A acceder directement a l'element DOM (ex: focus, scroll, play)",
+    "A supprimer l'element du DOM",
+    "A remplacer getElementById"
+  ]}
+  correctAnswer={1}
+  explanation="useRef cree une reference vers un element DOM, accessible via ref.current. Cela permet d'appeler des methodes DOM comme .focus(), .scrollIntoView(), .play() directement depuis React, sans passer par document.getElementById()."
+/>
 
 ## Exemples pratiques complets
 

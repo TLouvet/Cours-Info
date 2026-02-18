@@ -1,11 +1,11 @@
 # Custom Hooks
 
-Les custom hooks sont l'un des concepts les plus puissants de React. Ils vous permettent de réutiliser la logique stateful entre différents composants.
+Les custom hooks vous permettent de reutiliser la logique stateful entre differents composants.
 
 <Callout type="info">
 **Un custom hook, c'est quoi ?**
 
-C'est une fonction JavaScript qui utilise des hooks React (useState, useEffect, etc.) et qui peut être réutilisée dans plusieurs composants.
+C'est une fonction JavaScript qui utilise des hooks React (useState, useEffect, etc.) et qui peut etre reutilisee dans plusieurs composants.
 </Callout>
 
 ## Pourquoi créer des custom hooks ?
@@ -120,21 +120,45 @@ function ProductsList() {
 <Callout type="success">
 **Avantages :**
 - Code DRY (Don't Repeat Yourself)
-- Logique centralisée et testable
-- Composants plus simples et lisibles
-- Facilite les modifications (un seul endroit à changer)
+- Logique centralisee et testable
+- Composants plus lisibles
+- Facilite les modifications (un seul endroit a changer)
 </Callout>
 
-## Règles des custom hooks
+<QuickCheck
+  question="Qu'est-ce qu'un custom hook ?"
+  options={[
+    "Un composant React special",
+    "Une methode de classe",
+    "Une fonction JavaScript qui utilise des hooks React",
+    "Une librairie externe"
+  ]}
+  correctAnswer={2}
+  explanation="Un custom hook est une fonction JavaScript (prefixee par 'use') qui utilise des hooks React (useState, useEffect, etc.) pour extraire et reutiliser de la logique stateful. Ce n'est pas un composant (pas de JSX retourne) ni une librairie externe."
+/>
+
+## Regles des custom hooks
 
 Les custom hooks doivent suivre les mêmes règles que les hooks React :
 
-<Callout type="warning" title="Règles importantes">
+<Callout type="warning" title="Regles importantes">
 1. **Nom doit commencer par "use"** (convention obligatoire)
-2. **Appelés au top level** (pas dans des conditions/boucles)
-3. **Appelés uniquement dans les composants ou autres hooks**
+2. **Appeles au top level** (pas dans des conditions/boucles)
+3. **Appeles uniquement dans les composants ou autres hooks**
 4. **Peuvent utiliser d'autres hooks** (useState, useEffect, etc.)
 </Callout>
+
+<QuickCheck
+  question="Quelle convention de nommage est obligatoire pour les custom hooks ?"
+  options={[
+    "Commencer par 'custom' (ex: customFetch)",
+    "Commencer par 'hook' (ex: hookFetch)",
+    "Toujours commencer par 'use' (ex: useFetch)",
+    "Pas de convention specifique"
+  ]}
+  correctAnswer={2}
+  explanation="Les hooks commencent TOUJOURS par 'use' (useFetch, useLocalStorage, useForm). Le prefixe 'use' permet a React d'appliquer les regles des hooks automatiquement (detection des appels conditionnels, etc.)."
+/>
 
 ## Exemples de custom hooks utiles
 
@@ -281,8 +305,20 @@ function SearchProducts() {
 ```
 
 <Callout type="tip">
-Le debounce évite d'appeler l'API à chaque frappe. Économise des ressources et améliore les performances !
+Le debounce evite d'appeler l'API a chaque frappe. L'API est appelee seulement apres que l'utilisateur a arrete de taper pendant le delai specifie (ici 500ms).
 </Callout>
+
+<QuickCheck
+  question="Que retourne generalement un custom hook ?"
+  options={[
+    "Toujours du JSX",
+    "Uniquement des strings",
+    "Un objet ou tableau avec etat et fonctions",
+    "Rien (void)"
+  ]}
+  correctAnswer={2}
+  explanation="Les custom hooks retournent generalement un objet { data, loading, error } ou un tableau [value, setValue] comme useState. Ils ne retournent PAS de JSX (ca c'est pour les composants). Retourner un objet permet le renommage facile : const { data: users } = useFetch('/api/users')."
+/>
 
 ### 4. useForm
 
@@ -516,7 +552,7 @@ function ProductsPage() {
 ```
 
 <Callout type="success">
-Le composant est ultra-simple ! Toute la logique complexe est dans les hooks.
+Le composant reste concis. Toute la logique de fetch, debounce et recherche est dans les hooks.
 </Callout>
 
 ## Bonnes pratiques
@@ -567,6 +603,18 @@ function useFetch(url) {
   return { data, loading, error };
 }
 ```
+
+<QuickCheck
+  question="Pourquoi retourner un objet plutot qu'un tableau dans un custom hook ?"
+  options={[
+    "C'est obligatoire en React",
+    "C'est plus rapide en terme de performance",
+    "Cela permet le renommage facile lors de la destructuration",
+    "Les tableaux ne fonctionnent pas avec les hooks"
+  ]}
+  correctAnswer={2}
+  explanation="Un objet permet la destructuration nommee et le renommage facile : const { data: users } = useFetch('/api/users'). Avec un tableau, l'ordre est impose et le renommage est moins lisible. Les tableaux fonctionnent (useState en retourne un), mais les objets sont plus flexibles pour les hooks avec plusieurs valeurs."
+/>
 
 ### 4. Documenter vos hooks
 

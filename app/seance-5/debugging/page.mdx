@@ -1,12 +1,12 @@
-# Débogage React
+# Debogage React
 
-Déboguer efficacement est une compétence essentielle. Apprenons à identifier et résoudre les erreurs courantes en React.
+Savoir deboguer est une competence indispensable. Apprenons a identifier et resoudre les erreurs courantes en React.
 
 <Callout type="info">
-**Le débogage est un art :**
+**Le debogage en 4 etapes :**
 - Lire attentivement les messages d'erreur
-- Isoler le problème
-- Tester des hypothèses
+- Isoler le probleme
+- Tester des hypotheses
 - Utiliser les bons outils
 </Callout>
 
@@ -40,6 +40,18 @@ L'outil indispensable pour déboguer React.
 <Callout type="tip">
 Ouvrez DevTools avec **F12**, puis allez dans l'onglet "Components" ou "Profiler"
 </Callout>
+
+<QuickCheck
+  question="Quel est l'outil principal pour deboguer React ?"
+  options={[
+    "console.log() partout",
+    "Deviner au hasard",
+    "React DevTools (extension navigateur)",
+    "Demander a l'IA sans regarder le code"
+  ]}
+  correctAnswer={2}
+  explanation="React DevTools est l'extension navigateur dediee : elle permet d'inspecter les composants, voir les props/state en temps reel, profiler les performances et tracer les renders. console.log() aide ponctuellement mais ne remplace pas un outil dedie."
+/>
 
 ## Erreurs courantes et solutions
 
@@ -114,6 +126,18 @@ function UserProfile() {
 }
 ```
 
+<QuickCheck
+  question="Que signifie l'erreur 'Cannot read property of undefined' ?"
+  options={[
+    "React est casse",
+    "Vous essayez d'acceder a une propriete d'une valeur undefined",
+    "Votre ordinateur a un probleme",
+    "Il faut reinstaller Node.js"
+  ]}
+  correctAnswer={1}
+  explanation="Cette erreur signifie que vous essayez d'acceder a une propriete (ex: user.name) alors que la variable (user) est undefined ou null. Solutions : verifier que les donnees existent avec optional chaining (user?.name), ajouter un if de garde, ou initialiser l'etat avec une valeur par defaut."
+/>
+
 ### 2. "Too many re-renders"
 
 **Erreur :**
@@ -177,6 +201,18 @@ function Button() {
   );
 }
 ```
+
+<QuickCheck
+  question="Quelle est la cause de l'erreur 'Too many re-renders' ?"
+  options={[
+    "Le composant a trop de props",
+    "Un appel a setState directement dans le corps du composant (pas dans un handler)",
+    "Le fichier est trop long",
+    "React ne supporte pas autant de composants"
+  ]}
+  correctAnswer={1}
+  explanation="Cette erreur arrive quand vous appelez setState directement dans le render (pas dans un handler ou useEffect), creant une boucle infinie : render -> setState -> re-render -> setState -> ... La solution est de placer setState dans un event handler ou dans useEffect."
+/>
 
 ### 3. "Each child in a list should have a unique key"
 
@@ -479,6 +515,18 @@ function BugReproduction() {
   return <button onClick={() => setCount(count + 1)}>Test</button>;
 }
 ```
+
+<QuickCheck
+  question="Quelle est la meilleure strategie pour isoler un bug dans un composant React ?"
+  options={[
+    "Reecrire tout le composant depuis zero",
+    "Commenter des parties du code jusqu'a ce que l'erreur disparaisse",
+    "Ajouter plus de fonctionnalites et esperer que ca se corrige",
+    "Ignorer le bug et continuer"
+  ]}
+  correctAnswer={1}
+  explanation="Commenter progressivement des parties du code permet d'isoler exactement quelle section cause le probleme. C'est plus rapide que de tout reecrire et plus systematique que de deviner. Une fois le probleme isole, vous pouvez le corriger precisement."
+/>
 
 ### 5. Lire les stack traces
 

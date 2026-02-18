@@ -1,9 +1,9 @@
-# Déploiement sur Vercel
+# Deploiement sur Vercel
 
-Déployer votre application React en production est la dernière étape pour la rendre accessible au monde entier !
+Deployer votre application React en production est la derniere etape pour la rendre accessible en ligne.
 
 <Callout type="info">
-**Vercel** est la plateforme de déploiement recommandée pour les applications React. Elle est gratuite pour les projets personnels et offre un déploiement en un clic.
+**Vercel** est une plateforme de deploiement gratuite pour les projets personnels. Elle detecte automatiquement les projets Vite/React et deploie en quelques clics.
 </Callout>
 
 ## Préparation du projet
@@ -65,9 +65,21 @@ VITE_API_URL=
 VITE_API_KEY=
 ```
 
-Ce fichier PEUT être commité (sans les valeurs sensibles).
+Ce fichier PEUT etre commite (sans les valeurs sensibles).
 
-### 3. Vérifier package.json
+<QuickCheck
+  question="Que faut-il TOUJOURS ajouter au .gitignore ?"
+  options={[
+    "package.json",
+    "src/",
+    ".env (variables d'environnement sensibles)",
+    "README.md"
+  ]}
+  correctAnswer={2}
+  explanation=".env contient des secrets (API keys, tokens) qui ne doivent JAMAIS etre commites. Ajoutez aussi node_modules/ et dist/. En revanche, package.json, src/ et README.md DOIVENT etre commites car ils font partie du projet."
+/>
+
+### 3. Verifier package.json
 
 Assurez-vous que les scripts sont présents :
 
@@ -205,16 +217,28 @@ Si votre application utilise des variables d'environnement :
 
 1. Cliquez sur "Deploy"
 2. Attendez que le build se termine (environ 1-2 minutes)
-3. Votre site est en ligne ! 🎉
+3. Votre site est en ligne !
 
 Vercel vous donne une URL du type :
 ```
 https://your-project.vercel.app
 ```
 
-## Déploiement automatique
+<QuickCheck
+  question="Quelle commande permet de tester le build de production localement ?"
+  options={[
+    "npm run dev",
+    "npm start",
+    "npm run build puis npm run preview",
+    "npm deploy"
+  ]}
+  correctAnswer={2}
+  explanation="npm run build cree les fichiers optimises dans dist/. npm run preview lance un serveur local pour tester ce build. Testez toujours localement avant de deployer pour detecter les erreurs de build (imports manquants, variables d'environnement absentes)."
+/>
 
-**Bonne nouvelle :** Chaque fois que vous pushez du code sur GitHub, Vercel redéploie automatiquement votre site !
+## Deploiement automatique
+
+Chaque fois que vous pushez du code sur GitHub, Vercel redeploie automatiquement votre site.
 
 ```bash
 # Faites des modifications
@@ -357,9 +381,21 @@ git commit -m "Add vercel routing config"
 git push
 ```
 
+<QuickCheck
+  question="Pourquoi faut-il un fichier vercel.json avec des rewrites pour une SPA React ?"
+  options={[
+    "Pour accelerer le site",
+    "Pour que toutes les routes React fonctionnent (pas juste /)",
+    "Pour ajouter du CSS",
+    "Pour configurer la base de donnees"
+  ]}
+  correctAnswer={1}
+  explanation="Une SPA (Single Page Application) gere le routing cote client avec React Router. Sans rewrites, si un utilisateur accede directement a /about, le serveur cherche un fichier /about/index.html qui n'existe pas et retourne une 404. Les rewrites redirigent toutes les URLs vers index.html pour que React Router prenne le relais."
+/>
+
 ### Erreur de build
 
-Si le build échoue sur Vercel :
+Si le build echoue sur Vercel :
 
 1. Regardez les logs dans Vercel Dashboard
 2. Reproduisez localement avec `npm run build`
@@ -392,7 +428,7 @@ Netlify est une alternative à Vercel, tout aussi simple.
 5. Publish directory: `dist`
 6. Deploy !
 
-Les deux plateformes sont excellentes. Choisissez celle que vous préférez !
+Les deux plateformes offrent des fonctionnalites similaires. Choisissez celle que vous preferez.
 
 ## Monitoring et Analytics
 
@@ -450,7 +486,7 @@ Vous savez maintenant :
 - Corrections rapides
 - Testing
 
-Votre application est maintenant **accessible au monde entier** ! 🌍
+Votre application est maintenant **accessible en ligne** !
 </Callout>
 
 ## Ressources

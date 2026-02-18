@@ -1,96 +1,54 @@
 # Collaborer avec l'IA
 
-Maintenant que vous maîtrisez les fondamentaux JavaScript, apprenons à collaborer efficacement avec l'IA.
+Maintenant que vous maitrisez les fondamentaux React, apprenons a collaborer avec l'IA specifiquement pour vos projets React.
 
 <Callout type="info" title="Philosophie du cours">
-**Vous pilotez, l'IA exécute !**
+**Vous pilotez, l'IA execute !**
 
-L'IA est un outil puissant, mais elle ne remplace pas la compréhension. Votre connaissance des concepts JavaScript vous permet de :
-- Valider le code généré
-- Déboguer les erreurs
-- Donner des prompts précis
-- Adapter les solutions à vos besoins
+Votre connaissance de React vous permet de :
+- Valider le code genere
+- Deboguer les erreurs
+- Donner des prompts precis
+- Adapter les solutions a vos besoins
 </Callout>
 
-## Pourquoi les fondamentaux sont essentiels
+## Valider le code React genere par l'IA
 
-### Sans connaissance JavaScript
+Quand l'IA genere du code React, verifiez ces points :
 
-```
-Vous: "Crée-moi une fonction pour filtrer un tableau"
-
-IA: [génère du code]
-
-Vous: ✅ Copier-coller
-      ❌ Erreur... pourquoi ?
-      ❌ Impossible de déboguer
-      ❌ Impossible d'adapter
-```
-
-### Avec connaissance JavaScript
-
-```
-Vous: "Crée une fonction qui utilise .filter() pour garder
-       seulement les utilisateurs majeurs (age >= 18)"
-
-IA: [génère du code]
-
-Vous: ✅ Comprendre le code
-      ✅ Vérifier la syntaxe
-      ✅ Déboguer si nécessaire
-      ✅ Adapter selon vos besoins
-```
-
-<Callout type="success">
-**La différence ?** Avec les fondamentaux, vous pouvez **superviser** l'IA au lieu de la suivre aveuglément.
-</Callout>
-
-## Écrire de meilleurs prompts
-
-### ❌ Prompt vague
-
-```
-"Crée une fonction pour gérer des utilisateurs"
-```
-
-L'IA ne sait pas :
-- Quelle opération ? (ajouter, filtrer, trier)
-- Quelle structure de données ?
-- Quels critères ?
-
-### ✅ Prompt précis
-
-```
-"Crée une fonction filterAdults qui :
-- Prend un tableau d'objets users avec name et age
-- Utilise .filter() pour garder seulement age >= 18
-- Retourne un nouveau tableau
-- Utilise une arrow function"
-```
-
-**Résultat :** Code exact, prêt à utiliser !
-
-<Callout type="tip">
-Plus vous connaissez les concepts (`.filter()`, arrow functions, destructuration), plus vos prompts sont précis.
-</Callout>
-
-## Valider le code généré
-
-### Checklist de validation
-
-Quand l'IA génère du code, vérifiez :
-
-#### 1. **Syntaxe JavaScript**
+### 1. Function components (pas de classes)
 
 ```javascript
-// ❌ L'IA a utilisé var ?
-var count = 0;
+// ❌ L'IA a genere une classe ?
+class MyComponent extends React.Component {
+  render() { return <div>Hello</div>; }
+}
 
-// ✅ Corrigez en const ou let
-const count = 0;
+// ✅ Corrigez en function component
+function MyComponent() {
+  return <div>Hello</div>;
+}
 ```
 
-#### 2. **Immutabilité**
+### 2. Hooks au top level
+
+```javascript
+// ❌ Hook dans une condition
+function Component({ isLoggedIn }) {
+  if (isLoggedIn) {
+    const [user, setUser] = useState(null); // ❌ Hook conditionnel !
+  }
+}
+
+// ✅ Hooks toujours en haut du composant
+function Component({ isLoggedIn }) {
+  const [user, setUser] = useState(null); // ✅ Au top level
+  if (!isLoggedIn) return <p>Please login</p>;
+  return <p>Hello {user?.name}</p>;
+}
+```
+
+### 3. Immutabilite de l'etat
 
 ```javascript
 // ❌ Mutation du tableau original
@@ -105,443 +63,177 @@ const addItem = (items, newItem) => {
 };
 ```
 
-#### 3. **Destructuration**
+### 4. Gestion d'erreur dans les fetch
 
 ```javascript
-// ❌ Code verbeux
-const getFullName = (user) => {
-  return user.firstName + ' ' + user.lastName;
-};
+// ❌ Pas de gestion d'erreur
+useEffect(() => {
+  fetch('/api/users')
+    .then(res => res.json())
+    .then(data => setUsers(data));
+}, []);
 
-// ✅ Avec destructuration
-const getFullName = ({ firstName, lastName }) => {
-  return `${firstName} ${lastName}`;
-};
+// ✅ Gestion loading + error
+useEffect(() => {
+  setLoading(true);
+  fetch('/api/users')
+    .then(res => {
+      if (!res.ok) throw new Error('Erreur HTTP');
+      return res.json();
+    })
+    .then(data => {
+      setUsers(data);
+      setLoading(false);
+    })
+    .catch(err => {
+      setError(err.message);
+      setLoading(false);
+    });
+}, []);
 ```
 
-#### 4. **Méthodes de tableaux**
+<QuickCheck
+  question="Quel pattern l'IA genere-t-elle parfois et qui est obsolete ?"
+  options={[
+    "Les function components",
+    "Les class components (class extends React.Component)",
+    "Les hooks (useState, useEffect)",
+    "Les arrow functions"
+  ]}
+  correctAnswer={1}
+  explanation="L'IA genere parfois des class components (ancien style React). Depuis React 16.8, les function components avec hooks sont le standard. Si vous voyez 'class MyComponent extends React.Component', demandez une version avec function component et hooks."
+/>
 
-```javascript
-// ❌ L'IA utilise une boucle for ?
-const doubled = [];
-for (let i = 0; i < numbers.length; i++) {
-  doubled.push(numbers[i] * 2);
-}
+## Exemples de prompts pour React
 
-// ✅ Utilisez .map()
-const doubled = numbers.map(n => n * 2);
+### Creer un composant
+
+```
+"Cree un composant React SearchBar avec :
+- Un input controle (useState)
+- Un bouton clear qui vide l'input
+- Une prop onSearch appelee quand on appuie sur Enter
+- Destructuration des props"
 ```
 
-#### 5. **Arrow functions**
+### Deboguer une erreur
 
-```javascript
-// ❌ Fonction classique
-function add(a, b) {
-  return a + b;
-}
-
-// ✅ Arrow function moderne
-const add = (a, b) => a + b;
+```
+"J'ai cette erreur : 'Cannot read property map of undefined'
+Voici mon code :
+[coller le code]
+Qu'est-ce qui cause cette erreur ?"
 ```
 
-#### 6. **Template literals**
+### Creer un custom hook
 
-```javascript
-// ❌ Concaténation avec +
-const message = 'Hello ' + name + ', you are ' + age + ' years old';
-
-// ✅ Template literals
-const message = `Hello ${name}, you are ${age} years old`;
+```
+"Cree un custom hook useLocalStorage qui :
+- Prend (key, initialValue) comme parametres
+- Retourne [value, setValue] comme useState
+- Persiste automatiquement dans localStorage
+- Charge la valeur au premier rendu"
 ```
 
-## Déboguer les suggestions de l'IA
+### Demander une review
 
-### Erreur courante : Mauvaise méthode de tableau
-
-```javascript
-// ❌ L'IA utilise .forEach() pour transformer
-const doubled = [];
-numbers.forEach(n => {
-  doubled.push(n * 2);
-});
-
-// ✅ Utilisez .map() pour transformer
-const doubled = numbers.map(n => n * 2);
+```
+"Peux-tu review ce composant React et suggerer des ameliorations ?
+[coller le code]
+Focus sur :
+- Les bonnes pratiques React
+- La gestion d'erreur
+- La lisibilite"
 ```
 
-### Erreur courante : Mutation d'objet
+<QuickCheck
+  question="Quel type de prompt donne les meilleurs resultats avec l'IA ?"
+  options={[
+    "Vague : 'Cree un composant'",
+    "Specifique : 'Cree un composant SearchBar avec un input controle, un bouton clear et une prop onSearch'",
+    "Tres long : 'Cree une application complete de A a Z'",
+    "Sans contexte : 'Pourquoi ca marche pas ?'"
+  ]}
+  correctAnswer={1}
+  explanation="Un prompt specifique avec les details techniques (quel hook utiliser, quelles props, quel comportement) donne un resultat utilisable directement. Un prompt vague donne du code generique, et un prompt trop ambitieux donne du code inutilisable."
+/>
 
-```javascript
-// ❌ Modifie l'objet original
-const updateUser = (user, newAge) => {
-  user.age = newAge;
-  return user;
-};
+## Ameliorer du code avec l'IA
 
-// ✅ Crée un nouvel objet
-const updateUser = (user, newAge) => {
-  return { ...user, age: newAge };
-};
-```
+L'IA est utile pour ameliorer du code existant par iterations :
 
-### Erreur courante : Pas de valeur par défaut
+### Iteration 1 : Code fonctionnel
 
-```javascript
-// ❌ Erreur si country n'existe pas
-const getCountry = ({ country }) => {
-  return country.toUpperCase();
-};
+```jsx
+// Votre code qui fonctionne mais manque de gestion d'erreur
+function UserList() {
+  const [users, setUsers] = useState([]);
 
-// ✅ Avec valeur par défaut
-const getCountry = ({ country = 'France' }) => {
-  return country.toUpperCase();
-};
-```
+  useEffect(() => {
+    fetch('/api/users')
+      .then(res => res.json())
+      .then(data => setUsers(data));
+  }, []);
 
-<Callout type="warning">
-**Important :** L'IA fait des erreurs ! Votre rôle est de les détecter grâce à vos connaissances.
-</Callout>
-
-## Exemples pratiques
-
-### Exemple 1 : Filtrer des données
-
-**Votre prompt :**
-```
-"Crée une fonction filterExpensive qui :
-- Prend un tableau de produits (objets avec name et price)
-- Utilise .filter() pour garder seulement les produits > 100€
-- Retourne un nouveau tableau
-- Utilise une arrow function"
-```
-
-**Vérification :**
-- ✅ `.filter()` utilisé (pas de boucle for) ?
-- ✅ Arrow function ?
-- ✅ Pas de mutation du tableau original ?
-- ✅ Return explicite ou implicite ?
-
-### Exemple 2 : Transformer des données
-
-**Votre prompt :**
-```
-"Crée une fonction extractNames qui :
-- Prend un tableau d'utilisateurs (objets avec id, name, email)
-- Utilise .map() pour extraire seulement les noms
-- Retourne un tableau de strings
-- Utilise une arrow function avec return implicite"
-```
-
-**Vérification :**
-- ✅ `.map()` utilisé ?
-- ✅ Return implicite (pas d'accolades) ?
-- ✅ Arrow function ?
-
-### Exemple 3 : Calculer une somme
-
-**Votre prompt :**
-```
-"Crée une fonction calculateTotal qui :
-- Prend un tableau de produits avec price
-- Utilise .reduce() pour calculer le prix total
-- La valeur initiale est 0
-- Utilise une arrow function"
-```
-
-**Vérification :**
-- ✅ `.reduce()` utilisé ?
-- ✅ Valeur initiale fournie (0) ?
-- ✅ Accumulateur correct ?
-
-## Améliorer progressivement
-
-L'IA peut vous aider à améliorer du code existant.
-
-### Itération 1 : Code fonctionnel
-
-```javascript
-function getUserInfo(user) {
-  return user.name + ' (' + user.age + ' ans)';
+  return <ul>{users.map(u => <li key={u.id}>{u.name}</li>)}</ul>;
 }
 ```
 
-### Itération 2 : Avec vos connaissances
+**Prompt :** "Ajoute la gestion de loading et error a ce composant"
 
-**Prompt :** "Améliore ce code avec arrow function et template literals"
+### Iteration 2 : Extraire dans un hook
 
-```javascript
-const getUserInfo = (user) => {
-  return `${user.name} (${user.age} ans)`;
-};
-```
+**Prompt :** "Extrais la logique de fetch dans un custom hook useFetch"
 
-### Itération 3 : Encore mieux
+### Iteration 3 : Ajouter une fonctionnalite
 
-**Prompt :** "Ajoute la destructuration et le return implicite"
-
-```javascript
-const getUserInfo = ({ name, age }) => `${name} (${age} ans)`;
-```
-
-## Questions à vous poser
-
-Avant d'utiliser du code généré par l'IA, demandez-vous :
-
-### 1. **Compréhension**
-- ❓ Est-ce que je comprends ce que fait chaque ligne ?
-- ❓ Si quelqu'un me demande d'expliquer, je peux ?
-
-### 2. **Qualité**
-- ❓ Le code suit-il les bonnes pratiques JavaScript ?
-- ❓ Y a-t-il des mutations directes d'objets/tableaux ?
-- ❓ Les méthodes de tableaux sont-elles appropriées ?
-
-### 3. **Adaptation**
-- ❓ Puis-je adapter ce code à mes besoins ?
-- ❓ Que faire si j'ai un bug ?
-
-### 4. **Performance**
-- ❓ Le code est-il trop complexe pour ce que je veux ?
-- ❓ Y a-t-il une solution plus simple ?
-
-<Callout type="error" title="Signal d'alarme">
-Si vous répondez "non" à la question 1 (compréhension), **STOP** !
-
-Ne copiez jamais du code que vous ne comprenez pas. Demandez à l'IA d'expliquer ou simplifier.
-</Callout>
-
-## Bonnes pratiques
-
-### ✅ À faire
-
-1. **Comprendre avant de copier**
-   - Lisez le code ligne par ligne
-   - Identifiez les concepts JS utilisés
-   - Comprenez la logique
-
-2. **Tester systématiquement**
-   - Vérifiez que ça marche
-   - Testez les cas limites (tableau vide, undefined, etc.)
-   - Utilisez `console.log()` pour déboguer
-
-3. **Adapter à votre style**
-   - Renommez les variables si besoin
-   - Ajustez le formatage
-   - Simplifiez si possible
-
-4. **Demander des explications**
-   - "Pourquoi utilises-tu .filter() ici ?"
-   - "Explique-moi cette ligne"
-   - "Quelle alternative existe ?"
-
-### ❌ À éviter
-
-1. **Copier-coller aveugle**
-   - Ne pas comprendre = problèmes garantis
-
-2. **Ignorer les erreurs**
-   - Lisez les messages d'erreur
-   - Utilisez la console du navigateur
-
-3. **Accepter du code obsolète**
-   - Vérifiez que l'IA utilise les pratiques modernes
-   - Pas de `var`, pas de `function` quand arrow function est possible
-
-4. **Sur-complexifier**
-   - L'IA peut proposer du code trop complexe
-   - Demandez une version plus simple
-
-## Exercice pratique
-
-<Exercise
-  title="Valider du code IA"
-  difficulty="medium"
-  solution={
-    <CodeBlock language="javascript">{`// ✅ Code corrigé
-
-const processUsers = (users = []) => {
-  // Filtrer les adultes
-  const adults = users.filter(user => user.age >= 18);
-
-  // Extraire les noms
-  const names = adults.map(({ name }) => name);
-
-  // Trier alphabétiquement
-  const sorted = [...names].sort();
-
-  return sorted;
-};
-
-// Test
-const users = [
-  { name: 'Alice', age: 25 },
-  { name: 'Bob', age: 17 },
-  { name: 'Charlie', age: 30 }
-];
-
-console.log(processUsers(users)); // ['Alice', 'Charlie']`}</CodeBlock>
-  }
->
-L'IA vous a généré ce code. Identifiez les problèmes et corrigez-les :
-
-<CodeBlock language="javascript">{`function processUsers(users) {
-  var result = [];
-
-  // Filtrer les adultes
-  for (var i = 0; i < users.length; i++) {
-    if (users[i].age >= 18) {
-      result.push(users[i]);
-    }
-  }
-
-  // Extraire les noms
-  var names = [];
-  for (var j = 0; j < result.length; j++) {
-    names.push(result[j].name);
-  }
-
-  // Trier alphabétiquement
-  names.sort();
-
-  return names;
-}
-
-// Test
-const users = [
-  { name: 'Alice', age: 25 },
-  { name: 'Bob', age: 17 },
-  { name: 'Charlie', age: 30 }
-];
-
-console.log(processUsers(users));`}</CodeBlock>
-
-**Problèmes à trouver :**
-- `var` au lieu de `const`/`let`
-- `function` au lieu d'arrow function
-- Boucles `for` au lieu de `.filter()` et `.map()`
-- `.sort()` mute le tableau (pas de spread)
-- Pas de destructuration
-- Pas de valeur par défaut pour le paramètre
-</Exercise>
-
-## Collaboration avec l'IA et TypeScript
-
-Maintenant que vous connaissez les bases de TypeScript, vous pouvez demander à l'IA de générer du code typé !
-
-### ✅ Prompts incluant TypeScript
-
-```
-"Crée une interface User avec name (string) et age (number),
-puis une fonction filterAdults qui prend un tableau de User
-et retourne uniquement ceux qui ont age >= 18"
-```
-
-**L'IA générera** :
-```typescript
-interface User {
-  name: string;
-  age: number;
-}
-
-const filterAdults = (users: User[]): User[] => {
-  return users.filter(user => user.age >= 18);
-};
-```
+**Prompt :** "Ajoute une barre de recherche pour filtrer les utilisateurs par nom"
 
 <Callout type="tip">
-**Avantage** : En spécifiant les types dans votre prompt, l'IA génère directement du code TypeScript propre et typé !
+**Avantage de l'approche iterative :** Vous comprenez chaque etape du code car vous partez d'une base que vous maitrisez. L'IA ajoute une fonctionnalite a la fois, ce qui est plus facile a valider qu'un code complet genere d'un coup.
 </Callout>
 
-### Valider le code TypeScript généré
+## Questions a vous poser
 
-Quand l'IA génère du code TypeScript, vérifiez :
+Avant d'utiliser du code genere par l'IA :
 
-#### 1. **Types explicites vs inférés**
+### 1. Comprehension
+- Est-ce que je comprends ce que fait chaque ligne ?
+- Si quelqu'un me demande d'expliquer, je peux ?
 
-```typescript
-// ❌ Type manquant sur le paramètre
-const greet = (name) => `Hello ${name}`;
+### 2. Qualite
+- Le code suit-il les bonnes pratiques React ?
+- Y a-t-il des mutations directes d'objets/tableaux ?
+- Les hooks respectent-ils les regles (top level, pas conditionnel) ?
 
-// ✅ Type explicite
-const greet = (name: string) => `Hello ${name}`;
+### 3. Adaptation
+- Puis-je adapter ce code a mes besoins ?
+- Que faire si j'ai un bug ?
 
-// ✅ Ou avec type de retour
-const greet = (name: string): string => `Hello ${name}`;
-```
+<Callout type="error" title="Signal d'alarme">
+Si vous repondez "non" a la question 1 (comprehension), **STOP** !
 
-#### 2. **Interfaces pour les objets**
-
-```typescript
-// ❌ Pas de type pour l'objet
-const createUser = (name, age) => {
-  return { name, age };
-};
-
-// ✅ Interface définie
-interface User {
-  name: string;
-  age: number;
-}
-
-const createUser = (name: string, age: number): User => {
-  return { name, age };
-};
-```
-
-#### 3. **Types pour les tableaux**
-
-```typescript
-// ❌ Type any implicite
-const numbers = [1, 2, 3];
-numbers.push('hello'); // Aucune erreur !
-
-// ✅ Type explicite
-const numbers: number[] = [1, 2, 3];
-numbers.push('hello'); // ❌ Erreur TypeScript !
-```
-
-## Pour la suite : React avec TypeScript
-
-<Callout type="tip" title="Séance 2 - React avec TypeScript">
-À la **Séance 2**, vous apprendrez React avec TypeScript. Toutes ces compétences seront directement utilisées :
-
-- **Arrow functions** → Composants React
-- **Destructuration** → Props et hooks
-- **`.map()`** → Afficher des listes
-- **Spread operator** → Mise à jour d'état
-- **Template literals** → JSX dynamique
-- **Interfaces** → Types pour les props et le state
-- **Types** → Sécurité et autocomplétion
-
-Avec vos bases solides en JavaScript **et TypeScript**, React sera beaucoup plus facile à apprendre !
+Ne copiez jamais du code que vous ne comprenez pas. Demandez a l'IA d'expliquer ou de simplifier.
 </Callout>
 
-## Ressources pour progresser
+<QuickCheck
+  question="Quelle est la meilleure approche pour utiliser l'IA quand vous developpez ?"
+  options={[
+    "Demander tout le code d'un coup et copier-coller",
+    "Proceder par iterations : code de base, puis ameliorations une par une",
+    "Ne jamais utiliser l'IA",
+    "Laisser l'IA choisir l'architecture de votre projet"
+  ]}
+  correctAnswer={1}
+  explanation="L'approche iterative est la plus efficace : commencez par un code de base que vous comprenez, puis demandez des ameliorations une par une (gestion d'erreur, refactoring en hook, ajout de fonctionnalite). Vous gardez le controle et comprenez chaque changement."
+/>
 
-<Resources resources={[
-  {
-    title: "MDN JavaScript Guide",
-    description: "La référence pour vérifier la syntaxe et les bonnes pratiques",
-    url: "https://developer.mozilla.org/docs/Web/JavaScript/Guide",
-    type: "doc"
-  },
-  {
-    title: "JavaScript.info",
-    description: "Tutoriel moderne complet sur JavaScript",
-    url: "https://javascript.info/",
-    type: "tutorial"
-  },
-  {
-    title: "Console du navigateur",
-    description: "Testez du code rapidement avec F12 → Console",
-    url: "https://developer.mozilla.org/docs/Learn/Common_questions/What_are_browser_developer_tools",
-    type: "doc"
-  }
-]} />
+## Recapitulatif
 
-<Callout type="success" title="Vous êtes prêts !">
-Avec vos connaissances JavaScript et ces techniques, vous pouvez maintenant collaborer efficacement avec l'IA.
-
-**Rappelez-vous :** L'IA est un assistant, pas un pilote automatique. C'est **vous** qui décidez si le code est bon !
+<Callout type="success" title="Points cles">
+- Validez toujours le code React genere (function components, hooks au top level, immutabilite)
+- Ecrivez des prompts specifiques avec details techniques
+- Ameliorez par iterations plutot que de demander tout d'un coup
+- Verifiez la gestion d'erreur et de chargement
+- Ne copiez jamais du code que vous ne comprenez pas
 </Callout>
-

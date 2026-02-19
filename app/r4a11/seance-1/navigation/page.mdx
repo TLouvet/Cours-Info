@@ -1,0 +1,553 @@
+# Navigation
+
+La navigation mobile est fondamentalement différente de la navigation web. Sur le web, vous changez d'URL. Sur mobile, vous **empiler des écrans** ou **basculez entre des onglets**. Expo Router gère tout cela avec un système de routing basé sur les fichiers.
+
+## Navigation web vs navigation mobile
+
+### Sur le web (R4A10)
+
+En R4A10, vous avez utilisé **React Router** pour naviguer entre des pages via des URLs :
+
+```jsx
+// React Router (web) - R4A10
+<Routes>
+  <Route path="/" element={<Home />} />
+  <Route path="/about" element={<About />} />
+  <Route path="/users/:id" element={<UserDetail />} />
+</Routes>
+```
+
+La navigation web repose sur des **URLs** : chaque page a une adresse unique, et le navigateur gère l'historique avec les boutons Précédent/Suivant.
+
+### Sur mobile (R4A11)
+
+Sur mobile, la navigation utilise des **patterns physiques** spécifiques aux smartphones :
+
+- **Stack (pile)** : les écrans s'empilent les uns sur les autres, avec un geste de swipe ou un bouton retour pour revenir en arrière
+- **Tabs (onglets)** : une barre d'onglets en bas de l'écran permet de basculer entre les sections principales
+- **Drawer (tiroir)** : un menu latéral glissant (moins utilisé aujourd'hui)
+
+```
+Stack :                    Tabs :
+┌─────────┐               ┌─────────────────┐
+│ Détail  │ ← swipe back  │                 │
+│─────────│               │   Contenu       │
+│ Liste   │               │                 │
+│─────────│               │─────────────────│
+│ Accueil │               │ 🏠  📋  ⚙️     │
+└─────────┘               └─────────────────┘
+```
+
+<QuickCheck
+  question="Quelle est la principale différence entre la navigation web et la navigation mobile ?"
+  options={[
+    "La navigation mobile est plus lente",
+    "Le web utilise des URLs, le mobile utilise des piles d'écrans et des onglets avec des gestes physiques",
+    "La navigation mobile ne supporte pas le bouton retour",
+    "Il n'y a aucune différence significative"
+  ]}
+  correctAnswer={1}
+  explanation="Sur le web, la navigation repose sur des URLs et l'historique du navigateur. Sur mobile, la navigation utilise des patterns physiques : des piles d'écrans (stack) avec un geste de swipe pour revenir, des onglets (tabs) en bas de l'écran, etc. Expo Router permet de définir ces patterns facilement."
+/>
+
+## Expo Router : routing basé sur les fichiers
+
+Expo Router utilise un système de **routing basé sur les fichiers**, similaire à Next.js. Chaque fichier dans le dossier `app/` correspond à un écran.
+
+### Principe de base
+
+```
+app/
+├── _layout.tsx         → Layout racine (configuration)
+├── index.tsx           → Écran d'accueil (route "/")
+├── about.tsx           → Écran À propos (route "/about")
+└── settings.tsx        → Écran Paramètres (route "/settings")
+```
+
+Chaque fichier exporte un composant par défaut qui devient un **écran** :
+
+```jsx
+// app/about.tsx
+import { View, Text, StyleSheet } from 'react-native';
+
+export default function AboutScreen() {
+  return (
+    <View style={styles.container}>
+      <Text style={styles.title}>À propos</Text>
+      <Text>Cette application est un exemple R4A11.</Text>
+    </View>
+  );
+}
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 16,
+  },
+  title: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    marginBottom: 12,
+  },
+});
+```
+
+### Comparaison avec React Router (R4A10)
+
+<div className="overflow-x-auto my-6">
+  <table className="min-w-full border border-gray-200 dark:border-gray-700">
+    <thead className="bg-gray-50 dark:bg-gray-800">
+      <tr>
+        <th className="px-4 py-3 text-left text-sm font-semibold text-gray-900 dark:text-gray-100 border-b border-gray-200 dark:border-gray-700"></th>
+        <th className="px-4 py-3 text-left text-sm font-semibold text-gray-900 dark:text-gray-100 border-b border-gray-200 dark:border-gray-700">React Router (web)</th>
+        <th className="px-4 py-3 text-left text-sm font-semibold text-gray-900 dark:text-gray-100 border-b border-gray-200 dark:border-gray-700">Expo Router (mobile)</th>
+      </tr>
+    </thead>
+    <tbody className="bg-white dark:bg-gray-900 divide-y divide-gray-200 dark:divide-gray-700">
+      <tr>
+        <td className="px-4 py-3 text-sm font-medium text-gray-900 dark:text-gray-100">Définition des routes</td>
+        <td className="px-4 py-3 text-sm text-gray-700 dark:text-gray-300">Configuration dans le code (JSX)</td>
+        <td className="px-4 py-3 text-sm text-gray-700 dark:text-gray-300">Structure de fichiers dans <code>app/</code></td>
+      </tr>
+      <tr>
+        <td className="px-4 py-3 text-sm font-medium text-gray-900 dark:text-gray-100">Lien</td>
+        <td className="px-4 py-3 text-sm text-gray-700 dark:text-gray-300"><code>&lt;Link to="/about"&gt;</code></td>
+        <td className="px-4 py-3 text-sm text-gray-700 dark:text-gray-300"><code>&lt;Link href="/about"&gt;</code></td>
+      </tr>
+      <tr>
+        <td className="px-4 py-3 text-sm font-medium text-gray-900 dark:text-gray-100">Navigation programmatique</td>
+        <td className="px-4 py-3 text-sm text-gray-700 dark:text-gray-300"><code>useNavigate()</code></td>
+        <td className="px-4 py-3 text-sm text-gray-700 dark:text-gray-300"><code>useRouter()</code></td>
+      </tr>
+      <tr>
+        <td className="px-4 py-3 text-sm font-medium text-gray-900 dark:text-gray-100">Route dynamique</td>
+        <td className="px-4 py-3 text-sm text-gray-700 dark:text-gray-300"><code>/users/:id</code></td>
+        <td className="px-4 py-3 text-sm text-gray-700 dark:text-gray-300"><code>app/users/[id].tsx</code></td>
+      </tr>
+      <tr>
+        <td className="px-4 py-3 text-sm font-medium text-gray-900 dark:text-gray-100">Layout</td>
+        <td className="px-4 py-3 text-sm text-gray-700 dark:text-gray-300">Composant wrapper manuel</td>
+        <td className="px-4 py-3 text-sm text-gray-700 dark:text-gray-300">Fichier <code>_layout.tsx</code></td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<QuickCheck
+  question="Comment crée-t-on une route /settings dans Expo Router ?"
+  options={[
+    "En ajoutant <Route path='/settings'> dans un fichier de configuration",
+    "En créant un fichier app/settings.tsx",
+    "En appelant router.register('/settings')",
+    "En modifiant le fichier app.json"
+  ]}
+  correctAnswer={1}
+  explanation="Expo Router utilise le routing basé sur les fichiers : créer un fichier app/settings.tsx crée automatiquement la route /settings. Le composant exporté par défaut devient l'écran. Pas besoin de configuration dans un fichier central."
+/>
+
+## Stack Navigation (pile d'écrans)
+
+La **Stack Navigation** empile les écrans les uns sur les autres. C'est le pattern le plus courant : vous naviguez vers un écran, et vous pouvez revenir en arrière avec le geste de swipe (iOS) ou le bouton retour (Android).
+
+### Configuration avec _layout.tsx
+
+Le fichier `_layout.tsx` définit le type de navigation pour un groupe d'écrans :
+
+```jsx
+// app/_layout.tsx
+import { Stack } from 'expo-router';
+
+export default function RootLayout() {
+  return (
+    <Stack>
+      <Stack.Screen
+        name="index"
+        options={{ title: 'Accueil' }}
+      />
+      <Stack.Screen
+        name="about"
+        options={{ title: 'À propos' }}
+      />
+      <Stack.Screen
+        name="settings"
+        options={{ title: 'Paramètres' }}
+      />
+    </Stack>
+  );
+}
+```
+
+### Options de l'en-tête (header)
+
+```jsx
+<Stack.Screen
+  name="index"
+  options={{
+    title: 'Mon App',                    // Titre dans la barre
+    headerStyle: { backgroundColor: '#f5f5f5' }, // Fond de la barre
+    headerTintColor: '#333',             // Couleur du texte et des icônes
+    headerTitleStyle: { fontWeight: 'bold' },    // Style du titre
+    headerShown: true,                   // Afficher/masquer la barre (true par défaut)
+  }}
+/>
+```
+
+### Naviguer entre les écrans
+
+#### Avec le composant Link
+
+```jsx
+import { Link } from 'expo-router';
+import { View, Text, StyleSheet } from 'react-native';
+
+export default function HomeScreen() {
+  return (
+    <View style={styles.container}>
+      <Text style={styles.title}>Accueil</Text>
+
+      {/* Lien vers l'écran About */}
+      <Link href="/about" style={styles.link}>
+        <Text style={styles.linkText}>Aller à À propos</Text>
+      </Link>
+
+      {/* Lien vers l'écran Settings */}
+      <Link href="/settings" style={styles.link}>
+        <Text style={styles.linkText}>Aller aux Paramètres</Text>
+      </Link>
+    </View>
+  );
+}
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    gap: 16,
+  },
+  title: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    marginBottom: 24,
+  },
+  link: {
+    backgroundColor: '#0066cc',
+    paddingHorizontal: 24,
+    paddingVertical: 12,
+    borderRadius: 8,
+  },
+  linkText: {
+    color: '#fff',
+    fontSize: 16,
+    fontWeight: '600',
+  },
+});
+```
+
+#### Navigation programmatique avec useRouter
+
+```jsx
+import { useRouter } from 'expo-router';
+import { View, Text, Pressable, StyleSheet } from 'react-native';
+
+export default function HomeScreen() {
+  const router = useRouter();
+
+  function handleNavigate() {
+    router.push('/about');      // Ajouter un écran à la pile
+  }
+
+  function handleReplace() {
+    router.replace('/settings'); // Remplacer l'écran actuel (pas de retour)
+  }
+
+  function handleGoBack() {
+    router.back();               // Revenir à l'écran précédent
+  }
+
+  return (
+    <View style={styles.container}>
+      <Pressable onPress={handleNavigate} style={styles.button}>
+        <Text style={styles.buttonText}>Aller à About (push)</Text>
+      </Pressable>
+
+      <Pressable onPress={handleReplace} style={styles.button}>
+        <Text style={styles.buttonText}>Remplacer par Settings</Text>
+      </Pressable>
+
+      <Pressable onPress={handleGoBack} style={styles.button}>
+        <Text style={styles.buttonText}>Retour</Text>
+      </Pressable>
+    </View>
+  );
+}
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    gap: 12,
+  },
+  button: {
+    backgroundColor: '#0066cc',
+    paddingHorizontal: 24,
+    paddingVertical: 12,
+    borderRadius: 8,
+  },
+  buttonText: {
+    color: '#fff',
+    fontSize: 16,
+  },
+});
+```
+
+<Callout type="info" title="push vs replace vs back">
+- **`router.push('/about')`** : ajoute l'écran About à la pile. L'utilisateur peut revenir en arrière.
+- **`router.replace('/settings')`** : remplace l'écran actuel par Settings. L'utilisateur ne peut pas revenir en arrière (utile après une connexion réussie).
+- **`router.back()`** : retourne à l'écran précédent (comme le bouton retour).
+</Callout>
+
+<QuickCheck
+  question="Quelle est la différence entre router.push() et router.replace() ?"
+  options={[
+    "push est plus rapide que replace",
+    "push ajoute un écran à la pile (retour possible), replace remplace l'écran actuel (pas de retour)",
+    "replace est pour les onglets, push pour le stack",
+    "Il n'y a aucune différence"
+  ]}
+  correctAnswer={1}
+  explanation="router.push() empile un nouvel écran : l'utilisateur peut revenir avec un geste de swipe ou le bouton retour. router.replace() remplace l'écran actuel dans la pile : l'utilisateur ne peut pas revenir en arrière. replace est utile après une connexion (on ne veut pas revenir à l'écran de login)."
+/>
+
+## Tab Navigation (onglets)
+
+La **Tab Navigation** affiche une barre d'onglets en bas de l'écran. C'est le pattern utilisé par la plupart des applications (Instagram, Twitter, etc.).
+
+### Structure de fichiers
+
+Les onglets sont définis dans un dossier avec des **parenthèses** (groupe de routes) :
+
+```
+app/
+├── _layout.tsx              → Layout racine (Stack)
+├── (tabs)/                  → Groupe d'onglets
+│   ├── _layout.tsx          → Configuration des onglets
+│   ├── index.tsx            → Onglet Accueil
+│   ├── search.tsx           → Onglet Recherche
+│   └── profile.tsx          → Onglet Profil
+└── details/[id].tsx         → Écran détail (hors onglets, dans le stack)
+```
+
+### Configuration des onglets
+
+```jsx
+// app/(tabs)/_layout.tsx
+import { Tabs } from 'expo-router';
+import { Ionicons } from '@expo/vector-icons';
+
+export default function TabLayout() {
+  return (
+    <Tabs
+      screenOptions={{
+        tabBarActiveTintColor: '#0066cc',
+        tabBarInactiveTintColor: '#999',
+      }}
+    >
+      <Tabs.Screen
+        name="index"
+        options={{
+          title: 'Accueil',
+          tabBarIcon: ({ color, size }) => (
+            <Ionicons name="home" size={size} color={color} />
+          ),
+        }}
+      />
+      <Tabs.Screen
+        name="search"
+        options={{
+          title: 'Recherche',
+          tabBarIcon: ({ color, size }) => (
+            <Ionicons name="search" size={size} color={color} />
+          ),
+        }}
+      />
+      <Tabs.Screen
+        name="profile"
+        options={{
+          title: 'Profil',
+          tabBarIcon: ({ color, size }) => (
+            <Ionicons name="person" size={size} color={color} />
+          ),
+        }}
+      />
+    </Tabs>
+  );
+}
+```
+
+<Callout type="tip" title="Ionicons">
+`@expo/vector-icons` est inclus par défaut dans les projets Expo. Il fournit des milliers d'icônes via plusieurs bibliothèques (Ionicons, MaterialIcons, FontAwesome, etc.). Consultez [icons.expo.fyi](https://icons.expo.fyi) pour parcourir les icônes disponibles.
+</Callout>
+
+### Layout racine avec Tabs et Stack
+
+Pour combiner onglets et navigation par pile (ex : onglet Accueil qui pousse un écran détail) :
+
+```jsx
+// app/_layout.tsx
+import { Stack } from 'expo-router';
+
+export default function RootLayout() {
+  return (
+    <Stack>
+      <Stack.Screen
+        name="(tabs)"
+        options={{ headerShown: false }}
+      />
+      <Stack.Screen
+        name="details/[id]"
+        options={{ title: 'Détails' }}
+      />
+    </Stack>
+  );
+}
+```
+
+Avec cette structure, les onglets sont la vue principale, et les écrans détail s'affichent au-dessus (empilés) quand on navigue vers eux.
+
+<QuickCheck
+  question="Comment définir les onglets d'une application avec Expo Router ?"
+  options={[
+    "En ajoutant des <Tab> dans le fichier App.tsx",
+    "En créant un dossier (tabs)/ avec un _layout.tsx qui utilise le composant <Tabs>",
+    "En configurant les onglets dans app.json",
+    "En installant un package séparé react-native-tabs"
+  ]}
+  correctAnswer={1}
+  explanation="Expo Router utilise les dossiers entre parenthèses pour les groupes de navigation. Le dossier (tabs)/ contient les écrans des onglets, et son _layout.tsx configure la barre d'onglets avec le composant <Tabs>. Chaque fichier dans (tabs)/ devient un onglet."
+/>
+
+## Routes dynamiques
+
+Les routes dynamiques utilisent des **crochets** dans le nom du fichier, comme en R4A10 avec React Router :
+
+```
+app/
+├── users/
+│   ├── [id].tsx           → Route dynamique : /users/1, /users/42, etc.
+│   └── index.tsx          → Route : /users
+```
+
+```jsx
+// app/users/[id].tsx
+import { useLocalSearchParams } from 'expo-router';
+import { View, Text, StyleSheet } from 'react-native';
+
+export default function UserDetailScreen() {
+  // Récupérer le paramètre dynamique
+  const { id } = useLocalSearchParams();
+
+  return (
+    <View style={styles.container}>
+      <Text style={styles.title}>Utilisateur #{id}</Text>
+    </View>
+  );
+}
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  title: {
+    fontSize: 24,
+    fontWeight: 'bold',
+  },
+});
+```
+
+Pour naviguer vers cette route :
+
+```jsx
+import { Link } from 'expo-router';
+
+// Avec Link
+<Link href="/users/42">
+  <Text>Voir utilisateur 42</Text>
+</Link>
+
+// Avec useRouter
+const router = useRouter();
+router.push('/users/42');
+```
+
+<Callout type="info" title="useLocalSearchParams vs useParams">
+En R4A10 avec React Router, vous utilisiez `useParams()`. En Expo Router, c'est `useLocalSearchParams()`. Le principe est le même : récupérer les paramètres dynamiques de la route.
+
+```jsx
+// React Router (web)
+const { id } = useParams();
+
+// Expo Router (mobile)
+const { id } = useLocalSearchParams();
+```
+</Callout>
+
+<QuickCheck
+  question="Comment créer une route dynamique /products/42 avec Expo Router ?"
+  options={[
+    "En créant un fichier app/products/42.tsx",
+    "En créant un fichier app/products/[id].tsx",
+    "En ajoutant une configuration dans app.json",
+    "En utilisant router.addRoute('/products/:id')"
+  ]}
+  correctAnswer={1}
+  explanation="Les routes dynamiques dans Expo Router utilisent des crochets dans le nom du fichier : [id].tsx. Le fichier app/products/[id].tsx correspond aux routes /products/1, /products/42, etc. On récupère le paramètre avec useLocalSearchParams()."
+/>
+
+## À retenir
+
+<Callout type="success" title="Comprendre, pas mémoriser">
+**Navigation mobile :**
+- **Stack** : écrans empilés, swipe pour revenir. Pattern principal.
+- **Tabs** : barre d'onglets en bas, sections principales de l'app.
+
+**Expo Router :**
+- Routing basé sur les fichiers (comme Next.js)
+- `_layout.tsx` configure le type de navigation (Stack ou Tabs)
+- `Link` ou `useRouter()` pour naviguer entre les écrans
+- `[param].tsx` pour les routes dynamiques
+- `useLocalSearchParams()` pour récupérer les paramètres
+
+**Du web au mobile :**
+- `<Link to="/about">` (React Router) devient `<Link href="/about">` (Expo Router)
+- `useNavigate()` devient `useRouter()` avec `push`, `replace`, `back`
+- `useParams()` devient `useLocalSearchParams()`
+</Callout>
+
+## Ressources
+
+<Resources resources={[
+  {
+    title: "Expo Router - Introduction",
+    description: "Guide officiel d'Expo Router",
+    url: "https://docs.expo.dev/router/introduction/",
+    type: "doc"
+  },
+  {
+    title: "Expo Router - Tabs",
+    description: "Configuration de la navigation par onglets",
+    url: "https://docs.expo.dev/router/advanced/tabs/",
+    type: "doc"
+  },
+  {
+    title: "Expo Vector Icons",
+    description: "Parcourir toutes les icônes disponibles dans Expo",
+    url: "https://icons.expo.fyi",
+    type: "website"
+  }
+]} />

@@ -1,0 +1,271 @@
+# Quiz de Validation - Séance 2
+
+Testez vos connaissances sur la gestion d'état, les formulaires et la persistance sur mobile. Ce quiz couvre tous les sujets de la Séance 2.
+
+<Callout type="info" title="À propos de ce quiz">
+- **15 questions** couvrant tous les sujets de la Séance 2
+- Validez votre compréhension avant de passer à la Séance 3
+- Aucune note n'est enregistrée, c'est pour votre apprentissage !
+</Callout>
+
+## useState sur mobile
+
+<QuickCheck
+  question="1. Quelle est la différence entre la gestion d'état en React web et en React Native ?"
+  options={[
+    "React Native utilise un hook différent de useState",
+    "useState fonctionne de manière identique, mais le mobile ajoute des contraintes (clavier, arrière-plan)",
+    "React Native ne supporte pas les hooks",
+    "L'état est automatiquement sauvegardé sur mobile"
+  ]}
+  correctAnswer={1}
+  explanation="useState fonctionne exactement de la même manière en React web et React Native. La différence vient de l'environnement mobile : le clavier virtuel couvre l'écran, l'application peut passer en arrière-plan (et être tuée par l'OS), et les données en mémoire sont volatiles."
+/>
+
+<QuickCheck
+  question="2. Comment ajouter un élément à un tableau dans l'état sans mutation ?"
+  options={[
+    "items.push(newItem) puis setItems(items)",
+    "setItems([...items, newItem])",
+    "setItems(items.add(newItem))",
+    "items[items.length] = newItem"
+  ]}
+  correctAnswer={1}
+  explanation="Le spread operator [...items, newItem] crée un nouveau tableau avec tous les éléments existants plus le nouveau. items.push() modifie le tableau existant (mutation), ce que React ne détecte pas car la référence ne change pas."
+/>
+
+<QuickCheck
+  question="3. Pourquoi l'état useState est-il considéré comme 'volatile' sur mobile ?"
+  options={[
+    "useState ne fonctionne pas correctement sur mobile",
+    "Les données en mémoire RAM sont perdues si le système tue l'application en arrière-plan",
+    "useState a une limite de taille sur mobile",
+    "Le clavier virtuel réinitialise l'état"
+  ]}
+  correctAnswer={1}
+  explanation="useState stocke les données en mémoire RAM. Quand l'application passe en arrière-plan, le système d'exploitation peut la tuer pour libérer de la mémoire. Toutes les données en RAM sont alors perdues. C'est pourquoi on utilise AsyncStorage pour persister les données importantes."
+/>
+
+## TextInput et formulaires
+
+<QuickCheck
+  question="4. Quelle prop utilise-t-on pour recevoir le texte saisi dans TextInput ?"
+  options={[
+    "onChange={(e) => setText(e.target.value)} comme en React web",
+    "onChangeText={setText} qui reçoit directement la chaîne",
+    "onInput={setText}",
+    "value={setText}"
+  ]}
+  correctAnswer={1}
+  explanation="En React Native, onChangeText reçoit directement la chaîne de texte saisie (pas un événement). C'est plus simple que le web où onChange reçoit un événement et il faut extraire e.target.value. onChangeText={setText} suffit, sans fonction fléchée."
+/>
+
+<QuickCheck
+  question="5. Pourquoi ajouter autoCapitalize='none' sur un champ email ?"
+  options={[
+    "Pour améliorer les performances",
+    "Pour empêcher le clavier de mettre automatiquement une majuscule au début de la saisie",
+    "Pour désactiver l'auto-complétion",
+    "Pour changer le type de clavier"
+  ]}
+  correctAnswer={1}
+  explanation="Par défaut, le clavier mobile met une majuscule au début de la saisie (autoCapitalize='sentences'). Pour un email, cela produirait 'Jean@example.com' au lieu de 'jean@example.com'. autoCapitalize='none' désactive ce comportement."
+/>
+
+<QuickCheck
+  question="6. Comment naviguer du champ email au champ mot de passe avec le bouton du clavier ?"
+  options={[
+    "Avec tabIndex comme en HTML",
+    "Avec returnKeyType='next' et onSubmitEditing qui appelle .focus() sur le champ suivant via une ref",
+    "React Native gère automatiquement la navigation entre champs",
+    "En utilisant le composant Form de React Native"
+  ]}
+  correctAnswer={1}
+  explanation="Il n'y a pas de tabIndex en React Native. On utilise returnKeyType='next' pour afficher 'Suivant' sur le clavier, et onSubmitEditing pour appeler .focus() sur le champ suivant via une ref (useRef). C'est un pattern manuel mais standard."
+/>
+
+<QuickCheck
+  question="7. Quel est le rôle de KeyboardAvoidingView ?"
+  options={[
+    "Fermer automatiquement le clavier",
+    "Déplacer le contenu vers le haut pour que le clavier ne masque pas les champs de saisie",
+    "Empêcher le clavier de s'ouvrir",
+    "Valider le formulaire quand le clavier se ferme"
+  ]}
+  correctAnswer={1}
+  explanation="Quand le clavier virtuel apparaît, il couvre environ la moitié de l'écran. KeyboardAvoidingView ajuste la position du contenu (avec padding ou en réduisant la hauteur) pour que les champs restent visibles. Ce problème n'existe pas sur le web car le clavier physique ne couvre pas l'écran."
+/>
+
+## Cycle de vie et useEffect
+
+<QuickCheck
+  question="8. Que se passe-t-il avec useEffect(fn, []) quand l'utilisateur navigue vers un autre écran puis revient ?"
+  options={[
+    "L'effet se ré-exécute à chaque visite de l'écran",
+    "L'effet ne se ré-exécute PAS car le composant reste monté en mémoire (Stack Navigation)",
+    "Le composant est démonté puis remonté",
+    "React Native bloque la navigation si useEffect est en cours"
+  ]}
+  correctAnswer={1}
+  explanation="Avec Stack Navigation, les écrans restent montés en mémoire quand on navigue vers un autre écran. useEffect(fn, []) ne s'exécute qu'au montage initial. Pour exécuter du code à chaque visite, utilisez useFocusEffect à la place."
+/>
+
+<QuickCheck
+  question="9. Quand faut-il utiliser AppState pour sauvegarder les données ?"
+  options={[
+    "Quand l'application démarre",
+    "Quand l'application passe en arrière-plan (background), car le système pourrait la fermer",
+    "Quand le clavier se ferme",
+    "Quand l'utilisateur tape du texte"
+  ]}
+  correctAnswer={1}
+  explanation="Quand l'app passe en background, le système peut la tuer à tout moment pour libérer de la mémoire. C'est le dernier moment pour sauvegarder les données non enregistrées. AppState.addEventListener('change', ...) permet de détecter ce passage en arrière-plan."
+/>
+
+<QuickCheck
+  question="10. Quelle est la différence entre useEffect et useFocusEffect ?"
+  options={[
+    "useEffect est pour React web, useFocusEffect pour React Native",
+    "useEffect(fn, []) s'exécute au montage uniquement, useFocusEffect s'exécute chaque fois que l'écran devient visible",
+    "useFocusEffect est plus rapide que useEffect",
+    "useEffect nécessite useCallback, useFocusEffect non"
+  ]}
+  correctAnswer={1}
+  explanation="useEffect(fn, []) ne s'exécute qu'au montage du composant. Avec la navigation Stack, les écrans restent montés : useEffect ne se ré-exécute pas quand on revient sur un écran. useFocusEffect s'exécute chaque fois que l'écran redevient visible, ce qui permet de rafraîchir les données."
+/>
+
+## AsyncStorage
+
+<QuickCheck
+  question="11. Pourquoi AsyncStorage est-il asynchrone contrairement à localStorage ?"
+  options={[
+    "AsyncStorage est plus récent que localStorage",
+    "Sur mobile, le stockage peut être lent et bloquer le thread principal provoquerait un gel de l'interface",
+    "AsyncStorage stocke les données sur un serveur distant",
+    "Il n'y a pas de raison technique, c'est un choix de design"
+  ]}
+  correctAnswer={1}
+  explanation="Sur mobile, les opérations d'écriture sur la mémoire flash peuvent être lentes. Une opération synchrone bloquerait le thread principal (UI thread), ce qui provoquerait un gel visible de l'interface. AsyncStorage est asynchrone pour ne pas bloquer l'affichage pendant les opérations de lecture/écriture."
+/>
+
+<QuickCheck
+  question="12. Comment stocker un objet dans AsyncStorage ?"
+  options={[
+    "AsyncStorage.setItem('key', { name: 'Alice' })",
+    "AsyncStorage.setItem('key', JSON.stringify({ name: 'Alice' }))",
+    "AsyncStorage.setObject('key', { name: 'Alice' })",
+    "AsyncStorage.setItem('key', Object.toString({ name: 'Alice' }))"
+  ]}
+  correctAnswer={1}
+  explanation="AsyncStorage ne stocke que des chaînes de caractères. Pour stocker un objet, il faut le convertir en chaîne JSON avec JSON.stringify(). Pour le relire : JSON.parse(await AsyncStorage.getItem('key')). C'est le même pattern qu'avec localStorage sur le web."
+/>
+
+<QuickCheck
+  question="13. Pourquoi utiliser un flag isLoaded avant de sauvegarder dans useEffect ?"
+  options={[
+    "Pour améliorer les performances",
+    "Pour éviter que la valeur initiale de useState écrase la valeur sauvegardée avant la fin du chargement",
+    "AsyncStorage ne fonctionne pas sans ce flag",
+    "Pour déclencher un re-rendu supplémentaire"
+  ]}
+  correctAnswer={1}
+  explanation="Au montage, useState a sa valeur initiale (ex: 0 ou []). Le useEffect de sauvegarde s'exécute immédiatement avec cette valeur initiale. Si le chargement AsyncStorage n'est pas encore terminé, la valeur sauvegardée est écrasée par la valeur initiale. Le flag isLoaded empêche cette sauvegarde prématurée."
+/>
+
+<QuickCheck
+  question="14. Que faut-il utiliser pour stocker des données sensibles (mots de passe, tokens) sur mobile ?"
+  options={[
+    "AsyncStorage avec une clé secrète",
+    "expo-secure-store (stockage chiffré), car AsyncStorage n'est pas chiffré",
+    "localStorage qui est automatiquement chiffré",
+    "Un fichier JSON dans le dossier de l'application"
+  ]}
+  correctAnswer={1}
+  explanation="AsyncStorage n'est pas chiffré : les données sont stockées en clair sur le téléphone. Pour les données sensibles (tokens d'authentification, mots de passe), il faut utiliser expo-secure-store qui utilise le stockage sécurisé du système (Keychain sur iOS, EncryptedSharedPreferences sur Android)."
+/>
+
+## Mode offline
+
+<QuickCheck
+  question="15. Quelle est la stratégie offline-first ?"
+  options={[
+    "Toujours charger les données depuis le serveur en premier",
+    "Ne jamais utiliser le réseau",
+    "Lire les données locales en premier pour un affichage instantané, puis synchroniser avec le serveur quand possible",
+    "Afficher une page d'erreur quand il n'y a pas de connexion"
+  ]}
+  correctAnswer={2}
+  explanation="La stratégie offline-first donne la priorité aux données locales (AsyncStorage) pour un affichage immédiat sans attendre le réseau. Si la connexion est disponible, les données sont synchronisées avec le serveur en arrière-plan. L'utilisateur a une expérience fluide, avec ou sans connexion."
+/>
+
+---
+
+## Résultats
+
+<Callout type="success" title="Bravo !">
+Si vous avez répondu correctement à la plupart des questions, vous êtes prêt(e) pour la **Séance 3 - APIs, Caméra et Géolocalisation** !
+
+**Score cible :** Au moins 12/15 pour passer confortablement aux fonctionnalités natives.
+</Callout>
+
+<Callout type="warning" title="Besoin de réviser ?">
+Si vous avez eu des difficultés avec certaines questions, relisez les sections correspondantes :
+
+- **useState mobile** (Q1-3) : [État sur mobile](/r4a11/seance-2/state-mobile)
+- **TextInput et formulaires** (Q4-7) : [TextInput](/r4a11/seance-2/text-input) et [Formulaires](/r4a11/seance-2/forms)
+- **Cycle de vie** (Q8-10) : [Cycle de vie](/r4a11/seance-2/lifecycle)
+- **AsyncStorage** (Q11-14) : [AsyncStorage](/r4a11/seance-2/async-storage)
+- **Mode offline** (Q15) : [Mode Offline](/r4a11/seance-2/offline)
+</Callout>
+
+## Prochaines étapes
+
+<div className="grid grid-cols-1 md:grid-cols-2 gap-4 my-6">
+  <a href="/r4a11/seance-2/exercises" className="block p-4 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg hover:border-violet-500 dark:hover:border-violet-500 transition-colors">
+    <h3 className="font-semibold text-gray-900 dark:text-gray-100 mb-2">Refaire les exercices</h3>
+    <p className="text-sm text-gray-600 dark:text-gray-400">Pratiquez avec les 5 exercices de la Séance 2</p>
+  </a>
+
+  <a href="/r4a11/seance-2/project" className="block p-4 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg hover:border-violet-500 dark:hover:border-violet-500 transition-colors">
+    <h3 className="font-semibold text-gray-900 dark:text-gray-100 mb-2">Projet Fil Rouge</h3>
+    <p className="text-sm text-gray-600 dark:text-gray-400">Avancez sur votre application Notes & Tâches</p>
+  </a>
+
+  <a href="/r4a11/seance-3/introduction" className="block p-4 bg-violet-50 dark:bg-violet-900/20 border border-violet-200 dark:border-violet-800 rounded-lg hover:border-violet-500 dark:hover:border-violet-500 transition-colors">
+    <h3 className="font-semibold text-gray-900 dark:text-gray-100 mb-2">Séance 3 - APIs et Fonctionnalités Natives</h3>
+    <p className="text-sm text-gray-600 dark:text-gray-400">API REST, FlatList, caméra, géolocalisation et permissions</p>
+  </a>
+</div>
+
+<Callout type="tip" title="Conseil">
+Refaites ce quiz jusqu'à obtenir 13/15 ou plus sans regarder les explications. C'est le signe que vous maîtrisez la gestion d'état et la persistance sur mobile et que vous êtes prêt pour la Séance 3.
+</Callout>
+
+## Ressources
+
+<Resources resources={[
+  {
+    title: "React Native TextInput",
+    description: "Documentation officielle du composant TextInput",
+    url: "https://reactnative.dev/docs/textinput",
+    type: "doc"
+  },
+  {
+    title: "AsyncStorage",
+    description: "Documentation du package @react-native-async-storage/async-storage",
+    url: "https://react-native-async-storage.github.io/async-storage/",
+    type: "doc"
+  },
+  {
+    title: "React Native AppState",
+    description: "Documentation du module AppState",
+    url: "https://reactnative.dev/docs/appstate",
+    type: "doc"
+  },
+  {
+    title: "Expo Documentation",
+    description: "Documentation officielle d'Expo",
+    url: "https://docs.expo.dev",
+    type: "doc"
+  }
+]} />

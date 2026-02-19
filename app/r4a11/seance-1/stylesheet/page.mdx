@@ -1,0 +1,620 @@
+# StyleSheet et Flexbox
+
+Le système de styles de React Native ressemble au CSS, mais avec des différences fondamentales. Il n'y a pas de fichiers CSS, pas de cascade, pas de sélecteurs. Les styles sont des **objets JavaScript** appliqués directement aux composants.
+
+## Pas de CSS en React Native
+
+En React web, vous utilisez des fichiers CSS (ou className avec Tailwind). En React Native, les styles sont définis en **JavaScript** avec `StyleSheet.create()` :
+
+```jsx
+// React web : fichier CSS séparé ou className
+<div className="container">
+  <h1 className="title">Bonjour</h1>
+</div>
+
+// React Native : styles en JavaScript
+<View style={styles.container}>
+  <Text style={styles.title}>Bonjour</Text>
+</View>
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    padding: 16,
+  },
+  title: {
+    fontSize: 24,
+    fontWeight: 'bold',
+  },
+});
+```
+
+### Pourquoi pas de CSS ?
+
+React Native ne s'exécute pas dans un navigateur. Il n'y a pas de moteur CSS. Les styles sont traduits en propriétés natives de chaque plateforme (iOS et Android). `StyleSheet.create()` convertit vos objets JavaScript en instructions compréhensibles par les composants natifs.
+
+<Callout type="info" title="Pas de cascade">
+En CSS web, les styles se propagent par héritage (cascade) : si un `<div>` a `color: red`, tous ses enfants texte héritent de cette couleur. En React Native, **il n'y a pas de cascade**. Chaque composant doit recevoir ses propres styles explicitement. La seule exception : les styles de texte se propagent entre composants `Text` imbriqués.
+
+```jsx
+// ❌ Ne fonctionne pas : la couleur ne se propage pas de View vers Text
+<View style={{ color: 'red' }}>
+  <Text>Ce texte n'est PAS rouge</Text>
+</View>
+
+// ✅ Chaque Text doit avoir son propre style
+<View>
+  <Text style={{ color: 'red' }}>Ce texte est rouge</Text>
+</View>
+
+// ✅ Exception : les Text imbriqués héritent des styles du Text parent
+<Text style={{ color: 'red' }}>
+  Texte rouge <Text style={{ fontWeight: 'bold' }}>et celui-ci aussi (rouge + gras)</Text>
+</Text>
+```
+</Callout>
+
+<QuickCheck
+  question="Pourquoi React Native n'utilise-t-il pas de fichiers CSS ?"
+  options={[
+    "Les développeurs de React Native n'aiment pas le CSS",
+    "React Native ne s'exécute pas dans un navigateur, il n'y a pas de moteur CSS",
+    "Le CSS est trop lent pour le mobile",
+    "Il est possible d'utiliser du CSS mais ce n'est pas recommandé"
+  ]}
+  correctAnswer={1}
+  explanation="React Native produit des composants natifs iOS et Android, pas des éléments HTML. Il n'y a pas de navigateur ni de moteur CSS. Les styles sont des objets JavaScript traduits en propriétés natives de chaque plateforme. C'est pourquoi on utilise StyleSheet.create() au lieu de fichiers .css."
+/>
+
+## StyleSheet.create()
+
+`StyleSheet.create()` prend un objet dont chaque propriété est un objet de style. Il retourne un objet optimisé pour les performances.
+
+```jsx
+import { View, Text, StyleSheet } from 'react-native';
+
+function Card({ title, description }) {
+  return (
+    <View style={styles.card}>
+      <Text style={styles.cardTitle}>{title}</Text>
+      <Text style={styles.cardDescription}>{description}</Text>
+    </View>
+  );
+}
+
+// Définition des styles en bas du fichier
+const styles = StyleSheet.create({
+  card: {
+    backgroundColor: '#ffffff',
+    borderRadius: 8,
+    padding: 16,
+    marginBottom: 12,
+    // Ombre sur iOS
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    // Ombre sur Android
+    elevation: 3,
+  },
+  cardTitle: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    marginBottom: 4,
+  },
+  cardDescription: {
+    fontSize: 14,
+    color: '#666',
+    lineHeight: 20,
+  },
+});
+```
+
+### Convention
+
+Les styles sont définis en bas du fichier, après le composant. C'est une convention largement suivie dans la communauté React Native. On les nomme `styles` (au pluriel).
+
+### Propriétés en camelCase
+
+Les propriétés CSS sont écrites en **camelCase** (comme le style inline en React web) :
+
+<div className="overflow-x-auto my-6">
+  <table className="min-w-full border border-gray-200 dark:border-gray-700">
+    <thead className="bg-gray-50 dark:bg-gray-800">
+      <tr>
+        <th className="px-4 py-3 text-left text-sm font-semibold text-gray-900 dark:text-gray-100 border-b border-gray-200 dark:border-gray-700">CSS web</th>
+        <th className="px-4 py-3 text-left text-sm font-semibold text-gray-900 dark:text-gray-100 border-b border-gray-200 dark:border-gray-700">React Native</th>
+      </tr>
+    </thead>
+    <tbody className="bg-white dark:bg-gray-900 divide-y divide-gray-200 dark:divide-gray-700">
+      <tr>
+        <td className="px-4 py-3 text-sm text-gray-700 dark:text-gray-300"><code>background-color</code></td>
+        <td className="px-4 py-3 text-sm text-gray-700 dark:text-gray-300"><code>backgroundColor</code></td>
+      </tr>
+      <tr>
+        <td className="px-4 py-3 text-sm text-gray-700 dark:text-gray-300"><code>font-size</code></td>
+        <td className="px-4 py-3 text-sm text-gray-700 dark:text-gray-300"><code>fontSize</code></td>
+      </tr>
+      <tr>
+        <td className="px-4 py-3 text-sm text-gray-700 dark:text-gray-300"><code>font-weight</code></td>
+        <td className="px-4 py-3 text-sm text-gray-700 dark:text-gray-300"><code>fontWeight</code></td>
+      </tr>
+      <tr>
+        <td className="px-4 py-3 text-sm text-gray-700 dark:text-gray-300"><code>border-radius</code></td>
+        <td className="px-4 py-3 text-sm text-gray-700 dark:text-gray-300"><code>borderRadius</code></td>
+      </tr>
+      <tr>
+        <td className="px-4 py-3 text-sm text-gray-700 dark:text-gray-300"><code>margin-bottom</code></td>
+        <td className="px-4 py-3 text-sm text-gray-700 dark:text-gray-300"><code>marginBottom</code></td>
+      </tr>
+      <tr>
+        <td className="px-4 py-3 text-sm text-gray-700 dark:text-gray-300"><code>text-align</code></td>
+        <td className="px-4 py-3 text-sm text-gray-700 dark:text-gray-300"><code>textAlign</code></td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<QuickCheck
+  question="Où définit-on habituellement les styles dans un fichier React Native ?"
+  options={[
+    "Dans un fichier .css séparé",
+    "Directement dans la prop style avec un objet inline",
+    "En bas du fichier avec StyleSheet.create()",
+    "Dans un fichier styles.json"
+  ]}
+  correctAnswer={2}
+  explanation="La convention est de définir les styles en bas du fichier avec StyleSheet.create(). Cela permet à React Native d'optimiser les styles (ils ne sont créés qu'une fois) et de garder le composant lisible. Les styles inline fonctionnent mais ne sont pas optimisés."
+/>
+
+## Unités : pas de pixels CSS
+
+En React Native, **toutes les dimensions sont en density-independent pixels (dp)**. Il n'y a pas d'unités comme `px`, `rem`, `em`, `%` (sauf pour Flexbox).
+
+```jsx
+const styles = StyleSheet.create({
+  container: {
+    padding: 16,        // 16 dp, pas 16px
+    marginBottom: 12,   // 12 dp
+  },
+  title: {
+    fontSize: 24,       // 24 dp
+  },
+});
+```
+
+### Qu'est-ce qu'un dp (density-independent pixel) ?
+
+Un dp s'affiche à la même taille **physique** sur tous les appareils, quelle que soit la densité de pixels de l'écran :
+
+- Sur un écran 1x (ancien) : 1 dp = 1 pixel physique
+- Sur un écran 2x (Retina) : 1 dp = 2 pixels physiques
+- Sur un écran 3x (iPhone Pro) : 1 dp = 3 pixels physiques
+
+Résultat : `fontSize: 16` donne un texte de la même taille sur tous les téléphones, que l'écran fasse 720p ou 4K.
+
+<Callout type="tip" title="Pas d'unité à écrire">
+En React Native, vous écrivez juste le nombre, sans unité :
+
+```jsx
+// ❌ Pas d'unité en React Native
+padding: '16px'    // Erreur
+fontSize: '1.5rem' // Erreur
+
+// ✅ Juste le nombre (en dp)
+padding: 16
+fontSize: 24
+```
+</Callout>
+
+## Flexbox : le moteur de mise en page
+
+React Native utilise **Flexbox** pour la mise en page, comme en CSS web. Mais avec une différence importante : la direction par défaut est **`column`** (vertical), pas `row` (horizontal).
+
+### Flexbox en React Native vs CSS web
+
+<div className="overflow-x-auto my-6">
+  <table className="min-w-full border border-gray-200 dark:border-gray-700">
+    <thead className="bg-gray-50 dark:bg-gray-800">
+      <tr>
+        <th className="px-4 py-3 text-left text-sm font-semibold text-gray-900 dark:text-gray-100 border-b border-gray-200 dark:border-gray-700">Propriété</th>
+        <th className="px-4 py-3 text-left text-sm font-semibold text-gray-900 dark:text-gray-100 border-b border-gray-200 dark:border-gray-700">CSS web (défaut)</th>
+        <th className="px-4 py-3 text-left text-sm font-semibold text-gray-900 dark:text-gray-100 border-b border-gray-200 dark:border-gray-700">React Native (défaut)</th>
+      </tr>
+    </thead>
+    <tbody className="bg-white dark:bg-gray-900 divide-y divide-gray-200 dark:divide-gray-700">
+      <tr>
+        <td className="px-4 py-3 text-sm font-medium text-gray-900 dark:text-gray-100"><code>flexDirection</code></td>
+        <td className="px-4 py-3 text-sm text-gray-700 dark:text-gray-300"><code>row</code> (horizontal)</td>
+        <td className="px-4 py-3 text-sm text-gray-700 dark:text-gray-300"><code>column</code> (vertical)</td>
+      </tr>
+      <tr>
+        <td className="px-4 py-3 text-sm font-medium text-gray-900 dark:text-gray-100"><code>display</code></td>
+        <td className="px-4 py-3 text-sm text-gray-700 dark:text-gray-300"><code>block</code> par défaut</td>
+        <td className="px-4 py-3 text-sm text-gray-700 dark:text-gray-300"><code>flex</code> toujours</td>
+      </tr>
+      <tr>
+        <td className="px-4 py-3 text-sm font-medium text-gray-900 dark:text-gray-100"><code>position</code></td>
+        <td className="px-4 py-3 text-sm text-gray-700 dark:text-gray-300"><code>static</code></td>
+        <td className="px-4 py-3 text-sm text-gray-700 dark:text-gray-300"><code>relative</code></td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<Callout type="warning" title="flexDirection: column par défaut">
+C'est le piège classique quand on vient du web. En CSS, `flexDirection` est `row` par défaut (les éléments s'alignent horizontalement). En React Native, c'est `column` (les éléments s'empilent verticalement). Si vous voulez des éléments côte à côte, ajoutez explicitement `flexDirection: 'row'`.
+</Callout>
+
+### Exemples de mise en page
+
+#### Empiler verticalement (défaut)
+
+```jsx
+// Les enfants s'empilent verticalement (flexDirection: 'column' par défaut)
+<View style={styles.container}>
+  <Text>Premier</Text>
+  <Text>Deuxième</Text>
+  <Text>Troisième</Text>
+</View>
+
+// Résultat :
+// Premier
+// Deuxième
+// Troisième
+```
+
+#### Aligner horizontalement
+
+```jsx
+// flexDirection: 'row' pour aligner horizontalement
+<View style={styles.row}>
+  <Text>A</Text>
+  <Text>B</Text>
+  <Text>C</Text>
+</View>
+
+const styles = StyleSheet.create({
+  row: {
+    flexDirection: 'row',
+    gap: 12,
+  },
+});
+
+// Résultat :
+// A  B  C
+```
+
+#### Centrer un contenu
+
+```jsx
+// Centrer horizontalement et verticalement
+<View style={styles.centered}>
+  <Text>Je suis centré !</Text>
+</View>
+
+const styles = StyleSheet.create({
+  centered: {
+    flex: 1,
+    justifyContent: 'center', // Centre sur l'axe principal (vertical par défaut)
+    alignItems: 'center',     // Centre sur l'axe secondaire (horizontal par défaut)
+  },
+});
+```
+
+<QuickCheck
+  question="Quelle est la direction par défaut de Flexbox en React Native ?"
+  options={[
+    "row (horizontal, comme en CSS web)",
+    "column (vertical)",
+    "row-reverse (horizontal inversé)",
+    "Il n'y a pas de direction par défaut"
+  ]}
+  correctAnswer={1}
+  explanation="En React Native, flexDirection est 'column' par défaut (les éléments s'empilent verticalement). C'est logique pour le mobile où le contenu défile verticalement. En CSS web, le défaut est 'row' (horizontal). Si vous voulez des éléments côte à côte, ajoutez flexDirection: 'row' explicitement."
+/>
+
+### La propriété flex
+
+La propriété `flex` définit comment un élément occupe l'espace disponible :
+
+```jsx
+<View style={{ flex: 1 }}>
+  {/* Prend tout l'espace restant */}
+  <View style={{ flex: 2, backgroundColor: '#3498db' }}>
+    <Text style={{ color: '#fff' }}>Zone 1 (2/3 de l'espace)</Text>
+  </View>
+  <View style={{ flex: 1, backgroundColor: '#e74c3c' }}>
+    <Text style={{ color: '#fff' }}>Zone 2 (1/3 de l'espace)</Text>
+  </View>
+</View>
+```
+
+- `flex: 1` sur le conteneur = prend tout l'espace disponible
+- Les enfants avec `flex: 2` et `flex: 1` se partagent l'espace dans un ratio 2:1
+
+### gap : espacement entre éléments
+
+Depuis React Native 0.71, la propriété `gap` fonctionne comme en CSS :
+
+```jsx
+const styles = StyleSheet.create({
+  row: {
+    flexDirection: 'row',
+    gap: 12,           // Espace entre chaque enfant (12 dp)
+  },
+  grid: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 8,            // Espace entre les éléments de la grille
+  },
+});
+```
+
+## Combiner des styles
+
+Vous pouvez combiner plusieurs styles avec un tableau :
+
+```jsx
+function Badge({ label, type }) {
+  return (
+    <View style={[styles.badge, type === 'success' && styles.badgeSuccess]}>
+      <Text style={[styles.badgeText, type === 'success' && styles.badgeTextSuccess]}>
+        {label}
+      </Text>
+    </View>
+  );
+}
+
+const styles = StyleSheet.create({
+  badge: {
+    paddingHorizontal: 12,
+    paddingVertical: 4,
+    borderRadius: 12,
+    backgroundColor: '#e0e0e0',
+  },
+  badgeSuccess: {
+    backgroundColor: '#4caf50',
+  },
+  badgeText: {
+    fontSize: 12,
+    color: '#333',
+  },
+  badgeTextSuccess: {
+    color: '#fff',
+  },
+});
+```
+
+Le dernier style du tableau a la priorité (comme les classes CSS qui se superposent). Vous pouvez aussi combiner styles définis et styles inline :
+
+```jsx
+// Style défini + style inline conditionnel
+<View style={[styles.card, { opacity: isDisabled ? 0.5 : 1 }]}>
+  <Text>Contenu</Text>
+</View>
+```
+
+<QuickCheck
+  question="Comment appliquer conditionnellement un style en React Native ?"
+  options={[
+    "Avec la prop className et une condition",
+    "Avec un tableau de styles : style={[styles.base, condition && styles.variant]}",
+    "Avec la prop conditionalStyle",
+    "Ce n'est pas possible en React Native"
+  ]}
+  correctAnswer={1}
+  explanation="On utilise un tableau de styles avec l'opérateur && : style={[styles.base, isActive && styles.active]}. Si la condition est false, le style conditionnel est ignoré. Le dernier style du tableau a la priorité, exactement comme quand on superpose des classes CSS."
+/>
+
+## Patterns courants
+
+### Carte avec ombre
+
+```jsx
+const styles = StyleSheet.create({
+  card: {
+    backgroundColor: '#fff',
+    borderRadius: 12,
+    padding: 16,
+    margin: 8,
+    // Ombre iOS
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 8,
+    // Ombre Android
+    elevation: 4,
+  },
+});
+```
+
+<Callout type="info" title="Ombres différentes sur iOS et Android">
+Les ombres se gèrent différemment selon la plateforme :
+- **iOS** : utilise `shadowColor`, `shadowOffset`, `shadowOpacity`, `shadowRadius`
+- **Android** : utilise uniquement `elevation` (nombre entier)
+
+Pour un comportement cohérent, définissez les deux dans vos styles. Chaque plateforme ignorera les propriétés qui ne la concernent pas.
+</Callout>
+
+### Ligne séparatrice
+
+```jsx
+const styles = StyleSheet.create({
+  separator: {
+    height: 1,
+    backgroundColor: '#e0e0e0',
+    marginVertical: 12,
+  },
+});
+```
+
+### En-tête d'écran
+
+```jsx
+const styles = StyleSheet.create({
+  header: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingHorizontal: 16,
+    paddingVertical: 12,
+    backgroundColor: '#fff',
+    borderBottomWidth: 1,
+    borderBottomColor: '#e0e0e0',
+  },
+});
+```
+
+### Contenu centré (plein écran)
+
+```jsx
+const styles = StyleSheet.create({
+  centered: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#f5f5f5',
+  },
+});
+```
+
+## Exemple complet : Écran de paramètres
+
+```jsx
+import { View, Text, StyleSheet, SafeAreaView, ScrollView } from 'react-native';
+
+function SettingsItem({ label, value }) {
+  return (
+    <View style={styles.settingsItem}>
+      <Text style={styles.settingsLabel}>{label}</Text>
+      <Text style={styles.settingsValue}>{value}</Text>
+    </View>
+  );
+}
+
+function SectionTitle({ title }) {
+  return <Text style={styles.sectionTitle}>{title}</Text>;
+}
+
+export default function SettingsScreen() {
+  return (
+    <SafeAreaView style={styles.safeArea}>
+      <ScrollView style={styles.container}>
+        <Text style={styles.pageTitle}>Paramètres</Text>
+
+        <SectionTitle title="Compte" />
+        <View style={styles.section}>
+          <SettingsItem label="Nom" value="Alice Dupont" />
+          <View style={styles.separator} />
+          <SettingsItem label="Email" value="alice@example.com" />
+          <View style={styles.separator} />
+          <SettingsItem label="Langue" value="Français" />
+        </View>
+
+        <SectionTitle title="Notifications" />
+        <View style={styles.section}>
+          <SettingsItem label="Push" value="Activé" />
+          <View style={styles.separator} />
+          <SettingsItem label="Email" value="Désactivé" />
+        </View>
+
+        <SectionTitle title="Application" />
+        <View style={styles.section}>
+          <SettingsItem label="Version" value="1.0.0" />
+          <View style={styles.separator} />
+          <SettingsItem label="SDK Expo" value="52" />
+        </View>
+      </ScrollView>
+    </SafeAreaView>
+  );
+}
+
+const styles = StyleSheet.create({
+  safeArea: {
+    flex: 1,
+    backgroundColor: '#f2f2f7',
+  },
+  container: {
+    flex: 1,
+    padding: 16,
+  },
+  pageTitle: {
+    fontSize: 34,
+    fontWeight: 'bold',
+    marginBottom: 24,
+  },
+  sectionTitle: {
+    fontSize: 13,
+    fontWeight: '600',
+    color: '#666',
+    textTransform: 'uppercase',
+    marginBottom: 8,
+    marginTop: 16,
+    marginLeft: 16,
+  },
+  section: {
+    backgroundColor: '#fff',
+    borderRadius: 12,
+    paddingHorizontal: 16,
+    // Ombre iOS
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.05,
+    shadowRadius: 2,
+    // Ombre Android
+    elevation: 1,
+  },
+  settingsItem: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingVertical: 12,
+  },
+  settingsLabel: {
+    fontSize: 17,
+  },
+  settingsValue: {
+    fontSize: 17,
+    color: '#999',
+  },
+  separator: {
+    height: 1,
+    backgroundColor: '#e0e0e0',
+    marginLeft: 0,
+  },
+});
+```
+
+<QuickCheck
+  question="Quelle propriété utiliser pour ajouter une ombre sur Android ?"
+  options={[
+    "shadowColor et shadowOffset",
+    "boxShadow",
+    "elevation",
+    "shadow"
+  ]}
+  correctAnswer={2}
+  explanation="Sur Android, les ombres sont gérées par la propriété elevation (un nombre entier). Les propriétés shadowColor, shadowOffset, shadowOpacity, shadowRadius sont spécifiques à iOS. Pour un rendu cohérent, il faut définir les deux dans les styles. Chaque plateforme ignore les propriétés de l'autre."
+/>
+
+## À retenir
+
+<Callout type="success" title="Comprendre, pas mémoriser">
+**StyleSheet :**
+- Pas de fichiers CSS : les styles sont des objets JavaScript dans `StyleSheet.create()`
+- Pas de cascade : chaque composant doit recevoir ses propres styles
+- Propriétés en camelCase : `backgroundColor`, `fontSize`, `borderRadius`
+- Dimensions en dp (density-independent pixels) : pas de `px`, `rem`, `%`
+
+**Flexbox :**
+- Direction par défaut = **column** (vertical), pas row comme en CSS web
+- Tous les View sont des flex containers par défaut
+- `flex: 1` = prend tout l'espace disponible
+- `justifyContent` + `alignItems` pour centrer le contenu
+- `gap` pour l'espacement entre éléments
+
+**Patterns :**
+- Combiner des styles avec un tableau : `style={[styles.base, styles.variant]}`
+- Ombres : `shadowColor`/`shadowOffset` pour iOS, `elevation` pour Android
+</Callout>

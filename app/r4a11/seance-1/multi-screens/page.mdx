@@ -1,0 +1,635 @@
+# TP Guidé : Application Multi-écrans
+
+Ce TP vous guide pas à pas pour construire une application mobile complète avec **3 onglets** et **navigation entre écrans**. Vous allez mettre en pratique tous les concepts vus dans cette séance.
+
+## Ce que vous allez construire
+
+Une application "Mon Carnet" avec trois onglets :
+
+1. **Accueil** : liste de contacts avec navigation vers un écran détail
+2. **Favoris** : liste des contacts favoris
+3. **Paramètres** : écran de configuration
+
+L'application utilise :
+- Tab Navigation (3 onglets)
+- Stack Navigation (liste vers détail)
+- Composants primitifs (View, Text, Image, ScrollView)
+- StyleSheet et Flexbox
+
+<Callout type="info" title="Pré-requis">
+Assurez-vous d'avoir créé un projet Expo et d'avoir Expo Go fonctionnel sur votre téléphone (voir la page [Installation](/r4a11/seance-1/setup)).
+</Callout>
+
+## Étape 1 : Créer le projet
+
+Si vous n'avez pas encore de projet, créez-en un :
+
+```bash
+npx create-expo-app@latest mon-carnet
+cd mon-carnet
+```
+
+Nettoyez le projet en supprimant les fichiers d'exemple :
+
+```bash
+npm run reset-project
+```
+
+Cette commande remet le dossier `app/` à un état minimal.
+
+## Étape 2 : Structure de fichiers
+
+Créez la structure suivante dans le dossier `app/` :
+
+```
+app/
+├── _layout.tsx              → Layout racine (Stack)
+├── (tabs)/
+│   ├── _layout.tsx          → Configuration des onglets
+│   ├── index.tsx            → Onglet Accueil (liste de contacts)
+│   ├── favorites.tsx        → Onglet Favoris
+│   └── settings.tsx         → Onglet Paramètres
+└── contact/
+    └── [id].tsx             → Écran détail d'un contact
+```
+
+## Étape 3 : Les données
+
+Créez un fichier `data/contacts.js` à la racine du projet pour les données partagées :
+
+```jsx
+// data/contacts.js
+export const contacts = [
+  {
+    id: '1',
+    name: 'Alice Dupont',
+    role: 'Développeuse frontend',
+    phone: '06 12 34 56 78',
+    email: 'alice@example.com',
+    avatar: 'https://i.pravatar.cc/150?img=1',
+    favorite: true,
+  },
+  {
+    id: '2',
+    name: 'Bob Martin',
+    role: 'Designer UI/UX',
+    phone: '06 23 45 67 89',
+    email: 'bob@example.com',
+    avatar: 'https://i.pravatar.cc/150?img=3',
+    favorite: false,
+  },
+  {
+    id: '3',
+    name: 'Claire Rousseau',
+    role: 'Chef de projet',
+    phone: '06 34 56 78 90',
+    email: 'claire@example.com',
+    avatar: 'https://i.pravatar.cc/150?img=5',
+    favorite: true,
+  },
+  {
+    id: '4',
+    name: 'David Chen',
+    role: 'Développeur backend',
+    phone: '06 45 67 89 01',
+    email: 'david@example.com',
+    avatar: 'https://i.pravatar.cc/150?img=7',
+    favorite: false,
+  },
+  {
+    id: '5',
+    name: 'Eva Schmidt',
+    role: 'Data scientist',
+    phone: '06 56 78 90 12',
+    email: 'eva@example.com',
+    avatar: 'https://i.pravatar.cc/150?img=9',
+    favorite: true,
+  },
+];
+```
+
+## Étape 4 : Layout racine
+
+Le layout racine utilise un **Stack** pour combiner les onglets et l'écran détail :
+
+```jsx
+// app/_layout.tsx
+import { Stack } from 'expo-router';
+
+export default function RootLayout() {
+  return (
+    <Stack>
+      {/* Les onglets sont le premier écran */}
+      <Stack.Screen
+        name="(tabs)"
+        options={{ headerShown: false }}
+      />
+      {/* L'écran détail s'affiche au-dessus des onglets */}
+      <Stack.Screen
+        name="contact/[id]"
+        options={{ title: 'Détail du contact' }}
+      />
+    </Stack>
+  );
+}
+```
+
+## Étape 5 : Configuration des onglets
+
+```jsx
+// app/(tabs)/_layout.tsx
+import { Tabs } from 'expo-router';
+import { Ionicons } from '@expo/vector-icons';
+
+export default function TabLayout() {
+  return (
+    <Tabs
+      screenOptions={{
+        tabBarActiveTintColor: '#0066cc',
+        tabBarInactiveTintColor: '#999',
+        tabBarStyle: {
+          backgroundColor: '#fff',
+          borderTopWidth: 1,
+          borderTopColor: '#e0e0e0',
+        },
+      }}
+    >
+      <Tabs.Screen
+        name="index"
+        options={{
+          title: 'Contacts',
+          tabBarIcon: ({ color, size }) => (
+            <Ionicons name="people" size={size} color={color} />
+          ),
+        }}
+      />
+      <Tabs.Screen
+        name="favorites"
+        options={{
+          title: 'Favoris',
+          tabBarIcon: ({ color, size }) => (
+            <Ionicons name="star" size={size} color={color} />
+          ),
+        }}
+      />
+      <Tabs.Screen
+        name="settings"
+        options={{
+          title: 'Paramètres',
+          tabBarIcon: ({ color, size }) => (
+            <Ionicons name="settings" size={size} color={color} />
+          ),
+        }}
+      />
+    </Tabs>
+  );
+}
+```
+
+## Étape 6 : Composant ContactCard (réutilisable)
+
+Créez un composant réutilisable pour afficher un contact. Ce composant sera utilisé dans l'onglet Accueil et l'onglet Favoris :
+
+```jsx
+// components/ContactCard.jsx
+import { View, Text, Image, Pressable, StyleSheet } from 'react-native';
+import { useRouter } from 'expo-router';
+
+export default function ContactCard({ contact }) {
+  const router = useRouter();
+
+  return (
+    <Pressable
+      style={styles.card}
+      onPress={() => router.push(`/contact/${contact.id}`)}
+    >
+      <Image
+        source={{ uri: contact.avatar }}
+        style={styles.avatar}
+      />
+      <View style={styles.info}>
+        <Text style={styles.name}>{contact.name}</Text>
+        <Text style={styles.role}>{contact.role}</Text>
+      </View>
+      {contact.favorite && (
+        <Text style={styles.star}>*</Text>
+      )}
+    </Pressable>
+  );
+}
+
+const styles = StyleSheet.create({
+  card: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#fff',
+    padding: 12,
+    marginBottom: 8,
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: '#e0e0e0',
+  },
+  avatar: {
+    width: 50,
+    height: 50,
+    borderRadius: 25,
+  },
+  info: {
+    flex: 1,
+    marginLeft: 12,
+  },
+  name: {
+    fontSize: 16,
+    fontWeight: 'bold',
+  },
+  role: {
+    fontSize: 14,
+    color: '#666',
+    marginTop: 2,
+  },
+  star: {
+    fontSize: 20,
+    color: '#f5a623',
+  },
+});
+```
+
+<Callout type="tip" title="Pressable pour les éléments cliquables">
+`Pressable` est le composant React Native pour rendre un élément interactif. Il remplace `onClick` du web par `onPress`. Quand l'utilisateur appuie sur la carte, `router.push()` navigue vers l'écran détail du contact.
+</Callout>
+
+## Étape 7 : Onglet Accueil (liste de contacts)
+
+```jsx
+// app/(tabs)/index.tsx
+import { View, Text, ScrollView, StyleSheet } from 'react-native';
+import { contacts } from '../../data/contacts';
+import ContactCard from '../../components/ContactCard';
+
+export default function HomeScreen() {
+  return (
+    <ScrollView style={styles.container}>
+      <Text style={styles.title}>Mes contacts</Text>
+      <Text style={styles.subtitle}>{contacts.length} contacts</Text>
+      {contacts.map(contact => (
+        <ContactCard key={contact.id} contact={contact} />
+      ))}
+    </ScrollView>
+  );
+}
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: '#f5f5f5',
+    padding: 16,
+  },
+  title: {
+    fontSize: 28,
+    fontWeight: 'bold',
+    marginBottom: 4,
+  },
+  subtitle: {
+    fontSize: 14,
+    color: '#666',
+    marginBottom: 16,
+  },
+});
+```
+
+## Étape 8 : Onglet Favoris
+
+```jsx
+// app/(tabs)/favorites.tsx
+import { View, Text, ScrollView, StyleSheet } from 'react-native';
+import { contacts } from '../../data/contacts';
+import ContactCard from '../../components/ContactCard';
+
+export default function FavoritesScreen() {
+  // Filtrer les contacts favoris
+  const favoriteContacts = contacts.filter(contact => contact.favorite);
+
+  return (
+    <ScrollView style={styles.container}>
+      <Text style={styles.title}>Favoris</Text>
+      <Text style={styles.subtitle}>
+        {favoriteContacts.length} favori{favoriteContacts.length > 1 ? 's' : ''}
+      </Text>
+
+      {favoriteContacts.length === 0 ? (
+        <View style={styles.empty}>
+          <Text style={styles.emptyText}>Aucun favori pour le moment</Text>
+        </View>
+      ) : (
+        favoriteContacts.map(contact => (
+          <ContactCard key={contact.id} contact={contact} />
+        ))
+      )}
+    </ScrollView>
+  );
+}
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: '#f5f5f5',
+    padding: 16,
+  },
+  title: {
+    fontSize: 28,
+    fontWeight: 'bold',
+    marginBottom: 4,
+  },
+  subtitle: {
+    fontSize: 14,
+    color: '#666',
+    marginBottom: 16,
+  },
+  empty: {
+    alignItems: 'center',
+    paddingVertical: 40,
+  },
+  emptyText: {
+    fontSize: 16,
+    color: '#999',
+  },
+});
+```
+
+## Étape 9 : Onglet Paramètres
+
+```jsx
+// app/(tabs)/settings.tsx
+import { View, Text, ScrollView, StyleSheet } from 'react-native';
+
+function SettingsRow({ label, value }) {
+  return (
+    <View style={styles.row}>
+      <Text style={styles.rowLabel}>{label}</Text>
+      <Text style={styles.rowValue}>{value}</Text>
+    </View>
+  );
+}
+
+export default function SettingsScreen() {
+  return (
+    <ScrollView style={styles.container}>
+      <Text style={styles.title}>Paramètres</Text>
+
+      <Text style={styles.sectionTitle}>COMPTE</Text>
+      <View style={styles.section}>
+        <SettingsRow label="Nom" value="Mon Carnet" />
+        <View style={styles.separator} />
+        <SettingsRow label="Version" value="1.0.0" />
+        <View style={styles.separator} />
+        <SettingsRow label="SDK Expo" value="52" />
+      </View>
+
+      <Text style={styles.sectionTitle}>AFFICHAGE</Text>
+      <View style={styles.section}>
+        <SettingsRow label="Theme" value="Automatique" />
+        <View style={styles.separator} />
+        <SettingsRow label="Langue" value="Francais" />
+      </View>
+
+      <Text style={styles.sectionTitle}>A PROPOS</Text>
+      <View style={styles.section}>
+        <SettingsRow label="Cours" value="R4A11" />
+        <View style={styles.separator} />
+        <SettingsRow label="Seance" value="1 - Fondamentaux" />
+      </View>
+    </ScrollView>
+  );
+}
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: '#f2f2f7',
+    padding: 16,
+  },
+  title: {
+    fontSize: 28,
+    fontWeight: 'bold',
+    marginBottom: 24,
+  },
+  sectionTitle: {
+    fontSize: 13,
+    fontWeight: '600',
+    color: '#666',
+    marginBottom: 8,
+    marginTop: 16,
+    marginLeft: 16,
+  },
+  section: {
+    backgroundColor: '#fff',
+    borderRadius: 12,
+    paddingHorizontal: 16,
+  },
+  row: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingVertical: 12,
+  },
+  rowLabel: {
+    fontSize: 17,
+  },
+  rowValue: {
+    fontSize: 17,
+    color: '#999',
+  },
+  separator: {
+    height: 1,
+    backgroundColor: '#e0e0e0',
+  },
+});
+```
+
+## Étape 10 : Écran détail d'un contact
+
+```jsx
+// app/contact/[id].tsx
+import { useLocalSearchParams } from 'expo-router';
+import { View, Text, Image, ScrollView, StyleSheet } from 'react-native';
+import { contacts } from '../../data/contacts';
+
+export default function ContactDetailScreen() {
+  const { id } = useLocalSearchParams();
+
+  // Trouver le contact par son ID
+  const contact = contacts.find(c => c.id === id);
+
+  // Gérer le cas où le contact n'existe pas
+  if (!contact) {
+    return (
+      <View style={styles.centered}>
+        <Text style={styles.errorText}>Contact non trouvé</Text>
+      </View>
+    );
+  }
+
+  return (
+    <ScrollView style={styles.container}>
+      {/* En-tête avec avatar */}
+      <View style={styles.header}>
+        <Image
+          source={{ uri: contact.avatar }}
+          style={styles.avatar}
+        />
+        <Text style={styles.name}>{contact.name}</Text>
+        <Text style={styles.role}>{contact.role}</Text>
+      </View>
+
+      {/* Informations de contact */}
+      <View style={styles.infoSection}>
+        <Text style={styles.sectionTitle}>COORDONNEES</Text>
+        <View style={styles.infoCard}>
+          <View style={styles.infoRow}>
+            <Text style={styles.infoLabel}>Telephone</Text>
+            <Text style={styles.infoValue}>{contact.phone}</Text>
+          </View>
+          <View style={styles.separator} />
+          <View style={styles.infoRow}>
+            <Text style={styles.infoLabel}>Email</Text>
+            <Text style={styles.infoValue}>{contact.email}</Text>
+          </View>
+        </View>
+      </View>
+
+      {/* Statut favori */}
+      <View style={styles.infoSection}>
+        <Text style={styles.sectionTitle}>STATUT</Text>
+        <View style={styles.infoCard}>
+          <View style={styles.infoRow}>
+            <Text style={styles.infoLabel}>Favori</Text>
+            <Text style={styles.infoValue}>
+              {contact.favorite ? 'Oui' : 'Non'}
+            </Text>
+          </View>
+        </View>
+      </View>
+    </ScrollView>
+  );
+}
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: '#f2f2f7',
+  },
+  centered: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  errorText: {
+    fontSize: 18,
+    color: '#999',
+  },
+  header: {
+    alignItems: 'center',
+    paddingVertical: 32,
+    backgroundColor: '#fff',
+    borderBottomWidth: 1,
+    borderBottomColor: '#e0e0e0',
+  },
+  avatar: {
+    width: 120,
+    height: 120,
+    borderRadius: 60,
+    marginBottom: 16,
+  },
+  name: {
+    fontSize: 24,
+    fontWeight: 'bold',
+  },
+  role: {
+    fontSize: 16,
+    color: '#666',
+    marginTop: 4,
+  },
+  infoSection: {
+    padding: 16,
+  },
+  sectionTitle: {
+    fontSize: 13,
+    fontWeight: '600',
+    color: '#666',
+    marginBottom: 8,
+    marginLeft: 16,
+  },
+  infoCard: {
+    backgroundColor: '#fff',
+    borderRadius: 12,
+    paddingHorizontal: 16,
+  },
+  infoRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingVertical: 12,
+  },
+  infoLabel: {
+    fontSize: 17,
+  },
+  infoValue: {
+    fontSize: 17,
+    color: '#0066cc',
+  },
+  separator: {
+    height: 1,
+    backgroundColor: '#e0e0e0',
+  },
+});
+```
+
+## Résultat attendu
+
+En lançant `npx expo start` et en scannant le QR code, vous devriez voir :
+
+1. **Onglet Contacts** : une liste de 5 contacts. En appuyant sur un contact, l'écran détail s'affiche avec les coordonnées complètes. Le geste de swipe (ou bouton retour) ramène à la liste.
+
+2. **Onglet Favoris** : les 3 contacts marqués comme favoris (Alice, Claire, Eva). Même navigation vers le détail.
+
+3. **Onglet Paramètres** : les informations de l'application organisées en sections avec un style inspiré des réglages iOS.
+
+## Erreurs courantes
+
+<Callout type="warning" title="Problèmes fréquents">
+**1. "Text strings must be rendered within a Text component"**
+Vous avez mis du texte directement dans une `View`. Encapsulez-le dans `<Text>`.
+
+**2. L'image ne s'affiche pas**
+Vérifiez que vous avez spécifié `width` et `height` dans le style de l'Image.
+
+**3. Les onglets ne s'affichent pas**
+Vérifiez que le dossier s'appelle bien `(tabs)` avec les parenthèses, et que le `_layout.tsx` existe dans ce dossier.
+
+**4. L'écran détail ne s'affiche pas**
+Vérifiez que le fichier s'appelle `[id].tsx` (avec les crochets) et qu'il est déclaré dans le layout racine `_layout.tsx`.
+
+**5. Erreur d'import**
+Les chemins d'import relatifs (`../../data/contacts`) dépendent de la position du fichier. Vérifiez le nombre de `../` nécessaires.
+</Callout>
+
+## Pour aller plus loin
+
+Si vous avez terminé le TP et qu'il vous reste du temps :
+
+- **Ajoutez un champ de recherche** dans l'onglet Contacts pour filtrer par nom
+- **Améliorez le style** des cartes de contact (ombres, icônes)
+- **Ajoutez des animations** : `Pressable` supporte `style` comme fonction pour réagir à l'état pressé
+
+```jsx
+// Effet de pression sur la carte
+<Pressable
+  style={({ pressed }) => [
+    styles.card,
+    pressed && { opacity: 0.7 }
+  ]}
+  onPress={() => router.push(`/contact/${contact.id}`)}
+>
+  {/* ... */}
+</Pressable>
+```

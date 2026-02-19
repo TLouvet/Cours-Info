@@ -1,0 +1,272 @@
+# Introduction à React Native
+
+React Native permet de créer des applications mobiles **natives** en utilisant JavaScript et React. Si vous connaissez React (R4A10), vous connaissez déjà 80% de React Native.
+
+## Qu'est-ce que React Native ?
+
+React Native est un framework **open source** créé par Meta (Facebook) en 2015. Il permet d'écrire des applications mobiles iOS et Android en **JavaScript**, en utilisant les mêmes concepts que React web : composants, props, state, hooks.
+
+La différence fondamentale avec React web : au lieu de produire des éléments HTML (`<div>`, `<p>`, `<img>`), React Native produit des **composants natifs** de chaque plateforme (`UIView` sur iOS, `android.view.View` sur Android).
+
+```
+React web :     JSX → Virtual DOM → DOM HTML → Navigateur
+React Native :  JSX → Virtual DOM → Composants natifs → iOS / Android
+```
+
+<Callout type="info" title="Natif, pas WebView">
+React Native ne fait **pas** tourner votre code dans un navigateur intégré (WebView). Les composants `View`, `Text`, `Image` sont traduits en composants natifs réels de chaque plateforme. C'est ce qui différencie React Native des solutions hybrides comme Ionic.
+</Callout>
+
+## Architecture de React Native
+
+### Le pont (Bridge) - Architecture classique
+
+Dans l'architecture originale de React Native, un **pont** (bridge) permet la communication entre le code JavaScript et le code natif :
+
+```
+┌─────────────────────┐     ┌──────────────────────┐
+│   JavaScript        │     │   Natif               │
+│                     │     │                       │
+│  Votre code React   │────▶│  UIKit (iOS)          │
+│  + Logique métier   │◀────│  Android Views        │
+│                     │     │                       │
+└─────────────────────┘     └──────────────────────┘
+          Bridge (JSON sérialisé)
+```
+
+Le code JavaScript tourne dans un moteur JavaScript (JavaScriptCore ou Hermes). Quand vous écrivez `<View>`, React Native envoie un message via le bridge pour créer un composant natif correspondant.
+
+### La nouvelle architecture (JSI / TurboModules)
+
+Depuis 2024, React Native utilise une **nouvelle architecture** plus performante. Le bridge JSON est remplacé par **JSI** (JavaScript Interface), qui permet au code JavaScript d'appeler directement les fonctions natives, sans sérialisation.
+
+<Callout type="tip" title="Pas besoin de tout comprendre">
+L'architecture interne de React Native évolue, mais en tant que développeur, **votre code ne change pas**. Vous écrivez des composants React, et React Native se charge de la traduction en composants natifs. La nouvelle architecture améliore les performances de manière transparente.
+</Callout>
+
+## React web vs React Native
+
+La syntaxe est identique, seuls les composants de base changent :
+
+```jsx
+// React web (R4A10)
+function ProfileCard({ name, bio }) {
+  return (
+    <div className="card">
+      <h2>{name}</h2>
+      <p>{bio}</p>
+    </div>
+  );
+}
+
+// React Native (R4A11)
+function ProfileCard({ name, bio }) {
+  return (
+    <View style={styles.card}>
+      <Text style={styles.name}>{name}</Text>
+      <Text style={styles.bio}>{bio}</Text>
+    </View>
+  );
+}
+```
+
+### Ce qui reste identique
+
+- Les **composants fonctionnels** : même syntaxe `function MonComposant() {}`
+- Les **props** : même passage et destructuration
+- Le **JSX** : même logique avec `{}` pour les expressions
+- Les **hooks** : `useState`, `useEffect` fonctionnent de la même manière
+- La **logique** : conditions, boucles, `.map()`, événements
+
+### Ce qui change
+
+<div className="overflow-x-auto my-6">
+  <table className="min-w-full border border-gray-200 dark:border-gray-700">
+    <thead className="bg-gray-50 dark:bg-gray-800">
+      <tr>
+        <th className="px-4 py-3 text-left text-sm font-semibold text-gray-900 dark:text-gray-100 border-b border-gray-200 dark:border-gray-700">Concept</th>
+        <th className="px-4 py-3 text-left text-sm font-semibold text-gray-900 dark:text-gray-100 border-b border-gray-200 dark:border-gray-700">React web</th>
+        <th className="px-4 py-3 text-left text-sm font-semibold text-gray-900 dark:text-gray-100 border-b border-gray-200 dark:border-gray-700">React Native</th>
+      </tr>
+    </thead>
+    <tbody className="bg-white dark:bg-gray-900 divide-y divide-gray-200 dark:divide-gray-700">
+      <tr>
+        <td className="px-4 py-3 text-sm font-medium text-gray-900 dark:text-gray-100">Conteneur</td>
+        <td className="px-4 py-3 text-sm text-gray-700 dark:text-gray-300"><code>&lt;div&gt;</code></td>
+        <td className="px-4 py-3 text-sm text-gray-700 dark:text-gray-300"><code>&lt;View&gt;</code></td>
+      </tr>
+      <tr>
+        <td className="px-4 py-3 text-sm font-medium text-gray-900 dark:text-gray-100">Texte</td>
+        <td className="px-4 py-3 text-sm text-gray-700 dark:text-gray-300"><code>&lt;p&gt;</code>, <code>&lt;h1&gt;</code>, <code>&lt;span&gt;</code></td>
+        <td className="px-4 py-3 text-sm text-gray-700 dark:text-gray-300"><code>&lt;Text&gt;</code></td>
+      </tr>
+      <tr>
+        <td className="px-4 py-3 text-sm font-medium text-gray-900 dark:text-gray-100">Image</td>
+        <td className="px-4 py-3 text-sm text-gray-700 dark:text-gray-300"><code>&lt;img src="..."&gt;</code></td>
+        <td className="px-4 py-3 text-sm text-gray-700 dark:text-gray-300"><code>&lt;Image source=&#123;...&#125; /&gt;</code></td>
+      </tr>
+      <tr>
+        <td className="px-4 py-3 text-sm font-medium text-gray-900 dark:text-gray-100">Styles</td>
+        <td className="px-4 py-3 text-sm text-gray-700 dark:text-gray-300">CSS, className</td>
+        <td className="px-4 py-3 text-sm text-gray-700 dark:text-gray-300">StyleSheet, prop style</td>
+      </tr>
+      <tr>
+        <td className="px-4 py-3 text-sm font-medium text-gray-900 dark:text-gray-100">Scroll</td>
+        <td className="px-4 py-3 text-sm text-gray-700 dark:text-gray-300">Automatique (navigateur)</td>
+        <td className="px-4 py-3 text-sm text-gray-700 dark:text-gray-300"><code>&lt;ScrollView&gt;</code> explicite</td>
+      </tr>
+      <tr>
+        <td className="px-4 py-3 text-sm font-medium text-gray-900 dark:text-gray-100">Clic</td>
+        <td className="px-4 py-3 text-sm text-gray-700 dark:text-gray-300"><code>onClick</code></td>
+        <td className="px-4 py-3 text-sm text-gray-700 dark:text-gray-300"><code>onPress</code></td>
+      </tr>
+      <tr>
+        <td className="px-4 py-3 text-sm font-medium text-gray-900 dark:text-gray-100">Navigation</td>
+        <td className="px-4 py-3 text-sm text-gray-700 dark:text-gray-300">React Router (URLs)</td>
+        <td className="px-4 py-3 text-sm text-gray-700 dark:text-gray-300">Expo Router (fichiers)</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<QuickCheck
+  question="Quelle est la principale différence entre React web et React Native ?"
+  options={[
+    "React Native utilise un langage de programmation différent",
+    "React Native utilise des composants natifs (View, Text) au lieu d'éléments HTML (div, p)",
+    "React Native ne supporte pas les hooks comme useState",
+    "React Native nécessite TypeScript obligatoirement"
+  ]}
+  correctAnswer={1}
+  explanation="React Native utilise le même JavaScript et les mêmes concepts que React web (composants, props, hooks). La seule différence est que les composants de base sont des composants natifs (View, Text, Image) au lieu d'éléments HTML (div, p, img). Les hooks comme useState et useEffect fonctionnent exactement de la même manière."
+/>
+
+## Pourquoi Expo ?
+
+**Expo** est un ensemble d'outils et de services qui facilite le développement avec React Native. Sans Expo, configurer React Native nécessite d'installer Xcode, Android Studio, configurer les SDKs, les émulateurs, etc. Expo gère tout cela pour vous.
+
+### Ce qu'Expo apporte
+
+- **Création de projet rapide** : `npx create-expo-app@latest` au lieu d'une configuration manuelle
+- **Expo Go** : application mobile pour tester votre code instantanément (pas besoin d'émulateur)
+- **SDK Expo** : accès aux fonctionnalités natives (caméra, GPS, notifications) via des API JavaScript
+- **Expo Router** : système de navigation basé sur les fichiers (comme Next.js)
+- **EAS (Expo Application Services)** : compilation et déploiement sur les stores
+
+### Expo Go vs Development Build vs EAS Build
+
+<div className="overflow-x-auto my-6">
+  <table className="min-w-full border border-gray-200 dark:border-gray-700">
+    <thead className="bg-gray-50 dark:bg-gray-800">
+      <tr>
+        <th className="px-4 py-3 text-left text-sm font-semibold text-gray-900 dark:text-gray-100 border-b border-gray-200 dark:border-gray-700">Outil</th>
+        <th className="px-4 py-3 text-left text-sm font-semibold text-gray-900 dark:text-gray-100 border-b border-gray-200 dark:border-gray-700">Usage</th>
+        <th className="px-4 py-3 text-left text-sm font-semibold text-gray-900 dark:text-gray-100 border-b border-gray-200 dark:border-gray-700">Quand l'utiliser</th>
+      </tr>
+    </thead>
+    <tbody className="bg-white dark:bg-gray-900 divide-y divide-gray-200 dark:divide-gray-700">
+      <tr>
+        <td className="px-4 py-3 text-sm font-medium text-gray-900 dark:text-gray-100">Expo Go</td>
+        <td className="px-4 py-3 text-sm text-gray-700 dark:text-gray-300">App mobile pré-installée qui charge votre projet en Wi-Fi</td>
+        <td className="px-4 py-3 text-sm text-gray-700 dark:text-gray-300">Développement et prototypage rapide (ce cours)</td>
+      </tr>
+      <tr>
+        <td className="px-4 py-3 text-sm font-medium text-gray-900 dark:text-gray-100">Development Build</td>
+        <td className="px-4 py-3 text-sm text-gray-700 dark:text-gray-300">Version personnalisée d'Expo Go avec vos modules natifs</td>
+        <td className="px-4 py-3 text-sm text-gray-700 dark:text-gray-300">Quand Expo Go ne supporte pas un module nécessaire</td>
+      </tr>
+      <tr>
+        <td className="px-4 py-3 text-sm font-medium text-gray-900 dark:text-gray-100">EAS Build</td>
+        <td className="px-4 py-3 text-sm text-gray-700 dark:text-gray-300">Compilation dans le cloud pour générer les fichiers .apk / .ipa</td>
+        <td className="px-4 py-3 text-sm text-gray-700 dark:text-gray-300">Publication sur les stores (App Store, Google Play)</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<Callout type="info" title="Pour ce cours">
+Nous utilisons **Expo Go** pour le développement. C'est la méthode la plus rapide pour tester : vous scannez un QR code avec votre téléphone et l'application se charge instantanément, avec rechargement automatique à chaque modification du code.
+</Callout>
+
+<QuickCheck
+  question="Pourquoi utilise-t-on Expo plutôt que React Native seul ?"
+  options={[
+    "Expo est un langage de programmation différent de React Native",
+    "Expo simplifie la configuration, fournit un SDK et permet de tester via Expo Go sans émulateur",
+    "React Native ne fonctionne pas sans Expo",
+    "Expo remplace React par un framework différent"
+  ]}
+  correctAnswer={1}
+  explanation="Expo est un ensemble d'outils qui simplifie le développement React Native : pas besoin de configurer Xcode/Android Studio, SDK prêt à l'emploi pour les fonctionnalités natives, et Expo Go pour tester sur son téléphone en scannant un QR code. React Native fonctionne sans Expo, mais la configuration est plus complexe."
+/>
+
+### Comparaison avec Vite (R4A10)
+
+En R4A10, vous avez utilisé **Vite** pour créer vos projets React web. Expo joue un rôle similaire pour React Native :
+
+<div className="overflow-x-auto my-6">
+  <table className="min-w-full border border-gray-200 dark:border-gray-700">
+    <thead className="bg-gray-50 dark:bg-gray-800">
+      <tr>
+        <th className="px-4 py-3 text-left text-sm font-semibold text-gray-900 dark:text-gray-100 border-b border-gray-200 dark:border-gray-700"></th>
+        <th className="px-4 py-3 text-left text-sm font-semibold text-gray-900 dark:text-gray-100 border-b border-gray-200 dark:border-gray-700">Vite (React web)</th>
+        <th className="px-4 py-3 text-left text-sm font-semibold text-gray-900 dark:text-gray-100 border-b border-gray-200 dark:border-gray-700">Expo (React Native)</th>
+      </tr>
+    </thead>
+    <tbody className="bg-white dark:bg-gray-900 divide-y divide-gray-200 dark:divide-gray-700">
+      <tr>
+        <td className="px-4 py-3 text-sm font-medium text-gray-900 dark:text-gray-100">Création de projet</td>
+        <td className="px-4 py-3 text-sm text-gray-700 dark:text-gray-300"><code>npm create vite@latest</code></td>
+        <td className="px-4 py-3 text-sm text-gray-700 dark:text-gray-300"><code>npx create-expo-app@latest</code></td>
+      </tr>
+      <tr>
+        <td className="px-4 py-3 text-sm font-medium text-gray-900 dark:text-gray-100">Lancement</td>
+        <td className="px-4 py-3 text-sm text-gray-700 dark:text-gray-300"><code>npm run dev</code></td>
+        <td className="px-4 py-3 text-sm text-gray-700 dark:text-gray-300"><code>npx expo start</code></td>
+      </tr>
+      <tr>
+        <td className="px-4 py-3 text-sm font-medium text-gray-900 dark:text-gray-100">Rechargement auto</td>
+        <td className="px-4 py-3 text-sm text-gray-700 dark:text-gray-300">HMR dans le navigateur</td>
+        <td className="px-4 py-3 text-sm text-gray-700 dark:text-gray-300">Fast Refresh sur le téléphone</td>
+      </tr>
+      <tr>
+        <td className="px-4 py-3 text-sm font-medium text-gray-900 dark:text-gray-100">Où voir le résultat</td>
+        <td className="px-4 py-3 text-sm text-gray-700 dark:text-gray-300">Navigateur (localhost:5173)</td>
+        <td className="px-4 py-3 text-sm text-gray-700 dark:text-gray-300">Expo Go sur téléphone (ou émulateur)</td>
+      </tr>
+      <tr>
+        <td className="px-4 py-3 text-sm font-medium text-gray-900 dark:text-gray-100">Routing</td>
+        <td className="px-4 py-3 text-sm text-gray-700 dark:text-gray-300">React Router (config manuelle)</td>
+        <td className="px-4 py-3 text-sm text-gray-700 dark:text-gray-300">Expo Router (file-based)</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<QuickCheck
+  question="Quel outil est l'équivalent de Vite pour React Native ?"
+  options={[
+    "npm",
+    "Expo",
+    "Android Studio",
+    "Xcode"
+  ]}
+  correctAnswer={1}
+  explanation="Expo joue un rôle similaire à Vite : il simplifie la création de projet, fournit un serveur de développement avec rechargement automatique, et gère la configuration. La commande npx create-expo-app@latest est l'équivalent de npm create vite@latest."
+/>
+
+## À retenir
+
+<Callout type="success" title="Comprendre, pas mémoriser">
+**React Native :**
+- Framework cross-platform par Meta, basé sur React
+- Produit des composants **natifs** (pas de WebView)
+- Même JavaScript, mêmes hooks, mêmes concepts que React web
+- Composants différents : `View` au lieu de `div`, `Text` au lieu de `p`
+
+**Expo :**
+- Ensemble d'outils qui simplifie le développement React Native
+- **Expo Go** : tester sur votre téléphone en scannant un QR code
+- **Expo Router** : navigation basée sur les fichiers
+- Équivalent de Vite pour le mobile
+</Callout>

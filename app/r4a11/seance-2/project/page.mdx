@@ -1,0 +1,227 @@
+# Projet Fil Rouge - Séance 2
+
+Le projet fil rouge est une application **Notes & Tâches** que vous construisez progressivement au fil des séances. En Séance 1, vous avez mis en place la structure de navigation. En Séance 2, vous ajoutez la **gestion d'état**, les **formulaires** et la **persistance des données**.
+
+<Callout type="info" title="Projet continu">
+Ce projet s'enrichit à chaque séance :
+- **Séance 1** : Structure, navigation, écrans de base
+- **Séance 2** (cette séance) : État, formulaires, AsyncStorage
+- **Séance 3** : API REST, FlatList, caméra/GPS
+- **Séance 4** : Optimisation, build, déploiement
+</Callout>
+
+## Objectifs du sprint Séance 2
+
+À la fin de cette séance, votre application doit permettre de :
+
+1. **Créer des notes/tâches** via un formulaire avec validation
+2. **Afficher la liste** des notes avec catégories
+3. **Modifier le statut** (fait/non fait) en tapant sur un élément
+4. **Supprimer** des éléments
+5. **Persister les données** avec AsyncStorage (les données sont conservées après fermeture de l'app)
+6. **Sauvegarder des préférences** utilisateur (thème, tri)
+
+## Fonctionnalités requises
+
+### 1. Écran Liste (onglet principal)
+
+Afficher la liste des notes/tâches avec :
+
+- Filtrage par catégorie (boutons en haut)
+- Indicateur de catégorie (couleur) sur chaque élément
+- Tap pour basculer fait/non fait
+- Bouton de suppression
+- Compteur d'éléments restants
+- Message quand la liste est vide
+
+```jsx
+// Structure attendue pour un élément
+const item = {
+  id: 1708000000000,        // timestamp unique
+  text: "Apprendre AsyncStorage",
+  category: "cours",        // "cours", "perso", "travail"
+  done: false,
+  createdAt: "2025-02-15T10:30:00.000Z",
+};
+```
+
+### 2. Écran Ajout (onglet ou modal)
+
+Formulaire pour créer une note/tâche :
+
+- Champ texte (obligatoire, minimum 3 caractères)
+- Sélection de catégorie (3 catégories minimum)
+- Bouton "Ajouter" avec validation
+- KeyboardAvoidingView pour le clavier
+- Retour à la liste après ajout (ou message de succès)
+
+### 3. Écran Paramètres (onglet)
+
+Préférences de l'utilisateur :
+
+- Switch pour afficher/masquer les éléments terminés
+- Tri par date ou par catégorie
+- Bouton "Supprimer tout" avec confirmation (Alert)
+- Les préférences sont sauvegardées dans AsyncStorage
+
+### 4. Persistance
+
+Toutes les données doivent être persistées :
+
+- **Notes/tâches** : sauvegardées à chaque modification
+- **Préférences** : sauvegardées à chaque changement
+- **Chargement** : les données sont restaurées au lancement de l'app
+- **Gestion d'erreurs** : try/catch sur toutes les opérations AsyncStorage
+
+## Guide étape par étape (optionnel)
+
+<Callout type="tip" title="Suivez ces étapes si vous êtes bloqué">
+Ce guide est optionnel. Si vous vous sentez à l'aise, implémentez directement les fonctionnalités requises.
+</Callout>
+
+### Étape 1 : Structure de navigation
+
+Si ce n'est pas déjà fait, créez la structure avec 3 onglets :
+
+```
+app/
+  (tabs)/
+    _layout.tsx     ← Configuration des onglets
+    index.tsx       ← Liste des notes
+    add.tsx         ← Formulaire d'ajout
+    settings.tsx    ← Paramètres
+```
+
+### Étape 2 : Données en mémoire
+
+Commencez avec des données en dur dans `useState` :
+
+```jsx
+const [notes, setNotes] = useState([
+  { id: 1, text: 'Première note', category: 'perso', done: false, createdAt: new Date().toISOString() },
+  { id: 2, text: 'Deuxième note', category: 'cours', done: true, createdAt: new Date().toISOString() },
+]);
+```
+
+Implémentez l'affichage, le toggle et la suppression avec ces données en mémoire.
+
+### Étape 3 : Formulaire d'ajout
+
+Créez le formulaire dans l'onglet "Ajouter" :
+
+- TextInput pour le texte
+- Boutons de sélection pour la catégorie
+- Validation (champ non vide)
+- Ajout à la liste avec `setNotes([newNote, ...notes])`
+
+### Étape 4 : AsyncStorage
+
+Ajoutez la persistance :
+
+1. Installez : `npx expo install @react-native-async-storage/async-storage`
+2. Créez un fichier `utils/storage.js` avec les fonctions `loadNotes()` et `saveNotes()`
+3. Chargez les données au montage avec `useEffect`
+4. Sauvegardez à chaque modification avec `useEffect` sur `notes`
+5. Utilisez le flag `isLoaded` pour éviter l'écrasement
+
+### Étape 5 : Préférences
+
+Ajoutez les paramètres dans l'onglet "Paramètres" :
+
+- Objet de préférences dans `useState`
+- Composants `Switch` pour les toggles
+- Sauvegarde/chargement séparés des notes (`@app_preferences`)
+
+### Étape 6 : Améliorations
+
+- Ajoutez `useFocusEffect` pour recharger la liste à chaque visite
+- Ajoutez une bannière offline avec `NetInfo`
+- Améliorez les styles et les animations
+
+## Critères d'évaluation
+
+<div className="overflow-x-auto my-6">
+  <table className="min-w-full border border-gray-200 dark:border-gray-700">
+    <thead className="bg-gray-50 dark:bg-gray-800">
+      <tr>
+        <th className="px-4 py-3 text-left text-sm font-semibold text-gray-900 dark:text-gray-100 border-b border-gray-200 dark:border-gray-700">Critère</th>
+        <th className="px-4 py-3 text-left text-sm font-semibold text-gray-900 dark:text-gray-100 border-b border-gray-200 dark:border-gray-700">Points</th>
+        <th className="px-4 py-3 text-left text-sm font-semibold text-gray-900 dark:text-gray-100 border-b border-gray-200 dark:border-gray-700">Détail</th>
+      </tr>
+    </thead>
+    <tbody className="bg-white dark:bg-gray-900 divide-y divide-gray-200 dark:divide-gray-700">
+      <tr>
+        <td className="px-4 py-3 text-sm font-medium text-gray-900 dark:text-gray-100">Fonctionnalités</td>
+        <td className="px-4 py-3 text-sm text-gray-700 dark:text-gray-300">8 pts</td>
+        <td className="px-4 py-3 text-sm text-gray-700 dark:text-gray-300">CRUD complet (ajout, affichage, toggle, suppression), catégories, filtrage</td>
+      </tr>
+      <tr>
+        <td className="px-4 py-3 text-sm font-medium text-gray-900 dark:text-gray-100">Persistance</td>
+        <td className="px-4 py-3 text-sm text-gray-700 dark:text-gray-300">4 pts</td>
+        <td className="px-4 py-3 text-sm text-gray-700 dark:text-gray-300">AsyncStorage fonctionnel, données conservées après relance, gestion d'erreurs</td>
+      </tr>
+      <tr>
+        <td className="px-4 py-3 text-sm font-medium text-gray-900 dark:text-gray-100">Formulaire</td>
+        <td className="px-4 py-3 text-sm text-gray-700 dark:text-gray-300">4 pts</td>
+        <td className="px-4 py-3 text-sm text-gray-700 dark:text-gray-300">Validation, KeyboardAvoidingView, messages d'erreur, UX du clavier</td>
+      </tr>
+      <tr>
+        <td className="px-4 py-3 text-sm font-medium text-gray-900 dark:text-gray-100">Qualité du code</td>
+        <td className="px-4 py-3 text-sm text-gray-700 dark:text-gray-300">2 pts</td>
+        <td className="px-4 py-3 text-sm text-gray-700 dark:text-gray-300">Organisation, composants réutilisables, pas de code dupliqué</td>
+      </tr>
+      <tr>
+        <td className="px-4 py-3 text-sm font-medium text-gray-900 dark:text-gray-100">Interface</td>
+        <td className="px-4 py-3 text-sm text-gray-700 dark:text-gray-300">2 pts</td>
+        <td className="px-4 py-3 text-sm text-gray-700 dark:text-gray-300">Styles cohérents, feedback visuel, états vides gérés</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+**Total : 20 points**
+
+## Livrables attendus
+
+1. **Code source** du projet Expo (dossier complet)
+2. L'application doit se lancer avec `npx expo start` sans erreur
+3. Les données doivent persister entre les relances de l'application
+
+<Callout type="warning" title="Pas de code copié sans compréhension">
+Si vous utilisez l'IA pour générer du code :
+- **Comprenez chaque ligne** avant de l'intégrer
+- **Adaptez-le** à votre projet (noms, structure, styles)
+- **Testez-le** et corrigez les erreurs
+- **Soyez capable d'expliquer** ce que fait le code
+
+Le code copié sans compréhension sera identifiable et pénalisé.
+</Callout>
+
+## Ressources
+
+<Resources resources={[
+  {
+    title: "AsyncStorage Documentation",
+    description: "API complète pour la persistance locale",
+    url: "https://react-native-async-storage.github.io/async-storage/",
+    type: "doc"
+  },
+  {
+    title: "React Native TextInput",
+    description: "Référence du composant TextInput",
+    url: "https://reactnative.dev/docs/textinput",
+    type: "doc"
+  },
+  {
+    title: "Expo Router Tabs",
+    description: "Navigation par onglets avec Expo Router",
+    url: "https://docs.expo.dev/router/advanced/tabs/",
+    type: "doc"
+  },
+  {
+    title: "R4A10 Séance 3 - Formulaires",
+    description: "Rappel : formulaires contrôlés en React web",
+    url: "/seance-3/forms",
+    type: "doc"
+  }
+]} />

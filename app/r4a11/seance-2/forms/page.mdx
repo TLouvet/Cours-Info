@@ -1,0 +1,627 @@
+# Formulaires sur Mobile
+
+En R4A10 (Séance 3), vous avez appris à créer des formulaires contrôlés avec React. Le pattern est identique en React Native : chaque champ est lié à un état via `value` et `onChangeText`. Ce qui change, c'est la gestion du **clavier virtuel** et de l'**espace d'affichage réduit**.
+
+## Rappel : composants contrôlés
+
+Le pattern de composant contrôlé est le même qu'en React web :
+
+```jsx
+// React web (R4A10)
+const [email, setEmail] = useState('');
+<input value={email} onChange={(e) => setEmail(e.target.value)} />
+
+// React Native (R4A11) - même pattern
+const [email, setEmail] = useState('');
+<TextInput value={email} onChangeText={setEmail} />
+```
+
+Le composant React contrôle la valeur du champ. L'état est la "source de vérité", et le champ affiche toujours la valeur de l'état.
+
+## Formulaire avec plusieurs champs
+
+### Structure de base
+
+```jsx
+import { useState } from 'react';
+import { View, Text, TextInput, Pressable, StyleSheet, Alert } from 'react-native';
+
+function ContactForm() {
+  const [name, setName] = useState('');
+  const [email, setEmail] = useState('');
+  const [message, setMessage] = useState('');
+
+  const handleSubmit = () => {
+    // Validation simple
+    if (!name.trim() || !email.trim() || !message.trim()) {
+      Alert.alert('Erreur', 'Tous les champs sont obligatoires');
+      return;
+    }
+
+    Alert.alert('Succès', `Message envoyé par ${name}`);
+    // Réinitialiser le formulaire
+    setName('');
+    setEmail('');
+    setMessage('');
+  };
+
+  return (
+    <View style={styles.form}>
+      <Text style={styles.label}>Nom</Text>
+      <TextInput
+        style={styles.input}
+        value={name}
+        onChangeText={setName}
+        placeholder="Jean Dupont"
+        autoCapitalize="words"
+      />
+
+      <Text style={styles.label}>Email</Text>
+      <TextInput
+        style={styles.input}
+        value={email}
+        onChangeText={setEmail}
+        placeholder="jean@example.com"
+        keyboardType="email-address"
+        autoCapitalize="none"
+      />
+
+      <Text style={styles.label}>Message</Text>
+      <TextInput
+        style={[styles.input, styles.textArea]}
+        value={message}
+        onChangeText={setMessage}
+        placeholder="Votre message..."
+        multiline
+        numberOfLines={4}
+        textAlignVertical="top"
+      />
+
+      <Pressable style={styles.submitButton} onPress={handleSubmit}>
+        <Text style={styles.submitText}>Envoyer</Text>
+      </Pressable>
+    </View>
+  );
+}
+
+const styles = StyleSheet.create({
+  form: { padding: 16 },
+  label: { fontSize: 14, fontWeight: '600', color: '#333', marginBottom: 4, marginTop: 16 },
+  input: {
+    backgroundColor: '#fff', borderWidth: 1, borderColor: '#ddd',
+    borderRadius: 8, padding: 12, fontSize: 16,
+  },
+  textArea: { height: 120, textAlignVertical: 'top' },
+  submitButton: {
+    backgroundColor: '#0066cc', borderRadius: 8, padding: 16,
+    alignItems: 'center', marginTop: 24,
+  },
+  submitText: { color: '#fff', fontSize: 16, fontWeight: '600' },
+});
+```
+
+<Callout type="info" title="Alert.alert() remplace window.alert()">
+En React web, vous utilisez `alert()` ou des composants de notification. En React Native, `Alert.alert(titre, message)` affiche une boîte de dialogue native du système. C'est l'équivalent mobile de `window.alert()`, mais avec un meilleur rendu visuel car elle utilise les dialogues natifs iOS/Android.
+</Callout>
+
+### Regrouper l'état avec un objet
+
+Pour les formulaires avec beaucoup de champs, vous pouvez regrouper l'état dans un objet (même technique qu'en R4A10) :
+
+```jsx
+function RegistrationForm() {
+  const [form, setForm] = useState({
+    firstName: '',
+    lastName: '',
+    email: '',
+    password: '',
+    phone: '',
+  });
+
+  // Fonction générique pour mettre à jour un champ
+  const updateField = (field, value) => {
+    setForm(prev => ({ ...prev, [field]: value }));
+  };
+
+  return (
+    <View>
+      <TextInput
+        value={form.firstName}
+        onChangeText={(value) => updateField('firstName', value)}
+        placeholder="Prénom"
+      />
+      <TextInput
+        value={form.lastName}
+        onChangeText={(value) => updateField('lastName', value)}
+        placeholder="Nom"
+      />
+      <TextInput
+        value={form.email}
+        onChangeText={(value) => updateField('email', value)}
+        placeholder="Email"
+        keyboardType="email-address"
+        autoCapitalize="none"
+      />
+      {/* ... autres champs */}
+    </View>
+  );
+}
+```
+
+<QuickCheck
+  question="Comment mettre à jour un seul champ dans un objet d'état sans perdre les autres valeurs ?"
+  options={[
+    "form.email = newValue",
+    "setForm({ email: newValue })",
+    "setForm(prev => ({ ...prev, email: newValue }))",
+    "setForm({ ...form, email: newValue }) sans fonction de rappel"
+  ]}
+  correctAnswer={2}
+  explanation="On utilise le spread operator avec une fonction de rappel (prev) pour garantir qu'on travaille avec l'état le plus récent. setForm(prev => ({ ...prev, email: newValue })) copie toutes les propriétés existantes et écrase uniquement email. L'option D fonctionne dans la plupart des cas mais peut causer des bugs si plusieurs mises à jour sont en attente."
+/>
+
+## KeyboardAvoidingView
+
+Le problème principal des formulaires sur mobile : le clavier virtuel couvre les champs de saisie en bas de l'écran. `KeyboardAvoidingView` ajuste automatiquement la position du contenu quand le clavier apparaît.
+
+```jsx
+import { KeyboardAvoidingView, Platform, ScrollView, StyleSheet } from 'react-native';
+
+function FormScreen() {
+  return (
+    <KeyboardAvoidingView
+      style={styles.container}
+      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+      keyboardVerticalOffset={90}  // Ajuster selon la hauteur du header
+    >
+      <ScrollView contentContainerStyle={styles.scrollContent}>
+        {/* Vos champs de formulaire ici */}
+        <TextInput style={styles.input} placeholder="Nom" />
+        <TextInput style={styles.input} placeholder="Email" />
+        <TextInput style={styles.input} placeholder="Message" multiline />
+        <Pressable style={styles.button}>
+          <Text style={styles.buttonText}>Envoyer</Text>
+        </Pressable>
+      </ScrollView>
+    </KeyboardAvoidingView>
+  );
+}
+
+const styles = StyleSheet.create({
+  container: { flex: 1 },
+  scrollContent: { padding: 16, paddingBottom: 40 },
+  input: {
+    backgroundColor: '#fff', borderWidth: 1, borderColor: '#ddd',
+    borderRadius: 8, padding: 12, fontSize: 16, marginBottom: 12,
+  },
+  button: { backgroundColor: '#0066cc', borderRadius: 8, padding: 16, alignItems: 'center' },
+  buttonText: { color: '#fff', fontSize: 16, fontWeight: '600' },
+});
+```
+
+<Callout type="warning" title="behavior diffère entre iOS et Android">
+Le comportement du KeyboardAvoidingView est différent selon la plateforme :
+- **iOS** : utilisez `behavior="padding"` (ajoute du padding en bas)
+- **Android** : utilisez `behavior="height"` (réduit la hauteur du conteneur)
+
+Utilisez `Platform.OS` pour appliquer le bon comportement :
+```jsx
+behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+```
+
+Si le résultat n'est pas satisfaisant, ajustez `keyboardVerticalOffset` selon la hauteur de votre barre de navigation.
+</Callout>
+
+## ScrollView pour les formulaires longs
+
+Les formulaires longs dépassent souvent la taille de l'écran, surtout quand le clavier est ouvert. Combinez `KeyboardAvoidingView` avec `ScrollView` :
+
+```jsx
+import { useRef } from 'react';
+import {
+  View, Text, TextInput, Pressable, ScrollView,
+  KeyboardAvoidingView, Platform, Keyboard, StyleSheet
+} from 'react-native';
+
+function LongForm() {
+  const emailRef = useRef(null);
+  const phoneRef = useRef(null);
+  const addressRef = useRef(null);
+  const cityRef = useRef(null);
+
+  return (
+    <KeyboardAvoidingView
+      style={{ flex: 1 }}
+      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+    >
+      <Pressable onPress={Keyboard.dismiss} style={{ flex: 1 }}>
+        <ScrollView
+          style={styles.container}
+          keyboardShouldPersistTaps="handled"  // Permet de taper sur les boutons
+        >
+          <Text style={styles.title}>Inscription</Text>
+
+          <Text style={styles.label}>Nom complet</Text>
+          <TextInput
+            style={styles.input}
+            placeholder="Jean Dupont"
+            returnKeyType="next"
+            onSubmitEditing={() => emailRef.current?.focus()}
+          />
+
+          <Text style={styles.label}>Email</Text>
+          <TextInput
+            ref={emailRef}
+            style={styles.input}
+            placeholder="jean@example.com"
+            keyboardType="email-address"
+            autoCapitalize="none"
+            returnKeyType="next"
+            onSubmitEditing={() => phoneRef.current?.focus()}
+          />
+
+          <Text style={styles.label}>Téléphone</Text>
+          <TextInput
+            ref={phoneRef}
+            style={styles.input}
+            placeholder="06 12 34 56 78"
+            keyboardType="phone-pad"
+            returnKeyType="next"
+            onSubmitEditing={() => addressRef.current?.focus()}
+          />
+
+          <Text style={styles.label}>Adresse</Text>
+          <TextInput
+            ref={addressRef}
+            style={styles.input}
+            placeholder="12 rue de la Paix"
+            returnKeyType="next"
+            onSubmitEditing={() => cityRef.current?.focus()}
+          />
+
+          <Text style={styles.label}>Ville</Text>
+          <TextInput
+            ref={cityRef}
+            style={styles.input}
+            placeholder="Paris"
+            returnKeyType="done"
+            onSubmitEditing={Keyboard.dismiss}
+          />
+
+          <Pressable style={styles.submitButton}>
+            <Text style={styles.submitText}>S'inscrire</Text>
+          </Pressable>
+        </ScrollView>
+      </Pressable>
+    </KeyboardAvoidingView>
+  );
+}
+
+const styles = StyleSheet.create({
+  container: { flex: 1, padding: 16 },
+  title: { fontSize: 24, fontWeight: 'bold', marginBottom: 16 },
+  label: { fontSize: 14, fontWeight: '600', marginBottom: 4, marginTop: 12 },
+  input: {
+    backgroundColor: '#fff', borderWidth: 1, borderColor: '#ddd',
+    borderRadius: 8, padding: 12, fontSize: 16,
+  },
+  submitButton: {
+    backgroundColor: '#0066cc', borderRadius: 8, padding: 16,
+    alignItems: 'center', marginTop: 24, marginBottom: 40,
+  },
+  submitText: { color: '#fff', fontSize: 16, fontWeight: '600' },
+});
+```
+
+<Callout type="tip" title="keyboardShouldPersistTaps">
+La prop `keyboardShouldPersistTaps="handled"` sur `ScrollView` permet à l'utilisateur de taper sur un bouton (comme "Envoyer") **sans devoir d'abord fermer le clavier**. Sans cette prop, le premier tap ferme le clavier et l'utilisateur doit taper une deuxième fois pour activer le bouton.
+</Callout>
+
+<QuickCheck
+  question="Quel est le rôle de KeyboardAvoidingView ?"
+  options={[
+    "Il ferme automatiquement le clavier quand l'utilisateur tape en dehors",
+    "Il ajuste la position du contenu pour que le clavier ne masque pas les champs de saisie",
+    "Il empêche le clavier de s'ouvrir",
+    "Il change le type de clavier automatiquement"
+  ]}
+  correctAnswer={1}
+  explanation="KeyboardAvoidingView déplace le contenu vers le haut quand le clavier virtuel apparaît, pour que les champs de saisie restent visibles. Sans ce composant, un champ en bas de l'écran serait masqué par le clavier. Ce problème n'existe pas sur le web car le clavier physique ne couvre pas l'écran."
+/>
+
+## Validation de formulaire
+
+La validation fonctionne de la même manière qu'en React web : on vérifie les valeurs de l'état avant de soumettre.
+
+### Validation simple avec messages d'erreur
+
+```jsx
+import { useState } from 'react';
+import { View, Text, TextInput, Pressable, StyleSheet } from 'react-native';
+
+function ValidatedForm() {
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [errors, setErrors] = useState({});
+
+  const validate = () => {
+    const newErrors = {};
+
+    // Validation email
+    if (!email.trim()) {
+      newErrors.email = 'L\'email est obligatoire';
+    } else if (!email.includes('@')) {
+      newErrors.email = 'L\'email doit contenir un @';
+    }
+
+    // Validation mot de passe
+    if (!password) {
+      newErrors.password = 'Le mot de passe est obligatoire';
+    } else if (password.length < 6) {
+      newErrors.password = 'Le mot de passe doit contenir au moins 6 caractères';
+    }
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0; // true si aucune erreur
+  };
+
+  const handleSubmit = () => {
+    if (validate()) {
+      // Formulaire valide, traiter les données
+      console.log('Connexion avec', email, password);
+    }
+  };
+
+  return (
+    <View style={styles.form}>
+      <Text style={styles.label}>Email</Text>
+      <TextInput
+        style={[styles.input, errors.email && styles.inputError]}
+        value={email}
+        onChangeText={(text) => {
+          setEmail(text);
+          // Effacer l'erreur quand l'utilisateur tape
+          if (errors.email) setErrors(prev => ({ ...prev, email: null }));
+        }}
+        placeholder="jean@example.com"
+        keyboardType="email-address"
+        autoCapitalize="none"
+      />
+      {errors.email && <Text style={styles.errorText}>{errors.email}</Text>}
+
+      <Text style={styles.label}>Mot de passe</Text>
+      <TextInput
+        style={[styles.input, errors.password && styles.inputError]}
+        value={password}
+        onChangeText={(text) => {
+          setPassword(text);
+          if (errors.password) setErrors(prev => ({ ...prev, password: null }));
+        }}
+        placeholder="Au moins 6 caractères"
+        secureTextEntry
+      />
+      {errors.password && <Text style={styles.errorText}>{errors.password}</Text>}
+
+      <Pressable style={styles.submitButton} onPress={handleSubmit}>
+        <Text style={styles.submitText}>Se connecter</Text>
+      </Pressable>
+    </View>
+  );
+}
+
+const styles = StyleSheet.create({
+  form: { padding: 16 },
+  label: { fontSize: 14, fontWeight: '600', marginBottom: 4, marginTop: 16 },
+  input: {
+    backgroundColor: '#fff', borderWidth: 1, borderColor: '#ddd',
+    borderRadius: 8, padding: 12, fontSize: 16,
+  },
+  inputError: {
+    borderColor: '#f44336',       // Bordure rouge en cas d'erreur
+    borderWidth: 2,
+  },
+  errorText: {
+    color: '#f44336',
+    fontSize: 12,
+    marginTop: 4,
+  },
+  submitButton: {
+    backgroundColor: '#0066cc', borderRadius: 8, padding: 16,
+    alignItems: 'center', marginTop: 24,
+  },
+  submitText: { color: '#fff', fontSize: 16, fontWeight: '600' },
+});
+```
+
+<Callout type="info" title="Même pattern qu'en R4A10">
+La validation de formulaire en React Native utilise exactement le même pattern qu'en React web :
+1. Un objet `errors` dans l'état
+2. Une fonction `validate()` qui vérifie les champs et remplit l'objet errors
+3. Des styles conditionnels pour les champs en erreur
+4. Des messages d'erreur affichés sous les champs
+
+La seule différence : pas de `<form>` ni d'événement `onSubmit` natif. La soumission passe par un `Pressable` avec `onPress`.
+</Callout>
+
+<QuickCheck
+  question="Pourquoi effacer l'erreur quand l'utilisateur commence à taper dans un champ ?"
+  options={[
+    "Pour libérer de la mémoire",
+    "Pour donner un feedback immédiat : l'erreur disparaît dès que l'utilisateur corrige le champ",
+    "C'est obligatoire pour que TextInput fonctionne",
+    "Pour réinitialiser le formulaire"
+  ]}
+  correctAnswer={1}
+  explanation="Effacer l'erreur pendant la saisie donne un feedback immédiat à l'utilisateur : le champ redevient normal dès qu'il commence à corriger. Laisser l'erreur affichée pendant que l'utilisateur tape est frustrant. La validation finale se fait à la soumission."
+/>
+
+## Exemple complet : formulaire de contact
+
+```jsx
+import { useState, useRef } from 'react';
+import {
+  View, Text, TextInput, Pressable, ScrollView,
+  KeyboardAvoidingView, Platform, Keyboard, Alert, StyleSheet
+} from 'react-native';
+
+export default function ContactScreen() {
+  const [form, setForm] = useState({
+    name: '', email: '', subject: '', message: '',
+  });
+  const [errors, setErrors] = useState({});
+  const emailRef = useRef(null);
+  const subjectRef = useRef(null);
+  const messageRef = useRef(null);
+
+  const updateField = (field, value) => {
+    setForm(prev => ({ ...prev, [field]: value }));
+    if (errors[field]) {
+      setErrors(prev => ({ ...prev, [field]: null }));
+    }
+  };
+
+  const validate = () => {
+    const e = {};
+    if (!form.name.trim()) e.name = 'Le nom est obligatoire';
+    if (!form.email.trim()) e.email = 'L\'email est obligatoire';
+    else if (!/\S+@\S+\.\S+/.test(form.email)) e.email = 'Email invalide';
+    if (!form.subject.trim()) e.subject = 'Le sujet est obligatoire';
+    if (!form.message.trim()) e.message = 'Le message est obligatoire';
+    else if (form.message.trim().length < 10) e.message = 'Le message doit contenir au moins 10 caractères';
+    setErrors(e);
+    return Object.keys(e).length === 0;
+  };
+
+  const handleSubmit = () => {
+    Keyboard.dismiss();
+    if (validate()) {
+      Alert.alert('Message envoyé', `Merci ${form.name}, nous avons bien reçu votre message.`);
+      setForm({ name: '', email: '', subject: '', message: '' });
+    }
+  };
+
+  return (
+    <KeyboardAvoidingView
+      style={{ flex: 1 }}
+      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+    >
+      <ScrollView
+        style={styles.container}
+        keyboardShouldPersistTaps="handled"
+      >
+        <Text style={styles.title}>Contactez-nous</Text>
+        <Text style={styles.subtitle}>
+          Remplissez le formulaire ci-dessous et nous vous répondrons rapidement.
+        </Text>
+
+        <Text style={styles.label}>Nom *</Text>
+        <TextInput
+          style={[styles.input, errors.name && styles.inputError]}
+          value={form.name}
+          onChangeText={(v) => updateField('name', v)}
+          placeholder="Jean Dupont"
+          autoCapitalize="words"
+          returnKeyType="next"
+          onSubmitEditing={() => emailRef.current?.focus()}
+        />
+        {errors.name && <Text style={styles.error}>{errors.name}</Text>}
+
+        <Text style={styles.label}>Email *</Text>
+        <TextInput
+          ref={emailRef}
+          style={[styles.input, errors.email && styles.inputError]}
+          value={form.email}
+          onChangeText={(v) => updateField('email', v)}
+          placeholder="jean@example.com"
+          keyboardType="email-address"
+          autoCapitalize="none"
+          autoCorrect={false}
+          returnKeyType="next"
+          onSubmitEditing={() => subjectRef.current?.focus()}
+        />
+        {errors.email && <Text style={styles.error}>{errors.email}</Text>}
+
+        <Text style={styles.label}>Sujet *</Text>
+        <TextInput
+          ref={subjectRef}
+          style={[styles.input, errors.subject && styles.inputError]}
+          value={form.subject}
+          onChangeText={(v) => updateField('subject', v)}
+          placeholder="Objet de votre message"
+          returnKeyType="next"
+          onSubmitEditing={() => messageRef.current?.focus()}
+        />
+        {errors.subject && <Text style={styles.error}>{errors.subject}</Text>}
+
+        <Text style={styles.label}>Message *</Text>
+        <TextInput
+          ref={messageRef}
+          style={[styles.input, styles.textArea, errors.message && styles.inputError]}
+          value={form.message}
+          onChangeText={(v) => updateField('message', v)}
+          placeholder="Décrivez votre demande en détail..."
+          multiline
+          numberOfLines={5}
+          textAlignVertical="top"
+        />
+        {errors.message && <Text style={styles.error}>{errors.message}</Text>}
+
+        <Pressable style={styles.submitButton} onPress={handleSubmit}>
+          <Text style={styles.submitText}>Envoyer le message</Text>
+        </Pressable>
+      </ScrollView>
+    </KeyboardAvoidingView>
+  );
+}
+
+const styles = StyleSheet.create({
+  container: { flex: 1, padding: 16, backgroundColor: '#f5f5f5' },
+  title: { fontSize: 24, fontWeight: 'bold', marginBottom: 4 },
+  subtitle: { fontSize: 14, color: '#666', marginBottom: 16 },
+  label: { fontSize: 14, fontWeight: '600', marginBottom: 4, marginTop: 16 },
+  input: {
+    backgroundColor: '#fff', borderWidth: 1, borderColor: '#ddd',
+    borderRadius: 8, padding: 12, fontSize: 16,
+  },
+  inputError: { borderColor: '#f44336', borderWidth: 2 },
+  error: { color: '#f44336', fontSize: 12, marginTop: 4 },
+  textArea: { height: 120, textAlignVertical: 'top' },
+  submitButton: {
+    backgroundColor: '#0066cc', borderRadius: 8, padding: 16,
+    alignItems: 'center', marginTop: 24, marginBottom: 40,
+  },
+  submitText: { color: '#fff', fontSize: 16, fontWeight: '600' },
+});
+```
+
+Cet exemple combine tous les patterns vus dans cette page :
+- **Composants contrôlés** avec un objet d'état regroupé
+- **Navigation entre champs** avec refs et returnKeyType
+- **KeyboardAvoidingView** avec ScrollView
+- **Validation** avec messages d'erreur et styles conditionnels
+- **keyboardShouldPersistTaps** pour pouvoir soumettre sans fermer le clavier
+
+<QuickCheck
+  question="Pourquoi combiner KeyboardAvoidingView avec ScrollView pour les formulaires ?"
+  options={[
+    "KeyboardAvoidingView est obligatoire pour utiliser ScrollView",
+    "KeyboardAvoidingView décale le contenu pour que le clavier ne masque pas les champs, et ScrollView permet de faire défiler si le formulaire est plus grand que l'écran",
+    "C'est la seule façon d'afficher un formulaire en React Native",
+    "ScrollView gère automatiquement le clavier"
+  ]}
+  correctAnswer={1}
+  explanation="Chaque composant a un rôle distinct : KeyboardAvoidingView ajuste la zone visible quand le clavier apparaît, et ScrollView permet le défilement quand le formulaire dépasse la taille de l'écran. Ensemble, ils garantissent que tous les champs restent accessibles même avec le clavier ouvert."
+/>
+
+## À retenir
+
+<Callout type="success" title="Comprendre, pas mémoriser">
+**Formulaires en React Native :**
+- **Même pattern** qu'en React web : composants contrôlés avec `value` + `onChangeText`
+- **KeyboardAvoidingView** : décale le contenu quand le clavier apparaît (behavior différent iOS/Android)
+- **ScrollView** : nécessaire pour les formulaires longs, avec `keyboardShouldPersistTaps="handled"`
+- **Navigation entre champs** : `returnKeyType="next"` + `onSubmitEditing` + `ref.focus()`
+- **Validation** : même logique qu'en web (objet errors, styles conditionnels, messages d'erreur)
+- **Pas de `<form>`** : la soumission passe par `Pressable` + `onPress`
+- **Alert.alert()** : remplace `window.alert()` avec un dialogue natif
+</Callout>

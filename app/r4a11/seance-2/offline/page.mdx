@@ -1,0 +1,424 @@
+# Mode Offline
+
+Les applications mobiles sont utilisées en déplacement : dans le métro, en avion, en zone de couverture réseau limitée. Contrairement aux applications web qui affichent une page d'erreur quand la connexion est perdue, une application mobile doit **continuer à fonctionner** sans réseau.
+
+## Pourquoi le mode offline est important sur mobile
+
+Sur le web, la perte de connexion est un cas exceptionnel : l'utilisateur est généralement sur un réseau Wi-Fi ou filaire. Sur mobile, la situation est différente :
+
+- **Réseau instable** : la connexion peut disparaître en passant dans un tunnel, un ascenseur, un sous-sol
+- **Réseau lent** : la 3G/4G peut être lente dans certaines zones
+- **Mode avion** : l'utilisateur active le mode avion en vol
+- **Économie de batterie** : l'utilisateur désactive les données mobiles
+
+<Callout type="info" title="Attentes des utilisateurs">
+Les utilisateurs d'applications mobiles s'attendent à ce que l'application fonctionne en permanence, même sans connexion. Une application de notes qui refuse de s'ouvrir sans internet est frustrante. Les données locales (AsyncStorage) permettent de maintenir une expérience fonctionnelle en mode offline.
+</Callout>
+
+## Détecter l'état du réseau
+
+Le package `@react-native-community/netinfo` permet de connaître l'état de la connexion réseau.
+
+### Installation
+
+```bash
+npx expo install @react-native-community/netinfo
+```
+
+### Utilisation de base
+
+```jsx
+import { useState, useEffect } from 'react';
+import { View, Text, StyleSheet } from 'react-native';
+import NetInfo from '@react-native-community/netinfo';
+
+function NetworkStatus() {
+  const [isConnected, setIsConnected] = useState(true);
+
+  useEffect(() => {
+    // S'abonner aux changements de connexion
+    const unsubscribe = NetInfo.addEventListener(state => {
+      setIsConnected(state.isConnected);
+    });
+
+    return () => unsubscribe(); // Se désabonner au démontage
+  }, []);
+
+  return (
+    <View style={styles.container}>
+      {!isConnected && (
+        <View style={styles.offlineBanner}>
+          <Text style={styles.offlineText}>
+            Pas de connexion internet - Mode hors ligne
+          </Text>
+        </View>
+      )}
+      {/* Reste de l'application */}
+    </View>
+  );
+}
+
+const styles = StyleSheet.create({
+  container: { flex: 1 },
+  offlineBanner: {
+    backgroundColor: '#f44336', padding: 8, alignItems: 'center',
+  },
+  offlineText: { color: '#fff', fontSize: 13, fontWeight: '600' },
+});
+```
+
+### Vérifier la connexion avant une requête
+
+```jsx
+import NetInfo from '@react-native-community/netinfo';
+
+async function fetchData() {
+  const networkState = await NetInfo.fetch();
+
+  if (!networkState.isConnected) {
+    // Charger depuis le cache local
+    const cachedData = await AsyncStorage.getItem('cached_data');
+    return cachedData ? JSON.parse(cachedData) : [];
+  }
+
+  // Connexion disponible : charger depuis l'API
+  const response = await fetch('https://api.example.com/data');
+  const data = await response.json();
+
+  // Mettre en cache pour utilisation offline
+  await AsyncStorage.setItem('cached_data', JSON.stringify(data));
+
+  return data;
+}
+```
+
+<QuickCheck
+  question="Comment détecter en temps réel les changements de connexion dans React Native ?"
+  options={[
+    "Avec window.navigator.onLine comme sur le web",
+    "Avec NetInfo.addEventListener() du package @react-native-community/netinfo",
+    "React Native détecte automatiquement les changements de connexion",
+    "Avec useEffect et un timer qui vérifie la connexion toutes les secondes"
+  ]}
+  correctAnswer={1}
+  explanation="window.navigator.onLine n'existe pas dans React Native (il n'y a pas de navigateur). Le package @react-native-community/netinfo fournit NetInfo.addEventListener() qui notifie votre application à chaque changement d'état du réseau (connecté/déconnecté, type de connexion)."
+/>
+
+## Stratégie Offline-First
+
+La stratégie **offline-first** consiste à utiliser les données locales comme source principale et à synchroniser avec le serveur quand la connexion est disponible.
+
+### Principe
+
+1. **Lire** toujours depuis le stockage local (AsyncStorage) en premier
+2. **Afficher** les données locales immédiatement (pas de temps de chargement réseau)
+3. **Synchroniser** avec le serveur en arrière-plan quand la connexion est disponible
+4. **Mettre à jour** le stockage local avec les nouvelles données du serveur
+
+```jsx
+import { useState, useEffect } from 'react';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import NetInfo from '@react-native-community/netinfo';
+
+function useOfflineData(storageKey, apiUrl) {
+  const [data, setData] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [isOnline, setIsOnline] = useState(true);
+
+  // 1. Charger les données locales en premier
+  useEffect(() => {
+    const loadLocal = async () => {
+      try {
+        const cached = await AsyncStorage.getItem(storageKey);
+        if (cached) {
+          setData(JSON.parse(cached));
+        }
+      } catch (error) {
+        console.error('Erreur cache local :', error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    loadLocal();
+  }, []);
+
+  // 2. Synchroniser avec le serveur si connecté
+  useEffect(() => {
+    const syncWithServer = async () => {
+      const networkState = await NetInfo.fetch();
+      setIsOnline(networkState.isConnected);
+
+      if (networkState.isConnected) {
+        try {
+          const response = await fetch(apiUrl);
+          const serverData = await response.json();
+          setData(serverData);
+          await AsyncStorage.setItem(storageKey, JSON.stringify(serverData));
+        } catch (error) {
+          console.error('Erreur synchronisation :', error);
+          // Les données locales restent affichées
+        }
+      }
+    };
+    syncWithServer();
+  }, []);
+
+  return { data, isLoading, isOnline };
+}
+```
+
+<Callout type="tip" title="Avantage de l'offline-first">
+Avec cette stratégie, l'application affiche des données **instantanément** (depuis le cache local) sans attendre la réponse du serveur. Si le serveur est disponible, les données sont mises à jour en arrière-plan. L'utilisateur a une expérience fluide, avec ou sans connexion.
+</Callout>
+
+## Quand utiliser AsyncStorage vs API
+
+<div className="overflow-x-auto my-6">
+  <table className="min-w-full border border-gray-200 dark:border-gray-700">
+    <thead className="bg-gray-50 dark:bg-gray-800">
+      <tr>
+        <th className="px-4 py-3 text-left text-sm font-semibold text-gray-900 dark:text-gray-100 border-b border-gray-200 dark:border-gray-700">Type de données</th>
+        <th className="px-4 py-3 text-left text-sm font-semibold text-gray-900 dark:text-gray-100 border-b border-gray-200 dark:border-gray-700">Stockage</th>
+        <th className="px-4 py-3 text-left text-sm font-semibold text-gray-900 dark:text-gray-100 border-b border-gray-200 dark:border-gray-700">Raison</th>
+      </tr>
+    </thead>
+    <tbody className="bg-white dark:bg-gray-900 divide-y divide-gray-200 dark:divide-gray-700">
+      <tr>
+        <td className="px-4 py-3 text-sm text-gray-700 dark:text-gray-300">Préférences utilisateur</td>
+        <td className="px-4 py-3 text-sm text-gray-700 dark:text-gray-300">AsyncStorage uniquement</td>
+        <td className="px-4 py-3 text-sm text-gray-700 dark:text-gray-300">Données locales, pas de synchronisation nécessaire</td>
+      </tr>
+      <tr>
+        <td className="px-4 py-3 text-sm text-gray-700 dark:text-gray-300">Brouillon de formulaire</td>
+        <td className="px-4 py-3 text-sm text-gray-700 dark:text-gray-300">AsyncStorage uniquement</td>
+        <td className="px-4 py-3 text-sm text-gray-700 dark:text-gray-300">Données temporaires, pas besoin de serveur</td>
+      </tr>
+      <tr>
+        <td className="px-4 py-3 text-sm text-gray-700 dark:text-gray-300">Liste de tâches</td>
+        <td className="px-4 py-3 text-sm text-gray-700 dark:text-gray-300">AsyncStorage + API (si partagée)</td>
+        <td className="px-4 py-3 text-sm text-gray-700 dark:text-gray-300">Fonctionner offline, synchroniser quand possible</td>
+      </tr>
+      <tr>
+        <td className="px-4 py-3 text-sm text-gray-700 dark:text-gray-300">Profil utilisateur</td>
+        <td className="px-4 py-3 text-sm text-gray-700 dark:text-gray-300">API + cache AsyncStorage</td>
+        <td className="px-4 py-3 text-sm text-gray-700 dark:text-gray-300">Données serveur, cache pour affichage rapide</td>
+      </tr>
+      <tr>
+        <td className="px-4 py-3 text-sm text-gray-700 dark:text-gray-300">Fil d'actualité</td>
+        <td className="px-4 py-3 text-sm text-gray-700 dark:text-gray-300">API + cache AsyncStorage</td>
+        <td className="px-4 py-3 text-sm text-gray-700 dark:text-gray-300">Données fraîches du serveur, cache pour offline</td>
+      </tr>
+      <tr>
+        <td className="px-4 py-3 text-sm text-gray-700 dark:text-gray-300">Paiement en ligne</td>
+        <td className="px-4 py-3 text-sm text-gray-700 dark:text-gray-300">API uniquement</td>
+        <td className="px-4 py-3 text-sm text-gray-700 dark:text-gray-300">Nécessite obligatoirement une connexion serveur</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+## Synchronisation manuelle
+
+Pour les applications simples, une synchronisation manuelle (bouton "Rafraîchir") est suffisante :
+
+```jsx
+import { useState, useEffect } from 'react';
+import { View, Text, Pressable, ActivityIndicator, StyleSheet } from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import NetInfo from '@react-native-community/netinfo';
+
+function TodoListScreen() {
+  const [todos, setTodos] = useState([]);
+  const [isSyncing, setIsSyncing] = useState(false);
+  const [isOnline, setIsOnline] = useState(true);
+  const [lastSync, setLastSync] = useState(null);
+
+  // Surveiller la connexion
+  useEffect(() => {
+    const unsubscribe = NetInfo.addEventListener(state => {
+      setIsOnline(state.isConnected);
+    });
+    return () => unsubscribe();
+  }, []);
+
+  // Charger les données locales au démarrage
+  useEffect(() => {
+    const loadLocal = async () => {
+      try {
+        const data = await AsyncStorage.getItem('@todos');
+        const syncDate = await AsyncStorage.getItem('@last_sync');
+        if (data) setTodos(JSON.parse(data));
+        if (syncDate) setLastSync(new Date(syncDate));
+      } catch (error) {
+        console.error('Erreur chargement :', error);
+      }
+    };
+    loadLocal();
+  }, []);
+
+  // Synchroniser avec le serveur
+  const syncWithServer = async () => {
+    if (!isOnline) {
+      Alert.alert('Hors ligne', 'Synchronisation impossible sans connexion.');
+      return;
+    }
+
+    setIsSyncing(true);
+    try {
+      const response = await fetch('https://api.example.com/todos');
+      const serverTodos = await response.json();
+      setTodos(serverTodos);
+      await AsyncStorage.setItem('@todos', JSON.stringify(serverTodos));
+
+      const now = new Date();
+      setLastSync(now);
+      await AsyncStorage.setItem('@last_sync', now.toISOString());
+    } catch (error) {
+      console.error('Erreur sync :', error);
+    } finally {
+      setIsSyncing(false);
+    }
+  };
+
+  return (
+    <View style={styles.container}>
+      {/* Barre de statut */}
+      <View style={[styles.statusBar, !isOnline && styles.statusOffline]}>
+        <Text style={styles.statusText}>
+          {isOnline ? 'En ligne' : 'Hors ligne'}
+        </Text>
+        {lastSync && (
+          <Text style={styles.syncText}>
+            Dernière sync : {lastSync.toLocaleTimeString()}
+          </Text>
+        )}
+      </View>
+
+      {/* Bouton de synchronisation */}
+      <Pressable
+        style={[styles.syncButton, !isOnline && styles.syncButtonDisabled]}
+        onPress={syncWithServer}
+        disabled={!isOnline || isSyncing}
+      >
+        {isSyncing ? (
+          <ActivityIndicator color="#fff" />
+        ) : (
+          <Text style={styles.syncButtonText}>Synchroniser</Text>
+        )}
+      </Pressable>
+
+      {/* Liste des tâches */}
+      {todos.map(todo => (
+        <View key={todo.id} style={styles.todoItem}>
+          <Text>{todo.text}</Text>
+        </View>
+      ))}
+    </View>
+  );
+}
+
+const styles = StyleSheet.create({
+  container: { flex: 1, padding: 16, backgroundColor: '#f5f5f5' },
+  statusBar: {
+    flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center',
+    backgroundColor: '#4caf50', padding: 8, borderRadius: 8, marginBottom: 12,
+  },
+  statusOffline: { backgroundColor: '#f44336' },
+  statusText: { color: '#fff', fontWeight: '600', fontSize: 13 },
+  syncText: { color: '#fff', fontSize: 12 },
+  syncButton: {
+    backgroundColor: '#0066cc', padding: 12, borderRadius: 8,
+    alignItems: 'center', marginBottom: 16,
+  },
+  syncButtonDisabled: { backgroundColor: '#999' },
+  syncButtonText: { color: '#fff', fontWeight: '600' },
+  todoItem: {
+    backgroundColor: '#fff', padding: 12, borderRadius: 8, marginBottom: 8,
+  },
+});
+```
+
+<QuickCheck
+  question="Quelle est la stratégie offline-first ?"
+  options={[
+    "Toujours demander les données au serveur d'abord",
+    "Ne jamais utiliser le réseau et tout stocker localement",
+    "Lire les données locales en premier pour un affichage instantané, puis synchroniser avec le serveur quand la connexion est disponible",
+    "Afficher une page d'erreur quand il n'y a pas de connexion"
+  ]}
+  correctAnswer={2}
+  explanation="La stratégie offline-first donne la priorité aux données locales pour un affichage instantané, sans attendre le réseau. Si la connexion est disponible, les données sont synchronisées en arrière-plan. L'utilisateur a une expérience fluide, que la connexion soit disponible ou non."
+/>
+
+## Patterns UX pour le mode offline
+
+### Indicateur de connexion
+
+```jsx
+// Bannière en haut de l'écran
+function OfflineBanner({ isOnline }) {
+  if (isOnline) return null;
+
+  return (
+    <View style={{
+      backgroundColor: '#ff9800', padding: 8, alignItems: 'center',
+    }}>
+      <Text style={{ color: '#fff', fontSize: 13 }}>
+        Mode hors ligne - Les modifications seront synchronisées
+      </Text>
+    </View>
+  );
+}
+```
+
+### Boutons désactivés hors ligne
+
+```jsx
+// Désactiver les actions qui nécessitent une connexion
+<Pressable
+  style={[styles.button, !isOnline && styles.buttonDisabled]}
+  onPress={sendMessage}
+  disabled={!isOnline}
+>
+  <Text style={styles.buttonText}>
+    {isOnline ? 'Envoyer' : 'Connexion requise'}
+  </Text>
+</Pressable>
+```
+
+### Données en attente de synchronisation
+
+```jsx
+// Marquer visuellement les éléments non synchronisés
+<View style={styles.todoItem}>
+  <Text>{todo.text}</Text>
+  {!todo.synced && (
+    <Text style={{ fontSize: 11, color: '#ff9800' }}>En attente de sync</Text>
+  )}
+</View>
+```
+
+<QuickCheck
+  question="Pourquoi afficher une bannière 'Mode hors ligne' plutôt qu'une page d'erreur ?"
+  options={[
+    "Parce que les bannières sont plus jolies",
+    "Parce que l'application reste fonctionnelle avec les données locales, l'utilisateur doit juste être informé du mode dégradé",
+    "Parce que React Native ne supporte pas les pages d'erreur",
+    "Pour que l'utilisateur active manuellement le mode offline"
+  ]}
+  correctAnswer={1}
+  explanation="Avec une stratégie offline-first, l'application fonctionne grâce aux données locales (AsyncStorage). Une bannière discrète informe l'utilisateur que certaines fonctionnalités (synchronisation, envoi de messages) ne sont pas disponibles, sans bloquer l'utilisation de l'app."
+/>
+
+## À retenir
+
+<Callout type="success" title="Comprendre, pas mémoriser">
+**Mode offline en résumé :**
+- **Le réseau mobile est instable** : contrairement au web, la connexion peut disparaître à tout moment
+- **NetInfo** : `@react-native-community/netinfo` pour détecter l'état du réseau
+- **Offline-first** : lire les données locales d'abord, synchroniser ensuite
+- **AsyncStorage comme cache** : stocker les données du serveur localement
+- **UX adaptée** : bannière offline, boutons désactivés, indicateurs de synchronisation
+
+**Principe général** : les données locales (AsyncStorage) permettent à l'application de fonctionner sans réseau. La synchronisation avec le serveur se fait quand la connexion est disponible.
+</Callout>

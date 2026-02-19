@@ -12,6 +12,17 @@ export interface NavSession {
   sections?: NavSection[];
 }
 
+export interface Course {
+  id: string;
+  title: string;
+  shortTitle: string;
+  description: string;
+  color: 'cyan' | 'violet';
+  basePath: string;
+  sessions: NavSession[];
+}
+
+// R4A10 - Compléments Web (existing navigation, kept as-is for backward compatibility)
 export const navigation: NavSession[] = [
   {
     id: 'seance-1',
@@ -131,3 +142,124 @@ export const navigation: NavSession[] = [
     ],
   },
 ];
+
+// R4A11 - Développement Mobile
+export const r4a11Navigation: NavSession[] = [
+  {
+    id: 'r4a11-seance-1',
+    title: 'Séance 1',
+    description: 'Fondamentaux React Native',
+    href: '/r4a11/seance-1',
+    sections: [
+      { id: 'r4a11-s1-intro', title: 'Introduction', href: '/r4a11/seance-1/introduction' },
+      { id: 'r4a11-s1-landscape', title: 'Paysage mobile', href: '/r4a11/seance-1/mobile-landscape' },
+      { id: 'r4a11-s1-rn-intro', title: 'Introduction React Native', href: '/r4a11/seance-1/react-native-intro' },
+      { id: 'r4a11-s1-setup', title: 'Installation & Config', href: '/r4a11/seance-1/setup' },
+      { id: 'r4a11-s1-primitives', title: 'Composants Primitifs', href: '/r4a11/seance-1/primitives' },
+      { id: 'r4a11-s1-stylesheet', title: 'StyleSheet & Flexbox', href: '/r4a11/seance-1/stylesheet' },
+      { id: 'r4a11-s1-navigation', title: 'Navigation', href: '/r4a11/seance-1/navigation' },
+      { id: 'r4a11-s1-multi-screens', title: 'Multi-écrans', href: '/r4a11/seance-1/multi-screens' },
+      { id: 'r4a11-s1-conclusion', title: 'Conclusion', href: '/r4a11/seance-1/conclusion' },
+      { id: 'r4a11-s1-exercises', title: 'Exercices', href: '/r4a11/seance-1/exercises' },
+      { id: 'r4a11-s1-quiz', title: 'Quiz de validation', href: '/r4a11/seance-1/quiz' },
+    ],
+  },
+  {
+    id: 'r4a11-seance-2',
+    title: 'Séance 2',
+    description: 'État & Données',
+    href: '/r4a11/seance-2',
+    sections: [
+      { id: 'r4a11-s2-intro', title: 'Introduction', href: '/r4a11/seance-2/introduction' },
+      { id: 'r4a11-s2-state', title: 'État sur mobile', href: '/r4a11/seance-2/state-mobile' },
+      { id: 'r4a11-s2-textinput', title: 'TextInput', href: '/r4a11/seance-2/text-input' },
+      { id: 'r4a11-s2-forms', title: 'Formulaires', href: '/r4a11/seance-2/forms' },
+      { id: 'r4a11-s2-lifecycle', title: 'Cycle de vie', href: '/r4a11/seance-2/lifecycle' },
+      { id: 'r4a11-s2-storage', title: 'AsyncStorage', href: '/r4a11/seance-2/async-storage' },
+      { id: 'r4a11-s2-offline', title: 'Mode Offline', href: '/r4a11/seance-2/offline' },
+      { id: 'r4a11-s2-conclusion', title: 'Conclusion', href: '/r4a11/seance-2/conclusion' },
+      { id: 'r4a11-s2-exercises', title: 'Exercices', href: '/r4a11/seance-2/exercises' },
+      { id: 'r4a11-s2-project', title: 'Projet Fil Rouge', href: '/r4a11/seance-2/project' },
+      { id: 'r4a11-s2-quiz', title: 'Quiz de validation', href: '/r4a11/seance-2/quiz' },
+    ],
+  },
+  {
+    id: 'r4a11-seance-3',
+    title: 'Séance 3',
+    description: 'API Natives & Réseau',
+    href: '/r4a11/seance-3',
+    sections: [
+      { id: 'r4a11-s3-intro', title: 'Introduction', href: '/r4a11/seance-3/introduction' },
+      { id: 'r4a11-s3-permissions', title: 'Permissions', href: '/r4a11/seance-3/permissions' },
+      { id: 'r4a11-s3-camera', title: 'Caméra', href: '/r4a11/seance-3/camera' },
+      { id: 'r4a11-s3-geolocation', title: 'Géolocalisation', href: '/r4a11/seance-3/geolocation' },
+      { id: 'r4a11-s3-api', title: 'API REST', href: '/r4a11/seance-3/api-rest' },
+      { id: 'r4a11-s3-flatlist', title: 'FlatList', href: '/r4a11/seance-3/flatlist' },
+      { id: 'r4a11-s3-combining', title: 'Combinaison', href: '/r4a11/seance-3/combining' },
+      { id: 'r4a11-s3-conclusion', title: 'Conclusion', href: '/r4a11/seance-3/conclusion' },
+      { id: 'r4a11-s3-exercises', title: 'Exercices', href: '/r4a11/seance-3/exercises' },
+      { id: 'r4a11-s3-project', title: 'Projet Fil Rouge', href: '/r4a11/seance-3/project' },
+      { id: 'r4a11-s3-quiz', title: 'Quiz de validation', href: '/r4a11/seance-3/quiz' },
+    ],
+  },
+  {
+    id: 'r4a11-seance-4',
+    title: 'Séance 4',
+    description: 'Déploiement & Projet',
+    href: '/r4a11/seance-4',
+    sections: [
+      { id: 'r4a11-s4-intro', title: 'Introduction', href: '/r4a11/seance-4/introduction' },
+      { id: 'r4a11-s4-build', title: 'Build & Déploiement', href: '/r4a11/seance-4/build-deploy' },
+      { id: 'r4a11-s4-perf', title: 'Performance', href: '/r4a11/seance-4/performance' },
+      { id: 'r4a11-s4-eco', title: 'Éco-conception', href: '/r4a11/seance-4/eco-design' },
+      { id: 'r4a11-s4-practices', title: 'Bonnes Pratiques', href: '/r4a11/seance-4/best-practices' },
+      { id: 'r4a11-s4-guide', title: 'Guide Projet', href: '/r4a11/seance-4/project-guide' },
+      { id: 'r4a11-s4-conclusion', title: 'Conclusion', href: '/r4a11/seance-4/conclusion' },
+      { id: 'r4a11-s4-final', title: 'Projet Final', href: '/r4a11/seance-4/final-project' },
+      { id: 'r4a11-s4-quiz', title: 'Quiz Final', href: '/r4a11/seance-4/quiz' },
+    ],
+  },
+];
+
+// All courses
+export const courses: Course[] = [
+  {
+    id: 'r4a10',
+    title: 'R4A10 - Compléments Web',
+    shortTitle: 'R4A10',
+    description: 'Développement Frontend avec React',
+    color: 'cyan',
+    basePath: '',
+    sessions: navigation,
+  },
+  {
+    id: 'r4a11',
+    title: 'R4A11 - Développement Mobile',
+    shortTitle: 'R4A11',
+    description: 'Développement pour applications mobiles avec React Native',
+    color: 'violet',
+    basePath: '/r4a11',
+    sessions: r4a11Navigation,
+  },
+];
+
+/**
+ * Get the navigation array for a given pathname.
+ * Returns r4a11Navigation for /r4a11/* paths, otherwise returns the default navigation.
+ */
+export function getNavigationForPath(pathname: string): NavSession[] {
+  if (pathname.startsWith('/r4a11')) {
+    return r4a11Navigation;
+  }
+  return navigation;
+}
+
+/**
+ * Get the course for a given pathname.
+ */
+export function getCourseForPath(pathname: string): Course | undefined {
+  if (pathname.startsWith('/r4a11')) {
+    return courses.find(c => c.id === 'r4a11');
+  }
+  return courses.find(c => c.id === 'r4a10');
+}

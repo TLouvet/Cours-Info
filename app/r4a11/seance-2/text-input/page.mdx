@@ -1,0 +1,461 @@
+# TextInput - Saisie de Texte
+
+`TextInput` est le composant React Native pour la saisie de texte. Il remplace l'élément HTML `<input>` que vous avez utilisé en R4A10. Le principe est le même (composant contrôlé), mais l'API est adaptée au contexte mobile.
+
+## Du web au mobile
+
+```jsx
+// React web (R4A10)
+<input
+  type="text"
+  value={name}
+  onChange={(e) => setName(e.target.value)}  // événement avec e.target.value
+  placeholder="Votre nom"
+/>
+
+// React Native (R4A11)
+<TextInput
+  value={name}
+  onChangeText={setName}                     // reçoit directement la chaîne
+  placeholder="Votre nom"
+/>
+```
+
+<Callout type="info" title="onChangeText vs onChange">
+La différence principale : en React web, `onChange` reçoit un **événement** et vous devez extraire `e.target.value`. En React Native, `onChangeText` reçoit directement la **chaîne de texte**. C'est plus simple : `onChangeText={setText}` suffit, sans fonction fléchée.
+</Callout>
+
+## Utilisation de base
+
+```jsx
+import { useState } from 'react';
+import { View, Text, TextInput, StyleSheet } from 'react-native';
+
+function NameInput() {
+  const [name, setName] = useState('');
+
+  return (
+    <View style={styles.container}>
+      <Text style={styles.label}>Votre nom :</Text>
+      <TextInput
+        style={styles.input}
+        value={name}
+        onChangeText={setName}
+        placeholder="Entrez votre nom"
+        placeholderTextColor="#999"
+      />
+      {name.length > 0 && (
+        <Text style={styles.preview}>Bonjour {name} !</Text>
+      )}
+    </View>
+  );
+}
+
+const styles = StyleSheet.create({
+  container: { padding: 16 },
+  label: { fontSize: 16, fontWeight: '600', marginBottom: 8 },
+  input: {
+    backgroundColor: '#fff',
+    borderWidth: 1,
+    borderColor: '#ddd',
+    borderRadius: 8,
+    padding: 12,
+    fontSize: 16,
+  },
+  preview: { marginTop: 12, fontSize: 16, color: '#0066cc' },
+});
+```
+
+<Callout type="warning" title="TextInput n'a pas de style par défaut">
+Contrairement à `<input>` en HTML qui a une bordure et un padding par défaut, `TextInput` en React Native n'a **aucun style par défaut**. Sans styles, le champ de saisie est invisible. Pensez à ajouter au minimum : `borderWidth`, `borderColor`, `padding` et `fontSize`.
+</Callout>
+
+## Comparaison HTML input vs TextInput
+
+<div className="overflow-x-auto my-6">
+  <table className="min-w-full border border-gray-200 dark:border-gray-700">
+    <thead className="bg-gray-50 dark:bg-gray-800">
+      <tr>
+        <th className="px-4 py-3 text-left text-sm font-semibold text-gray-900 dark:text-gray-100 border-b border-gray-200 dark:border-gray-700">Fonctionnalité</th>
+        <th className="px-4 py-3 text-left text-sm font-semibold text-gray-900 dark:text-gray-100 border-b border-gray-200 dark:border-gray-700">HTML <code>&lt;input&gt;</code></th>
+        <th className="px-4 py-3 text-left text-sm font-semibold text-gray-900 dark:text-gray-100 border-b border-gray-200 dark:border-gray-700">React Native <code>&lt;TextInput&gt;</code></th>
+      </tr>
+    </thead>
+    <tbody className="bg-white dark:bg-gray-900 divide-y divide-gray-200 dark:divide-gray-700">
+      <tr>
+        <td className="px-4 py-3 text-sm font-medium text-gray-900 dark:text-gray-100">Événement de saisie</td>
+        <td className="px-4 py-3 text-sm text-gray-700 dark:text-gray-300"><code>onChange=&#123;(e) =&gt; set(e.target.value)&#125;</code></td>
+        <td className="px-4 py-3 text-sm text-gray-700 dark:text-gray-300"><code>onChangeText=&#123;set&#125;</code></td>
+      </tr>
+      <tr>
+        <td className="px-4 py-3 text-sm font-medium text-gray-900 dark:text-gray-100">Type de clavier</td>
+        <td className="px-4 py-3 text-sm text-gray-700 dark:text-gray-300"><code>type="email"</code>, <code>type="number"</code></td>
+        <td className="px-4 py-3 text-sm text-gray-700 dark:text-gray-300"><code>keyboardType="email-address"</code></td>
+      </tr>
+      <tr>
+        <td className="px-4 py-3 text-sm font-medium text-gray-900 dark:text-gray-100">Mot de passe</td>
+        <td className="px-4 py-3 text-sm text-gray-700 dark:text-gray-300"><code>type="password"</code></td>
+        <td className="px-4 py-3 text-sm text-gray-700 dark:text-gray-300"><code>secureTextEntry=&#123;true&#125;</code></td>
+      </tr>
+      <tr>
+        <td className="px-4 py-3 text-sm font-medium text-gray-900 dark:text-gray-100">Zone multiligne</td>
+        <td className="px-4 py-3 text-sm text-gray-700 dark:text-gray-300"><code>&lt;textarea&gt;</code></td>
+        <td className="px-4 py-3 text-sm text-gray-700 dark:text-gray-300"><code>multiline=&#123;true&#125;</code></td>
+      </tr>
+      <tr>
+        <td className="px-4 py-3 text-sm font-medium text-gray-900 dark:text-gray-100">Bouton Entrée</td>
+        <td className="px-4 py-3 text-sm text-gray-700 dark:text-gray-300"><code>onSubmit</code> (formulaire)</td>
+        <td className="px-4 py-3 text-sm text-gray-700 dark:text-gray-300"><code>onSubmitEditing</code> + <code>returnKeyType</code></td>
+      </tr>
+      <tr>
+        <td className="px-4 py-3 text-sm font-medium text-gray-900 dark:text-gray-100">Styles par défaut</td>
+        <td className="px-4 py-3 text-sm text-gray-700 dark:text-gray-300">Bordure et padding par défaut</td>
+        <td className="px-4 py-3 text-sm text-gray-700 dark:text-gray-300">Aucun style (invisible sans style)</td>
+      </tr>
+      <tr>
+        <td className="px-4 py-3 text-sm font-medium text-gray-900 dark:text-gray-100">Auto-complétion</td>
+        <td className="px-4 py-3 text-sm text-gray-700 dark:text-gray-300"><code>autocomplete="email"</code></td>
+        <td className="px-4 py-3 text-sm text-gray-700 dark:text-gray-300"><code>autoComplete="email"</code></td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<QuickCheck
+  question="Quelle est la différence entre onChange (React web) et onChangeText (React Native) ?"
+  options={[
+    "onChange est pour le texte, onChangeText est pour les nombres",
+    "onChange reçoit un événement (e.target.value), onChangeText reçoit directement la chaîne de texte",
+    "Il n'y a aucune différence",
+    "onChangeText est appelé après onChange"
+  ]}
+  correctAnswer={1}
+  explanation="En React web, onChange reçoit un objet événement et vous devez extraire la valeur avec e.target.value. En React Native, onChangeText reçoit directement la chaîne de texte saisie. C'est pourquoi onChangeText={setText} fonctionne sans fonction fléchée."
+/>
+
+## Types de clavier (keyboardType)
+
+Sur mobile, le clavier peut s'adapter au type de données attendu. La prop `keyboardType` change l'apparence du clavier virtuel :
+
+```jsx
+// Clavier texte standard (défaut)
+<TextInput keyboardType="default" />
+
+// Clavier email (avec @ et .)
+<TextInput keyboardType="email-address" />
+
+// Clavier numérique
+<TextInput keyboardType="numeric" />
+
+// Clavier téléphone
+<TextInput keyboardType="phone-pad" />
+
+// Clavier numérique avec décimales
+<TextInput keyboardType="decimal-pad" />
+
+// Clavier URL (avec / et .com)
+<TextInput keyboardType="url" />
+```
+
+<Callout type="tip" title="Choisir le bon clavier">
+Utiliser le bon type de clavier améliore l'expérience utilisateur : un champ email affiche un clavier avec `@`, un champ numérique n'affiche que des chiffres. Sur le web, c'est l'attribut `type` de `<input>` qui joue ce rôle. Sur mobile, l'impact est plus visible car le clavier virtuel change complètement d'apparence.
+</Callout>
+
+### Exemple : formulaire avec différents claviers
+
+```jsx
+import { useState } from 'react';
+import { View, Text, TextInput, StyleSheet } from 'react-native';
+
+function ContactInfo() {
+  const [name, setName] = useState('');
+  const [email, setEmail] = useState('');
+  const [phone, setPhone] = useState('');
+  const [age, setAge] = useState('');
+
+  return (
+    <View style={styles.container}>
+      <Text style={styles.label}>Nom</Text>
+      <TextInput
+        style={styles.input}
+        value={name}
+        onChangeText={setName}
+        placeholder="Jean Dupont"
+        autoCapitalize="words"       // Majuscule au début de chaque mot
+        autoCorrect={false}          // Pas de correction automatique pour les noms
+      />
+
+      <Text style={styles.label}>Email</Text>
+      <TextInput
+        style={styles.input}
+        value={email}
+        onChangeText={setEmail}
+        placeholder="jean@example.com"
+        keyboardType="email-address"
+        autoCapitalize="none"        // Pas de majuscule pour les emails
+        autoCorrect={false}
+      />
+
+      <Text style={styles.label}>Téléphone</Text>
+      <TextInput
+        style={styles.input}
+        value={phone}
+        onChangeText={setPhone}
+        placeholder="06 12 34 56 78"
+        keyboardType="phone-pad"
+      />
+
+      <Text style={styles.label}>Âge</Text>
+      <TextInput
+        style={styles.input}
+        value={age}
+        onChangeText={setAge}
+        placeholder="25"
+        keyboardType="numeric"
+      />
+    </View>
+  );
+}
+
+const styles = StyleSheet.create({
+  container: { padding: 16 },
+  label: { fontSize: 14, fontWeight: '600', color: '#333', marginBottom: 4, marginTop: 12 },
+  input: {
+    backgroundColor: '#fff', borderWidth: 1, borderColor: '#ddd',
+    borderRadius: 8, padding: 12, fontSize: 16,
+  },
+});
+```
+
+## Saisie sécurisée (mot de passe)
+
+Pour les mots de passe, utilisez `secureTextEntry` :
+
+```jsx
+import { useState } from 'react';
+import { View, TextInput, Pressable, Text, StyleSheet } from 'react-native';
+
+function PasswordInput() {
+  const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
+
+  return (
+    <View style={styles.passwordContainer}>
+      <TextInput
+        style={styles.passwordInput}
+        value={password}
+        onChangeText={setPassword}
+        placeholder="Mot de passe"
+        secureTextEntry={!showPassword}   // Masquer les caractères
+        autoCapitalize="none"
+        autoCorrect={false}
+      />
+      <Pressable onPress={() => setShowPassword(!showPassword)}>
+        <Text style={styles.toggleText}>
+          {showPassword ? 'Masquer' : 'Afficher'}
+        </Text>
+      </Pressable>
+    </View>
+  );
+}
+
+const styles = StyleSheet.create({
+  passwordContainer: {
+    flexDirection: 'row', alignItems: 'center',
+    backgroundColor: '#fff', borderWidth: 1, borderColor: '#ddd', borderRadius: 8,
+  },
+  passwordInput: { flex: 1, padding: 12, fontSize: 16 },
+  toggleText: { paddingHorizontal: 12, color: '#0066cc', fontWeight: '600' },
+});
+```
+
+<QuickCheck
+  question="Comment afficher un clavier avec uniquement des chiffres dans React Native ?"
+  options={[
+    "Avec type='number' comme en HTML",
+    "Avec la prop keyboardType='numeric'",
+    "Avec la prop inputMode='number'",
+    "En utilisant le composant NumberInput de React Native"
+  ]}
+  correctAnswer={1}
+  explanation="En React Native, keyboardType='numeric' affiche un clavier avec uniquement des chiffres. Sur le web, c'est type='number' qui remplit cette fonction. Il n'y a pas de composant NumberInput dans React Native."
+/>
+
+## Contrôle de la capitalisation et de la correction
+
+```jsx
+// Majuscule à chaque mot (noms, villes)
+<TextInput autoCapitalize="words" />
+
+// Majuscule à la première lettre de chaque phrase (défaut)
+<TextInput autoCapitalize="sentences" />
+
+// Pas de majuscule automatique (emails, identifiants)
+<TextInput autoCapitalize="none" />
+
+// Tout en majuscules
+<TextInput autoCapitalize="characters" />
+
+// Désactiver la correction automatique (noms propres, code)
+<TextInput autoCorrect={false} />
+```
+
+<Callout type="warning" title="autoCapitalize pour les emails">
+N'oubliez pas `autoCapitalize="none"` pour les champs email et mot de passe. Par défaut, le clavier met une majuscule au début de la saisie, ce qui produit des emails comme "Jean@example.com" au lieu de "jean@example.com". C'est une erreur courante sur mobile.
+</Callout>
+
+## Zone de texte multiligne
+
+Pour des saisies longues (commentaires, notes, descriptions), utilisez `multiline` :
+
+```jsx
+<TextInput
+  style={[styles.input, styles.textArea]}
+  value={description}
+  onChangeText={setDescription}
+  placeholder="Décrivez votre problème..."
+  multiline={true}
+  numberOfLines={4}              // Hauteur initiale (Android)
+  textAlignVertical="top"        // Texte en haut (Android)
+/>
+```
+
+```jsx
+// Style pour la zone de texte
+const styles = StyleSheet.create({
+  input: {
+    backgroundColor: '#fff', borderWidth: 1, borderColor: '#ddd',
+    borderRadius: 8, padding: 12, fontSize: 16,
+  },
+  textArea: {
+    height: 120,
+    textAlignVertical: 'top',  // Nécessaire sur Android
+  },
+});
+```
+
+<Callout type="info" title="textarea vs multiline">
+En HTML, vous utilisez `<textarea>` pour les saisies multilignes. En React Native, il n'y a qu'un seul composant `TextInput` avec la prop `multiline={true}`. Comme pour `Text` qui remplace `p`, `h1` et `span`, React Native unifie les variantes en un seul composant configurable.
+</Callout>
+
+## Gestion du clavier
+
+### Fermer le clavier
+
+Le clavier virtuel reste ouvert jusqu'à ce que l'utilisateur le ferme ou que vous le fermiez programmatiquement :
+
+```jsx
+import { Keyboard, Pressable, View } from 'react-native';
+
+// Composant utilitaire : fermer le clavier au tap en dehors
+function DismissKeyboard({ children }) {
+  return (
+    <Pressable onPress={Keyboard.dismiss} style={{ flex: 1 }}>
+      {children}
+    </Pressable>
+  );
+}
+
+// Utilisation
+function MyScreen() {
+  return (
+    <DismissKeyboard>
+      <View style={styles.container}>
+        <TextInput style={styles.input} placeholder="Tapez ici..." />
+        {/* Taper en dehors du champ ferme le clavier */}
+      </View>
+    </DismissKeyboard>
+  );
+}
+```
+
+### Bouton "Entrée" du clavier
+
+La prop `returnKeyType` change le texte du bouton Entrée du clavier, et `onSubmitEditing` est appelé quand l'utilisateur appuie dessus :
+
+```jsx
+<TextInput
+  returnKeyType="search"       // "search", "done", "go", "next", "send"
+  onSubmitEditing={() => {
+    handleSearch();
+    Keyboard.dismiss();
+  }}
+/>
+```
+
+### Passer au champ suivant
+
+Pour naviguer entre les champs d'un formulaire avec le bouton "Suivant" du clavier :
+
+```jsx
+import { useRef } from 'react';
+
+function LoginForm() {
+  const passwordRef = useRef(null);
+
+  return (
+    <View>
+      <TextInput
+        placeholder="Email"
+        returnKeyType="next"
+        onSubmitEditing={() => passwordRef.current?.focus()}
+      />
+      <TextInput
+        ref={passwordRef}
+        placeholder="Mot de passe"
+        secureTextEntry
+        returnKeyType="done"
+        onSubmitEditing={() => handleLogin()}
+      />
+    </View>
+  );
+}
+```
+
+<Callout type="tip" title="Navigation entre champs">
+Sur le web, l'utilisateur utilise la touche Tab pour passer d'un champ à l'autre. Sur mobile, il n'y a pas de touche Tab. Utilisez `returnKeyType="next"` et `onSubmitEditing` avec `ref.current.focus()` pour guider l'utilisateur d'un champ à l'autre. C'est une bonne pratique qui améliore l'expérience de saisie.
+</Callout>
+
+<QuickCheck
+  question="Comment naviguer du champ email au champ mot de passe quand l'utilisateur appuie sur 'Suivant' ?"
+  options={[
+    "Avec la prop tabIndex comme en HTML",
+    "Avec returnKeyType='next' et onSubmitEditing qui appelle focus() sur le champ suivant via une ref",
+    "React Native gère automatiquement la navigation entre champs",
+    "Avec la prop nextField='password'"
+  ]}
+  correctAnswer={1}
+  explanation="En React Native, il n'y a pas de tabIndex. On utilise returnKeyType='next' pour afficher 'Suivant' sur le clavier, et onSubmitEditing pour appeler .focus() sur le champ suivant via une ref (useRef). C'est un pattern manuel mais standard sur mobile."
+/>
+
+<QuickCheck
+  question="Pourquoi TextInput est-il invisible sans styles ?"
+  options={[
+    "C'est un bug de React Native",
+    "TextInput n'a aucun style par défaut (pas de bordure, pas de fond), contrairement à <input> en HTML",
+    "Il faut appeler TextInput.show() pour le rendre visible",
+    "TextInput est toujours invisible et sert uniquement pour la logique"
+  ]}
+  correctAnswer={1}
+  explanation="Contrairement à <input> en HTML qui a des styles par défaut du navigateur (bordure, padding), TextInput en React Native n'a aucun style. Sans borderWidth, backgroundColor ou padding, le composant est invisible. C'est cohérent avec la philosophie React Native : tout le style est explicite."
+/>
+
+## À retenir
+
+<Callout type="success" title="Comprendre, pas mémoriser">
+**TextInput en résumé :**
+- Remplace `<input>` et `<textarea>` du HTML
+- `onChangeText` reçoit directement la chaîne (pas d'événement)
+- `keyboardType` adapte le clavier au type de données (email, numérique, téléphone)
+- `secureTextEntry` masque les caractères (mots de passe)
+- `autoCapitalize="none"` pour les emails et identifiants
+- `multiline={true}` pour les zones de texte longues
+- `returnKeyType` et `onSubmitEditing` pour le bouton Entrée
+- Aucun style par défaut : toujours ajouter bordure, padding, fontSize
+
+**Pattern de composant contrôlé** (identique au web) :
+```jsx
+const [value, setValue] = useState('');
+<TextInput value={value} onChangeText={setValue} />
+```
+</Callout>

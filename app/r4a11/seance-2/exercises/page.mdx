@@ -1,0 +1,989 @@
+# Exercices - État, Formulaires et Persistance
+
+Mettez en pratique les concepts de la Séance 2 : useState sur mobile, TextInput, formulaires, AsyncStorage et mode offline.
+
+<Callout type="tip" title="Comment travailler efficacement">
+- **Utilisez votre projet Expo** existant ou créez-en un : `npx create-expo-app@latest rn-seance2`
+- **Installez les dépendances** : `npx expo install @react-native-async-storage/async-storage @react-native-community/netinfo`
+- **Testez sur votre téléphone** : lancez `npx expo start` et scannez le QR code
+- **Essayez d'abord** : tentez de résoudre avant de regarder la solution
+- **Comprenez le code** : l'objectif est de comprendre les patterns, pas de copier
+
+Temps estimé : 3h pour les 5 exercices
+</Callout>
+
+## Exercice 1 : Compteur persistant
+
+<Exercise
+  title="Compteur avec AsyncStorage"
+  difficulty="easy"
+  solution={
+    <CodeBlock language="jsx">{`import { useState, useEffect } from 'react';
+import { View, Text, Pressable, StyleSheet } from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+
+export default function CounterScreen() {
+  const [count, setCount] = useState(0);
+  const [isLoaded, setIsLoaded] = useState(false);
+
+  // Charger la valeur sauvegardée
+  useEffect(() => {
+    const load = async () => {
+      try {
+        const saved = await AsyncStorage.getItem('@counter');
+        if (saved !== null) setCount(parseInt(saved, 10));
+      } catch (e) {
+        console.error('Erreur chargement :', e);
+      } finally {
+        setIsLoaded(true);
+      }
+    };
+    load();
+  }, []);
+
+  // Sauvegarder à chaque changement
+  useEffect(() => {
+    if (isLoaded) {
+      AsyncStorage.setItem('@counter', count.toString())
+        .catch(e => console.error('Erreur sauvegarde :', e));
+    }
+  }, [count, isLoaded]);
+
+  const reset = async () => {
+    setCount(0);
+    try {
+      await AsyncStorage.removeItem('@counter');
+    } catch (e) {
+      console.error('Erreur reset :', e);
+    }
+  };
+
+  if (!isLoaded) {
+    return (
+      <View style={styles.container}>
+        <Text>Chargement...</Text>
+      </View>
+    );
+  }
+
+  return (
+    <View style={styles.container}>
+      <Text style={styles.count}>{count}</Text>
+      <View style={styles.buttons}>
+        <Pressable style={styles.button} onPress={() => setCount(c => c - 1)}>
+          <Text style={styles.buttonText}>-1</Text>
+        </Pressable>
+        <Pressable style={[styles.button, styles.resetButton]} onPress={reset}>
+          <Text style={[styles.buttonText, styles.resetText]}>Reset</Text>
+        </Pressable>
+        <Pressable style={styles.button} onPress={() => setCount(c => c + 1)}>
+          <Text style={styles.buttonText}>+1</Text>
+        </Pressable>
+      </View>
+      <Text style={styles.info}>
+        Fermez l'application et relancez-la : la valeur est conservée.
+      </Text>
+    </View>
+  );
+}
+
+const styles = StyleSheet.create({
+  container: { flex: 1, justifyContent: 'center', alignItems: 'center', padding: 16 },
+  count: { fontSize: 72, fontWeight: 'bold', color: '#0066cc' },
+  buttons: { flexDirection: 'row', gap: 12, marginTop: 24 },
+  button: {
+    backgroundColor: '#0066cc', borderRadius: 12, paddingHorizontal: 24, paddingVertical: 12,
+  },
+  buttonText: { color: '#fff', fontSize: 18, fontWeight: 'bold' },
+  resetButton: { backgroundColor: '#f44336' },
+  resetText: { color: '#fff' },
+  info: { marginTop: 24, fontSize: 14, color: '#666', textAlign: 'center' },
+});`}</CodeBlock>
+  }
+>
+Créez un compteur dont la valeur est **sauvegardée dans AsyncStorage**. Quand l'utilisateur ferme et relance l'application, le compteur reprend là où il en était.
+
+**Fonctionnalités :**
+- Bouton +1 et bouton -1
+- Bouton "Reset" qui remet à 0
+- La valeur est automatiquement sauvegardée dans AsyncStorage
+- Au lancement, la valeur sauvegardée est chargée
+- Afficher "Chargement..." pendant le chargement initial
+
+**Concepts pratiqués :**
+- useState, useEffect
+- AsyncStorage.getItem / setItem / removeItem
+- Pattern isLoaded pour éviter l'écrasement
+- Gestion d'erreurs avec try/catch
+
+<Callout type="tip" title="Rappel">
+N'oubliez pas le flag `isLoaded` pour ne pas sauvegarder la valeur initiale (0) avant que le chargement soit terminé.
+</Callout>
+</Exercise>
+
+## Exercice 2 : Liste de tâches
+
+<Exercise
+  title="Todo list avec ajout, suppression et toggle"
+  difficulty="easy"
+  solution={
+    <CodeBlock language="jsx">{`import { useState } from 'react';
+import { View, Text, TextInput, Pressable, ScrollView, Keyboard, StyleSheet } from 'react-native';
+
+export default function TodoScreen() {
+  const [todos, setTodos] = useState([
+    { id: 1, text: 'Apprendre useState', done: true },
+    { id: 2, text: 'Créer un formulaire', done: false },
+    { id: 3, text: 'Utiliser AsyncStorage', done: false },
+  ]);
+  const [newText, setNewText] = useState('');
+
+  const addTodo = () => {
+    if (!newText.trim()) return;
+    setTodos([...todos, {
+      id: Date.now(),
+      text: newText.trim(),
+      done: false,
+    }]);
+    setNewText('');
+    Keyboard.dismiss();
+  };
+
+  const toggleTodo = (id) => {
+    setTodos(todos.map(t => t.id === id ? { ...t, done: !t.done } : t));
+  };
+
+  const removeTodo = (id) => {
+    setTodos(todos.filter(t => t.id !== id));
+  };
+
+  const remaining = todos.filter(t => !t.done).length;
+
+  return (
+    <View style={styles.container}>
+      <Text style={styles.title}>Mes tâches</Text>
+
+      <View style={styles.inputRow}>
+        <TextInput
+          style={styles.input}
+          value={newText}
+          onChangeText={setNewText}
+          placeholder="Ajouter une tâche..."
+          onSubmitEditing={addTodo}
+          returnKeyType="done"
+        />
+        <Pressable
+          style={[styles.addButton, !newText.trim() && styles.addButtonDisabled]}
+          onPress={addTodo}
+          disabled={!newText.trim()}
+        >
+          <Text style={styles.addButtonText}>+</Text>
+        </Pressable>
+      </View>
+
+      <ScrollView style={styles.list}>
+        {todos.length === 0 ? (
+          <Text style={styles.emptyText}>Aucune tâche. Ajoutez-en une !</Text>
+        ) : (
+          todos.map(todo => (
+            <View key={todo.id} style={styles.todoItem}>
+              <Pressable onPress={() => toggleTodo(todo.id)} style={styles.todoLeft}>
+                <View style={[styles.checkbox, todo.done && styles.checkboxDone]}>
+                  {todo.done && <Text style={styles.checkmark}>✓</Text>}
+                </View>
+                <Text style={[styles.todoText, todo.done && styles.todoTextDone]}>
+                  {todo.text}
+                </Text>
+              </Pressable>
+              <Pressable onPress={() => removeTodo(todo.id)} style={styles.deleteBtn}>
+                <Text style={styles.deleteText}>✕</Text>
+              </Pressable>
+            </View>
+          ))
+        )}
+      </ScrollView>
+
+      <Text style={styles.footer}>
+        {remaining} tâche{remaining !== 1 ? 's' : ''} restante{remaining !== 1 ? 's' : ''}
+      </Text>
+    </View>
+  );
+}
+
+const styles = StyleSheet.create({
+  container: { flex: 1, padding: 16, paddingTop: 60, backgroundColor: '#f5f5f5' },
+  title: { fontSize: 28, fontWeight: 'bold', marginBottom: 16 },
+  inputRow: { flexDirection: 'row', marginBottom: 16 },
+  input: {
+    flex: 1, backgroundColor: '#fff', borderWidth: 1, borderColor: '#ddd',
+    borderRadius: 8, padding: 12, fontSize: 16,
+  },
+  addButton: {
+    backgroundColor: '#0066cc', borderRadius: 8, width: 48,
+    justifyContent: 'center', alignItems: 'center', marginLeft: 8,
+  },
+  addButtonDisabled: { backgroundColor: '#999' },
+  addButtonText: { color: '#fff', fontSize: 24, fontWeight: 'bold' },
+  list: { flex: 1 },
+  emptyText: { textAlign: 'center', color: '#999', marginTop: 32, fontSize: 16 },
+  todoItem: {
+    flexDirection: 'row', alignItems: 'center', backgroundColor: '#fff',
+    padding: 12, borderRadius: 8, marginBottom: 8,
+  },
+  todoLeft: { flex: 1, flexDirection: 'row', alignItems: 'center' },
+  checkbox: {
+    width: 24, height: 24, borderRadius: 12, borderWidth: 2,
+    borderColor: '#ddd', marginRight: 12, justifyContent: 'center', alignItems: 'center',
+  },
+  checkboxDone: { backgroundColor: '#0066cc', borderColor: '#0066cc' },
+  checkmark: { color: '#fff', fontSize: 14, fontWeight: 'bold' },
+  todoText: { fontSize: 16, flex: 1 },
+  todoTextDone: { textDecorationLine: 'line-through', color: '#999' },
+  deleteBtn: { padding: 8 },
+  deleteText: { color: '#f44336', fontSize: 18 },
+  footer: { textAlign: 'center', color: '#666', paddingVertical: 12, fontSize: 14 },
+});`}</CodeBlock>
+  }
+>
+Créez une liste de tâches avec ajout, suppression et basculement fait/non fait.
+
+**Fonctionnalités :**
+- Champ de saisie avec bouton "+" pour ajouter une tâche
+- Le bouton "+" est désactivé si le champ est vide
+- Taper sur une tâche bascule son état fait/non fait
+- Bouton de suppression sur chaque tâche
+- Compteur "X tâche(s) restante(s)" en bas
+- Message "Aucune tâche" quand la liste est vide
+- Le clavier se ferme après l'ajout
+
+**Exigences :**
+- Checkbox avec état visuel (cercle vide ou coché)
+- Texte barré pour les tâches terminées
+- Layout avec ScrollView pour la liste
+
+<Callout type="tip" title="Rappel immutabilité">
+Utilisez `filter()` pour supprimer, `map()` pour modifier, et `[...spread]` pour ajouter. Ne modifiez jamais le tableau directement.
+</Callout>
+</Exercise>
+
+## Exercice 3 : Application de notes avec catégories
+
+<Exercise
+  title="Notes avec catégories et AsyncStorage"
+  difficulty="medium"
+  solution={
+    <CodeBlock language="jsx">{`import { useState, useEffect } from 'react';
+import {
+  View, Text, TextInput, Pressable, ScrollView,
+  Keyboard, StyleSheet
+} from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+
+const CATEGORIES = [
+  { id: 'all', label: 'Toutes', color: '#666' },
+  { id: 'perso', label: 'Perso', color: '#4caf50' },
+  { id: 'travail', label: 'Travail', color: '#2196f3' },
+  { id: 'idees', label: 'Idées', color: '#ff9800' },
+];
+
+const STORAGE_KEY = '@notes_app';
+
+export default function NotesScreen() {
+  const [notes, setNotes] = useState([]);
+  const [newNote, setNewNote] = useState('');
+  const [selectedCategory, setSelectedCategory] = useState('perso');
+  const [filterCategory, setFilterCategory] = useState('all');
+  const [isLoaded, setIsLoaded] = useState(false);
+
+  // Charger les notes
+  useEffect(() => {
+    const load = async () => {
+      try {
+        const saved = await AsyncStorage.getItem(STORAGE_KEY);
+        if (saved) setNotes(JSON.parse(saved));
+      } catch (e) {
+        console.error('Erreur chargement :', e);
+      } finally {
+        setIsLoaded(true);
+      }
+    };
+    load();
+  }, []);
+
+  // Sauvegarder les notes
+  useEffect(() => {
+    if (isLoaded) {
+      AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(notes))
+        .catch(e => console.error('Erreur sauvegarde :', e));
+    }
+  }, [notes, isLoaded]);
+
+  const addNote = () => {
+    if (!newNote.trim()) return;
+    const note = {
+      id: Date.now(),
+      text: newNote.trim(),
+      category: selectedCategory,
+      createdAt: new Date().toISOString(),
+    };
+    setNotes([note, ...notes]); // Ajouter en haut
+    setNewNote('');
+    Keyboard.dismiss();
+  };
+
+  const removeNote = (id) => {
+    setNotes(notes.filter(n => n.id !== id));
+  };
+
+  const filteredNotes = filterCategory === 'all'
+    ? notes
+    : notes.filter(n => n.category === filterCategory);
+
+  const getCategoryColor = (catId) => {
+    return CATEGORIES.find(c => c.id === catId)?.color || '#666';
+  };
+
+  if (!isLoaded) {
+    return (
+      <View style={styles.loading}>
+        <Text>Chargement des notes...</Text>
+      </View>
+    );
+  }
+
+  return (
+    <View style={styles.container}>
+      <Text style={styles.title}>Mes notes</Text>
+
+      {/* Saisie */}
+      <View style={styles.inputSection}>
+        <TextInput
+          style={styles.input}
+          value={newNote}
+          onChangeText={setNewNote}
+          placeholder="Nouvelle note..."
+          multiline
+          numberOfLines={2}
+          textAlignVertical="top"
+        />
+        <View style={styles.inputFooter}>
+          <View style={styles.categoryPicker}>
+            {CATEGORIES.filter(c => c.id !== 'all').map(cat => (
+              <Pressable
+                key={cat.id}
+                style={[
+                  styles.categoryChip,
+                  { borderColor: cat.color },
+                  selectedCategory === cat.id && { backgroundColor: cat.color },
+                ]}
+                onPress={() => setSelectedCategory(cat.id)}
+              >
+                <Text style={[
+                  styles.categoryChipText,
+                  selectedCategory === cat.id && { color: '#fff' },
+                ]}>
+                  {cat.label}
+                </Text>
+              </Pressable>
+            ))}
+          </View>
+          <Pressable style={styles.addButton} onPress={addNote}>
+            <Text style={styles.addButtonText}>Ajouter</Text>
+          </Pressable>
+        </View>
+      </View>
+
+      {/* Filtres */}
+      <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.filterRow}>
+        {CATEGORIES.map(cat => (
+          <Pressable
+            key={cat.id}
+            style={[
+              styles.filterChip,
+              filterCategory === cat.id && styles.filterChipActive,
+            ]}
+            onPress={() => setFilterCategory(cat.id)}
+          >
+            <Text style={[
+              styles.filterText,
+              filterCategory === cat.id && styles.filterTextActive,
+            ]}>
+              {cat.label} ({cat.id === 'all'
+                ? notes.length
+                : notes.filter(n => n.category === cat.id).length})
+            </Text>
+          </Pressable>
+        ))}
+      </ScrollView>
+
+      {/* Liste des notes */}
+      <ScrollView style={styles.notesList}>
+        {filteredNotes.length === 0 ? (
+          <Text style={styles.emptyText}>Aucune note dans cette catégorie</Text>
+        ) : (
+          filteredNotes.map(note => (
+            <View key={note.id} style={styles.noteCard}>
+              <View style={[styles.categoryDot, { backgroundColor: getCategoryColor(note.category) }]} />
+              <View style={styles.noteContent}>
+                <Text style={styles.noteText}>{note.text}</Text>
+                <Text style={styles.noteDate}>
+                  {new Date(note.createdAt).toLocaleDateString('fr-FR', {
+                    day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit',
+                  })}
+                </Text>
+              </View>
+              <Pressable onPress={() => removeNote(note.id)} style={styles.deleteBtn}>
+                <Text style={styles.deleteText}>✕</Text>
+              </Pressable>
+            </View>
+          ))
+        )}
+      </ScrollView>
+    </View>
+  );
+}
+
+const styles = StyleSheet.create({
+  container: { flex: 1, padding: 16, paddingTop: 60, backgroundColor: '#f5f5f5' },
+  loading: { flex: 1, justifyContent: 'center', alignItems: 'center' },
+  title: { fontSize: 28, fontWeight: 'bold', marginBottom: 16 },
+  inputSection: { backgroundColor: '#fff', borderRadius: 12, padding: 12, marginBottom: 12 },
+  input: { fontSize: 16, minHeight: 60, textAlignVertical: 'top' },
+  inputFooter: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginTop: 8 },
+  categoryPicker: { flexDirection: 'row', gap: 6 },
+  categoryChip: {
+    paddingHorizontal: 10, paddingVertical: 4, borderRadius: 12,
+    borderWidth: 1.5,
+  },
+  categoryChipText: { fontSize: 12, fontWeight: '600', color: '#333' },
+  addButton: { backgroundColor: '#0066cc', borderRadius: 8, paddingHorizontal: 16, paddingVertical: 8 },
+  addButtonText: { color: '#fff', fontWeight: '600' },
+  filterRow: { flexDirection: 'row', marginBottom: 12, maxHeight: 36 },
+  filterChip: {
+    paddingHorizontal: 14, paddingVertical: 6, borderRadius: 16,
+    backgroundColor: '#e0e0e0', marginRight: 8,
+  },
+  filterChipActive: { backgroundColor: '#0066cc' },
+  filterText: { fontSize: 13, color: '#666' },
+  filterTextActive: { color: '#fff', fontWeight: '600' },
+  notesList: { flex: 1 },
+  emptyText: { textAlign: 'center', color: '#999', marginTop: 32 },
+  noteCard: {
+    flexDirection: 'row', alignItems: 'flex-start', backgroundColor: '#fff',
+    padding: 12, borderRadius: 8, marginBottom: 8,
+  },
+  categoryDot: { width: 8, height: 8, borderRadius: 4, marginTop: 6, marginRight: 10 },
+  noteContent: { flex: 1 },
+  noteText: { fontSize: 15, lineHeight: 22 },
+  noteDate: { fontSize: 12, color: '#999', marginTop: 4 },
+  deleteBtn: { padding: 4 },
+  deleteText: { color: '#f44336', fontSize: 16 },
+});`}</CodeBlock>
+  }
+>
+Créez une application de notes avec un système de **catégories** et la **persistance** via AsyncStorage.
+
+**Fonctionnalités :**
+- Saisie multiligne pour les notes
+- 3 catégories au choix : Perso (vert), Travail (bleu), Idées (orange)
+- Filtre par catégorie avec compteur
+- Les notes sont triées par date (plus récente en haut)
+- Suppression d'une note
+- Persistance avec AsyncStorage
+- Indicateur de catégorie (point coloré) sur chaque note
+- Date de création affichée sous chaque note
+
+**Concepts pratiqués :**
+- useState avec objets complexes
+- AsyncStorage charger/sauvegarder
+- filter() pour le filtrage par catégorie
+- Styles conditionnels (catégorie sélectionnée)
+- multiline TextInput
+
+<Callout type="tip" title="Structure des données">
+Chaque note est un objet : `{ id, text, category, createdAt }`. La catégorie est une chaîne (`'perso'`, `'travail'`, `'idees'`).
+</Callout>
+</Exercise>
+
+## Exercice 4 : Formulaire avec validation et clavier
+
+<Exercise
+  title="Formulaire d'inscription avec validation complète"
+  difficulty="medium"
+  solution={
+    <CodeBlock language="jsx">{`import { useState, useRef } from 'react';
+import {
+  View, Text, TextInput, Pressable, ScrollView,
+  KeyboardAvoidingView, Platform, Keyboard, Alert, StyleSheet
+} from 'react-native';
+
+export default function SignupScreen() {
+  const [form, setForm] = useState({
+    firstName: '', lastName: '', email: '', password: '', confirmPassword: '', phone: '',
+  });
+  const [errors, setErrors] = useState({});
+  const [submitted, setSubmitted] = useState(false);
+
+  const lastNameRef = useRef(null);
+  const emailRef = useRef(null);
+  const passwordRef = useRef(null);
+  const confirmRef = useRef(null);
+  const phoneRef = useRef(null);
+
+  const updateField = (field, value) => {
+    setForm(prev => ({ ...prev, [field]: value }));
+    if (errors[field]) setErrors(prev => ({ ...prev, [field]: null }));
+  };
+
+  const validate = () => {
+    const e = {};
+    if (!form.firstName.trim()) e.firstName = 'Le prénom est obligatoire';
+    if (!form.lastName.trim()) e.lastName = 'Le nom est obligatoire';
+    if (!form.email.trim()) e.email = 'L\\'email est obligatoire';
+    else if (!/\\S+@\\S+\\.\\S+/.test(form.email)) e.email = 'Email invalide';
+    if (!form.password) e.password = 'Le mot de passe est obligatoire';
+    else if (form.password.length < 8) e.password = 'Au moins 8 caractères';
+    else if (!/[A-Z]/.test(form.password)) e.password = 'Au moins une majuscule';
+    else if (!/[0-9]/.test(form.password)) e.password = 'Au moins un chiffre';
+    if (form.password !== form.confirmPassword) e.confirmPassword = 'Les mots de passe ne correspondent pas';
+    if (form.phone && !/^0[0-9]{9}$/.test(form.phone.replace(/\\s/g, '')))
+      e.phone = 'Numéro de téléphone invalide';
+    setErrors(e);
+    return Object.keys(e).length === 0;
+  };
+
+  const handleSubmit = () => {
+    Keyboard.dismiss();
+    if (validate()) {
+      setSubmitted(true);
+      Alert.alert('Inscription réussie', 'Bienvenue ' + form.firstName + ' !');
+    }
+  };
+
+  if (submitted) {
+    return (
+      <View style={styles.successContainer}>
+        <Text style={styles.successIcon}>✓</Text>
+        <Text style={styles.successTitle}>Inscription réussie !</Text>
+        <Text style={styles.successText}>Bienvenue {form.firstName} {form.lastName}</Text>
+        <Pressable style={styles.resetBtn} onPress={() => {
+          setSubmitted(false);
+          setForm({ firstName: '', lastName: '', email: '', password: '', confirmPassword: '', phone: '' });
+        }}>
+          <Text style={styles.resetBtnText}>Nouvelle inscription</Text>
+        </Pressable>
+      </View>
+    );
+  }
+
+  return (
+    <KeyboardAvoidingView
+      style={{ flex: 1 }}
+      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+    >
+      <ScrollView style={styles.container} keyboardShouldPersistTaps="handled">
+        <Text style={styles.title}>Inscription</Text>
+        <Text style={styles.subtitle}>Créez votre compte en quelques secondes</Text>
+
+        <View style={styles.row}>
+          <View style={{ flex: 1 }}>
+            <Text style={styles.label}>Prénom *</Text>
+            <TextInput
+              style={[styles.input, errors.firstName && styles.inputError]}
+              value={form.firstName} onChangeText={v => updateField('firstName', v)}
+              placeholder="Jean" autoCapitalize="words"
+              returnKeyType="next" onSubmitEditing={() => lastNameRef.current?.focus()}
+            />
+            {errors.firstName && <Text style={styles.error}>{errors.firstName}</Text>}
+          </View>
+          <View style={{ flex: 1, marginLeft: 8 }}>
+            <Text style={styles.label}>Nom *</Text>
+            <TextInput
+              ref={lastNameRef}
+              style={[styles.input, errors.lastName && styles.inputError]}
+              value={form.lastName} onChangeText={v => updateField('lastName', v)}
+              placeholder="Dupont" autoCapitalize="words"
+              returnKeyType="next" onSubmitEditing={() => emailRef.current?.focus()}
+            />
+            {errors.lastName && <Text style={styles.error}>{errors.lastName}</Text>}
+          </View>
+        </View>
+
+        <Text style={styles.label}>Email *</Text>
+        <TextInput
+          ref={emailRef}
+          style={[styles.input, errors.email && styles.inputError]}
+          value={form.email} onChangeText={v => updateField('email', v)}
+          placeholder="jean@example.com" keyboardType="email-address"
+          autoCapitalize="none" autoCorrect={false}
+          returnKeyType="next" onSubmitEditing={() => passwordRef.current?.focus()}
+        />
+        {errors.email && <Text style={styles.error}>{errors.email}</Text>}
+
+        <Text style={styles.label}>Mot de passe *</Text>
+        <TextInput
+          ref={passwordRef}
+          style={[styles.input, errors.password && styles.inputError]}
+          value={form.password} onChangeText={v => updateField('password', v)}
+          placeholder="Au moins 8 caractères, 1 majuscule, 1 chiffre"
+          secureTextEntry autoCapitalize="none"
+          returnKeyType="next" onSubmitEditing={() => confirmRef.current?.focus()}
+        />
+        {errors.password && <Text style={styles.error}>{errors.password}</Text>}
+
+        <Text style={styles.label}>Confirmer le mot de passe *</Text>
+        <TextInput
+          ref={confirmRef}
+          style={[styles.input, errors.confirmPassword && styles.inputError]}
+          value={form.confirmPassword} onChangeText={v => updateField('confirmPassword', v)}
+          placeholder="Retapez votre mot de passe" secureTextEntry autoCapitalize="none"
+          returnKeyType="next" onSubmitEditing={() => phoneRef.current?.focus()}
+        />
+        {errors.confirmPassword && <Text style={styles.error}>{errors.confirmPassword}</Text>}
+
+        <Text style={styles.label}>Téléphone (optionnel)</Text>
+        <TextInput
+          ref={phoneRef}
+          style={[styles.input, errors.phone && styles.inputError]}
+          value={form.phone} onChangeText={v => updateField('phone', v)}
+          placeholder="06 12 34 56 78" keyboardType="phone-pad"
+          returnKeyType="done" onSubmitEditing={handleSubmit}
+        />
+        {errors.phone && <Text style={styles.error}>{errors.phone}</Text>}
+
+        <Pressable style={styles.submitButton} onPress={handleSubmit}>
+          <Text style={styles.submitText}>S'inscrire</Text>
+        </Pressable>
+      </ScrollView>
+    </KeyboardAvoidingView>
+  );
+}
+
+const styles = StyleSheet.create({
+  container: { flex: 1, padding: 16, backgroundColor: '#f5f5f5' },
+  title: { fontSize: 28, fontWeight: 'bold', marginTop: 40 },
+  subtitle: { fontSize: 14, color: '#666', marginBottom: 24 },
+  row: { flexDirection: 'row' },
+  label: { fontSize: 14, fontWeight: '600', marginBottom: 4, marginTop: 12 },
+  input: {
+    backgroundColor: '#fff', borderWidth: 1, borderColor: '#ddd',
+    borderRadius: 8, padding: 12, fontSize: 16,
+  },
+  inputError: { borderColor: '#f44336', borderWidth: 2 },
+  error: { color: '#f44336', fontSize: 12, marginTop: 4 },
+  submitButton: {
+    backgroundColor: '#0066cc', borderRadius: 8, padding: 16,
+    alignItems: 'center', marginTop: 24, marginBottom: 40,
+  },
+  submitText: { color: '#fff', fontSize: 16, fontWeight: '600' },
+  successContainer: { flex: 1, justifyContent: 'center', alignItems: 'center', padding: 16 },
+  successIcon: { fontSize: 64, color: '#4caf50' },
+  successTitle: { fontSize: 24, fontWeight: 'bold', marginTop: 16 },
+  successText: { fontSize: 16, color: '#666', marginTop: 8 },
+  resetBtn: {
+    backgroundColor: '#0066cc', borderRadius: 8, paddingHorizontal: 24,
+    paddingVertical: 12, marginTop: 24,
+  },
+  resetBtnText: { color: '#fff', fontWeight: '600' },
+});`}</CodeBlock>
+  }
+>
+Créez un formulaire d'inscription complet avec validation et gestion du clavier.
+
+**Champs :**
+- Prénom et Nom (côte à côte sur la même ligne)
+- Email (validation format)
+- Mot de passe (min 8 caractères, 1 majuscule, 1 chiffre)
+- Confirmation du mot de passe (doit correspondre)
+- Téléphone (optionnel, format français)
+
+**Exigences :**
+- KeyboardAvoidingView + ScrollView
+- Navigation entre champs avec returnKeyType et refs
+- Validation à la soumission avec messages d'erreur
+- Erreurs effacées quand l'utilisateur tape
+- Bordure rouge sur les champs en erreur
+- Écran de succès après validation
+- Champs côte à côte pour prénom/nom (flexDirection: 'row')
+
+<Callout type="tip" title="Validation du mot de passe">
+Utilisez des regex simples :
+- Au moins une majuscule : `/[A-Z]/`
+- Au moins un chiffre : `/[0-9]/`
+- Format email : `/\S+@\S+\.\S+/`
+</Callout>
+</Exercise>
+
+## Exercice 5 : Application complète
+
+<Exercise
+  title="Application de notes avec persistance, catégories et mode offline"
+  difficulty="hard"
+  solution={
+    <CodeBlock language="jsx">{`// Cet exercice combine tous les concepts.
+// Structure recommandée (fichiers séparés) :
+//
+// app/(tabs)/_layout.tsx    - Navigation par onglets
+// app/(tabs)/index.tsx      - Liste des notes (avec filtrage)
+// app/(tabs)/add.tsx        - Ajout d'une note (formulaire)
+// app/(tabs)/settings.tsx   - Paramètres (thème, catégories)
+// utils/storage.js          - Fonctions AsyncStorage
+
+// ---- utils/storage.js ----
+import AsyncStorage from '@react-native-async-storage/async-storage';
+
+const NOTES_KEY = '@app_notes';
+const PREFS_KEY = '@app_prefs';
+
+export const loadNotes = async () => {
+  try {
+    const data = await AsyncStorage.getItem(NOTES_KEY);
+    return data ? JSON.parse(data) : [];
+  } catch (e) {
+    console.error('Erreur chargement notes :', e);
+    return [];
+  }
+};
+
+export const saveNotes = async (notes) => {
+  try {
+    await AsyncStorage.setItem(NOTES_KEY, JSON.stringify(notes));
+  } catch (e) {
+    console.error('Erreur sauvegarde notes :', e);
+  }
+};
+
+export const loadPreferences = async () => {
+  try {
+    const data = await AsyncStorage.getItem(PREFS_KEY);
+    return data ? JSON.parse(data) : { sortBy: 'date', showDone: true };
+  } catch (e) {
+    return { sortBy: 'date', showDone: true };
+  }
+};
+
+export const savePreferences = async (prefs) => {
+  try {
+    await AsyncStorage.setItem(PREFS_KEY, JSON.stringify(prefs));
+  } catch (e) {
+    console.error('Erreur sauvegarde prefs :', e);
+  }
+};
+
+// ---- app/(tabs)/_layout.tsx ----
+import { Tabs } from 'expo-router';
+import { Ionicons } from '@expo/vector-icons';
+
+export default function TabLayout() {
+  return (
+    <Tabs screenOptions={{ tabBarActiveTintColor: '#0066cc' }}>
+      <Tabs.Screen name="index"
+        options={{ title: 'Notes',
+          tabBarIcon: ({ color, size }) => <Ionicons name="document-text" size={size} color={color} /> }} />
+      <Tabs.Screen name="add"
+        options={{ title: 'Ajouter',
+          tabBarIcon: ({ color, size }) => <Ionicons name="add-circle" size={size} color={color} /> }} />
+      <Tabs.Screen name="settings"
+        options={{ title: 'Paramètres',
+          tabBarIcon: ({ color, size }) => <Ionicons name="settings" size={size} color={color} /> }} />
+    </Tabs>
+  );
+}
+
+// ---- app/(tabs)/index.tsx (liste des notes) ----
+import { useState, useCallback } from 'react';
+import { View, Text, Pressable, ScrollView, StyleSheet } from 'react-native';
+import { useFocusEffect } from '@react-navigation/native';
+import NetInfo from '@react-native-community/netinfo';
+import { loadNotes, saveNotes } from '../../utils/storage';
+
+export default function NotesListScreen() {
+  const [notes, setNotes] = useState([]);
+  const [filter, setFilter] = useState('all');
+  const [isOnline, setIsOnline] = useState(true);
+
+  // Recharger les notes à chaque visite de l'écran
+  useFocusEffect(
+    useCallback(() => {
+      loadNotes().then(setNotes);
+    }, [])
+  );
+
+  // Surveiller la connexion
+  useFocusEffect(
+    useCallback(() => {
+      const unsub = NetInfo.addEventListener(state => setIsOnline(state.isConnected));
+      return () => unsub();
+    }, [])
+  );
+
+  const toggleDone = async (id) => {
+    const updated = notes.map(n => n.id === id ? { ...n, done: !n.done } : n);
+    setNotes(updated);
+    await saveNotes(updated);
+  };
+
+  const deleteNote = async (id) => {
+    const updated = notes.filter(n => n.id !== id);
+    setNotes(updated);
+    await saveNotes(updated);
+  };
+
+  const filtered = filter === 'all' ? notes : notes.filter(n => n.category === filter);
+
+  return (
+    <View style={styles.container}>
+      {!isOnline && (
+        <View style={styles.offlineBanner}>
+          <Text style={styles.offlineText}>Mode hors ligne</Text>
+        </View>
+      )}
+      <Text style={styles.title}>Mes notes ({notes.length})</Text>
+
+      {/* Filtres */}
+      <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{ maxHeight: 36, marginBottom: 12 }}>
+        {['all', 'perso', 'travail', 'idees'].map(cat => (
+          <Pressable key={cat} onPress={() => setFilter(cat)}
+            style={[styles.chip, filter === cat && styles.chipActive]}>
+            <Text style={[styles.chipText, filter === cat && styles.chipTextActive]}>
+              {cat === 'all' ? 'Toutes' : cat.charAt(0).toUpperCase() + cat.slice(1)}
+            </Text>
+          </Pressable>
+        ))}
+      </ScrollView>
+
+      {/* Liste */}
+      <ScrollView style={{ flex: 1 }}>
+        {filtered.map(note => (
+          <View key={note.id} style={styles.noteCard}>
+            <Pressable onPress={() => toggleDone(note.id)} style={{ flex: 1 }}>
+              <Text style={[styles.noteText, note.done && styles.noteDone]}>{note.text}</Text>
+              <Text style={styles.noteMeta}>{note.category} - {new Date(note.createdAt).toLocaleDateString('fr-FR')}</Text>
+            </Pressable>
+            <Pressable onPress={() => deleteNote(note.id)}>
+              <Text style={{ color: '#f44336', fontSize: 18 }}>✕</Text>
+            </Pressable>
+          </View>
+        ))}
+      </ScrollView>
+    </View>
+  );
+}
+
+// Styles abrégés pour la lisibilité
+const styles = StyleSheet.create({
+  container: { flex: 1, padding: 16, backgroundColor: '#f5f5f5' },
+  title: { fontSize: 24, fontWeight: 'bold', marginBottom: 12 },
+  offlineBanner: { backgroundColor: '#ff9800', padding: 6, borderRadius: 6, marginBottom: 8, alignItems: 'center' },
+  offlineText: { color: '#fff', fontSize: 12, fontWeight: '600' },
+  chip: { paddingHorizontal: 14, paddingVertical: 6, borderRadius: 16, backgroundColor: '#e0e0e0', marginRight: 8 },
+  chipActive: { backgroundColor: '#0066cc' },
+  chipText: { fontSize: 13, color: '#666' },
+  chipTextActive: { color: '#fff', fontWeight: '600' },
+  noteCard: { flexDirection: 'row', alignItems: 'center', backgroundColor: '#fff', padding: 12, borderRadius: 8, marginBottom: 8 },
+  noteText: { fontSize: 15 },
+  noteDone: { textDecorationLine: 'line-through', color: '#999' },
+  noteMeta: { fontSize: 12, color: '#999', marginTop: 4 },
+});`}</CodeBlock>
+  }
+>
+Créez une application complète de notes qui combine **tous** les concepts de la Séance 2.
+
+**Architecture :**
+- 3 onglets : Notes, Ajouter, Paramètres
+- Navigation par Tabs (Expo Router)
+
+**Onglet Notes :**
+- Liste des notes avec filtrage par catégorie
+- Taper sur une note pour basculer fait/non fait
+- Bouton de suppression
+- Bannière "Mode hors ligne" quand pas de connexion
+- Rechargement automatique avec `useFocusEffect`
+
+**Onglet Ajouter :**
+- Formulaire avec : texte (multiligne), sélection de catégorie
+- Validation (texte obligatoire)
+- KeyboardAvoidingView
+- Sauvegarde dans AsyncStorage
+
+**Onglet Paramètres :**
+- Switch pour afficher/masquer les notes terminées
+- Bouton "Supprimer toutes les notes"
+- Préférences sauvegardées dans AsyncStorage
+
+**Concepts combinés :**
+- useState, useEffect, useFocusEffect
+- TextInput, KeyboardAvoidingView, ScrollView
+- AsyncStorage (notes + préférences)
+- NetInfo (détection offline)
+- Navigation (Tabs)
+- Validation de formulaire
+
+<Callout type="tip" title="Procédez par étapes">
+1. Créez la structure de navigation (Tabs)
+2. Implémentez la liste des notes avec des données en dur
+3. Ajoutez le formulaire d'ajout
+4. Ajoutez AsyncStorage pour la persistance
+5. Ajoutez NetInfo et la bannière offline
+6. Ajoutez les paramètres
+
+Ne cherchez pas la perfection : l'objectif est de pratiquer les patterns.
+</Callout>
+</Exercise>
+
+---
+
+## Récapitulatif
+
+<Callout type="info" title="Ce que vous avez pratiqué">
+**Exercice 1 :** AsyncStorage avec pattern charger/sauvegarder et flag isLoaded
+
+**Exercice 2 :** useState avec listes (ajout, suppression, toggle) et TextInput
+
+**Exercice 3 :** Notes avec catégories, filtrage et persistance AsyncStorage
+
+**Exercice 4 :** Formulaire complet avec validation, KeyboardAvoidingView et refs
+
+**Exercice 5 :** Application complète combinant tous les concepts (Tabs, AsyncStorage, NetInfo, useFocusEffect)
+
+**Temps total estimé :** ~3h
+</Callout>
+
+<Callout type="warning" title="Comprendre, pas mémoriser">
+L'objectif de ces exercices est de **comprendre les patterns**, pas de mémoriser la syntaxe. Les patterns importants sont :
+- **Composant contrôlé** : `value` + `onChangeText`
+- **Charger/sauvegarder** : useEffect au montage + useEffect sur les données
+- **Immutabilité** : `filter`, `map`, `...spread` pour modifier l'état
+- **Gestion du clavier** : KeyboardAvoidingView, Keyboard.dismiss(), refs
+
+Quand vous travaillerez sur un vrai projet, vous pourrez consulter la documentation ou demander à l'IA de générer du code. L'important est de savoir **valider** et **adapter** ce code.
+</Callout>
+
+## Ressources
+
+<Resources resources={[
+  {
+    title: "React Native TextInput",
+    description: "Toutes les props du composant TextInput",
+    url: "https://reactnative.dev/docs/textinput",
+    type: "doc"
+  },
+  {
+    title: "AsyncStorage",
+    description: "API complète de @react-native-async-storage/async-storage",
+    url: "https://react-native-async-storage.github.io/async-storage/",
+    type: "doc"
+  },
+  {
+    title: "KeyboardAvoidingView",
+    description: "Documentation du composant KeyboardAvoidingView",
+    url: "https://reactnative.dev/docs/keyboardavoidingview",
+    type: "doc"
+  },
+  {
+    title: "Expo Router Tabs",
+    description: "Guide de navigation par onglets avec Expo Router",
+    url: "https://docs.expo.dev/router/advanced/tabs/",
+    type: "doc"
+  }
+]} />

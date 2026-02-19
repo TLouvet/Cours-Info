@@ -1,0 +1,246 @@
+# Conclusion - Séance 1
+
+Vous avez terminé les fondamentaux de React Native. Vous êtes maintenant capable de créer des applications mobiles multi-écrans avec Expo.
+
+## Ce que vous maîtrisez
+
+<Callout type="info">
+Vous avez acquis les **compétences pour créer des applications mobiles** avec React Native et Expo. Chaque concept de cette séance sera réutilisé dans les séances suivantes.
+</Callout>
+
+### Paysage mobile
+
+- **Trois approches** : natif (Swift/Kotlin), hybride (WebView), cross-platform (React Native/Flutter)
+- **React Native** : composants natifs, pas de WebView, une seule base de code
+- **Expo** : outils pour simplifier le développement (Expo Go, SDK, Router)
+
+### Composants primitifs
+
+- **View** : conteneur de base (remplace `<div>`)
+- **Text** : affichage de texte (remplace `<p>`, `<h1>`, etc.)
+- **Image** : affichage d'images (dimensions obligatoires pour les images distantes)
+- **ScrollView** : zone défilable (pas de scroll automatique en React Native)
+- **SafeAreaView** : gestion de l'encoche et de la barre d'état
+
+### StyleSheet et Flexbox
+
+- **StyleSheet.create()** : styles en JavaScript, pas de fichiers CSS
+- **Pas de cascade** : chaque composant reçoit ses propres styles
+- **Flexbox vertical** : `flexDirection: 'column'` par défaut (pas `row`)
+- **Density-independent pixels** : pas d'unités `px`, `rem`, `%`
+
+### Navigation
+
+- **Expo Router** : routing basé sur les fichiers (comme Next.js)
+- **Stack** : pile d'écrans, swipe pour revenir
+- **Tabs** : barre d'onglets en bas de l'écran
+- **Link** et **useRouter** : navigation déclarative et programmatique
+
+## Web vs Mobile : les différences clés
+
+<div className="overflow-x-auto my-6">
+  <table className="min-w-full border border-gray-200 dark:border-gray-700">
+    <thead className="bg-gray-50 dark:bg-gray-800">
+      <tr>
+        <th className="px-4 py-3 text-left text-sm font-semibold text-gray-900 dark:text-gray-100 border-b border-gray-200 dark:border-gray-700">Concept</th>
+        <th className="px-4 py-3 text-left text-sm font-semibold text-gray-900 dark:text-gray-100 border-b border-gray-200 dark:border-gray-700">React web (R4A10)</th>
+        <th className="px-4 py-3 text-left text-sm font-semibold text-gray-900 dark:text-gray-100 border-b border-gray-200 dark:border-gray-700">React Native (R4A11)</th>
+      </tr>
+    </thead>
+    <tbody className="bg-white dark:bg-gray-900 divide-y divide-gray-200 dark:divide-gray-700">
+      <tr>
+        <td className="px-4 py-3 text-sm font-medium text-gray-900 dark:text-gray-100">Outil de création</td>
+        <td className="px-4 py-3 text-sm text-gray-700 dark:text-gray-300"><code>npm create vite@latest</code></td>
+        <td className="px-4 py-3 text-sm text-gray-700 dark:text-gray-300"><code>npx create-expo-app@latest</code></td>
+      </tr>
+      <tr>
+        <td className="px-4 py-3 text-sm font-medium text-gray-900 dark:text-gray-100">Conteneur</td>
+        <td className="px-4 py-3 text-sm text-gray-700 dark:text-gray-300"><code>&lt;div&gt;</code></td>
+        <td className="px-4 py-3 text-sm text-gray-700 dark:text-gray-300"><code>&lt;View&gt;</code></td>
+      </tr>
+      <tr>
+        <td className="px-4 py-3 text-sm font-medium text-gray-900 dark:text-gray-100">Texte</td>
+        <td className="px-4 py-3 text-sm text-gray-700 dark:text-gray-300"><code>&lt;p&gt;</code>, <code>&lt;h1&gt;</code>, <code>&lt;span&gt;</code></td>
+        <td className="px-4 py-3 text-sm text-gray-700 dark:text-gray-300"><code>&lt;Text&gt;</code> (unique)</td>
+      </tr>
+      <tr>
+        <td className="px-4 py-3 text-sm font-medium text-gray-900 dark:text-gray-100">Styles</td>
+        <td className="px-4 py-3 text-sm text-gray-700 dark:text-gray-300">CSS, className, cascade</td>
+        <td className="px-4 py-3 text-sm text-gray-700 dark:text-gray-300">StyleSheet.create(), pas de cascade</td>
+      </tr>
+      <tr>
+        <td className="px-4 py-3 text-sm font-medium text-gray-900 dark:text-gray-100">Flexbox par défaut</td>
+        <td className="px-4 py-3 text-sm text-gray-700 dark:text-gray-300"><code>row</code> (horizontal)</td>
+        <td className="px-4 py-3 text-sm text-gray-700 dark:text-gray-300"><code>column</code> (vertical)</td>
+      </tr>
+      <tr>
+        <td className="px-4 py-3 text-sm font-medium text-gray-900 dark:text-gray-100">Scroll</td>
+        <td className="px-4 py-3 text-sm text-gray-700 dark:text-gray-300">Automatique (navigateur)</td>
+        <td className="px-4 py-3 text-sm text-gray-700 dark:text-gray-300"><code>&lt;ScrollView&gt;</code> explicite</td>
+      </tr>
+      <tr>
+        <td className="px-4 py-3 text-sm font-medium text-gray-900 dark:text-gray-100">Événement clic</td>
+        <td className="px-4 py-3 text-sm text-gray-700 dark:text-gray-300"><code>onClick</code></td>
+        <td className="px-4 py-3 text-sm text-gray-700 dark:text-gray-300"><code>onPress</code></td>
+      </tr>
+      <tr>
+        <td className="px-4 py-3 text-sm font-medium text-gray-900 dark:text-gray-100">Navigation</td>
+        <td className="px-4 py-3 text-sm text-gray-700 dark:text-gray-300">React Router (URLs)</td>
+        <td className="px-4 py-3 text-sm text-gray-700 dark:text-gray-300">Expo Router (fichiers, Stack, Tabs)</td>
+      </tr>
+      <tr>
+        <td className="px-4 py-3 text-sm font-medium text-gray-900 dark:text-gray-100">Rechargement auto</td>
+        <td className="px-4 py-3 text-sm text-gray-700 dark:text-gray-300">HMR (navigateur)</td>
+        <td className="px-4 py-3 text-sm text-gray-700 dark:text-gray-300">Fast Refresh (téléphone)</td>
+      </tr>
+      <tr>
+        <td className="px-4 py-3 text-sm font-medium text-gray-900 dark:text-gray-100">Ce qui reste identique</td>
+        <td className="px-4 py-3 text-sm text-gray-700 dark:text-gray-300" colSpan="2">Composants, props, hooks (useState, useEffect), JSX, .map(), conditions</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+## La Séance 2 : État, Formulaires et Persistance
+
+Maintenant que vous maîtrisez les fondamentaux de React Native, la Séance 2 ajoutera l'**interactivité** :
+
+- **useState sur mobile** : gérer l'état des composants (vous connaissez déjà de R4A10)
+- **TextInput** : saisie de texte (équivalent de `<input>` en HTML)
+- **Formulaires** : créer des formulaires contrôlés
+- **Cycle de vie** : useEffect pour les effets de bord
+- **AsyncStorage** : persister des données localement (équivalent de localStorage)
+- **Mode hors ligne** : faire fonctionner l'application sans connexion
+
+<Callout type="success" title="Bonne nouvelle">
+En R4A10, vous avez déjà appris **useState**, **useEffect** et les **formulaires contrôlés**. En Séance 2 de R4A11, vous allez appliquer ces mêmes concepts au mobile. La transition sera naturelle.
+</Callout>
+
+## Validation des compétences
+
+Avant de passer à la Séance 2, vérifiez que vous maîtrisez ces concepts :
+
+<div className="my-6 space-y-2">
+  <div className="flex items-start gap-3 p-3 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg">
+    <div>
+      <p className="font-medium text-gray-900 dark:text-gray-100">Je sais créer un projet Expo et le lancer avec Expo Go</p>
+      <p className="text-sm text-gray-600 dark:text-gray-400">npx create-expo-app, npx expo start, scanner le QR code</p>
+    </div>
+  </div>
+
+  <div className="flex items-start gap-3 p-3 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg">
+    <div>
+      <p className="font-medium text-gray-900 dark:text-gray-100">Je connais les composants primitifs</p>
+      <p className="text-sm text-gray-600 dark:text-gray-400">View, Text, Image, ScrollView, SafeAreaView et leurs différences avec le HTML</p>
+    </div>
+  </div>
+
+  <div className="flex items-start gap-3 p-3 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg">
+    <div>
+      <p className="font-medium text-gray-900 dark:text-gray-100">Je sais appliquer des styles avec StyleSheet.create()</p>
+      <p className="text-sm text-gray-600 dark:text-gray-400">Pas de CSS, pas de cascade, Flexbox en colonne par défaut</p>
+    </div>
+  </div>
+
+  <div className="flex items-start gap-3 p-3 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg">
+    <div>
+      <p className="font-medium text-gray-900 dark:text-gray-100">Je sais mettre en place la navigation</p>
+      <p className="text-sm text-gray-600 dark:text-gray-400">Expo Router, Stack, Tabs, Link, useRouter, routes dynamiques</p>
+    </div>
+  </div>
+
+  <div className="flex items-start gap-3 p-3 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg">
+    <div>
+      <p className="font-medium text-gray-900 dark:text-gray-100">Je sais construire une application multi-écrans</p>
+      <p className="text-sm text-gray-600 dark:text-gray-400">Combiner onglets, listes, écrans détail avec passage de paramètres</p>
+    </div>
+  </div>
+</div>
+
+<Callout type="warning" title="Besoin de réviser ?">
+Si vous n'êtes pas à l'aise avec l'un de ces concepts :
+
+1. **Relisez la page correspondante**
+2. **Refaites le TP guidé** (application Mon Carnet)
+3. **Faites les exercices** de cette séance
+4. **Posez des questions** en cours
+
+Ne passez pas à la Séance 2 sans maîtriser ces bases : useState et les formulaires mobiles s'appuient sur ces fondamentaux.
+</Callout>
+
+## Conseils pour la suite
+
+<Callout type="tip" title="Pour progresser">
+**1. Expérimentez dans votre projet Expo**
+- Modifiez les styles, ajoutez des écrans, testez les layouts
+- Le Fast Refresh vous donne un retour instantané
+
+**2. Faites le lien avec R4A10**
+- Quand vous apprenez un concept mobile, pensez à l'équivalent web
+- Les concepts React (composants, props, hooks) sont identiques
+
+**3. Consultez la documentation Expo**
+- [docs.expo.dev](https://docs.expo.dev) est la référence
+- Cherchez les composants par nom quand vous avez un doute
+
+**4. Utilisez l'IA avec le vocabulaire React Native**
+- Parlez de "View" et "Text", pas de "div" et "p"
+- Mentionnez "StyleSheet" et "Expo Router"
+- Validez toujours que le code généré utilise les composants React Native
+</Callout>
+
+<Callout type="warning" title="Comprendre, pas mémoriser">
+**Vous n'avez pas besoin de connaître par coeur** tous les composants et toutes les propriétés de style. L'important est de :
+
+- **Savoir que ça existe** : View, Text, Image, StyleSheet, Expo Router
+- **Comprendre les principes** : pas de CSS, Flexbox vertical, routing par fichiers
+- **Savoir chercher** : documentation Expo, exemples, autocomplétion
+- **Valider le code** : reconnaître les erreurs courantes (texte hors Text, image sans dimensions)
+</Callout>
+
+## Ressources
+
+<Resources resources={[
+  {
+    title: "React Native Documentation",
+    description: "Documentation officielle de React Native",
+    url: "https://reactnative.dev",
+    type: "doc"
+  },
+  {
+    title: "Expo Documentation",
+    description: "Documentation officielle d'Expo",
+    url: "https://docs.expo.dev",
+    type: "doc"
+  },
+  {
+    title: "Expo Router",
+    description: "Guide complet sur le routing avec Expo",
+    url: "https://docs.expo.dev/router/introduction/",
+    type: "doc"
+  },
+  {
+    title: "React Native Core Components",
+    description: "Référence des composants primitifs (View, Text, Image, etc.)",
+    url: "https://reactnative.dev/docs/components-and-apis",
+    type: "doc"
+  }
+]} />
+
+<div className="my-8 p-6 bg-gradient-to-r from-cyan-50 to-blue-50 dark:from-cyan-900/20 dark:to-blue-900/20 border-2 border-cyan-200 dark:border-cyan-800 rounded-lg text-center">
+  <h3 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-2">
+    Bravo !
+  </h3>
+  <div className="text-lg text-gray-700 dark:text-gray-300 mb-4">
+    Vous avez terminé les fondamentaux de React Native
+  </div>
+  <div className="text-gray-600 dark:text-gray-400 mb-6">
+    Vous savez maintenant créer des applications mobiles multi-écrans avec Expo, en réutilisant vos connaissances React du web.
+  </div>
+  <a
+    href="/r4a11/seance-1/quiz"
+    className="inline-block px-6 py-3 bg-cyan-600 hover:bg-cyan-700 text-white font-semibold rounded-lg transition-colors no-prose-styles"
+  >
+    Faire le quiz de validation
+  </a>
+</div>

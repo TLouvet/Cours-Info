@@ -3,13 +3,17 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { FiChevronRight, FiHome } from 'react-icons/fi';
-import { navigation } from '@/lib/navigation';
+import { getNavigationForPath, getCourseForPath } from '@/lib/navigation';
 
 export default function Breadcrumbs() {
   const pathname = usePathname();
 
-  // Don't show breadcrumbs on homepage
-  if (pathname === '/') return null;
+  // Don't show breadcrumbs on homepage or course landing pages
+  if (pathname === '/' || pathname === '/r4a11') return null;
+
+  const currentNav = getNavigationForPath(pathname);
+  const currentCourse = getCourseForPath(pathname);
+  const isR4A11 = pathname.startsWith('/r4a11');
 
   const pathSegments = pathname.split('/').filter(Boolean);
 
@@ -18,16 +22,28 @@ export default function Breadcrumbs() {
     { label: 'Accueil', href: '/' }
   ];
 
-  // Find the current session and section
-  for (const session of navigation) {
-    if (pathSegments[0] === session.id) {
+  // Add course breadcrumb for R4A11
+  if (isR4A11) {
+    breadcrumbs.push({
+      label: 'R4A11',
+      href: '/r4a11'
+    });
+  }
+
+  // Find the current session and section in the correct navigation
+  const sessionSegment = isR4A11 ? pathSegments[1] : pathSegments[0];
+  const sectionSegment = isR4A11 ? pathSegments[2] : pathSegments[1];
+
+  for (const session of currentNav) {
+    const sessionIdSuffix = session.href.split('/').pop();
+    if (sessionSegment === sessionIdSuffix) {
       breadcrumbs.push({
         label: session.title,
-        href: `/${session.id}`
+        href: session.href
       });
 
       // If we have a section, find it
-      if (pathSegments[1] && session.sections) {
+      if (sectionSegment && session.sections) {
         const section = session.sections.find(s => s.href === pathname);
         if (section) {
           breadcrumbs.push({
@@ -41,9 +57,10 @@ export default function Breadcrumbs() {
   }
 
   // If we couldn't find the page in navigation, fall back to path-based breadcrumbs
-  if (breadcrumbs.length === 1) {
-    pathSegments.forEach((segment, index) => {
-      const href = '/' + pathSegments.slice(0, index + 1).join('/');
+  if (breadcrumbs.length <= (isR4A11 ? 2 : 1)) {
+    const startIndex = isR4A11 ? 1 : 0;
+    pathSegments.slice(startIndex).forEach((segment, index) => {
+      const href = '/' + pathSegments.slice(0, startIndex + index + 1).join('/');
       const label = segment
         .split('-')
         .map(word => word.charAt(0).toUpperCase() + word.slice(1))
@@ -51,6 +68,10 @@ export default function Breadcrumbs() {
       breadcrumbs.push({ label, href });
     });
   }
+
+  const linkColorClass = isR4A11
+    ? 'text-violet-600 dark:text-violet-400 hover:text-violet-700 dark:hover:text-violet-300'
+    : 'text-cyan-600 dark:text-cyan-400 hover:text-cyan-700 dark:hover:text-cyan-300';
 
   return (
     <nav aria-label="Breadcrumb" className="mb-6">
@@ -75,7 +96,7 @@ export default function Breadcrumbs() {
               ) : (
                 <Link
                   href={crumb.href}
-                  className="text-cyan-600 dark:text-cyan-400 hover:text-cyan-700 dark:hover:text-cyan-300 transition-colors no-prose-styles inline-flex items-center"
+                  className={`${linkColorClass} transition-colors no-prose-styles inline-flex items-center`}
                 >
                   {crumb.label}
                 </Link>

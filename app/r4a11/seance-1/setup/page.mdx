@@ -1,0 +1,306 @@
+# Installation et Configuration
+
+Créons votre premier projet React Native avec Expo. Si vous avez déjà installé Node.js pour R4A10, vous êtes presque prêt.
+
+## Prérequis
+
+### Node.js et npm
+
+Vous avez déjà installé Node.js et npm pour le cours R4A10. Vérifiez que tout fonctionne :
+
+```bash
+node --version   # v18 ou supérieur
+npm --version    # v9 ou supérieur
+```
+
+<Callout type="warning" title="Node.js requis">
+Si Node.js n'est pas installé, suivez les instructions de la [Séance 2 R4A10](/seance-2/environment). Sur les postes de l'IUT, Node.js est déjà disponible.
+</Callout>
+
+### Application Expo Go sur votre téléphone
+
+Installez **Expo Go** sur votre smartphone :
+
+- **Android** : [Expo Go sur Google Play](https://play.google.com/store/apps/details?id=host.exp.exponent)
+- **iOS** : [Expo Go sur l'App Store](https://apps.apple.com/app/expo-go/id982107779)
+
+<Callout type="info" title="Même réseau Wi-Fi">
+Votre ordinateur et votre téléphone doivent être connectés au **même réseau Wi-Fi** pour que Expo Go puisse charger votre application. À l'IUT, utilisez le réseau Wi-Fi étudiant sur les deux appareils.
+</Callout>
+
+## Créer un projet
+
+### La commande
+
+```bash
+npx create-expo-app@latest mon-app-mobile
+```
+
+Cette commande crée un nouveau projet Expo avec la configuration par défaut. Elle installe automatiquement les dépendances nécessaires.
+
+<Callout type="tip" title="Comparaison avec Vite">
+En R4A10, vous utilisiez `npm create vite@latest`. Ici, c'est `npx create-expo-app@latest`. Le principe est le même : un outil qui génère la structure du projet et installe les dépendances.
+</Callout>
+
+### Lancer le projet
+
+```bash
+cd mon-app-mobile
+npx expo start
+```
+
+Le terminal affiche un **QR code**. Scannez-le avec votre téléphone :
+
+- **Android** : ouvrez Expo Go et scannez le QR code
+- **iOS** : ouvrez l'application Appareil photo et scannez le QR code (Expo Go s'ouvre automatiquement)
+
+<Callout type="warning" title="Si le QR code ne fonctionne pas">
+Plusieurs causes possibles :
+
+1. **Réseau différent** : vérifiez que le PC et le téléphone sont sur le même Wi-Fi
+2. **Pare-feu** : le port 8081 peut être bloqué. Essayez `npx expo start --tunnel`
+3. **Expo Go obsolète** : mettez à jour l'application sur votre téléphone
+
+La commande `--tunnel` utilise un tunnel internet (plus lent mais fonctionne sur des réseaux différents) :
+
+```bash
+npx expo start --tunnel
+```
+</Callout>
+
+### Alternatives sans téléphone
+
+Si vous n'avez pas de téléphone disponible :
+
+```bash
+# Lancer dans un émulateur Android (nécessite Android Studio)
+npx expo start --android
+
+# Lancer dans le simulateur iOS (macOS uniquement, nécessite Xcode)
+npx expo start --ios
+
+# Lancer dans le navigateur web (limité mais utile pour un aperçu rapide)
+npx expo start --web
+```
+
+## Structure du projet
+
+Après la création, votre projet contient :
+
+```
+mon-app-mobile/
+├── app/                    # Écrans de l'application (Expo Router)
+│   ├── (tabs)/             # Groupe de navigation par onglets
+│   │   ├── index.tsx       # Écran d'accueil (onglet 1)
+│   │   ├── explore.tsx     # Écran Explorer (onglet 2)
+│   │   └── _layout.tsx     # Configuration des onglets
+│   ├── _layout.tsx         # Layout racine de l'application
+│   └── +not-found.tsx      # Page 404
+├── assets/                 # Images, polices, fichiers statiques
+│   ├── images/
+│   └── fonts/
+├── components/             # Composants réutilisables
+├── constants/              # Constantes (couleurs, etc.)
+├── hooks/                  # Hooks personnalisés
+├── app.json                # Configuration de l'application
+├── package.json            # Dépendances et scripts
+└── tsconfig.json           # Configuration TypeScript
+```
+
+### Les dossiers importants
+
+**`app/`** : contient les **écrans** de votre application. Chaque fichier correspond à une route (comme le routing par fichiers de Next.js). C'est ici que vous passerez le plus de temps.
+
+**`components/`** : contient les composants **réutilisables** (boutons, cartes, etc.). Même logique qu'en React web.
+
+**`assets/`** : contient les **fichiers statiques** (images, polices). Les images sont importées différemment qu'en web.
+
+<QuickCheck
+  question="Dans un projet Expo, où se trouvent les écrans de l'application ?"
+  options={[
+    "Dans le dossier components/",
+    "Dans le dossier app/",
+    "Dans le dossier screens/",
+    "Dans le fichier App.tsx à la racine"
+  ]}
+  correctAnswer={1}
+  explanation="Expo Router utilise le dossier app/ pour le routing basé sur les fichiers. Chaque fichier dans app/ correspond à un écran/route. C'est similaire au routing de Next.js. Le dossier components/ est réservé aux composants réutilisables, pas aux écrans."
+/>
+
+## Le fichier app.json
+
+Le fichier `app.json` contient la **configuration** de votre application :
+
+```json
+{
+  "expo": {
+    "name": "mon-app-mobile",
+    "slug": "mon-app-mobile",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/images/icon.png",
+    "scheme": "myapp",
+    "userInterfaceStyle": "automatic",
+    "newArchEnabled": true,
+    "ios": {
+      "supportsTablet": true
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/images/adaptive-icon.png",
+        "backgroundColor": "#ffffff"
+      }
+    },
+    "plugins": [
+      "expo-router"
+    ]
+  }
+}
+```
+
+### Propriétés principales
+
+- **name** : nom affiché de l'application
+- **slug** : identifiant URL pour Expo (pas d'espaces, pas de majuscules)
+- **version** : numéro de version de l'application
+- **orientation** : `"portrait"`, `"landscape"` ou `"default"` (les deux)
+- **icon** : icône de l'application sur l'écran d'accueil
+- **ios** / **android** : configuration spécifique à chaque plateforme
+- **plugins** : extensions Expo (router, caméra, etc.)
+
+<Callout type="info" title="Différence avec Vite">
+En React web avec Vite, la configuration se fait dans `vite.config.ts`. En Expo, c'est `app.json` (ou `app.config.js` pour une configuration dynamique). Le fichier `app.json` configure aussi des éléments spécifiques au mobile : icône, orientation, permissions, splash screen.
+</Callout>
+
+## Votre premier écran
+
+Ouvrez le fichier `app/(tabs)/index.tsx` et remplacez son contenu :
+
+```jsx
+import { View, Text, StyleSheet } from 'react-native';
+
+export default function HomeScreen() {
+  return (
+    <View style={styles.container}>
+      <Text style={styles.title}>Bienvenue dans R4A11 !</Text>
+      <Text style={styles.subtitle}>Mon premier écran React Native</Text>
+    </View>
+  );
+}
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#f5f5f5',
+  },
+  title: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    marginBottom: 8,
+  },
+  subtitle: {
+    fontSize: 16,
+    color: '#666',
+  },
+});
+```
+
+Sauvegardez le fichier. Expo Go recharge automatiquement l'application sur votre téléphone (**Fast Refresh**), comme le HMR de Vite dans le navigateur.
+
+<QuickCheck
+  question="Quel est l'équivalent du HMR de Vite dans Expo ?"
+  options={[
+    "Il n'y a pas de rechargement automatique en React Native",
+    "Le Fast Refresh qui recharge l'application sur le téléphone à chaque sauvegarde",
+    "Il faut relancer npx expo start à chaque modification",
+    "Il faut scanner le QR code à chaque modification"
+  ]}
+  correctAnswer={1}
+  explanation="Le Fast Refresh d'Expo recharge automatiquement l'application sur votre téléphone à chaque sauvegarde de fichier, exactement comme le Hot Module Replacement (HMR) de Vite recharge la page dans le navigateur. Pas besoin de relancer le serveur ou de rescanner le QR code."
+/>
+
+## Commandes utiles
+
+```bash
+# Démarrer le serveur de développement
+npx expo start
+
+# Démarrer avec un tunnel (si le Wi-Fi pose problème)
+npx expo start --tunnel
+
+# Effacer le cache (si l'app ne se met pas à jour)
+npx expo start --clear
+
+# Installer une dépendance compatible Expo
+npx expo install nom-du-package
+
+# Vérifier les dépendances
+npx expo doctor
+```
+
+<Callout type="tip" title="npx expo install vs npm install">
+Utilisez **`npx expo install`** au lieu de `npm install` pour les packages React Native. Expo sélectionne automatiquement la version compatible avec votre version du SDK Expo. Avec `npm install`, vous risquez d'installer une version incompatible.
+
+```bash
+# Correct : Expo choisit la bonne version
+npx expo install react-native-maps
+
+# Risqué : peut installer une version incompatible
+npm install react-native-maps
+```
+</Callout>
+
+<QuickCheck
+  question="Pourquoi utiliser npx expo install au lieu de npm install pour les packages React Native ?"
+  options={[
+    "npx expo install est plus rapide",
+    "npm install ne fonctionne pas avec React Native",
+    "npx expo install sélectionne automatiquement la version compatible avec le SDK Expo",
+    "Il n'y a aucune différence entre les deux"
+  ]}
+  correctAnswer={2}
+  explanation="npx expo install vérifie la compatibilité avec votre version du SDK Expo et installe la version appropriée du package. Avec npm install, vous pourriez installer une version trop récente ou trop ancienne qui cause des erreurs de compatibilité."
+/>
+
+## À retenir
+
+<Callout type="success" title="Comprendre, pas mémoriser">
+**Configuration :**
+- `npx create-expo-app@latest` crée un projet (équivalent de `npm create vite@latest`)
+- `npx expo start` lance le serveur de développement
+- Scannez le QR code avec Expo Go pour voir l'application sur votre téléphone
+
+**Structure :**
+- `app/` contient les écrans (routing par fichiers)
+- `components/` contient les composants réutilisables
+- `app.json` configure l'application (nom, icône, orientation)
+
+**Outils :**
+- Fast Refresh = rechargement automatique (comme le HMR de Vite)
+- `npx expo install` = installation de dépendances compatibles
+</Callout>
+
+## Ressources
+
+<Resources resources={[
+  {
+    title: "Create a project - Expo Docs",
+    description: "Guide officiel pour créer un projet Expo",
+    url: "https://docs.expo.dev/get-started/create-a-project/",
+    type: "doc"
+  },
+  {
+    title: "Expo Go",
+    description: "Documentation sur l'utilisation d'Expo Go",
+    url: "https://docs.expo.dev/get-started/set-up-your-environment/",
+    type: "doc"
+  },
+  {
+    title: "app.json / app.config.js",
+    description: "Référence complète de la configuration Expo",
+    url: "https://docs.expo.dev/versions/latest/config/app/",
+    type: "doc"
+  }
+]} />

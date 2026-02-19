@@ -1,0 +1,257 @@
+# Conclusion - Séance 2
+
+Vous avez terminé la Séance 2 : État, Formulaires et Persistance. Vous êtes maintenant capable de créer des applications mobiles **interactives** qui **conservent les données** de l'utilisateur.
+
+## Ce que vous maîtrisez
+
+<Callout type="info">
+Vous avez acquis les compétences pour gérer **l'état**, **les formulaires** et **la persistance des données** dans une application React Native. Chaque concept de cette séance sera réutilisé dans les séances suivantes.
+</Callout>
+
+### État sur mobile
+
+- **useState** : même syntaxe qu'en React web, mêmes règles d'immutabilité
+- **Opérations sur les listes** : ajouter (`...spread`), supprimer (`filter`), modifier (`map`)
+- **Contraintes mobiles** : clavier virtuel (`Keyboard.dismiss()`), arrière-plan (données volatiles)
+
+### TextInput et saisie
+
+- **TextInput** : remplace `<input>` et `<textarea>` du HTML
+- **onChangeText** : reçoit directement la chaîne (pas d'événement)
+- **keyboardType** : adapte le clavier au type de données
+- **secureTextEntry** : champ mot de passe
+- **Navigation entre champs** : `returnKeyType` + `onSubmitEditing` + `ref.focus()`
+
+### Formulaires
+
+- **Composants contrôlés** : même pattern qu'en React web (`value` + `onChangeText`)
+- **KeyboardAvoidingView** : décale le contenu quand le clavier apparaît
+- **ScrollView** : pour les formulaires longs, avec `keyboardShouldPersistTaps`
+- **Validation** : objet errors, styles conditionnels, messages d'erreur
+
+### Cycle de vie
+
+- **useEffect** : identique au web, pour le chargement et la sauvegarde
+- **AppState** : détecter foreground/background (sauvegarder avant fermeture)
+- **useFocusEffect** : réagir à la visibilité de l'écran dans la navigation
+
+### Persistance
+
+- **AsyncStorage** : équivalent de `localStorage`, asynchrone, chaînes uniquement
+- **JSON.stringify/parse** : pour stocker objets et tableaux
+- **Pattern charger/sauvegarder** : useEffect au montage + useEffect sur les données
+- **Gestion d'erreurs** : try/catch systématique
+
+### Mode offline
+
+- **NetInfo** : détecter l'état du réseau
+- **Offline-first** : données locales en priorité, synchronisation quand possible
+- **UX adaptée** : bannières, boutons désactivés, indicateurs de synchronisation
+
+## Web vs Mobile : état et données
+
+<div className="overflow-x-auto my-6">
+  <table className="min-w-full border border-gray-200 dark:border-gray-700">
+    <thead className="bg-gray-50 dark:bg-gray-800">
+      <tr>
+        <th className="px-4 py-3 text-left text-sm font-semibold text-gray-900 dark:text-gray-100 border-b border-gray-200 dark:border-gray-700">Concept</th>
+        <th className="px-4 py-3 text-left text-sm font-semibold text-gray-900 dark:text-gray-100 border-b border-gray-200 dark:border-gray-700">React web (R4A10)</th>
+        <th className="px-4 py-3 text-left text-sm font-semibold text-gray-900 dark:text-gray-100 border-b border-gray-200 dark:border-gray-700">React Native (R4A11)</th>
+      </tr>
+    </thead>
+    <tbody className="bg-white dark:bg-gray-900 divide-y divide-gray-200 dark:divide-gray-700">
+      <tr>
+        <td className="px-4 py-3 text-sm font-medium text-gray-900 dark:text-gray-100">Gestion d'état</td>
+        <td className="px-4 py-3 text-sm text-gray-700 dark:text-gray-300"><code>useState</code></td>
+        <td className="px-4 py-3 text-sm text-gray-700 dark:text-gray-300"><code>useState</code> (identique)</td>
+      </tr>
+      <tr>
+        <td className="px-4 py-3 text-sm font-medium text-gray-900 dark:text-gray-100">Saisie de texte</td>
+        <td className="px-4 py-3 text-sm text-gray-700 dark:text-gray-300"><code>&lt;input onChange=&#123;...&#125; /&gt;</code></td>
+        <td className="px-4 py-3 text-sm text-gray-700 dark:text-gray-300"><code>&lt;TextInput onChangeText=&#123;...&#125; /&gt;</code></td>
+      </tr>
+      <tr>
+        <td className="px-4 py-3 text-sm font-medium text-gray-900 dark:text-gray-100">Zone multiligne</td>
+        <td className="px-4 py-3 text-sm text-gray-700 dark:text-gray-300"><code>&lt;textarea&gt;</code></td>
+        <td className="px-4 py-3 text-sm text-gray-700 dark:text-gray-300"><code>&lt;TextInput multiline /&gt;</code></td>
+      </tr>
+      <tr>
+        <td className="px-4 py-3 text-sm font-medium text-gray-900 dark:text-gray-100">Formulaire</td>
+        <td className="px-4 py-3 text-sm text-gray-700 dark:text-gray-300"><code>&lt;form onSubmit=&#123;...&#125;&gt;</code></td>
+        <td className="px-4 py-3 text-sm text-gray-700 dark:text-gray-300">Pas de <code>&lt;form&gt;</code>, <code>Pressable</code> + <code>onPress</code></td>
+      </tr>
+      <tr>
+        <td className="px-4 py-3 text-sm font-medium text-gray-900 dark:text-gray-100">Clavier</td>
+        <td className="px-4 py-3 text-sm text-gray-700 dark:text-gray-300">Physique (ne gêne pas)</td>
+        <td className="px-4 py-3 text-sm text-gray-700 dark:text-gray-300">Virtuel (<code>KeyboardAvoidingView</code>)</td>
+      </tr>
+      <tr>
+        <td className="px-4 py-3 text-sm font-medium text-gray-900 dark:text-gray-100">Effets de bord</td>
+        <td className="px-4 py-3 text-sm text-gray-700 dark:text-gray-300"><code>useEffect</code></td>
+        <td className="px-4 py-3 text-sm text-gray-700 dark:text-gray-300"><code>useEffect</code> + <code>AppState</code> + <code>useFocusEffect</code></td>
+      </tr>
+      <tr>
+        <td className="px-4 py-3 text-sm font-medium text-gray-900 dark:text-gray-100">Stockage local</td>
+        <td className="px-4 py-3 text-sm text-gray-700 dark:text-gray-300"><code>localStorage</code> (synchrone)</td>
+        <td className="px-4 py-3 text-sm text-gray-700 dark:text-gray-300"><code>AsyncStorage</code> (asynchrone)</td>
+      </tr>
+      <tr>
+        <td className="px-4 py-3 text-sm font-medium text-gray-900 dark:text-gray-100">Mode hors ligne</td>
+        <td className="px-4 py-3 text-sm text-gray-700 dark:text-gray-300">Rare (Service Workers)</td>
+        <td className="px-4 py-3 text-sm text-gray-700 dark:text-gray-300">Courant (<code>NetInfo</code>, offline-first)</td>
+      </tr>
+      <tr>
+        <td className="px-4 py-3 text-sm font-medium text-gray-900 dark:text-gray-100">Arrière-plan</td>
+        <td className="px-4 py-3 text-sm text-gray-700 dark:text-gray-300">Onglet reste en mémoire</td>
+        <td className="px-4 py-3 text-sm text-gray-700 dark:text-gray-300">App peut être tuée (<code>AppState</code>)</td>
+      </tr>
+      <tr>
+        <td className="px-4 py-3 text-sm font-medium text-gray-900 dark:text-gray-100">Ce qui reste identique</td>
+        <td className="px-4 py-3 text-sm text-gray-700 dark:text-gray-300" colSpan="2">useState, useEffect, immutabilité, composants contrôlés, validation, JSON.stringify/parse</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+## La Séance 3 : APIs, Caméra et Géolocalisation
+
+Maintenant que vous maîtrisez l'état, les formulaires et la persistance, la Séance 3 ajoutera les **fonctionnalités natives** :
+
+- **API REST** : communiquer avec un serveur (fetch, affichage de données distantes)
+- **FlatList** : afficher de grandes listes de manière performante
+- **Caméra** : prendre des photos avec expo-camera
+- **Géolocalisation** : accéder à la position GPS avec expo-location
+- **Permissions** : demander l'accès aux fonctionnalités du téléphone
+
+<Callout type="success" title="Progression naturelle">
+La Séance 2 vous a donné les outils pour gérer les **données locales**. La Séance 3 vous apprendra à gérer les **données distantes** (API) et les **fonctionnalités matérielles** (caméra, GPS). Vous combinerez les deux : données API + cache AsyncStorage + accès aux capteurs.
+</Callout>
+
+## Validation des compétences
+
+Avant de passer à la Séance 3, vérifiez que vous maîtrisez ces concepts :
+
+<div className="my-6 space-y-2">
+  <div className="flex items-start gap-3 p-3 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg">
+    <div>
+      <p className="font-medium text-gray-900 dark:text-gray-100">Je sais gérer l'état avec useState sur mobile</p>
+      <p className="text-sm text-gray-600 dark:text-gray-400">Ajouter, supprimer, modifier des éléments dans une liste avec immutabilité</p>
+    </div>
+  </div>
+
+  <div className="flex items-start gap-3 p-3 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg">
+    <div>
+      <p className="font-medium text-gray-900 dark:text-gray-100">Je sais utiliser TextInput avec ses props mobiles</p>
+      <p className="text-sm text-gray-600 dark:text-gray-400">keyboardType, secureTextEntry, autoCapitalize, onSubmitEditing</p>
+    </div>
+  </div>
+
+  <div className="flex items-start gap-3 p-3 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg">
+    <div>
+      <p className="font-medium text-gray-900 dark:text-gray-100">Je sais créer un formulaire avec validation</p>
+      <p className="text-sm text-gray-600 dark:text-gray-400">KeyboardAvoidingView, ScrollView, messages d'erreur, styles conditionnels</p>
+    </div>
+  </div>
+
+  <div className="flex items-start gap-3 p-3 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg">
+    <div>
+      <p className="font-medium text-gray-900 dark:text-gray-100">Je sais persister des données avec AsyncStorage</p>
+      <p className="text-sm text-gray-600 dark:text-gray-400">setItem, getItem, JSON.stringify/parse, pattern charger/sauvegarder</p>
+    </div>
+  </div>
+
+  <div className="flex items-start gap-3 p-3 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg">
+    <div>
+      <p className="font-medium text-gray-900 dark:text-gray-100">Je comprends le cycle de vie mobile</p>
+      <p className="text-sm text-gray-600 dark:text-gray-400">useEffect, AppState (foreground/background), useFocusEffect</p>
+    </div>
+  </div>
+</div>
+
+<Callout type="warning" title="Besoin de réviser ?">
+Si vous n'êtes pas à l'aise avec l'un de ces concepts :
+
+1. **Relisez la page correspondante**
+2. **Faites les exercices** de cette séance
+3. **Construisez le projet fil rouge** pour mettre tout en pratique
+4. **Posez des questions** en cours
+
+Ne passez pas à la Séance 3 sans maîtriser la persistance avec AsyncStorage : les APIs et le cache local sont étroitement liés.
+</Callout>
+
+## Conseils pour la suite
+
+<Callout type="tip" title="Pour progresser">
+**1. Pratiquez avec votre projet Expo**
+- Créez une mini-application de notes avec persistance
+- Testez le passage en arrière-plan et la relance de l'app
+
+**2. Testez les cas limites**
+- Que se passe-t-il sans connexion ?
+- Que se passe-t-il si les données sauvegardées sont corrompues ?
+- Que se passe-t-il si le clavier couvre votre formulaire ?
+
+**3. Faites le lien avec R4A10**
+- Comparez vos formulaires web et mobiles
+- Les patterns sont les mêmes, seuls les composants changent
+
+**4. Consultez la documentation**
+- [AsyncStorage](https://react-native-async-storage.github.io/async-storage/) pour l'API complète
+- [TextInput](https://reactnative.dev/docs/textinput) pour toutes les props disponibles
+</Callout>
+
+<Callout type="warning" title="Comprendre, pas mémoriser">
+**Vous n'avez pas besoin de connaître par coeur** toutes les props de TextInput ou l'API complète d'AsyncStorage. L'important est de :
+
+- **Savoir que ça existe** : TextInput, AsyncStorage, AppState, NetInfo
+- **Comprendre les patterns** : composant contrôlé, charger/sauvegarder, offline-first
+- **Savoir adapter** : passer du web au mobile en changeant les composants et l'API de stockage
+- **Valider le code** : reconnaître les oublis courants (isLoaded, try/catch, autoCapitalize)
+</Callout>
+
+## Ressources
+
+<Resources resources={[
+  {
+    title: "React Native TextInput",
+    description: "Documentation officielle du composant TextInput",
+    url: "https://reactnative.dev/docs/textinput",
+    type: "doc"
+  },
+  {
+    title: "AsyncStorage",
+    description: "Documentation du package @react-native-async-storage/async-storage",
+    url: "https://react-native-async-storage.github.io/async-storage/",
+    type: "doc"
+  },
+  {
+    title: "React Native AppState",
+    description: "Documentation du module AppState",
+    url: "https://reactnative.dev/docs/appstate",
+    type: "doc"
+  },
+  {
+    title: "NetInfo",
+    description: "Documentation du package @react-native-community/netinfo",
+    url: "https://github.com/react-native-netinfo/react-native-netinfo",
+    type: "doc"
+  }
+]} />
+
+<div className="my-8 p-6 bg-gradient-to-r from-violet-50 to-purple-50 dark:from-violet-900/20 dark:to-purple-900/20 border-2 border-violet-200 dark:border-violet-800 rounded-lg text-center">
+  <h3 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-2">
+    Bravo !
+  </h3>
+  <div className="text-lg text-gray-700 dark:text-gray-300 mb-4">
+    Vous maîtrisez l'état, les formulaires et la persistance sur mobile
+  </div>
+  <div className="text-gray-600 dark:text-gray-400 mb-6">
+    Vos applications peuvent maintenant recevoir des données de l'utilisateur et les conserver entre les sessions.
+  </div>
+  <a
+    href="/r4a11/seance-2/quiz"
+    className="inline-block px-6 py-3 bg-violet-600 hover:bg-violet-700 text-white font-semibold rounded-lg transition-colors no-prose-styles"
+  >
+    Faire le quiz de validation
+  </a>
+</div>

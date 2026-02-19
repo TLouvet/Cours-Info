@@ -1,0 +1,358 @@
+# État sur Mobile
+
+En R4A10 (Séance 3), vous avez appris `useState` pour gérer l'état des composants React. En React Native, le hook `useState` fonctionne exactement de la même manière. Ce qui change, ce sont les **contraintes de l'environnement mobile**.
+
+## Rappel : useState
+
+Le hook `useState` permet à un composant de stocker et modifier des données qui déclenchent un nouveau rendu quand elles changent.
+
+```jsx
+import { useState } from 'react';
+import { View, Text, Pressable, StyleSheet } from 'react-native';
+
+function Counter() {
+  const [count, setCount] = useState(0);
+
+  return (
+    <View style={styles.container}>
+      <Text style={styles.count}>{count}</Text>
+      <Pressable style={styles.button} onPress={() => setCount(count + 1)}>
+        <Text style={styles.buttonText}>+1</Text>
+      </Pressable>
+    </View>
+  );
+}
+```
+
+<Callout type="success" title="Du web au mobile">
+La syntaxe est identique au React web :
+- `const [value, setValue] = useState(initialValue)`
+- `setValue(newValue)` déclenche un re-rendu
+- Les règles des hooks s'appliquent : appel au niveau supérieur, pas dans des conditions
+
+La seule différence visible : `onPress` au lieu de `onClick`, et `Pressable` au lieu de `button`.
+</Callout>
+
+## Ce qui est identique au web
+
+### Les règles des hooks
+
+Toutes les règles apprises en R4A10 s'appliquent :
+
+```jsx
+// ✅ Hook au niveau supérieur du composant
+function MyComponent() {
+  const [name, setName] = useState('');
+  const [age, setAge] = useState(0);
+  // ...
+}
+
+// ❌ Jamais dans une condition
+function MyComponent({ showName }) {
+  if (showName) {
+    const [name, setName] = useState(''); // ERREUR
+  }
+}
+
+// ❌ Jamais dans une boucle
+function MyComponent() {
+  for (let i = 0; i < 3; i++) {
+    const [val, setVal] = useState(0); // ERREUR
+  }
+}
+```
+
+### L'immutabilité des objets et tableaux
+
+En React Native comme en React web, les objets et tableaux doivent être **remplacés**, jamais modifiés directement :
+
+```jsx
+// ❌ Mutation directe : React ne détecte pas le changement
+const [user, setUser] = useState({ name: 'Alice', age: 25 });
+user.age = 26;        // Ne déclenche PAS de re-rendu
+setUser(user);        // Même référence, React ignore
+
+// ✅ Créer un nouvel objet avec le spread operator
+setUser({ ...user, age: 26 });
+
+// ❌ Mutation de tableau
+const [items, setItems] = useState(['A', 'B']);
+items.push('C');      // Ne déclenche PAS de re-rendu
+
+// ✅ Nouveau tableau
+setItems([...items, 'C']);
+```
+
+<QuickCheck
+  question="Pourquoi items.push('C') ne provoque-t-il pas de re-rendu ?"
+  options={[
+    "push() est une méthode interdite en React Native",
+    "push() modifie le tableau existant sans créer une nouvelle référence, donc React ne détecte pas le changement",
+    "push() ne fonctionne pas avec useState",
+    "Il faut utiliser items.add('C') en React Native"
+  ]}
+  correctAnswer={1}
+  explanation="React compare les références (===) pour détecter les changements. items.push('C') modifie le tableau en place : la référence reste la même. setItems(items) ne déclenche pas de re-rendu car React voit la même référence. Il faut créer un nouveau tableau : setItems([...items, 'C'])."
+/>
+
+## Spécificités mobiles
+
+### Le clavier virtuel
+
+Sur mobile, quand l'utilisateur tape du texte, un **clavier virtuel** apparaît et couvre environ la moitié de l'écran. Cela a des conséquences sur la gestion de l'état :
+
+```jsx
+import { View, Text, TextInput, Pressable, Keyboard, StyleSheet } from 'react-native';
+
+function AddItem() {
+  const [text, setText] = useState('');
+
+  const handleAdd = () => {
+    if (text.trim()) {
+      // Traiter l'ajout...
+      setText('');
+      Keyboard.dismiss(); // Fermer le clavier après l'ajout
+    }
+  };
+
+  return (
+    <View style={styles.inputRow}>
+      <TextInput
+        style={styles.input}
+        value={text}
+        onChangeText={setText}
+        placeholder="Nouvelle tâche..."
+        onSubmitEditing={handleAdd}  // Appui sur "Entrée" du clavier
+        returnKeyType="done"         // Texte du bouton Entrée
+      />
+      <Pressable style={styles.addButton} onPress={handleAdd}>
+        <Text style={styles.addButtonText}>Ajouter</Text>
+      </Pressable>
+    </View>
+  );
+}
+```
+
+<Callout type="tip" title="Keyboard.dismiss()">
+Après une action (ajout d'un élément, validation d'un formulaire), pensez à fermer le clavier avec `Keyboard.dismiss()`. Sur le web, le clavier physique ne gêne pas l'affichage. Sur mobile, laisser le clavier ouvert après une action est une mauvaise expérience utilisateur.
+</Callout>
+
+### L'application en arrière-plan
+
+Contrairement à un site web (qui reste ouvert dans un onglet), une application mobile peut passer en **arrière-plan** (l'utilisateur reçoit un appel, change d'application, verrouille le téléphone). Quand l'application revient au premier plan :
+
+- L'état en mémoire (`useState`) est **conservé** tant que l'OS n'a pas tué l'application
+- Mais l'OS **peut tuer l'application** en arrière-plan si la mémoire est insuffisante
+- Les données non sauvegardées sont **perdues**
+
+```jsx
+// Problème : les données sont perdues si l'app est tuée en arrière-plan
+function Notes() {
+  const [notes, setNotes] = useState([]); // Perdu si l'app est tuée !
+
+  // Solution : persister avec AsyncStorage (vu plus loin dans cette séance)
+}
+```
+
+<Callout type="warning" title="L'état en mémoire est volatile">
+`useState` stocke les données **en mémoire RAM**. Si l'utilisateur ferme l'application ou si le système la tue pour libérer de la mémoire, toutes les données non sauvegardées sont perdues. C'est pourquoi on utilise **AsyncStorage** (vu dans cette séance) pour persister les données importantes.
+</Callout>
+
+### Rotation de l'écran
+
+Quand l'utilisateur tourne son téléphone, React Native reconstruit la mise en page. L'état `useState` est **conservé** lors d'une rotation (le composant n'est pas démonté). Mais l'affichage peut changer si vos styles ne gèrent pas les deux orientations.
+
+## useState avec des listes
+
+La gestion de listes est un cas d'usage central sur mobile : liste de tâches, liste de notes, liste de contacts. Les opérations courantes sont : ajouter, supprimer, modifier, basculer un état.
+
+### Ajouter un élément
+
+```jsx
+const [todos, setTodos] = useState([]);
+
+const addTodo = (text) => {
+  const newTodo = {
+    id: Date.now(),      // Identifiant unique simple
+    text: text,
+    done: false,
+  };
+  setTodos([...todos, newTodo]); // Ajouter à la fin
+};
+```
+
+### Supprimer un élément
+
+```jsx
+const removeTodo = (id) => {
+  setTodos(todos.filter(todo => todo.id !== id));
+};
+```
+
+### Basculer un état (toggle)
+
+```jsx
+const toggleTodo = (id) => {
+  setTodos(todos.map(todo =>
+    todo.id === id
+      ? { ...todo, done: !todo.done }  // Inverser done
+      : todo                            // Garder les autres inchangés
+  ));
+};
+```
+
+### Exemple complet : liste de tâches
+
+```jsx
+import { useState } from 'react';
+import { View, Text, TextInput, Pressable, ScrollView, StyleSheet } from 'react-native';
+
+export default function TodoScreen() {
+  const [todos, setTodos] = useState([
+    { id: 1, text: 'Apprendre React Native', done: true },
+    { id: 2, text: 'Créer mon premier composant', done: true },
+    { id: 3, text: 'Gérer l\'état avec useState', done: false },
+  ]);
+  const [newText, setNewText] = useState('');
+
+  const addTodo = () => {
+    if (newText.trim()) {
+      setTodos([...todos, { id: Date.now(), text: newText.trim(), done: false }]);
+      setNewText('');
+    }
+  };
+
+  const toggleTodo = (id) => {
+    setTodos(todos.map(t => t.id === id ? { ...t, done: !t.done } : t));
+  };
+
+  const removeTodo = (id) => {
+    setTodos(todos.filter(t => t.id !== id));
+  };
+
+  return (
+    <View style={styles.container}>
+      <Text style={styles.title}>Mes tâches</Text>
+
+      {/* Zone de saisie */}
+      <View style={styles.inputRow}>
+        <TextInput
+          style={styles.input}
+          value={newText}
+          onChangeText={setNewText}
+          placeholder="Nouvelle tâche..."
+          onSubmitEditing={addTodo}
+        />
+        <Pressable style={styles.addButton} onPress={addTodo}>
+          <Text style={styles.addButtonText}>+</Text>
+        </Pressable>
+      </View>
+
+      {/* Liste des tâches */}
+      <ScrollView style={styles.list}>
+        {todos.map(todo => (
+          <View key={todo.id} style={styles.todoItem}>
+            <Pressable onPress={() => toggleTodo(todo.id)} style={styles.todoContent}>
+              <Text style={styles.checkbox}>{todo.done ? '✓' : '○'}</Text>
+              <Text style={[styles.todoText, todo.done && styles.todoTextDone]}>
+                {todo.text}
+              </Text>
+            </Pressable>
+            <Pressable onPress={() => removeTodo(todo.id)}>
+              <Text style={styles.deleteButton}>✕</Text>
+            </Pressable>
+          </View>
+        ))}
+      </ScrollView>
+
+      {/* Compteur */}
+      <Text style={styles.counter}>
+        {todos.filter(t => !t.done).length} tâche(s) restante(s)
+      </Text>
+    </View>
+  );
+}
+
+const styles = StyleSheet.create({
+  container: { flex: 1, padding: 16, paddingTop: 60, backgroundColor: '#f5f5f5' },
+  title: { fontSize: 28, fontWeight: 'bold', marginBottom: 16 },
+  inputRow: { flexDirection: 'row', marginBottom: 16 },
+  input: {
+    flex: 1, backgroundColor: '#fff', borderRadius: 8, padding: 12,
+    fontSize: 16, borderWidth: 1, borderColor: '#ddd',
+  },
+  addButton: {
+    backgroundColor: '#0066cc', borderRadius: 8, padding: 12,
+    marginLeft: 8, justifyContent: 'center',
+  },
+  addButtonText: { color: '#fff', fontSize: 20, fontWeight: 'bold' },
+  list: { flex: 1 },
+  todoItem: {
+    flexDirection: 'row', alignItems: 'center', backgroundColor: '#fff',
+    padding: 12, borderRadius: 8, marginBottom: 8,
+  },
+  todoContent: { flex: 1, flexDirection: 'row', alignItems: 'center' },
+  checkbox: { fontSize: 20, marginRight: 12, color: '#0066cc' },
+  todoText: { fontSize: 16, flex: 1 },
+  todoTextDone: { textDecorationLine: 'line-through', color: '#999' },
+  deleteButton: { fontSize: 18, color: '#f44336', padding: 4 },
+  counter: { textAlign: 'center', color: '#666', marginTop: 12, fontSize: 14 },
+});
+```
+
+<Callout type="info" title="Pattern identique au web">
+Si vous avez fait les exercices de R4A10 Séance 3, ce code vous est familier. Les opérations sur les listes (`filter`, `map`, spread) sont identiques. Seuls les composants d'affichage changent (Pressable au lieu de button, TextInput au lieu de input).
+</Callout>
+
+<QuickCheck
+  question="Comment supprimer un élément d'un tableau dans l'état ?"
+  options={[
+    "todos.splice(index, 1) puis setTodos(todos)",
+    "setTodos(todos.filter(t => t.id !== id))",
+    "delete todos[index] puis setTodos(todos)",
+    "setTodos(todos.remove(id))"
+  ]}
+  correctAnswer={1}
+  explanation="On utilise filter() pour créer un nouveau tableau sans l'élément à supprimer. splice() et delete modifient le tableau existant (mutation), ce que React ne détecte pas. remove() n'existe pas sur les tableaux JavaScript."
+/>
+
+<QuickCheck
+  question="Que fait Date.now() comme identifiant dans addTodo ?"
+  options={[
+    "Il génère un identifiant unique basé sur la date et l'heure en millisecondes",
+    "Il retourne la date formatée en français",
+    "Il crée un identifiant UUID standard",
+    "Il retourne un nombre aléatoire"
+  ]}
+  correctAnswer={0}
+  explanation="Date.now() retourne le nombre de millisecondes depuis le 1er janvier 1970. Comme deux appels à Date.now() à des moments différents donnent des valeurs différentes, cela produit un identifiant unique suffisant pour une liste locale. Pour une application en production, on utiliserait plutôt uuid ou un identifiant serveur."
+/>
+
+<QuickCheck
+  question="Pourquoi appeler Keyboard.dismiss() après l'ajout d'une tâche ?"
+  options={[
+    "Pour éviter une erreur React Native",
+    "Pour fermer le clavier virtuel qui couvre la moitié de l'écran",
+    "Pour sauvegarder les données automatiquement",
+    "Pour réinitialiser le composant TextInput"
+  ]}
+  correctAnswer={1}
+  explanation="Sur mobile, le clavier virtuel occupe environ la moitié de l'écran. Après une action comme l'ajout d'une tâche, laisser le clavier ouvert masque le contenu. Keyboard.dismiss() ferme le clavier pour que l'utilisateur voie le résultat de son action. Sur le web, ce problème n'existe pas car le clavier physique ne couvre pas l'écran."
+/>
+
+## À retenir
+
+<Callout type="success" title="Comprendre, pas mémoriser">
+**Ce qui est identique au web :**
+- `useState` : même syntaxe, mêmes règles, mêmes hooks
+- Immutabilité : `...spread`, `filter()`, `map()` pour modifier l'état
+- Opérations sur les listes : ajouter, supprimer, modifier avec des tableaux
+
+**Ce qui est spécifique au mobile :**
+- **Clavier virtuel** : pensez à `Keyboard.dismiss()` après les actions
+- **Arrière-plan** : l'état en mémoire peut être perdu (besoin de persistance)
+- **Composants** : `Pressable`/`onPress` au lieu de `button`/`onClick`
+- **TextInput** : `onChangeText` au lieu de `onChange` (reçoit directement la chaîne)
+
+**Règle générale** : la logique React est identique, seuls les composants et les contraintes de l'environnement changent.
+</Callout>

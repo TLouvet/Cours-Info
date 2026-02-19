@@ -1,0 +1,578 @@
+# Composants Primitifs
+
+En React web, vous utilisez des balises HTML (`<div>`, `<p>`, `<img>`). En React Native, ces balises n'existent pas. Vous utilisez des **composants primitifs** fournis par React Native qui sont traduits en composants natifs de chaque plateforme.
+
+## Du HTML aux composants React Native
+
+Voici la correspondance entre les balises HTML et les composants React Native :
+
+<div className="overflow-x-auto my-6">
+  <table className="min-w-full border border-gray-200 dark:border-gray-700">
+    <thead className="bg-gray-50 dark:bg-gray-800">
+      <tr>
+        <th className="px-4 py-3 text-left text-sm font-semibold text-gray-900 dark:text-gray-100 border-b border-gray-200 dark:border-gray-700">HTML (React web)</th>
+        <th className="px-4 py-3 text-left text-sm font-semibold text-gray-900 dark:text-gray-100 border-b border-gray-200 dark:border-gray-700">React Native</th>
+        <th className="px-4 py-3 text-left text-sm font-semibold text-gray-900 dark:text-gray-100 border-b border-gray-200 dark:border-gray-700">Usage</th>
+      </tr>
+    </thead>
+    <tbody className="bg-white dark:bg-gray-900 divide-y divide-gray-200 dark:divide-gray-700">
+      <tr>
+        <td className="px-4 py-3 text-sm text-gray-700 dark:text-gray-300"><code>&lt;div&gt;</code></td>
+        <td className="px-4 py-3 text-sm text-gray-700 dark:text-gray-300"><code>&lt;View&gt;</code></td>
+        <td className="px-4 py-3 text-sm text-gray-700 dark:text-gray-300">Conteneur, mise en page</td>
+      </tr>
+      <tr>
+        <td className="px-4 py-3 text-sm text-gray-700 dark:text-gray-300"><code>&lt;p&gt;</code>, <code>&lt;h1&gt;</code>, <code>&lt;span&gt;</code></td>
+        <td className="px-4 py-3 text-sm text-gray-700 dark:text-gray-300"><code>&lt;Text&gt;</code></td>
+        <td className="px-4 py-3 text-sm text-gray-700 dark:text-gray-300">Afficher du texte</td>
+      </tr>
+      <tr>
+        <td className="px-4 py-3 text-sm text-gray-700 dark:text-gray-300"><code>&lt;img&gt;</code></td>
+        <td className="px-4 py-3 text-sm text-gray-700 dark:text-gray-300"><code>&lt;Image&gt;</code></td>
+        <td className="px-4 py-3 text-sm text-gray-700 dark:text-gray-300">Afficher une image</td>
+      </tr>
+      <tr>
+        <td className="px-4 py-3 text-sm text-gray-700 dark:text-gray-300"><code>&lt;div style="overflow: scroll"&gt;</code></td>
+        <td className="px-4 py-3 text-sm text-gray-700 dark:text-gray-300"><code>&lt;ScrollView&gt;</code></td>
+        <td className="px-4 py-3 text-sm text-gray-700 dark:text-gray-300">Zone défilable</td>
+      </tr>
+      <tr>
+        <td className="px-4 py-3 text-sm text-gray-700 dark:text-gray-300"><code>&lt;input&gt;</code></td>
+        <td className="px-4 py-3 text-sm text-gray-700 dark:text-gray-300"><code>&lt;TextInput&gt;</code></td>
+        <td className="px-4 py-3 text-sm text-gray-700 dark:text-gray-300">Saisie de texte</td>
+      </tr>
+      <tr>
+        <td className="px-4 py-3 text-sm text-gray-700 dark:text-gray-300"><code>&lt;button&gt;</code></td>
+        <td className="px-4 py-3 text-sm text-gray-700 dark:text-gray-300"><code>&lt;Pressable&gt;</code> ou <code>&lt;Button&gt;</code></td>
+        <td className="px-4 py-3 text-sm text-gray-700 dark:text-gray-300">Élément cliquable</td>
+      </tr>
+      <tr>
+        <td className="px-4 py-3 text-sm text-gray-700 dark:text-gray-300">(pas d'équivalent)</td>
+        <td className="px-4 py-3 text-sm text-gray-700 dark:text-gray-300"><code>&lt;SafeAreaView&gt;</code></td>
+        <td className="px-4 py-3 text-sm text-gray-700 dark:text-gray-300">Éviter l'encoche et la barre d'état</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<Callout type="warning" title="Tous les imports sont explicites">
+En React Native, vous devez **importer chaque composant** que vous utilisez :
+
+```jsx
+import { View, Text, Image, ScrollView } from 'react-native';
+```
+
+En HTML, les balises sont disponibles par défaut. En React Native, chaque composant doit être importé depuis `'react-native'`.
+</Callout>
+
+## View - Le conteneur universel
+
+`View` est l'équivalent de `<div>` en HTML. C'est le conteneur de base pour la mise en page.
+
+```jsx
+// React web
+<div className="container">
+  <div className="header">...</div>
+  <div className="content">...</div>
+</div>
+
+// React Native
+<View style={styles.container}>
+  <View style={styles.header}>...</View>
+  <View style={styles.content}>...</View>
+</View>
+```
+
+### Propriétés importantes de View
+
+- **style** : objet de styles (pas de className en React Native)
+- Utilise **Flexbox** par défaut (direction : `column`, pas `row`)
+- **Ne peut pas afficher de texte directement** : il faut utiliser `<Text>` à l'intérieur
+
+```jsx
+// ❌ ERREUR : texte directement dans View
+<View>
+  Bonjour !
+</View>
+
+// ✅ CORRECT : texte dans un composant Text
+<View>
+  <Text>Bonjour !</Text>
+</View>
+```
+
+<Callout type="warning" title="Pas de texte dans View">
+Contrairement à `<div>` en HTML, `<View>` **ne peut pas** contenir du texte directement. Tout texte doit être encapsulé dans un composant `<Text>`. C'est l'erreur la plus courante quand on vient du web.
+</Callout>
+
+<QuickCheck
+  question="Que se passe-t-il si vous écrivez <View>Bonjour</View> ?"
+  options={[
+    "Le texte 'Bonjour' s'affiche normalement",
+    "React Native génère une erreur car le texte doit être dans un composant <Text>",
+    "Le texte s'affiche mais sans style",
+    "View est automatiquement converti en Text"
+  ]}
+  correctAnswer={1}
+  explanation="Contrairement à <div> en HTML qui peut contenir du texte directement, <View> en React Native ne peut PAS afficher de texte. Tout texte doit être encapsulé dans <Text>. L'erreur affichée sera : 'Text strings must be rendered within a <Text> component'."
+/>
+
+## Text - Afficher du texte
+
+`Text` remplace toutes les balises de texte HTML (`<p>`, `<h1>`, `<h2>`, `<span>`, `<strong>`). Il n'y a **qu'un seul composant** pour tout le texte.
+
+```jsx
+// React web : plusieurs balises pour le texte
+<h1>Titre principal</h1>
+<h2>Sous-titre</h2>
+<p>Un paragraphe avec du <strong>gras</strong> et de l'<em>italique</em>.</p>
+
+// React Native : un seul composant Text, les styles différencient
+<Text style={styles.title}>Titre principal</Text>
+<Text style={styles.subtitle}>Sous-titre</Text>
+<Text style={styles.paragraph}>
+  Un paragraphe avec du <Text style={styles.bold}>gras</Text> et de l'
+  <Text style={styles.italic}>italique</Text>.
+</Text>
+```
+
+### Text peut être imbriqué
+
+Le composant `Text` peut contenir d'autres composants `Text` pour appliquer des styles différents à des portions de texte :
+
+```jsx
+import { View, Text, StyleSheet } from 'react-native';
+
+function ArticleHeader() {
+  return (
+    <View style={styles.container}>
+      <Text style={styles.title}>React Native</Text>
+      <Text style={styles.meta}>
+        Par <Text style={styles.author}>Alice Dupont</Text> - 5 min de lecture
+      </Text>
+      <Text style={styles.description}>
+        Apprenez à créer des applications mobiles avec{' '}
+        <Text style={styles.highlight}>JavaScript</Text> et{' '}
+        <Text style={styles.highlight}>React</Text>.
+      </Text>
+    </View>
+  );
+}
+
+const styles = StyleSheet.create({
+  container: {
+    padding: 16,
+  },
+  title: {
+    fontSize: 28,
+    fontWeight: 'bold',
+    marginBottom: 8,
+  },
+  meta: {
+    fontSize: 14,
+    color: '#666',
+    marginBottom: 12,
+  },
+  author: {
+    fontWeight: 'bold',
+    color: '#333',
+  },
+  description: {
+    fontSize: 16,
+    lineHeight: 24,
+  },
+  highlight: {
+    fontWeight: 'bold',
+    color: '#0066cc',
+  },
+});
+```
+
+<Callout type="info" title="Pas de balises sémantiques">
+En HTML, vous avez `<h1>`, `<h2>`, `<p>`, `<strong>`, `<em>` pour donner du sens au contenu. En React Native, il n'y a que `<Text>`. La distinction visuelle se fait uniquement par les **styles** (fontSize, fontWeight, etc.). Cela signifie que c'est à vous de structurer visuellement votre texte.
+</Callout>
+
+<QuickCheck
+  question="Comment afficher du texte en gras dans React Native ?"
+  options={[
+    "Avec la balise <strong>",
+    "Avec la balise <b>",
+    "Avec un composant Text et le style fontWeight: 'bold'",
+    "Avec la prop bold={true} sur Text"
+  ]}
+  correctAnswer={2}
+  explanation="En React Native, les balises HTML comme <strong> et <b> n'existent pas. Pour du texte en gras, on utilise le style fontWeight: 'bold' sur un composant <Text>. Tous les styles de texte passent par l'objet style."
+/>
+
+## Image - Afficher des images
+
+Le composant `Image` remplace `<img>` mais fonctionne différemment selon la source de l'image.
+
+### Images distantes (URL)
+
+```jsx
+// React web
+<img src="https://picsum.photos/200" alt="Photo" />
+
+// React Native - la source est un objet avec uri
+<Image
+  source={{ uri: 'https://picsum.photos/200' }}
+  style={{ width: 200, height: 200 }}
+/>
+```
+
+<Callout type="warning" title="Dimensions obligatoires pour les images distantes">
+En React Native, les images chargées depuis une URL **n'ont pas de dimensions par défaut**. Vous devez obligatoirement spécifier `width` et `height` dans le style. Sans ces propriétés, l'image ne s'affiche pas (taille 0x0).
+
+```jsx
+// ❌ L'image ne s'affiche pas (0x0 pixels)
+<Image source={{ uri: 'https://picsum.photos/200' }} />
+
+// ✅ Dimensions spécifiées
+<Image
+  source={{ uri: 'https://picsum.photos/200' }}
+  style={{ width: 200, height: 200 }}
+/>
+```
+</Callout>
+
+### Images locales (fichier)
+
+```jsx
+// React Native - import direct du fichier
+<Image source={require('../assets/images/logo.png')} style={{ width: 100, height: 100 }} />
+```
+
+Pour les images locales, on utilise `require()`. React Native détermine automatiquement les dimensions à partir du fichier, mais il est recommandé de les spécifier pour des performances optimales.
+
+### Propriété resizeMode
+
+La propriété `resizeMode` contrôle comment l'image s'adapte à son conteneur :
+
+```jsx
+<Image
+  source={{ uri: 'https://picsum.photos/400/200' }}
+  style={{ width: 200, height: 200 }}
+  resizeMode="cover"     // Remplit le conteneur, recadre si nécessaire (défaut)
+/>
+
+<Image
+  source={{ uri: 'https://picsum.photos/400/200' }}
+  style={{ width: 200, height: 200 }}
+  resizeMode="contain"   // L'image entière est visible, avec des marges si nécessaire
+/>
+```
+
+- **cover** (défaut) : remplit tout l'espace, recadre si le ratio est différent
+- **contain** : affiche l'image entière, laisse des espaces vides si nécessaire
+- **stretch** : étire l'image pour remplir exactement l'espace
+- **center** : centre l'image sans la redimensionner
+
+<QuickCheck
+  question="Pourquoi une image distante ne s'affiche pas si on ne spécifie pas width et height ?"
+  options={[
+    "React Native affiche une erreur",
+    "L'image est chargée mais invisible (taille 0x0 pixels)",
+    "React Native redimensionne automatiquement l'image",
+    "Le composant Image ne supporte pas les images distantes"
+  ]}
+  correctAnswer={1}
+  explanation="Contrairement au navigateur web qui peut déterminer les dimensions d'une image après son chargement, React Native ne connaît pas les dimensions d'une image distante à l'avance. Sans width et height, l'image a une taille de 0x0 pixels : elle est chargée mais invisible."
+/>
+
+## ScrollView - Zone défilable
+
+Sur le web, le navigateur gère automatiquement le défilement quand le contenu dépasse la taille de la fenêtre. En React Native, il n'y a **pas de scroll automatique**. Vous devez utiliser `ScrollView` explicitement.
+
+```jsx
+// React web : le scroll est automatique
+<div>
+  <p>Beaucoup de contenu...</p>
+  {/* Le navigateur gère le scroll automatiquement */}
+</div>
+
+// React Native : il faut utiliser ScrollView
+<ScrollView>
+  <Text>Beaucoup de contenu...</Text>
+  {/* Sans ScrollView, le contenu déborde sans scroll possible */}
+</ScrollView>
+```
+
+### Exemple pratique
+
+```jsx
+import { ScrollView, View, Text, StyleSheet } from 'react-native';
+
+function ArticleList() {
+  const articles = [
+    { id: 1, title: 'Introduction à React Native', preview: 'Découvrez les bases...' },
+    { id: 2, title: 'Composants primitifs', preview: 'View, Text, Image...' },
+    { id: 3, title: 'StyleSheet et Flexbox', preview: 'Mise en page mobile...' },
+    { id: 4, title: 'Navigation', preview: 'Se déplacer entre écrans...' },
+    { id: 5, title: 'État et formulaires', preview: 'useState sur mobile...' },
+    { id: 6, title: 'API et données', preview: 'Fetch et affichage...' },
+  ];
+
+  return (
+    <ScrollView style={styles.container}>
+      {articles.map(article => (
+        <View key={article.id} style={styles.card}>
+          <Text style={styles.cardTitle}>{article.title}</Text>
+          <Text style={styles.cardPreview}>{article.preview}</Text>
+        </View>
+      ))}
+    </ScrollView>
+  );
+}
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    padding: 16,
+  },
+  card: {
+    backgroundColor: '#fff',
+    padding: 16,
+    borderRadius: 8,
+    marginBottom: 12,
+    borderWidth: 1,
+    borderColor: '#e0e0e0',
+  },
+  cardTitle: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    marginBottom: 4,
+  },
+  cardPreview: {
+    fontSize: 14,
+    color: '#666',
+  },
+});
+```
+
+<Callout type="tip" title="ScrollView vs FlatList">
+`ScrollView` rend **tous** ses enfants d'un coup, même ceux qui ne sont pas visibles. Pour les longues listes (50+ éléments), utilisez plutôt `FlatList` qui ne rend que les éléments visibles à l'écran (virtualisation). Nous verrons `FlatList` en Séance 3.
+
+```jsx
+// Pour quelques éléments : ScrollView
+<ScrollView>
+  {items.map(item => <ItemCard key={item.id} item={item} />)}
+</ScrollView>
+
+// Pour de longues listes : FlatList (Séance 3)
+<FlatList
+  data={items}
+  renderItem={({ item }) => <ItemCard item={item} />}
+  keyExtractor={item => item.id.toString()}
+/>
+```
+</Callout>
+
+## SafeAreaView - Éviter l'encoche
+
+Les téléphones modernes ont une **encoche** (notch) en haut de l'écran et une **barre de navigation** en bas. `SafeAreaView` ajuste automatiquement le contenu pour éviter ces zones.
+
+```jsx
+import { SafeAreaView, View, Text, StyleSheet } from 'react-native';
+
+function HomeScreen() {
+  return (
+    <SafeAreaView style={styles.safeArea}>
+      <View style={styles.content}>
+        <Text style={styles.title}>Mon Application</Text>
+        <Text>Le contenu ne sera pas masqué par l'encoche.</Text>
+      </View>
+    </SafeAreaView>
+  );
+}
+
+const styles = StyleSheet.create({
+  safeArea: {
+    flex: 1,
+    backgroundColor: '#f5f5f5',
+  },
+  content: {
+    flex: 1,
+    padding: 16,
+  },
+  title: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    marginBottom: 12,
+  },
+});
+```
+
+<Callout type="info" title="SafeAreaView vs SafeAreaProvider">
+Le `SafeAreaView` de React Native fonctionne uniquement sur iOS. Pour un comportement cohérent sur les deux plateformes, Expo recommande d'utiliser `SafeAreaProvider` et `SafeAreaView` du package `react-native-safe-area-context` (déjà inclus dans les projets Expo) :
+
+```jsx
+import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
+
+// Dans le layout racine
+<SafeAreaProvider>
+  <SafeAreaView style={{ flex: 1 }}>
+    {/* Votre contenu */}
+  </SafeAreaView>
+</SafeAreaProvider>
+```
+</Callout>
+
+<QuickCheck
+  question="Pourquoi utiliser SafeAreaView dans une application React Native ?"
+  options={[
+    "Pour améliorer les performances de l'application",
+    "Pour éviter que le contenu soit masqué par l'encoche du téléphone et la barre d'état",
+    "Pour ajouter des animations au contenu",
+    "Pour rendre le contenu accessible aux lecteurs d'écran"
+  ]}
+  correctAnswer={1}
+  explanation="SafeAreaView ajuste automatiquement les marges du contenu pour éviter les zones occupées par le matériel du téléphone (encoche, barre d'état en haut, barre de navigation en bas). Sans SafeAreaView, votre texte pourrait être partiellement masqué par l'encoche."
+/>
+
+## Exemple complet : Carte de profil
+
+Voici un exemple qui combine tous les composants primitifs :
+
+```jsx
+import { View, Text, Image, ScrollView, SafeAreaView, StyleSheet } from 'react-native';
+
+function ProfileCard({ name, role, avatar, bio }) {
+  return (
+    <View style={styles.card}>
+      <Image
+        source={{ uri: avatar }}
+        style={styles.avatar}
+        resizeMode="cover"
+      />
+      <View style={styles.info}>
+        <Text style={styles.name}>{name}</Text>
+        <Text style={styles.role}>{role}</Text>
+        <Text style={styles.bio}>{bio}</Text>
+      </View>
+    </View>
+  );
+}
+
+const team = [
+  {
+    id: 1,
+    name: 'Alice Dupont',
+    role: 'Développeuse frontend',
+    avatar: 'https://i.pravatar.cc/150?img=1',
+    bio: 'Spécialisée en React et React Native depuis 4 ans.',
+  },
+  {
+    id: 2,
+    name: 'Bob Martin',
+    role: 'Designer UI/UX',
+    avatar: 'https://i.pravatar.cc/150?img=3',
+    bio: 'Conception d\'interfaces utilisateur pour applications mobiles.',
+  },
+  {
+    id: 3,
+    name: 'Claire Rousseau',
+    role: 'Développeuse backend',
+    avatar: 'https://i.pravatar.cc/150?img=5',
+    bio: 'API REST et bases de données pour applications mobiles.',
+  },
+];
+
+export default function TeamScreen() {
+  return (
+    <SafeAreaView style={styles.safeArea}>
+      <ScrollView style={styles.container}>
+        <Text style={styles.title}>Notre équipe</Text>
+        {team.map(member => (
+          <ProfileCard key={member.id} {...member} />
+        ))}
+      </ScrollView>
+    </SafeAreaView>
+  );
+}
+
+const styles = StyleSheet.create({
+  safeArea: {
+    flex: 1,
+    backgroundColor: '#f5f5f5',
+  },
+  container: {
+    flex: 1,
+    padding: 16,
+  },
+  title: {
+    fontSize: 28,
+    fontWeight: 'bold',
+    marginBottom: 16,
+  },
+  card: {
+    flexDirection: 'row',
+    backgroundColor: '#fff',
+    borderRadius: 12,
+    padding: 16,
+    marginBottom: 12,
+    borderWidth: 1,
+    borderColor: '#e0e0e0',
+  },
+  avatar: {
+    width: 80,
+    height: 80,
+    borderRadius: 40,
+  },
+  info: {
+    flex: 1,
+    marginLeft: 16,
+  },
+  name: {
+    fontSize: 18,
+    fontWeight: 'bold',
+  },
+  role: {
+    fontSize: 14,
+    color: '#0066cc',
+    marginBottom: 4,
+  },
+  bio: {
+    fontSize: 14,
+    color: '#666',
+    lineHeight: 20,
+  },
+});
+```
+
+Cet exemple montre :
+- `SafeAreaView` pour éviter l'encoche
+- `ScrollView` pour le défilement
+- `View` pour la mise en page (conteneur + carte avec `flexDirection: 'row'`)
+- `Text` pour le texte (titre, nom, rôle, bio)
+- `Image` pour l'avatar (avec dimensions et resizeMode)
+- `.map()` pour afficher une liste (identique à React web)
+
+<QuickCheck
+  question="Comment afficher une liste d'éléments en React Native ?"
+  options={[
+    "Avec une boucle for dans le JSX",
+    "Avec .map() dans un ScrollView, exactement comme en React web",
+    "Avec un composant spécial List de React Native",
+    "Les listes ne sont pas supportées en React Native"
+  ]}
+  correctAnswer={1}
+  explanation="L'affichage de listes en React Native fonctionne exactement comme en React web : on utilise .map() avec des keys. La seule différence est qu'il faut encapsuler la liste dans un ScrollView pour le défilement (le navigateur ne gère pas le scroll automatiquement en React Native)."
+/>
+
+## À retenir
+
+<Callout type="success" title="Comprendre, pas mémoriser">
+**Composants primitifs :**
+- `View` = `<div>` : conteneur de base, ne peut PAS afficher du texte directement
+- `Text` = `<p>`, `<h1>`, `<span>` : le seul composant pour afficher du texte
+- `Image` : `source={{ uri: '...' }}` + dimensions obligatoires pour les images distantes
+- `ScrollView` : nécessaire pour le défilement (pas automatique comme sur le web)
+- `SafeAreaView` : évite l'encoche et la barre d'état
+
+**Différences avec le web :**
+- Pas de balises HTML : tout est importé depuis `'react-native'`
+- Pas de `className` : les styles passent par la prop `style`
+- Pas de scroll automatique : il faut utiliser `ScrollView`
+- Texte uniquement dans `<Text>` : jamais directement dans `<View>`
+</Callout>

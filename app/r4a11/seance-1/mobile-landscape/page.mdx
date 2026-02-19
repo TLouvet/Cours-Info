@@ -1,0 +1,317 @@
+# Le paysage du développement mobile
+
+Avant de plonger dans React Native, il faut comprendre les différentes approches pour créer des applications mobiles. Chaque approche a ses forces et ses limites.
+
+## Les trois grandes approches
+
+Il existe trois familles principales pour développer des applications mobiles :
+
+1. **Développement natif** : un langage par plateforme
+2. **Applications hybrides** : du web empaqueté dans une app
+3. **Cross-platform** : un code, des composants natifs
+
+## 1. Développement natif
+
+Le développement natif consiste à écrire du code **spécifique à chaque plateforme** en utilisant les outils officiels du fabricant.
+
+### iOS : Swift (et Objective-C)
+
+```swift
+// Swift - iOS uniquement
+import UIKit
+
+class ViewController: UIViewController {
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        let label = UILabel()
+        label.text = "Bonjour !"
+        view.addSubview(label)
+    }
+}
+```
+
+- **IDE** : Xcode (macOS uniquement)
+- **Langage** : Swift (ou Objective-C pour du code ancien)
+- **Distribution** : App Store
+
+### Android : Kotlin (et Java)
+
+```kotlin
+// Kotlin - Android uniquement
+class MainActivity : AppCompatActivity() {
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_main)
+        val textView = findViewById<TextView>(R.id.greeting)
+        textView.text = "Bonjour !"
+    }
+}
+```
+
+- **IDE** : Android Studio (Windows, macOS, Linux)
+- **Langage** : Kotlin (ou Java pour du code ancien)
+- **Distribution** : Google Play
+
+### Avantages et limites du natif
+
+**Avantages :**
+- Performance maximale (accès direct aux API du système)
+- Accès complet aux fonctionnalités du téléphone
+- Interface qui respecte les conventions de chaque plateforme
+
+**Limites :**
+- **Deux bases de code** à maintenir (une iOS, une Android)
+- **Deux équipes** avec des compétences différentes (Swift vs Kotlin)
+- **Temps de développement doublé** pour supporter les deux plateformes
+
+<QuickCheck
+  question="Quel est le principal inconvénient du développement natif ?"
+  options={[
+    "Les performances sont mauvaises",
+    "Il faut écrire et maintenir deux bases de code distinctes",
+    "On ne peut pas publier sur les stores",
+    "Les interfaces sont moins belles"
+  ]}
+  correctAnswer={1}
+  explanation="Le développement natif offre les meilleures performances et un accès complet aux API, mais il nécessite de maintenir deux projets séparés (Swift pour iOS, Kotlin pour Android) avec des compétences et des outils différents."
+/>
+
+## 2. Applications hybrides (WebView)
+
+Les applications hybrides utilisent des **technologies web** (HTML, CSS, JavaScript) affichées dans une **WebView** (un navigateur intégré dans l'application).
+
+```javascript
+// Ionic / Capacitor - Application hybride
+// C'est du HTML/CSS/JS classique empaqueté dans une app
+import { IonButton, IonContent, IonPage } from '@ionic/react';
+
+function Home() {
+  return (
+    <IonPage>
+      <IonContent>
+        <h1>Bonjour !</h1>
+        <IonButton>Cliquer</IonButton>
+      </IonContent>
+    </IonPage>
+  );
+}
+```
+
+### Comment ça fonctionne
+
+```
+Votre code web (HTML/CSS/JS)
+        ↓
+    WebView (navigateur intégré)
+        ↓
+    Application mobile
+```
+
+Le code web tourne dans un navigateur intégré. Un pont (bridge) permet d'accéder aux fonctionnalités natives du téléphone (caméra, GPS, etc.) via des plugins.
+
+### Frameworks hybrides courants
+
+- **Ionic** + **Capacitor** : framework UI + couche native
+- **Apache Cordova** : l'ancêtre (moins utilisé aujourd'hui)
+
+### Avantages et limites des hybrides
+
+**Avantages :**
+- **Une seule base de code** web pour iOS et Android
+- Réutilisation des compétences HTML/CSS/JS existantes
+- Développement rapide pour des applications à dominante contenu
+
+**Limites :**
+- Performance inférieure (le rendu passe par une WebView)
+- L'interface ne se comporte pas exactement comme une app native
+- Animations et transitions moins fluides
+- Accès aux fonctionnalités natives via des plugins (parfois limité)
+
+## 3. Cross-platform (composants natifs)
+
+Les frameworks cross-platform utilisent **un seul langage** pour générer des **composants natifs** sur chaque plateforme. Contrairement aux hybrides, il n'y a pas de WebView : les composants sont traduits en éléments natifs réels.
+
+### React Native (JavaScript/React)
+
+```jsx
+// React Native - Cross-platform
+import { View, Text, Button } from 'react-native';
+
+function Home() {
+  return (
+    <View>
+      <Text>Bonjour !</Text>
+      <Button title="Cliquer" onPress={() => {}} />
+    </View>
+  );
+}
+```
+
+- **Langage** : JavaScript (ou TypeScript)
+- **Framework** : React
+- **Créé par** : Meta (Facebook) en 2015
+- **Utilisé par** : Instagram, Discord, Shopify, Bloomberg
+
+### Flutter (Dart)
+
+```dart
+// Flutter - Cross-platform
+import 'package:flutter/material.dart';
+
+class Home extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: Column(
+        children: [
+          Text('Bonjour !'),
+          ElevatedButton(
+            onPressed: () {},
+            child: Text('Cliquer'),
+          ),
+        ],
+      ),
+    );
+  }
+}
+```
+
+- **Langage** : Dart
+- **Créé par** : Google en 2017
+- **Utilisé par** : Google Ads, BMW, Alibaba
+
+### Avantages et limites du cross-platform
+
+**Avantages :**
+- **Une seule base de code** pour iOS et Android
+- **Composants natifs** (pas de WebView) : meilleures performances que les hybrides
+- Accès aux fonctionnalités du téléphone via des modules natifs
+
+**Limites :**
+- Performance légèrement inférieure au natif pur (pont de communication)
+- Certaines fonctionnalités très spécifiques à une plateforme nécessitent du code natif
+- Dépendance au framework et à sa communauté
+
+<QuickCheck
+  question="Quelle est la différence entre une application hybride et une application cross-platform ?"
+  options={[
+    "Il n'y a aucune différence",
+    "Les hybrides utilisent une WebView, les cross-platform génèrent des composants natifs",
+    "Les cross-platform sont plus lentes que les hybrides",
+    "Les hybrides supportent plus de plateformes"
+  ]}
+  correctAnswer={1}
+  explanation="Les applications hybrides affichent du HTML/CSS dans une WebView (navigateur intégré). Les frameworks cross-platform comme React Native et Flutter traduisent le code en composants natifs de chaque plateforme, ce qui donne de meilleures performances et une expérience utilisateur plus proche du natif."
+/>
+
+## Comparaison des approches
+
+<div className="overflow-x-auto my-6">
+  <table className="min-w-full border border-gray-200 dark:border-gray-700">
+    <thead className="bg-gray-50 dark:bg-gray-800">
+      <tr>
+        <th className="px-4 py-3 text-left text-sm font-semibold text-gray-900 dark:text-gray-100 border-b border-gray-200 dark:border-gray-700">Critère</th>
+        <th className="px-4 py-3 text-left text-sm font-semibold text-gray-900 dark:text-gray-100 border-b border-gray-200 dark:border-gray-700">Natif</th>
+        <th className="px-4 py-3 text-left text-sm font-semibold text-gray-900 dark:text-gray-100 border-b border-gray-200 dark:border-gray-700">Hybride</th>
+        <th className="px-4 py-3 text-left text-sm font-semibold text-gray-900 dark:text-gray-100 border-b border-gray-200 dark:border-gray-700">Cross-platform</th>
+      </tr>
+    </thead>
+    <tbody className="bg-white dark:bg-gray-900 divide-y divide-gray-200 dark:divide-gray-700">
+      <tr>
+        <td className="px-4 py-3 text-sm font-medium text-gray-900 dark:text-gray-100">Langage</td>
+        <td className="px-4 py-3 text-sm text-gray-700 dark:text-gray-300">Swift / Kotlin</td>
+        <td className="px-4 py-3 text-sm text-gray-700 dark:text-gray-300">HTML / CSS / JS</td>
+        <td className="px-4 py-3 text-sm text-gray-700 dark:text-gray-300">JS (React Native) / Dart (Flutter)</td>
+      </tr>
+      <tr>
+        <td className="px-4 py-3 text-sm font-medium text-gray-900 dark:text-gray-100">Rendu UI</td>
+        <td className="px-4 py-3 text-sm text-gray-700 dark:text-gray-300">Composants natifs</td>
+        <td className="px-4 py-3 text-sm text-gray-700 dark:text-gray-300">WebView (navigateur)</td>
+        <td className="px-4 py-3 text-sm text-gray-700 dark:text-gray-300">Composants natifs</td>
+      </tr>
+      <tr>
+        <td className="px-4 py-3 text-sm font-medium text-gray-900 dark:text-gray-100">Performance</td>
+        <td className="px-4 py-3 text-sm text-gray-700 dark:text-gray-300">Maximale</td>
+        <td className="px-4 py-3 text-sm text-gray-700 dark:text-gray-300">Inférieure (WebView)</td>
+        <td className="px-4 py-3 text-sm text-gray-700 dark:text-gray-300">Proche du natif</td>
+      </tr>
+      <tr>
+        <td className="px-4 py-3 text-sm font-medium text-gray-900 dark:text-gray-100">Bases de code</td>
+        <td className="px-4 py-3 text-sm text-gray-700 dark:text-gray-300">2 (iOS + Android)</td>
+        <td className="px-4 py-3 text-sm text-gray-700 dark:text-gray-300">1</td>
+        <td className="px-4 py-3 text-sm text-gray-700 dark:text-gray-300">1</td>
+      </tr>
+      <tr>
+        <td className="px-4 py-3 text-sm font-medium text-gray-900 dark:text-gray-100">Accès natif</td>
+        <td className="px-4 py-3 text-sm text-gray-700 dark:text-gray-300">Complet</td>
+        <td className="px-4 py-3 text-sm text-gray-700 dark:text-gray-300">Via plugins</td>
+        <td className="px-4 py-3 text-sm text-gray-700 dark:text-gray-300">Via modules natifs</td>
+      </tr>
+      <tr>
+        <td className="px-4 py-3 text-sm font-medium text-gray-900 dark:text-gray-100">Temps de développement</td>
+        <td className="px-4 py-3 text-sm text-gray-700 dark:text-gray-300">Long (x2)</td>
+        <td className="px-4 py-3 text-sm text-gray-700 dark:text-gray-300">Court</td>
+        <td className="px-4 py-3 text-sm text-gray-700 dark:text-gray-300">Moyen</td>
+      </tr>
+      <tr>
+        <td className="px-4 py-3 text-sm font-medium text-gray-900 dark:text-gray-100">Exemples</td>
+        <td className="px-4 py-3 text-sm text-gray-700 dark:text-gray-300">App Apple, Jeux 3D</td>
+        <td className="px-4 py-3 text-sm text-gray-700 dark:text-gray-300">Apps de contenu, PWA</td>
+        <td className="px-4 py-3 text-sm text-gray-700 dark:text-gray-300">Instagram, Discord, Shopify</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+## Quand utiliser quelle approche ?
+
+### Choisissez le natif quand :
+- L'application nécessite des performances maximales (jeux 3D, traitement vidéo)
+- Vous exploitez des fonctionnalités très spécifiques à une plateforme
+- Vous avez le budget pour deux équipes de développement
+
+### Choisissez l'hybride quand :
+- L'application est principalement du contenu (articles, catalogues)
+- Vous avez une application web existante à empaqueter
+- Le budget et le temps sont limités
+
+### Choisissez le cross-platform quand :
+- Vous ciblez iOS et Android avec une seule équipe
+- L'application nécessite des performances proches du natif
+- Vous voulez un rendu qui respecte les conventions de chaque plateforme
+- Votre équipe maîtrise déjà JavaScript/React (React Native) ou veut apprendre Dart (Flutter)
+
+<Callout type="info" title="Notre choix : React Native">
+Dans ce cours, nous utilisons **React Native** car :
+
+- Vous connaissez déjà **JavaScript** et **React** (R4A10)
+- React Native produit des **composants natifs** (pas de WebView)
+- L'écosystème est mature et bien documenté
+- C'est l'un des frameworks cross-platform les plus utilisés en entreprise
+</Callout>
+
+<QuickCheck
+  question="Pour une startup qui veut lancer une app iOS et Android rapidement avec une équipe JavaScript, quelle approche est la plus adaptée ?"
+  options={[
+    "Développement natif avec Swift et Kotlin",
+    "Application hybride avec Ionic/Capacitor",
+    "Cross-platform avec React Native",
+    "Il faut toujours choisir le natif"
+  ]}
+  correctAnswer={2}
+  explanation="React Native permet de cibler iOS et Android avec une seule base de code JavaScript, en produisant des composants natifs. C'est le meilleur compromis pour une équipe JavaScript qui veut une app performante sur les deux plateformes sans doubler le temps de développement."
+/>
+
+## À retenir
+
+<Callout type="success" title="Comprendre, pas mémoriser">
+**Trois approches pour le développement mobile :**
+
+- **Natif** (Swift/Kotlin) : performances maximales, deux bases de code
+- **Hybride** (Ionic/Capacitor) : web dans une WebView, une base de code
+- **Cross-platform** (React Native/Flutter) : composants natifs, une base de code
+
+**Le choix dépend du contexte** : budget, compétences de l'équipe, exigences de performance, fonctionnalités natives nécessaires.
+
+React Native est un compromis pertinent : **performances proches du natif** avec **une seule base de code** en JavaScript/React.
+</Callout>

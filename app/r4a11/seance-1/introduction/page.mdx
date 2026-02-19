@@ -1,0 +1,191 @@
+# Introduction - R4A11 Séance 1
+
+Bienvenue dans le cours **R4A11 - Développement pour applications mobiles**. Cette première séance pose les fondations du développement mobile avec **React Native** et **Expo**.
+
+## Du web au mobile
+
+En R4A10, vous avez appris à créer des applications **web** avec React : composants, props, JSX, state, événements, formulaires, routing. Toutes ces connaissances s'appliquent directement au développement mobile.
+
+<Callout type="success" title="Vous êtes prêt !">
+Les concepts React de R4A10 (composants, JSX, props, useState) sont **directement réutilisés** dans React Native. Vous ne repartez pas de zéro : vous apprenez à **adapter** vos connaissances web au contexte mobile.
+</Callout>
+
+```jsx
+// Ce que vous savez déjà (React web - R4A10)
+function Welcome({ name }) {
+  return <h1>Bonjour {name} !</h1>;
+}
+
+// Ce que vous allez apprendre (React Native - R4A11)
+function Welcome({ name }) {
+  return (
+    <View>
+      <Text>Bonjour {name} !</Text>
+    </View>
+  );
+}
+```
+
+La logique est la même : des **composants**, des **props**, du **JSX**. Seuls les composants de base changent (`View` au lieu de `div`, `Text` au lieu de `p`).
+
+## Pourquoi le développement mobile ?
+
+### Le mobile en chiffres
+
+Le mobile représente aujourd'hui **plus de 60% du trafic web mondial**. Les applications mobiles natives offrent des avantages que le web seul ne peut pas fournir :
+
+- **Notifications push** : alerter l'utilisateur même quand l'app est fermée
+- **Accès aux capteurs** : caméra, GPS, accéléromètre, gyroscope
+- **Performance** : accès direct aux API du système d'exploitation
+- **Présence sur les stores** : App Store et Google Play pour la distribution
+- **Mode hors ligne** : fonctionnement sans connexion internet
+
+<Callout type="info" title="Compétence recherchée">
+Les développeurs capables de créer des applications **web ET mobile** avec les mêmes technologies (JavaScript/React) sont particulièrement recherchés. React Native permet cette polyvalence.
+</Callout>
+
+### Ce que vous allez construire
+
+Durant les 4 séances de R4A11, vous allez progressivement construire des applications mobiles complètes. En Séance 1, vous allez :
+
+- Créer votre premier projet React Native avec Expo
+- Construire des écrans avec les composants natifs (View, Text, Image)
+- Appliquer des styles avec StyleSheet et Flexbox
+- Mettre en place la navigation entre plusieurs écrans
+
+## Ce que vous allez apprendre
+
+<Callout type="info" title="Objectifs de la Séance 1">
+À la fin de cette séance, vous serez capable de :
+
+- **Comprendre le paysage mobile** : natif, hybride, cross-platform
+- **Connaître React Native** : architecture, lien avec React web
+- **Créer un projet** : Expo, structure de fichiers, Expo Go
+- **Utiliser les composants primitifs** : View, Text, Image, ScrollView
+- **Appliquer des styles** : StyleSheet.create(), Flexbox en mode colonne
+- **Naviguer entre écrans** : Expo Router, Stack, Tabs
+- **Construire une application multi-écrans** : mettre tout ensemble
+</Callout>
+
+## Comment cette séance fonctionne
+
+### Structure du parcours
+
+Cette séance suit une progression logique :
+
+1. **Le paysage mobile** : comprendre les différentes approches
+2. **React Native** : qu'est-ce que c'est, comment ça fonctionne
+3. **Installation** : créer et lancer votre premier projet
+4. **Composants primitifs** : View, Text, Image, ScrollView
+5. **Styles** : StyleSheet et Flexbox
+6. **Navigation** : se déplacer entre les écrans
+7. **TP guidé** : construire une application multi-écrans
+8. **Exercices et quiz** : valider vos acquis
+
+### Philosophie : comprendre, pas mémoriser
+
+<Callout type="warning" title="Comprendre, pas mémoriser">
+**L'objectif n'est PAS de tout mémoriser !**
+
+Votre vrai objectif est de :
+- **Lire et comprendre du code React Native**
+- **Reconnaître les différences** entre web et mobile
+- **Adapter votre code React web** au contexte mobile
+- **Valider le code généré par l'IA** en connaissant les composants natifs
+
+**L'IA peut générer du code React Native, mais vous devez comprendre ce code pour le valider, le corriger et l'adapter.**
+</Callout>
+
+## Prérequis
+
+<Callout type="warning" title="Avant de commencer">
+**Assurez-vous d'avoir suivi R4A10 !**
+
+Cette séance suppose que vous maîtrisez :
+- Les composants fonctionnels React
+- La syntaxe JSX
+- Les props et la destructuration
+- Les bases de useState (R4A10 Séance 3)
+- Les concepts de routing (R4A10 Séance 4 - utile mais pas obligatoire)
+
+**Si ces concepts ne sont pas clairs, retournez en [R4A10](/seance-2/introduction) !** React Native s'appuie sur ces fondamentaux.
+</Callout>
+
+## Outils et environnement
+
+Pour suivre cette séance, vous aurez besoin de :
+
+1. **Node.js et npm** - Déjà installés si vous avez suivi R4A10
+2. **Un éditeur de code** - WebStorm, VS Code ou autre
+3. **Un smartphone** - Android ou iOS avec l'application **Expo Go** installée
+4. **Un réseau Wi-Fi partagé** - Le téléphone et l'ordinateur doivent être sur le même réseau
+
+<Callout type="tip" title="Pas de smartphone ?">
+Si vous n'avez pas de smartphone disponible, vous pouvez utiliser un **émulateur Android** (Android Studio) ou le **simulateur iOS** (macOS uniquement). La page Installation détaille ces alternatives.
+</Callout>
+
+## Architecture de la séance
+
+Chaque page contient :
+
+- **Explications** - Pourquoi et comment, avec le lien web/mobile
+- **Exemples de code** - Code commenté, testable dans votre projet
+- **QuickCheck** - Questions pour valider votre compréhension
+- **Callouts** - Points importants et pièges à éviter
+
+### Pages principales
+
+<div className="grid grid-cols-1 md:grid-cols-2 gap-4 my-6">
+  <a href="/r4a11/seance-1/mobile-landscape" className="block p-4 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg hover:border-cyan-500 dark:hover:border-cyan-500 transition-colors">
+    <h3 className="font-semibold text-gray-900 dark:text-gray-100 mb-2">Le paysage mobile</h3>
+    <p className="text-sm text-gray-600 dark:text-gray-400">Natif, hybride, cross-platform : comprendre les approches</p>
+  </a>
+
+  <a href="/r4a11/seance-1/react-native-intro" className="block p-4 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg hover:border-cyan-500 dark:hover:border-cyan-500 transition-colors">
+    <h3 className="font-semibold text-gray-900 dark:text-gray-100 mb-2">React Native</h3>
+    <p className="text-sm text-gray-600 dark:text-gray-400">Architecture, Expo, différences avec React web</p>
+  </a>
+
+  <a href="/r4a11/seance-1/setup" className="block p-4 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg hover:border-cyan-500 dark:hover:border-cyan-500 transition-colors">
+    <h3 className="font-semibold text-gray-900 dark:text-gray-100 mb-2">Installation</h3>
+    <p className="text-sm text-gray-600 dark:text-gray-400">Créer et lancer votre premier projet Expo</p>
+  </a>
+
+  <a href="/r4a11/seance-1/primitives" className="block p-4 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg hover:border-cyan-500 dark:hover:border-cyan-500 transition-colors">
+    <h3 className="font-semibold text-gray-900 dark:text-gray-100 mb-2">Composants primitifs</h3>
+    <p className="text-sm text-gray-600 dark:text-gray-400">View, Text, Image, ScrollView, SafeAreaView</p>
+  </a>
+
+  <a href="/r4a11/seance-1/stylesheet" className="block p-4 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg hover:border-cyan-500 dark:hover:border-cyan-500 transition-colors">
+    <h3 className="font-semibold text-gray-900 dark:text-gray-100 mb-2">StyleSheet et Flexbox</h3>
+    <p className="text-sm text-gray-600 dark:text-gray-400">Styles en React Native, Flexbox vertical par défaut</p>
+  </a>
+
+  <a href="/r4a11/seance-1/navigation" className="block p-4 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg hover:border-cyan-500 dark:hover:border-cyan-500 transition-colors">
+    <h3 className="font-semibold text-gray-900 dark:text-gray-100 mb-2">Navigation</h3>
+    <p className="text-sm text-gray-600 dark:text-gray-400">Expo Router, Stack, Tabs, navigation programmatique</p>
+  </a>
+</div>
+
+## Ressources
+
+<Resources resources={[
+  {
+    title: "React Native Documentation",
+    description: "Documentation officielle de React Native",
+    url: "https://reactnative.dev",
+    type: "doc"
+  },
+  {
+    title: "Expo Documentation",
+    description: "Documentation officielle d'Expo (framework React Native)",
+    url: "https://docs.expo.dev",
+    type: "doc"
+  },
+  {
+    title: "R4A10 - Cours React Web",
+    description: "Prérequis : les fondamentaux React vus en R4A10",
+    url: "/seance-2/introduction",
+    type: "doc"
+  }
+]} />

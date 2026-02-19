@@ -1,4 +1,4 @@
-import { navigation, type NavSection } from './navigation';
+import { navigation, r4a11Navigation, getNavigationForPath, type NavSession } from './navigation';
 
 interface PageNavigation {
   prev?: { href: string; label: string };
@@ -12,12 +12,12 @@ interface PageInfo {
 }
 
 /**
- * Get all pages in order (flattened navigation)
+ * Get all pages in order (flattened navigation) for a given navigation array
  */
-function getAllPages(): PageInfo[] {
+function getAllPagesFromNav(nav: NavSession[]): PageInfo[] {
   const pages: PageInfo[] = [];
 
-  navigation.forEach((session) => {
+  nav.forEach((session) => {
     if (session.sections && session.sections.length > 0) {
       session.sections.forEach((section) => {
         pages.push({
@@ -33,10 +33,19 @@ function getAllPages(): PageInfo[] {
 }
 
 /**
- * Get previous and next pages for a given href
+ * Get all pages in order (flattened navigation) - R4A10 only (backward compatible)
+ */
+function getAllPages(): PageInfo[] {
+  return getAllPagesFromNav(navigation);
+}
+
+/**
+ * Get previous and next pages for a given href.
+ * Automatically detects which course the page belongs to.
  */
 export function getPageNavigation(currentHref: string): PageNavigation {
-  const allPages = getAllPages();
+  const nav = getNavigationForPath(currentHref);
+  const allPages = getAllPagesFromNav(nav);
   const currentIndex = allPages.findIndex((page) => page.href === currentHref);
 
   if (currentIndex === -1) {

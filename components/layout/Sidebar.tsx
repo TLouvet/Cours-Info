@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { navigation } from '@/lib/navigation';
+import { navigation, r4a11Navigation, getNavigationForPath, getCourseForPath, type NavSession } from '@/lib/navigation';
 import { getProgress, markSectionComplete, markSectionIncomplete } from '@/lib/progress';
 import { FiMenu, FiX, FiChevronDown, FiChevronRight, FiCheck } from 'react-icons/fi';
 
@@ -13,10 +13,28 @@ export default function Sidebar() {
   const [completedSections, setCompletedSections] = useState<string[]>([]);
   const pathname = usePathname();
 
+  // Get the correct navigation based on current path
+  const currentNav = getNavigationForPath(pathname);
+  const currentCourse = getCourseForPath(pathname);
+  const isR4A11 = pathname.startsWith('/r4a11');
+  const colorClass = isR4A11 ? 'violet' : 'cyan';
+
   useEffect(() => {
     const progress = getProgress();
     setCompletedSections(progress.completedSections);
   }, []);
+
+  // Auto-expand the current session
+  useEffect(() => {
+    for (const session of currentNav) {
+      if (session.sections?.some(s => pathname === s.href) || pathname === session.href) {
+        setExpandedSessions((prev) =>
+          prev.includes(session.id) ? prev : [...prev, session.id]
+        );
+        break;
+      }
+    }
+  }, [pathname, currentNav]);
 
   const toggleSession = (sessionId: string) => {
     setExpandedSessions((prev) =>
@@ -41,37 +59,69 @@ export default function Sidebar() {
 
   const isActive = (href: string) => pathname === href;
 
+  const totalSections = currentNav.reduce((acc, session) => acc + (session.sections?.length || 0), 0);
+  const completedInCourse = completedSections.filter(id =>
+    currentNav.some(session =>
+      session.sections?.some(section => section.id === id)
+    )
+  ).length;
+
   const sidebarContent = (
     <div className="flex flex-col h-full">
+      {/* Course Switcher */}
+      <div className="p-4 border-b border-gray-700">
+        <div className="flex gap-2">
+          <Link
+            href="/"
+            className={`flex-1 text-center px-2 py-1.5 text-xs font-medium rounded-lg transition-colors ${
+              !isR4A11
+                ? 'bg-cyan-900/30 text-cyan-400 border border-cyan-700'
+                : 'text-gray-400 hover:bg-gray-800'
+            }`}
+            onClick={() => setIsOpen(false)}
+          >
+            R4A10
+          </Link>
+          <Link
+            href="/r4a11"
+            className={`flex-1 text-center px-2 py-1.5 text-xs font-medium rounded-lg transition-colors ${
+              isR4A11
+                ? 'bg-violet-900/30 text-violet-400 border border-violet-700'
+                : 'text-gray-400 hover:bg-gray-800'
+            }`}
+            onClick={() => setIsOpen(false)}
+          >
+            R4A11
+          </Link>
+        </div>
+      </div>
+
       {/* Progress Bar */}
       <div className="p-4 border-b border-gray-700">
         <div className="text-sm text-gray-400 mb-2">
-          Progression globale
+          Progression {currentCourse?.shortTitle || ''}
         </div>
         <div className="w-full bg-gray-700 rounded-full h-2">
           <div
-            className="bg-cyan-500 h-2 rounded-full transition-all duration-300"
+            className={`h-2 rounded-full transition-all duration-300 ${isR4A11 ? 'bg-violet-500' : 'bg-cyan-500'}`}
             style={{
               width: `${
-                navigation.reduce((acc, session) => acc + (session.sections?.length || 0), 0) > 0
-                  ? (completedSections.length /
-                      navigation.reduce((acc, session) => acc + (session.sections?.length || 0), 0)) *
-                    100
+                totalSections > 0
+                  ? (completedInCourse / totalSections) * 100
                   : 0
               }%`,
             }}
           />
         </div>
         <div className="text-xs text-gray-400 mt-1">
-          {completedSections.length} /{' '}
-          {navigation.reduce((acc, session) => acc + (session.sections?.length || 0), 0)} sections
+          {completedInCourse} / {totalSections} sections
         </div>
       </div>
 
       {/* Navigation */}
       <nav className="flex-1 overflow-y-auto p-4">
         <div className="space-y-1">
-          {navigation.map((session) => (
+          {currentNav.map((session) => (
             <div key={session.id}>
               <button
                 onClick={() => toggleSession(session.id)}
@@ -98,7 +148,9 @@ export default function Sidebar() {
                       href={section.href}
                       className={`group flex items-center gap-2 px-3 py-2 text-sm rounded-lg transition-colors ${
                         isActive(section.href)
-                          ? 'bg-cyan-900/20 text-cyan-400'
+                          ? isR4A11
+                            ? 'bg-violet-900/20 text-violet-400'
+                            : 'bg-cyan-900/20 text-cyan-400'
                           : 'text-gray-300 hover:bg-gray-800'
                       }`}
                       onClick={() => setIsOpen(false)}
@@ -107,8 +159,12 @@ export default function Sidebar() {
                         onClick={(e) => toggleSectionComplete(section.id, e)}
                         className={`flex-shrink-0 w-5 h-5 rounded border-2 flex items-center justify-center transition-colors ${
                           completedSections.includes(section.id)
-                            ? 'bg-cyan-500 border-cyan-500'
-                            : 'border-gray-600 hover:border-cyan-500'
+                            ? isR4A11
+                              ? 'bg-violet-500 border-violet-500'
+                              : 'bg-cyan-500 border-cyan-500'
+                            : isR4A11
+                              ? 'border-gray-600 hover:border-violet-500'
+                              : 'border-gray-600 hover:border-cyan-500'
                         }`}
                       >
                         {completedSections.includes(section.id) && (
@@ -132,7 +188,7 @@ export default function Sidebar() {
           className="block px-3 py-2 text-sm font-medium text-gray-300 rounded-lg hover:bg-gray-800 transition-colors"
           onClick={() => setIsOpen(false)}
         >
-          📚 Ressources
+          Ressources
         </Link>
       </div>
     </div>
@@ -143,7 +199,7 @@ export default function Sidebar() {
       {/* Mobile Toggle Button */}
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="lg:hidden fixed top-4 left-4 z-50 p-3 rounded-lg bg-cyan-600 hover:bg-cyan-700 text-white shadow-lg transition-colors no-print"
+        className={`lg:hidden fixed top-4 left-4 z-50 p-3 rounded-lg ${isR4A11 ? 'bg-violet-600 hover:bg-violet-700' : 'bg-cyan-600 hover:bg-cyan-700'} text-white shadow-lg transition-colors no-print`}
         aria-label="Toggle menu"
       >
         {isOpen ? <FiX className="w-6 h-6" /> : <FiMenu className="w-6 h-6" />}

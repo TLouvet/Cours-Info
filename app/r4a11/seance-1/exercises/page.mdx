@@ -1,0 +1,913 @@
+# Exercices - Fondamentaux React Native
+
+Mettez en pratique les concepts de la Séance 1 : composants primitifs, StyleSheet, Flexbox et navigation.
+
+<Callout type="tip" title="Comment travailler efficacement">
+- **Créez un projet Expo** : `npx create-expo-app@latest rn-exercises`
+- **Testez sur votre téléphone** : lancez `npx expo start` et scannez le QR code
+- **Essayez d'abord** : tentez de résoudre avant de regarder la solution
+- **Comprenez le code** : l'objectif est de comprendre, pas de copier
+
+Temps estimé : 2h pour les 5 exercices
+</Callout>
+
+## Exercice 1 : Composant avec View, Text et Image
+
+<Exercise
+  title="Carte de membre"
+  difficulty="easy"
+  solution={
+    <CodeBlock language="jsx">{`import { View, Text, Image, StyleSheet } from 'react-native';
+
+function MemberCard({ name, role, avatar, isActive }) {
+  return (
+    <View style={styles.card}>
+      <Image
+        source={{ uri: avatar }}
+        style={styles.avatar}
+      />
+      <View style={styles.info}>
+        <Text style={styles.name}>{name}</Text>
+        <Text style={styles.role}>{role}</Text>
+        {isActive && (
+          <Text style={styles.badge}>Actif</Text>
+        )}
+      </View>
+    </View>
+  );
+}
+
+// Utilisation dans l'écran principal
+export default function App() {
+  return (
+    <View style={styles.container}>
+      <Text style={styles.title}>Membres</Text>
+      <MemberCard
+        name="Alice Dupont"
+        role="Développeuse"
+        avatar="https://i.pravatar.cc/150?img=1"
+        isActive={true}
+      />
+      <MemberCard
+        name="Bob Martin"
+        role="Designer"
+        avatar="https://i.pravatar.cc/150?img=3"
+        isActive={false}
+      />
+      <MemberCard
+        name="Claire Rousseau"
+        role="Chef de projet"
+        avatar="https://i.pravatar.cc/150?img=5"
+        isActive={true}
+      />
+    </View>
+  );
+}
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    padding: 16,
+    backgroundColor: '#f5f5f5',
+    paddingTop: 60,
+  },
+  title: {
+    fontSize: 28,
+    fontWeight: 'bold',
+    marginBottom: 16,
+  },
+  card: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#fff',
+    padding: 12,
+    borderRadius: 12,
+    marginBottom: 8,
+    borderWidth: 1,
+    borderColor: '#e0e0e0',
+  },
+  avatar: {
+    width: 60,
+    height: 60,
+    borderRadius: 30,
+  },
+  info: {
+    marginLeft: 12,
+    flex: 1,
+  },
+  name: {
+    fontSize: 16,
+    fontWeight: 'bold',
+  },
+  role: {
+    fontSize: 14,
+    color: '#666',
+    marginTop: 2,
+  },
+  badge: {
+    fontSize: 12,
+    color: '#4caf50',
+    fontWeight: '600',
+    marginTop: 4,
+  },
+});`}</CodeBlock>
+  }
+>
+Créez un composant `MemberCard` qui affiche une carte de membre d'équipe.
+
+**Props attendues :**
+- `name` : string (nom du membre)
+- `role` : string (rôle dans l'équipe)
+- `avatar` : string (URL de l'avatar)
+- `isActive` : boolean (afficher "Actif" si true)
+
+**Exigences :**
+- Utiliser `View`, `Text` et `Image`
+- Layout horizontal : avatar à gauche, informations à droite
+- Afficher "Actif" uniquement si `isActive` est true (rendu conditionnel)
+- Dimensions de l'avatar : 60x60 pixels, arrondi (cercle)
+
+**Dans l'écran principal :** Afficher 3 cartes de membres différents.
+
+<Callout type="tip" title="Rappel">
+Pour un layout horizontal, ajoutez `flexDirection: 'row'` au conteneur. Pour un avatar rond, utilisez `borderRadius` égal à la moitié de la largeur.
+</Callout>
+</Exercise>
+
+## Exercice 2 : StyleSheet - Carte stylisée
+
+<Exercise
+  title="Carte de produit"
+  difficulty="easy"
+  solution={
+    <CodeBlock language="jsx">{`import { View, Text, Image, StyleSheet } from 'react-native';
+
+function ProductCard({ name, price, image, inStock }) {
+  return (
+    <View style={styles.card}>
+      <Image
+        source={{ uri: image }}
+        style={styles.image}
+        resizeMode="cover"
+      />
+      <View style={styles.content}>
+        <Text style={styles.name}>{name}</Text>
+        <Text style={styles.price}>{price} EUR</Text>
+        <View style={[styles.stockBadge, !inStock && styles.outOfStock]}>
+          <Text style={[styles.stockText, !inStock && styles.outOfStockText]}>
+            {inStock ? 'En stock' : 'Rupture'}
+          </Text>
+        </View>
+      </View>
+    </View>
+  );
+}
+
+export default function App() {
+  return (
+    <View style={styles.container}>
+      <Text style={styles.title}>Catalogue</Text>
+      <ProductCard
+        name="Casque audio"
+        price={149}
+        image="https://picsum.photos/seed/headphones/400/200"
+        inStock={true}
+      />
+      <ProductCard
+        name="Clavier mécanique"
+        price={89}
+        image="https://picsum.photos/seed/keyboard/400/200"
+        inStock={true}
+      />
+      <ProductCard
+        name="Webcam HD"
+        price={59}
+        image="https://picsum.photos/seed/webcam/400/200"
+        inStock={false}
+      />
+    </View>
+  );
+}
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    padding: 16,
+    backgroundColor: '#f5f5f5',
+    paddingTop: 60,
+  },
+  title: {
+    fontSize: 28,
+    fontWeight: 'bold',
+    marginBottom: 16,
+  },
+  card: {
+    backgroundColor: '#fff',
+    borderRadius: 12,
+    marginBottom: 16,
+    overflow: 'hidden',
+    // Ombre iOS
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 8,
+    // Ombre Android
+    elevation: 4,
+  },
+  image: {
+    width: '100%',
+    height: 150,
+  },
+  content: {
+    padding: 16,
+  },
+  name: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    marginBottom: 4,
+  },
+  price: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    color: '#0066cc',
+    marginBottom: 8,
+  },
+  stockBadge: {
+    alignSelf: 'flex-start',
+    backgroundColor: '#e8f5e9',
+    paddingHorizontal: 12,
+    paddingVertical: 4,
+    borderRadius: 12,
+  },
+  outOfStock: {
+    backgroundColor: '#ffebee',
+  },
+  stockText: {
+    fontSize: 12,
+    fontWeight: '600',
+    color: '#4caf50',
+  },
+  outOfStockText: {
+    color: '#f44336',
+  },
+});`}</CodeBlock>
+  }
+>
+Créez un composant `ProductCard` avec un style travaillé.
+
+**Props attendues :**
+- `name` : string (nom du produit)
+- `price` : number (prix en euros)
+- `image` : string (URL de l'image)
+- `inStock` : boolean (disponibilité)
+
+**Exigences :**
+- Image en haut de la carte (pleine largeur, hauteur 150dp)
+- Nom du produit en gras
+- Prix en bleu et en gros
+- Badge "En stock" vert ou "Rupture" rouge selon `inStock`
+- Ombre sur la carte (shadowColor pour iOS, elevation pour Android)
+- Coins arrondis sur la carte
+
+**Dans l'écran principal :** Afficher 3 produits avec des disponibilités différentes.
+
+<Callout type="tip" title="Styles conditionnels">
+Utilisez un tableau de styles pour combiner le style de base et le style conditionnel :
+
+```jsx
+<View style={[styles.badge, !inStock && styles.outOfStock]}>
+```
+</Callout>
+</Exercise>
+
+## Exercice 3 : Écran de profil avec sections
+
+<Exercise
+  title="Écran de profil utilisateur"
+  difficulty="medium"
+  solution={
+    <CodeBlock language="jsx">{`import { View, Text, Image, ScrollView, SafeAreaView, StyleSheet } from 'react-native';
+
+function StatItem({ label, value }) {
+  return (
+    <View style={styles.statItem}>
+      <Text style={styles.statValue}>{value}</Text>
+      <Text style={styles.statLabel}>{label}</Text>
+    </View>
+  );
+}
+
+function InfoRow({ label, value }) {
+  return (
+    <View style={styles.infoRow}>
+      <Text style={styles.infoLabel}>{label}</Text>
+      <Text style={styles.infoValue}>{value}</Text>
+    </View>
+  );
+}
+
+function SectionCard({ title, children }) {
+  return (
+    <View style={styles.sectionContainer}>
+      <Text style={styles.sectionTitle}>{title}</Text>
+      <View style={styles.sectionCard}>
+        {children}
+      </View>
+    </View>
+  );
+}
+
+export default function ProfileScreen() {
+  return (
+    <SafeAreaView style={styles.safeArea}>
+      <ScrollView style={styles.container}>
+        {/* En-tête du profil */}
+        <View style={styles.header}>
+          <Image
+            source={{ uri: 'https://i.pravatar.cc/150?img=1' }}
+            style={styles.avatar}
+          />
+          <Text style={styles.name}>Alice Dupont</Text>
+          <Text style={styles.bio}>Développeuse frontend - React & React Native</Text>
+        </View>
+
+        {/* Statistiques */}
+        <View style={styles.statsRow}>
+          <StatItem label="Projets" value="42" />
+          <StatItem label="Contributions" value="156" />
+          <StatItem label="Followers" value="89" />
+        </View>
+
+        {/* Informations personnelles */}
+        <SectionCard title="INFORMATIONS">
+          <InfoRow label="Email" value="alice@example.com" />
+          <View style={styles.separator} />
+          <InfoRow label="Telephone" value="06 12 34 56 78" />
+          <View style={styles.separator} />
+          <InfoRow label="Localisation" value="Paris, France" />
+        </SectionCard>
+
+        {/* Compétences */}
+        <SectionCard title="COMPETENCES">
+          <InfoRow label="Frontend" value="React, TypeScript" />
+          <View style={styles.separator} />
+          <InfoRow label="Mobile" value="React Native, Expo" />
+          <View style={styles.separator} />
+          <InfoRow label="Outils" value="Git, VS Code, Figma" />
+        </SectionCard>
+      </ScrollView>
+    </SafeAreaView>
+  );
+}
+
+const styles = StyleSheet.create({
+  safeArea: {
+    flex: 1,
+    backgroundColor: '#f2f2f7',
+  },
+  container: {
+    flex: 1,
+  },
+  header: {
+    alignItems: 'center',
+    paddingVertical: 32,
+    backgroundColor: '#fff',
+  },
+  avatar: {
+    width: 100,
+    height: 100,
+    borderRadius: 50,
+    marginBottom: 12,
+  },
+  name: {
+    fontSize: 24,
+    fontWeight: 'bold',
+  },
+  bio: {
+    fontSize: 14,
+    color: '#666',
+    marginTop: 4,
+    textAlign: 'center',
+    paddingHorizontal: 32,
+  },
+  statsRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    backgroundColor: '#fff',
+    paddingVertical: 16,
+    borderTopWidth: 1,
+    borderTopColor: '#e0e0e0',
+  },
+  statItem: {
+    alignItems: 'center',
+  },
+  statValue: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    color: '#0066cc',
+  },
+  statLabel: {
+    fontSize: 12,
+    color: '#666',
+    marginTop: 4,
+  },
+  sectionContainer: {
+    padding: 16,
+  },
+  sectionTitle: {
+    fontSize: 13,
+    fontWeight: '600',
+    color: '#666',
+    marginBottom: 8,
+    marginLeft: 16,
+  },
+  sectionCard: {
+    backgroundColor: '#fff',
+    borderRadius: 12,
+    paddingHorizontal: 16,
+  },
+  infoRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingVertical: 12,
+  },
+  infoLabel: {
+    fontSize: 17,
+  },
+  infoValue: {
+    fontSize: 17,
+    color: '#999',
+  },
+  separator: {
+    height: 1,
+    backgroundColor: '#e0e0e0',
+  },
+});`}</CodeBlock>
+  }
+>
+Créez un écran de profil utilisateur complet avec plusieurs sections.
+
+**Sections requises :**
+
+1. **En-tête** : avatar (100x100, cercle), nom, biographie
+2. **Statistiques** : 3 stats en ligne (Projets, Contributions, Followers)
+3. **Informations** : email, téléphone, localisation (style réglages iOS)
+4. **Compétences** : 3 compétences (même style que les informations)
+
+**Exigences :**
+- Utiliser `SafeAreaView` et `ScrollView`
+- Créer des sous-composants réutilisables (`StatItem`, `InfoRow`, `SectionCard`)
+- Style inspiré des réglages iOS (sections avec fond blanc, séparateurs, titres de section en majuscules)
+- Layout responsive avec Flexbox
+
+<Callout type="tip" title="Décomposition en composants">
+Créez des petits composants réutilisables :
+- `StatItem` : affiche une statistique (valeur + label)
+- `InfoRow` : affiche une ligne label/valeur
+- `SectionCard` : conteneur de section avec titre
+
+C'est la même logique de composition qu'en React web (R4A10).
+</Callout>
+</Exercise>
+
+## Exercice 4 : Navigation entre 3 écrans
+
+<Exercise
+  title="Application avec Stack Navigation"
+  difficulty="medium"
+  solution={
+    <CodeBlock language="jsx">{`// app/_layout.tsx
+import { Stack } from 'expo-router';
+
+export default function RootLayout() {
+  return (
+    <Stack>
+      <Stack.Screen name="index" options={{ title: 'Recettes' }} />
+      <Stack.Screen name="recipe/[id]" options={{ title: 'Détail' }} />
+      <Stack.Screen name="about" options={{ title: 'À propos' }} />
+    </Stack>
+  );
+}
+
+// app/index.tsx
+import { View, Text, ScrollView, Pressable, StyleSheet } from 'react-native';
+import { useRouter, Link } from 'expo-router';
+
+const recipes = [
+  { id: '1', name: 'Pâtes carbonara', time: '20 min', difficulty: 'Facile' },
+  { id: '2', name: 'Poulet rôti', time: '1h30', difficulty: 'Moyen' },
+  { id: '3', name: 'Tarte aux pommes', time: '45 min', difficulty: 'Moyen' },
+  { id: '4', name: 'Salade César', time: '15 min', difficulty: 'Facile' },
+];
+
+export default function HomeScreen() {
+  const router = useRouter();
+
+  return (
+    <ScrollView style={styles.container}>
+      {recipes.map(recipe => (
+        <Pressable
+          key={recipe.id}
+          style={styles.card}
+          onPress={() => router.push(\`/recipe/\${recipe.id}\`)}
+        >
+          <Text style={styles.recipeName}>{recipe.name}</Text>
+          <View style={styles.meta}>
+            <Text style={styles.metaText}>{recipe.time}</Text>
+            <Text style={styles.metaText}>{recipe.difficulty}</Text>
+          </View>
+        </Pressable>
+      ))}
+      <Link href="/about" style={styles.aboutLink}>
+        <Text style={styles.aboutLinkText}>À propos de cette application</Text>
+      </Link>
+    </ScrollView>
+  );
+}
+
+// app/recipe/[id].tsx
+import { useLocalSearchParams } from 'expo-router';
+import { View, Text, StyleSheet } from 'react-native';
+
+const recipes = [
+  { id: '1', name: 'Pâtes carbonara', time: '20 min', difficulty: 'Facile',
+    ingredients: ['Pâtes', 'Lardons', 'Oeufs', 'Parmesan', 'Poivre'],
+    steps: ['Cuire les pâtes', 'Faire revenir les lardons', 'Mélanger oeufs et parmesan', 'Combiner le tout'] },
+  { id: '2', name: 'Poulet rôti', time: '1h30', difficulty: 'Moyen',
+    ingredients: ['Poulet entier', 'Beurre', 'Herbes', 'Ail', 'Pommes de terre'],
+    steps: ['Préchauffer le four à 200°C', 'Badigeonner le poulet', 'Enfourner 1h15', 'Laisser reposer 10 min'] },
+  { id: '3', name: 'Tarte aux pommes', time: '45 min', difficulty: 'Moyen',
+    ingredients: ['Pâte brisée', 'Pommes', 'Sucre', 'Beurre', 'Cannelle'],
+    steps: ['Étaler la pâte', 'Couper les pommes', 'Disposer sur la pâte', 'Enfourner 30 min'] },
+  { id: '4', name: 'Salade César', time: '15 min', difficulty: 'Facile',
+    ingredients: ['Laitue romaine', 'Poulet grillé', 'Croûtons', 'Parmesan', 'Sauce César'],
+    steps: ['Laver la salade', 'Griller le poulet', 'Assembler', 'Ajouter la sauce'] },
+];
+
+export default function RecipeDetailScreen() {
+  const { id } = useLocalSearchParams();
+  const recipe = recipes.find(r => r.id === id);
+
+  if (!recipe) {
+    return (
+      <View style={styles.centered}>
+        <Text>Recette non trouvée</Text>
+      </View>
+    );
+  }
+
+  return (
+    <View style={styles.container}>
+      <Text style={styles.title}>{recipe.name}</Text>
+      <View style={styles.metaRow}>
+        <Text style={styles.metaItem}>{recipe.time}</Text>
+        <Text style={styles.metaItem}>{recipe.difficulty}</Text>
+      </View>
+
+      <Text style={styles.sectionTitle}>Ingrédients</Text>
+      {recipe.ingredients.map((ing, i) => (
+        <Text key={i} style={styles.listItem}>- {ing}</Text>
+      ))}
+
+      <Text style={styles.sectionTitle}>Étapes</Text>
+      {recipe.steps.map((step, i) => (
+        <Text key={i} style={styles.listItem}>{i + 1}. {step}</Text>
+      ))}
+    </View>
+  );
+}
+
+// app/about.tsx
+import { View, Text, StyleSheet } from 'react-native';
+
+export default function AboutScreen() {
+  return (
+    <View style={styles.centered}>
+      <Text style={styles.title}>Mon Livre de Recettes</Text>
+      <Text style={styles.description}>
+        Application créée dans le cadre du cours R4A11.
+      </Text>
+      <Text style={styles.version}>Version 1.0.0</Text>
+    </View>
+  );
+}
+
+const styles = StyleSheet.create({
+  container: { flex: 1, padding: 16, backgroundColor: '#f5f5f5' },
+  centered: { flex: 1, justifyContent: 'center', alignItems: 'center', padding: 16 },
+  card: { backgroundColor: '#fff', padding: 16, borderRadius: 12, marginBottom: 8, borderWidth: 1, borderColor: '#e0e0e0' },
+  recipeName: { fontSize: 18, fontWeight: 'bold' },
+  meta: { flexDirection: 'row', gap: 12, marginTop: 4 },
+  metaText: { fontSize: 14, color: '#666' },
+  metaRow: { flexDirection: 'row', gap: 16, marginBottom: 24 },
+  metaItem: { fontSize: 14, color: '#0066cc', fontWeight: '600' },
+  title: { fontSize: 24, fontWeight: 'bold', marginBottom: 8 },
+  sectionTitle: { fontSize: 18, fontWeight: 'bold', marginTop: 16, marginBottom: 8 },
+  listItem: { fontSize: 16, marginBottom: 4, lineHeight: 24 },
+  description: { fontSize: 16, color: '#666', textAlign: 'center', marginTop: 8 },
+  version: { fontSize: 14, color: '#999', marginTop: 16 },
+  aboutLink: { alignItems: 'center', paddingVertical: 16 },
+  aboutLinkText: { fontSize: 16, color: '#0066cc' },
+});`}</CodeBlock>
+  }
+>
+Créez une application "Livre de recettes" avec 3 écrans et Stack Navigation.
+
+**Écrans à créer :**
+
+1. **Écran Accueil** (`app/index.tsx`) : liste de 4 recettes. Chaque recette est cliquable et mène à l'écran détail. Un lien "À propos" en bas.
+2. **Écran Détail** (`app/recipe/[id].tsx`) : route dynamique affichant les ingrédients et les étapes de la recette sélectionnée. Gérer le cas "recette non trouvée".
+3. **Écran À propos** (`app/about.tsx`) : nom de l'application, description, version.
+
+**Données :**
+
+<CodeBlock language="jsx">{`const recipes = [
+  { id: '1', name: 'Pâtes carbonara', time: '20 min', difficulty: 'Facile' },
+  { id: '2', name: 'Poulet rôti', time: '1h30', difficulty: 'Moyen' },
+  { id: '3', name: 'Tarte aux pommes', time: '45 min', difficulty: 'Moyen' },
+  { id: '4', name: 'Salade César', time: '15 min', difficulty: 'Facile' },
+];`}</CodeBlock>
+
+**Exigences :**
+- Stack Navigation avec `_layout.tsx`
+- Route dynamique `[id].tsx` avec `useLocalSearchParams()`
+- Navigation avec `router.push()` ou `Link`
+- Gérer le cas d'erreur (recette non trouvée)
+</Exercise>
+
+## Exercice 5 : Application complète avec Tabs
+
+<Exercise
+  title="Application de tâches multi-écrans"
+  difficulty="hard"
+  solution={
+    <CodeBlock language="jsx">{`// Structure des fichiers :
+// app/_layout.tsx         - Stack racine
+// app/(tabs)/_layout.tsx  - Configuration des onglets
+// app/(tabs)/index.tsx    - Onglet Tâches
+// app/(tabs)/stats.tsx    - Onglet Statistiques
+// app/(tabs)/settings.tsx - Onglet Paramètres
+// app/task/[id].tsx       - Détail d'une tâche
+// data/tasks.js           - Données
+
+// data/tasks.js
+export const tasks = [
+  { id: '1', title: 'Créer le projet Expo', category: 'dev', priority: 'haute', done: true,
+    description: 'Initialiser un nouveau projet avec create-expo-app.' },
+  { id: '2', title: 'Designer les écrans', category: 'design', priority: 'haute', done: true,
+    description: 'Créer les maquettes des 3 écrans principaux.' },
+  { id: '3', title: 'Implémenter la navigation', category: 'dev', priority: 'moyenne', done: false,
+    description: 'Mettre en place Expo Router avec tabs et stack.' },
+  { id: '4', title: 'Ajouter les styles', category: 'dev', priority: 'moyenne', done: false,
+    description: 'Appliquer StyleSheet.create sur tous les composants.' },
+  { id: '5', title: 'Rédiger la documentation', category: 'docs', priority: 'basse', done: false,
+    description: 'Documenter les composants et les écrans.' },
+  { id: '6', title: 'Tester sur Android', category: 'test', priority: 'haute', done: false,
+    description: 'Vérifier le rendu et les interactions sur Android.' },
+];
+
+// app/_layout.tsx
+import { Stack } from 'expo-router';
+
+export default function RootLayout() {
+  return (
+    <Stack>
+      <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+      <Stack.Screen name="task/[id]" options={{ title: 'Détail de la tâche' }} />
+    </Stack>
+  );
+}
+
+// app/(tabs)/_layout.tsx
+import { Tabs } from 'expo-router';
+import { Ionicons } from '@expo/vector-icons';
+
+export default function TabLayout() {
+  return (
+    <Tabs screenOptions={{ tabBarActiveTintColor: '#0066cc' }}>
+      <Tabs.Screen name="index"
+        options={{ title: 'Tâches',
+          tabBarIcon: ({ color, size }) => <Ionicons name="list" size={size} color={color} /> }} />
+      <Tabs.Screen name="stats"
+        options={{ title: 'Stats',
+          tabBarIcon: ({ color, size }) => <Ionicons name="bar-chart" size={size} color={color} /> }} />
+      <Tabs.Screen name="settings"
+        options={{ title: 'Paramètres',
+          tabBarIcon: ({ color, size }) => <Ionicons name="settings" size={size} color={color} /> }} />
+    </Tabs>
+  );
+}
+
+// app/(tabs)/index.tsx - Liste de tâches
+import { View, Text, ScrollView, Pressable, StyleSheet } from 'react-native';
+import { useRouter } from 'expo-router';
+import { tasks } from '../../data/tasks';
+
+export default function TasksScreen() {
+  const router = useRouter();
+  const todoTasks = tasks.filter(t => !t.done);
+  const doneTasks = tasks.filter(t => t.done);
+
+  return (
+    <ScrollView style={styles.container}>
+      <Text style={styles.pageTitle}>Mes tâches</Text>
+      <Text style={styles.sectionHeader}>A FAIRE ({todoTasks.length})</Text>
+      {todoTasks.map(task => (
+        <Pressable key={task.id} style={styles.taskCard}
+          onPress={() => router.push(\`/task/\${task.id}\`)}>
+          <View style={[styles.priorityDot,
+            task.priority === 'haute' && styles.priorityHigh,
+            task.priority === 'moyenne' && styles.priorityMedium,
+            task.priority === 'basse' && styles.priorityLow]} />
+          <View style={styles.taskInfo}>
+            <Text style={styles.taskTitle}>{task.title}</Text>
+            <Text style={styles.taskCategory}>{task.category}</Text>
+          </View>
+        </Pressable>
+      ))}
+      <Text style={styles.sectionHeader}>TERMINÉES ({doneTasks.length})</Text>
+      {doneTasks.map(task => (
+        <Pressable key={task.id} style={[styles.taskCard, styles.doneCard]}
+          onPress={() => router.push(\`/task/\${task.id}\`)}>
+          <Text style={styles.checkmark}>✓</Text>
+          <View style={styles.taskInfo}>
+            <Text style={[styles.taskTitle, styles.doneTitle]}>{task.title}</Text>
+            <Text style={styles.taskCategory}>{task.category}</Text>
+          </View>
+        </Pressable>
+      ))}
+    </ScrollView>
+  );
+}
+
+// app/(tabs)/stats.tsx - Statistiques
+import { View, Text, StyleSheet } from 'react-native';
+import { tasks } from '../../data/tasks';
+
+function StatBox({ label, value, color }) {
+  return (
+    <View style={[styles.statBox, { borderLeftColor: color }]}>
+      <Text style={[styles.statValue, { color }]}>{value}</Text>
+      <Text style={styles.statLabel}>{label}</Text>
+    </View>
+  );
+}
+
+export default function StatsScreen() {
+  const total = tasks.length;
+  const done = tasks.filter(t => t.done).length;
+  const todo = total - done;
+  const highPriority = tasks.filter(t => t.priority === 'haute' && !t.done).length;
+
+  return (
+    <View style={styles.container}>
+      <Text style={styles.pageTitle}>Statistiques</Text>
+      <StatBox label="Total" value={total} color="#0066cc" />
+      <StatBox label="Terminées" value={done} color="#4caf50" />
+      <StatBox label="À faire" value={todo} color="#ff9800" />
+      <StatBox label="Priorité haute (non faites)" value={highPriority} color="#f44336" />
+    </View>
+  );
+}
+
+// app/task/[id].tsx - Détail
+import { useLocalSearchParams } from 'expo-router';
+import { View, Text, StyleSheet } from 'react-native';
+import { tasks } from '../../data/tasks';
+
+export default function TaskDetailScreen() {
+  const { id } = useLocalSearchParams();
+  const task = tasks.find(t => t.id === id);
+  if (!task) return <View style={styles.centered}><Text>Tâche non trouvée</Text></View>;
+
+  return (
+    <View style={styles.container}>
+      <Text style={styles.title}>{task.title}</Text>
+      <View style={styles.badges}>
+        <View style={styles.badge}><Text style={styles.badgeText}>{task.category}</Text></View>
+        <View style={[styles.badge, styles.priorityBadge]}>
+          <Text style={styles.badgeText}>{task.priority}</Text></View>
+        <View style={[styles.badge, task.done ? styles.doneBadge : styles.todoBadge]}>
+          <Text style={styles.badgeText}>{task.done ? 'Terminée' : 'À faire'}</Text></View>
+      </View>
+      <Text style={styles.description}>{task.description}</Text>
+    </View>
+  );
+}
+
+const styles = StyleSheet.create({
+  container: { flex: 1, padding: 16, backgroundColor: '#f5f5f5' },
+  centered: { flex: 1, justifyContent: 'center', alignItems: 'center' },
+  pageTitle: { fontSize: 28, fontWeight: 'bold', marginBottom: 16 },
+  sectionHeader: { fontSize: 13, fontWeight: '600', color: '#666', marginTop: 16, marginBottom: 8 },
+  taskCard: { flexDirection: 'row', alignItems: 'center', backgroundColor: '#fff', padding: 12, borderRadius: 12, marginBottom: 8 },
+  doneCard: { opacity: 0.6 },
+  priorityDot: { width: 10, height: 10, borderRadius: 5, marginRight: 12 },
+  priorityHigh: { backgroundColor: '#f44336' },
+  priorityMedium: { backgroundColor: '#ff9800' },
+  priorityLow: { backgroundColor: '#4caf50' },
+  taskInfo: { flex: 1 },
+  taskTitle: { fontSize: 16, fontWeight: '600' },
+  doneTitle: { textDecorationLine: 'line-through', color: '#999' },
+  taskCategory: { fontSize: 12, color: '#666', marginTop: 2 },
+  checkmark: { fontSize: 16, color: '#4caf50', marginRight: 12, fontWeight: 'bold' },
+  statBox: { backgroundColor: '#fff', padding: 16, borderRadius: 12, marginBottom: 12, borderLeftWidth: 4 },
+  statValue: { fontSize: 32, fontWeight: 'bold' },
+  statLabel: { fontSize: 14, color: '#666', marginTop: 4 },
+  title: { fontSize: 24, fontWeight: 'bold', marginBottom: 12 },
+  badges: { flexDirection: 'row', gap: 8, marginBottom: 16 },
+  badge: { backgroundColor: '#e0e0e0', paddingHorizontal: 12, paddingVertical: 4, borderRadius: 12 },
+  badgeText: { fontSize: 12, fontWeight: '600' },
+  priorityBadge: { backgroundColor: '#fff3e0' },
+  doneBadge: { backgroundColor: '#e8f5e9' },
+  todoBadge: { backgroundColor: '#ffebee' },
+  description: { fontSize: 16, lineHeight: 24, color: '#333' },
+});`}</CodeBlock>
+  }
+>
+Créez une application de gestion de tâches complète avec Tab Navigation et Stack Navigation.
+
+**Structure :**
+- 3 onglets : Tâches, Statistiques, Paramètres
+- 1 écran détail accessible depuis l'onglet Tâches
+
+**Onglet Tâches :**
+- Liste de tâches séparées en deux sections : "À faire" et "Terminées"
+- Chaque tâche a un indicateur de priorité (point coloré : rouge/orange/vert)
+- Appuyer sur une tâche ouvre l'écran détail (route dynamique)
+- Les tâches terminées apparaissent en grisé avec un texte barré
+
+**Onglet Statistiques :**
+- Nombre total de tâches
+- Nombre de tâches terminées
+- Nombre de tâches à faire
+- Nombre de tâches à priorité haute non terminées
+
+**Onglet Paramètres :**
+- Informations de l'application (réutilisez le pattern de l'exercice 3)
+
+**Écran Détail :**
+- Titre de la tâche, catégorie, priorité, statut
+- Description complète
+- Gestion du cas "tâche non trouvée"
+
+<Callout type="tip" title="Organisation">
+Cet exercice combine tous les concepts de la séance. Procédez par étapes :
+1. Créez la structure de fichiers
+2. Configurez les layouts (Stack + Tabs)
+3. Implémentez chaque écran un par un
+4. Ajoutez les styles en dernier
+</Callout>
+</Exercise>
+
+---
+
+## Récapitulatif
+
+<Callout type="info" title="Ce que vous avez pratiqué">
+**Exercice 1 :** Composants primitifs (View, Text, Image) avec layout horizontal
+
+**Exercice 2 :** StyleSheet avec ombres, coins arrondis et styles conditionnels
+
+**Exercice 3 :** Écran complet avec sections, sous-composants réutilisables et ScrollView
+
+**Exercice 4 :** Stack Navigation avec route dynamique et Link/useRouter
+
+**Exercice 5 :** Application complète avec Tabs + Stack + styles avancés
+
+**Temps total estimé :** ~2h
+</Callout>
+
+<Callout type="warning" title="Comprendre, pas mémoriser">
+L'objectif de ces exercices est de **comprendre les patterns**, pas de mémoriser la syntaxe. Quand vous travaillerez sur un vrai projet, vous pourrez toujours consulter la documentation Expo ou demander à l'IA de générer du code. L'important est de savoir **valider** et **adapter** ce code.
+</Callout>
+
+## Ressources
+
+<Resources resources={[
+  {
+    title: "React Native Core Components",
+    description: "Référence des composants View, Text, Image, ScrollView, etc.",
+    url: "https://reactnative.dev/docs/components-and-apis",
+    type: "doc"
+  },
+  {
+    title: "Expo Router Documentation",
+    description: "Guide complet sur la navigation avec Expo Router",
+    url: "https://docs.expo.dev/router/introduction/",
+    type: "doc"
+  },
+  {
+    title: "React Native StyleSheet",
+    description: "Référence de toutes les propriétés de style disponibles",
+    url: "https://reactnative.dev/docs/stylesheet",
+    type: "doc"
+  },
+  {
+    title: "Flexbox in React Native",
+    description: "Guide Flexbox spécifique à React Native",
+    url: "https://reactnative.dev/docs/flexbox",
+    type: "doc"
+  }
+]} />

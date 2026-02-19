@@ -1,0 +1,466 @@
+# AsyncStorage - Persistance Locale
+
+`AsyncStorage` est le système de stockage local pour React Native. Il joue le même rôle que `localStorage` sur le web : stocker des données clé-valeur qui persistent entre les sessions. La différence principale : toutes les opérations sont **asynchrones** (d'où le nom).
+
+## Comparaison avec localStorage
+
+<div className="overflow-x-auto my-6">
+  <table className="min-w-full border border-gray-200 dark:border-gray-700">
+    <thead className="bg-gray-50 dark:bg-gray-800">
+      <tr>
+        <th className="px-4 py-3 text-left text-sm font-semibold text-gray-900 dark:text-gray-100 border-b border-gray-200 dark:border-gray-700">Fonctionnalité</th>
+        <th className="px-4 py-3 text-left text-sm font-semibold text-gray-900 dark:text-gray-100 border-b border-gray-200 dark:border-gray-700">Web <code>localStorage</code></th>
+        <th className="px-4 py-3 text-left text-sm font-semibold text-gray-900 dark:text-gray-100 border-b border-gray-200 dark:border-gray-700">React Native <code>AsyncStorage</code></th>
+      </tr>
+    </thead>
+    <tbody className="bg-white dark:bg-gray-900 divide-y divide-gray-200 dark:divide-gray-700">
+      <tr>
+        <td className="px-4 py-3 text-sm font-medium text-gray-900 dark:text-gray-100">Écriture</td>
+        <td className="px-4 py-3 text-sm text-gray-700 dark:text-gray-300"><code>localStorage.setItem(key, value)</code></td>
+        <td className="px-4 py-3 text-sm text-gray-700 dark:text-gray-300"><code>await AsyncStorage.setItem(key, value)</code></td>
+      </tr>
+      <tr>
+        <td className="px-4 py-3 text-sm font-medium text-gray-900 dark:text-gray-100">Lecture</td>
+        <td className="px-4 py-3 text-sm text-gray-700 dark:text-gray-300"><code>localStorage.getItem(key)</code></td>
+        <td className="px-4 py-3 text-sm text-gray-700 dark:text-gray-300"><code>await AsyncStorage.getItem(key)</code></td>
+      </tr>
+      <tr>
+        <td className="px-4 py-3 text-sm font-medium text-gray-900 dark:text-gray-100">Suppression</td>
+        <td className="px-4 py-3 text-sm text-gray-700 dark:text-gray-300"><code>localStorage.removeItem(key)</code></td>
+        <td className="px-4 py-3 text-sm text-gray-700 dark:text-gray-300"><code>await AsyncStorage.removeItem(key)</code></td>
+      </tr>
+      <tr>
+        <td className="px-4 py-3 text-sm font-medium text-gray-900 dark:text-gray-100">Type de valeur</td>
+        <td className="px-4 py-3 text-sm text-gray-700 dark:text-gray-300">Chaînes uniquement</td>
+        <td className="px-4 py-3 text-sm text-gray-700 dark:text-gray-300">Chaînes uniquement</td>
+      </tr>
+      <tr>
+        <td className="px-4 py-3 text-sm font-medium text-gray-900 dark:text-gray-100">Synchrone / Asynchrone</td>
+        <td className="px-4 py-3 text-sm text-gray-700 dark:text-gray-300">Synchrone (bloquant)</td>
+        <td className="px-4 py-3 text-sm text-gray-700 dark:text-gray-300">Asynchrone (async/await)</td>
+      </tr>
+      <tr>
+        <td className="px-4 py-3 text-sm font-medium text-gray-900 dark:text-gray-100">Persistance</td>
+        <td className="px-4 py-3 text-sm text-gray-700 dark:text-gray-300">Jusqu'à suppression explicite</td>
+        <td className="px-4 py-3 text-sm text-gray-700 dark:text-gray-300">Jusqu'à désinstallation de l'app</td>
+      </tr>
+      <tr>
+        <td className="px-4 py-3 text-sm font-medium text-gray-900 dark:text-gray-100">Chiffrement</td>
+        <td className="px-4 py-3 text-sm text-gray-700 dark:text-gray-300">Non chiffré</td>
+        <td className="px-4 py-3 text-sm text-gray-700 dark:text-gray-300">Non chiffré</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<Callout type="info" title="Pourquoi asynchrone ?">
+Sur le web, `localStorage` est synchrone : l'opération bloque l'exécution jusqu'à la fin. Sur mobile, le stockage peut être plus lent (mémoire flash), et bloquer le thread principal provoquerait un **gel de l'interface**. AsyncStorage est asynchrone pour ne pas bloquer l'affichage pendant la lecture/écriture des données.
+</Callout>
+
+## Installation
+
+AsyncStorage n'est pas inclus dans React Native par défaut. Il faut l'installer :
+
+```bash
+npx expo install @react-native-async-storage/async-storage
+```
+
+<Callout type="tip" title="npx expo install">
+Utilisez `npx expo install` au lieu de `npm install` pour garantir la compatibilité avec votre version du SDK Expo. C'est la même recommandation qu'en Séance 1 pour tous les packages.
+</Callout>
+
+## API de base
+
+### Écrire une valeur
+
+```jsx
+import AsyncStorage from '@react-native-async-storage/async-storage';
+
+// Stocker une chaîne
+await AsyncStorage.setItem('username', 'Alice');
+
+// Stocker un objet (il faut le convertir en chaîne JSON)
+const user = { name: 'Alice', age: 25 };
+await AsyncStorage.setItem('user', JSON.stringify(user));
+```
+
+### Lire une valeur
+
+```jsx
+// Lire une chaîne
+const username = await AsyncStorage.getItem('username');
+console.log(username); // 'Alice'
+
+// Lire un objet (il faut le parser depuis JSON)
+const userData = await AsyncStorage.getItem('user');
+const user = userData ? JSON.parse(userData) : null;
+console.log(user); // { name: 'Alice', age: 25 }
+```
+
+### Supprimer une valeur
+
+```jsx
+// Supprimer une clé
+await AsyncStorage.removeItem('username');
+
+// Supprimer toutes les données (attention !)
+await AsyncStorage.clear();
+```
+
+<QuickCheck
+  question="Pourquoi faut-il utiliser JSON.stringify() et JSON.parse() avec AsyncStorage ?"
+  options={[
+    "AsyncStorage ne fonctionne pas sans JSON",
+    "AsyncStorage ne stocke que des chaînes de caractères, il faut donc convertir les objets/tableaux en chaînes JSON",
+    "JSON est le format de données par défaut de React Native",
+    "Pour chiffrer les données"
+  ]}
+  correctAnswer={1}
+  explanation="Comme localStorage sur le web, AsyncStorage ne peut stocker que des chaînes de caractères. Pour stocker un objet ou un tableau, il faut le convertir en chaîne avec JSON.stringify(). Pour le relire, il faut le reconvertir avec JSON.parse(). C'est exactement le même pattern qu'avec localStorage."
+/>
+
+## Pattern complet : charger et sauvegarder
+
+Le pattern le plus courant avec AsyncStorage combine `useEffect` pour charger les données au démarrage et sauvegarder automatiquement quand elles changent :
+
+```jsx
+import { useState, useEffect } from 'react';
+import { View, Text, Pressable, StyleSheet } from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+
+function Counter() {
+  const [count, setCount] = useState(0);
+  const [isLoaded, setIsLoaded] = useState(false);
+
+  // Charger la valeur sauvegardée au démarrage
+  useEffect(() => {
+    const loadCount = async () => {
+      try {
+        const saved = await AsyncStorage.getItem('counter');
+        if (saved !== null) {
+          setCount(parseInt(saved, 10));
+        }
+      } catch (error) {
+        console.error('Erreur de chargement :', error);
+      } finally {
+        setIsLoaded(true);
+      }
+    };
+    loadCount();
+  }, []);
+
+  // Sauvegarder à chaque changement
+  useEffect(() => {
+    if (isLoaded) {  // Ne pas sauvegarder avant le chargement initial
+      AsyncStorage.setItem('counter', count.toString());
+    }
+  }, [count, isLoaded]);
+
+  if (!isLoaded) {
+    return <Text>Chargement...</Text>;
+  }
+
+  return (
+    <View style={styles.container}>
+      <Text style={styles.count}>{count}</Text>
+      <Pressable style={styles.button} onPress={() => setCount(count + 1)}>
+        <Text style={styles.buttonText}>+1</Text>
+      </Pressable>
+      <Text style={styles.info}>La valeur est sauvegardée automatiquement</Text>
+    </View>
+  );
+}
+
+const styles = StyleSheet.create({
+  container: { flex: 1, justifyContent: 'center', alignItems: 'center' },
+  count: { fontSize: 64, fontWeight: 'bold', color: '#0066cc' },
+  button: { backgroundColor: '#0066cc', borderRadius: 8, padding: 16, marginTop: 16 },
+  buttonText: { color: '#fff', fontSize: 20, fontWeight: 'bold' },
+  info: { marginTop: 16, fontSize: 14, color: '#666' },
+});
+```
+
+<Callout type="warning" title="Le flag isLoaded est important">
+Sans le flag `isLoaded`, le deuxième `useEffect` sauvegarderait la valeur initiale (0) avant que le chargement soit terminé, écrasant la valeur sauvegardée. Le flag garantit que la sauvegarde ne commence qu'après le chargement initial.
+</Callout>
+
+<QuickCheck
+  question="Que se passe-t-il si on ne vérifie pas isLoaded avant de sauvegarder ?"
+  options={[
+    "Rien, AsyncStorage gère automatiquement ce cas",
+    "La valeur initiale (0) est sauvegardée avant que le chargement soit terminé, écrasant la valeur réelle",
+    "React affiche une erreur",
+    "Le composant entre dans une boucle infinie"
+  ]}
+  correctAnswer={1}
+  explanation="Au montage : count vaut 0 (valeur initiale). Le premier useEffect lance le chargement (asynchrone). Le second useEffect s'exécute immédiatement avec count=0 et sauvegarde 0. Puis le chargement se termine et met count à la vraie valeur. Résultat : la valeur sauvegardée a été écrasée par 0 pendant un instant. Le flag isLoaded empêche cette sauvegarde prématurée."
+/>
+
+## Gestion des erreurs
+
+Les opérations AsyncStorage peuvent échouer (stockage plein, corruption des données). Gérez toujours les erreurs avec try/catch :
+
+```jsx
+// ❌ Sans gestion d'erreur
+const data = await AsyncStorage.getItem('key');
+
+// ✅ Avec gestion d'erreur
+const loadData = async () => {
+  try {
+    const data = await AsyncStorage.getItem('key');
+    if (data !== null) {
+      return JSON.parse(data);
+    }
+    return null;
+  } catch (error) {
+    console.error('Erreur AsyncStorage :', error);
+    return null;
+  }
+};
+
+const saveData = async (key, value) => {
+  try {
+    await AsyncStorage.setItem(key, JSON.stringify(value));
+  } catch (error) {
+    console.error('Erreur de sauvegarde :', error);
+  }
+};
+```
+
+<Callout type="warning" title="JSON.parse() peut aussi échouer">
+Si les données sauvegardées sont corrompues ou dans un format inattendu, `JSON.parse()` lance une erreur. Mettez toujours `JSON.parse()` dans un bloc try/catch. C'est la même précaution que pour `localStorage` sur le web.
+</Callout>
+
+## Exemple complet : préférences utilisateur
+
+```jsx
+import { useState, useEffect } from 'react';
+import { View, Text, Pressable, Switch, StyleSheet } from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+
+const STORAGE_KEY = '@user_preferences';
+
+const defaultPreferences = {
+  darkMode: false,
+  notifications: true,
+  fontSize: 'medium',  // 'small', 'medium', 'large'
+};
+
+export default function SettingsScreen() {
+  const [prefs, setPrefs] = useState(defaultPreferences);
+  const [isLoaded, setIsLoaded] = useState(false);
+
+  // Charger les préférences au démarrage
+  useEffect(() => {
+    const loadPreferences = async () => {
+      try {
+        const saved = await AsyncStorage.getItem(STORAGE_KEY);
+        if (saved) {
+          setPrefs({ ...defaultPreferences, ...JSON.parse(saved) });
+        }
+      } catch (error) {
+        console.error('Erreur chargement préférences :', error);
+      } finally {
+        setIsLoaded(true);
+      }
+    };
+    loadPreferences();
+  }, []);
+
+  // Sauvegarder quand les préférences changent
+  useEffect(() => {
+    if (isLoaded) {
+      AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(prefs))
+        .catch(error => console.error('Erreur sauvegarde :', error));
+    }
+  }, [prefs, isLoaded]);
+
+  const updatePref = (key, value) => {
+    setPrefs(prev => ({ ...prev, [key]: value }));
+  };
+
+  if (!isLoaded) {
+    return (
+      <View style={styles.loading}>
+        <Text>Chargement des préférences...</Text>
+      </View>
+    );
+  }
+
+  return (
+    <View style={styles.container}>
+      <Text style={styles.title}>Paramètres</Text>
+
+      {/* Mode sombre */}
+      <View style={styles.settingRow}>
+        <View>
+          <Text style={styles.settingLabel}>Mode sombre</Text>
+          <Text style={styles.settingDesc}>Activer le thème sombre</Text>
+        </View>
+        <Switch
+          value={prefs.darkMode}
+          onValueChange={(value) => updatePref('darkMode', value)}
+          trackColor={{ false: '#ddd', true: '#81b0ff' }}
+          thumbColor={prefs.darkMode ? '#0066cc' : '#f4f3f4'}
+        />
+      </View>
+
+      {/* Notifications */}
+      <View style={styles.settingRow}>
+        <View>
+          <Text style={styles.settingLabel}>Notifications</Text>
+          <Text style={styles.settingDesc}>Recevoir les alertes</Text>
+        </View>
+        <Switch
+          value={prefs.notifications}
+          onValueChange={(value) => updatePref('notifications', value)}
+          trackColor={{ false: '#ddd', true: '#81b0ff' }}
+          thumbColor={prefs.notifications ? '#0066cc' : '#f4f3f4'}
+        />
+      </View>
+
+      {/* Taille du texte */}
+      <View style={styles.settingSection}>
+        <Text style={styles.settingLabel}>Taille du texte</Text>
+        <View style={styles.fontSizeRow}>
+          {['small', 'medium', 'large'].map(size => (
+            <Pressable
+              key={size}
+              style={[
+                styles.fontSizeButton,
+                prefs.fontSize === size && styles.fontSizeButtonActive,
+              ]}
+              onPress={() => updatePref('fontSize', size)}
+            >
+              <Text style={[
+                styles.fontSizeText,
+                prefs.fontSize === size && styles.fontSizeTextActive,
+              ]}>
+                {size === 'small' ? 'Petit' : size === 'medium' ? 'Moyen' : 'Grand'}
+              </Text>
+            </Pressable>
+          ))}
+        </View>
+      </View>
+
+      {/* Réinitialiser */}
+      <Pressable
+        style={styles.resetButton}
+        onPress={() => setPrefs(defaultPreferences)}
+      >
+        <Text style={styles.resetText}>Réinitialiser les paramètres</Text>
+      </Pressable>
+    </View>
+  );
+}
+
+const styles = StyleSheet.create({
+  container: { flex: 1, padding: 16, backgroundColor: '#f5f5f5' },
+  loading: { flex: 1, justifyContent: 'center', alignItems: 'center' },
+  title: { fontSize: 24, fontWeight: 'bold', marginBottom: 24 },
+  settingRow: {
+    flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center',
+    backgroundColor: '#fff', padding: 16, borderRadius: 12, marginBottom: 8,
+  },
+  settingSection: {
+    backgroundColor: '#fff', padding: 16, borderRadius: 12, marginBottom: 8,
+  },
+  settingLabel: { fontSize: 16, fontWeight: '600' },
+  settingDesc: { fontSize: 13, color: '#666', marginTop: 2 },
+  fontSizeRow: { flexDirection: 'row', gap: 8, marginTop: 12 },
+  fontSizeButton: {
+    flex: 1, padding: 10, borderRadius: 8, borderWidth: 1,
+    borderColor: '#ddd', alignItems: 'center',
+  },
+  fontSizeButtonActive: { borderColor: '#0066cc', backgroundColor: '#e8f0fe' },
+  fontSizeText: { fontSize: 14, color: '#666' },
+  fontSizeTextActive: { color: '#0066cc', fontWeight: '600' },
+  resetButton: {
+    padding: 16, borderRadius: 12, alignItems: 'center', marginTop: 16,
+    backgroundColor: '#fff', borderWidth: 1, borderColor: '#f44336',
+  },
+  resetText: { color: '#f44336', fontWeight: '600' },
+});
+```
+
+Cet exemple montre :
+- **Chargement initial** avec `useEffect` et un état de chargement
+- **Sauvegarde automatique** avec `useEffect` et dépendance sur `prefs`
+- **Valeurs par défaut** fusionnées avec les données sauvegardées (`...defaultPreferences, ...saved`)
+- **Gestion d'erreurs** avec try/catch
+- **Composant Switch** pour les toggles (booléens)
+
+<QuickCheck
+  question="Pourquoi fusionner les préférences par défaut avec les données sauvegardées ?"
+  options={[
+    "Pour écraser les données sauvegardées",
+    "Pour garantir que toutes les clés existent, même si de nouvelles préférences ont été ajoutées après la dernière sauvegarde",
+    "Pour que JSON.parse() fonctionne",
+    "Pour convertir les chaînes en objets"
+  ]}
+  correctAnswer={1}
+  explanation="Si vous ajoutez une nouvelle préférence (ex: fontSize) après que l'utilisateur a déjà sauvegardé ses préférences (qui ne contiennent que darkMode et notifications), la clé fontSize serait undefined. En fusionnant { ...defaultPreferences, ...saved }, les nouvelles clés prennent leur valeur par défaut et les clés existantes gardent leur valeur sauvegardée."
+/>
+
+<QuickCheck
+  question="Comment stocker un tableau dans AsyncStorage ?"
+  options={[
+    "AsyncStorage.setItem('list', [1, 2, 3])",
+    "AsyncStorage.setItem('list', JSON.stringify([1, 2, 3]))",
+    "AsyncStorage.setArray('list', [1, 2, 3])",
+    "Les tableaux ne peuvent pas être stockés dans AsyncStorage"
+  ]}
+  correctAnswer={1}
+  explanation="AsyncStorage ne stocke que des chaînes. Pour stocker un tableau, il faut le convertir en chaîne JSON avec JSON.stringify(). Pour le relire : JSON.parse(await AsyncStorage.getItem('list')). C'est le même pattern qu'avec localStorage sur le web."
+/>
+
+## Bonnes pratiques
+
+<Callout type="tip" title="Conventions pour les clés">
+Préfixez vos clés AsyncStorage avec `@` et le nom de votre app pour éviter les conflits :
+```jsx
+const KEYS = {
+  preferences: '@myapp_preferences',
+  todos: '@myapp_todos',
+  authToken: '@myapp_auth_token',
+};
+```
+</Callout>
+
+<Callout type="warning" title="Ce qu'il ne faut PAS stocker dans AsyncStorage">
+AsyncStorage n'est **pas chiffré**. Ne stockez jamais :
+- Des mots de passe en clair
+- Des tokens d'authentification sensibles (utilisez `expo-secure-store` pour cela)
+- Des données confidentielles
+
+AsyncStorage est adapté pour : préférences utilisateur, brouillons, données de cache, listes de tâches, paramètres d'affichage.
+</Callout>
+
+## À retenir
+
+<Callout type="success" title="Comprendre, pas mémoriser">
+**AsyncStorage en résumé :**
+- Équivalent mobile de `localStorage` : stockage clé-valeur persistant
+- **Asynchrone** : toujours utiliser `await` ou `.then()`
+- **Chaînes uniquement** : `JSON.stringify()` pour écrire, `JSON.parse()` pour lire
+- **Gestion d'erreurs** : toujours entourer de try/catch
+- **Non chiffré** : pas pour les données sensibles
+
+**Pattern standard :**
+```jsx
+// Charger au montage
+useEffect(() => {
+  AsyncStorage.getItem('key').then(data => {
+    if (data) setState(JSON.parse(data));
+    setIsLoaded(true);
+  });
+}, []);
+
+// Sauvegarder quand ça change
+useEffect(() => {
+  if (isLoaded) {
+    AsyncStorage.setItem('key', JSON.stringify(state));
+  }
+}, [state, isLoaded]);
+```
+</Callout>

@@ -1,0 +1,266 @@
+# Quiz de Validation - Séance 1
+
+Testez vos connaissances sur les fondamentaux de React Native ! Ce quiz couvre tous les sujets de la Séance 1.
+
+<Callout type="info" title="À propos de ce quiz">
+- **15 questions** couvrant tous les sujets de la Séance 1
+- Validez votre compréhension avant de passer à la Séance 2
+- Aucune note n'est enregistrée, c'est pour votre apprentissage !
+</Callout>
+
+## Paysage mobile
+
+<QuickCheck
+  question="1. Quelle est la différence entre une application hybride et une application cross-platform ?"
+  options={[
+    "Les hybrides produisent des composants natifs, les cross-platform utilisent une WebView",
+    "Les hybrides utilisent une WebView pour afficher du HTML, les cross-platform génèrent des composants natifs",
+    "Il n'y a aucune différence technique entre les deux approches",
+    "Les cross-platform ne supportent qu'une seule plateforme"
+  ]}
+  correctAnswer={1}
+  explanation="Les applications hybrides (Ionic/Capacitor) affichent du HTML/CSS/JS dans une WebView (navigateur intégré). Les frameworks cross-platform (React Native, Flutter) traduisent le code en composants natifs de chaque plateforme, ce qui donne de meilleures performances."
+/>
+
+<QuickCheck
+  question="2. Quel est le principal avantage du développement natif (Swift/Kotlin) ?"
+  options={[
+    "Une seule base de code pour iOS et Android",
+    "Le développement est plus rapide que le cross-platform",
+    "Les performances sont maximales avec un accès complet aux API du système",
+    "Le coût de développement est plus bas"
+  ]}
+  correctAnswer={2}
+  explanation="Le développement natif offre les performances maximales et un accès direct à toutes les API du système. En contrepartie, il nécessite deux bases de code distinctes (Swift pour iOS, Kotlin pour Android), ce qui double le temps de développement et nécessite deux équipes avec des compétences différentes."
+/>
+
+## React Native et Expo
+
+<QuickCheck
+  question="3. Que fait React Native avec un composant <View> ?"
+  options={[
+    "Il crée une balise <div> dans une WebView",
+    "Il le traduit en composant natif de la plateforme (UIView sur iOS, android.view.View sur Android)",
+    "Il le convertit en HTML standard",
+    "Il l'envoie directement au navigateur"
+  ]}
+  correctAnswer={1}
+  explanation="React Native traduit les composants JSX en composants natifs de chaque plateforme. <View> devient UIView sur iOS et android.view.View sur Android. Il n'y a pas de WebView ni de HTML : ce sont des composants natifs réels."
+/>
+
+<QuickCheck
+  question="4. Quel est le rôle d'Expo Go ?"
+  options={[
+    "Un IDE pour écrire du code React Native",
+    "Une application mobile qui charge votre projet en Wi-Fi pour le tester instantanément",
+    "Un compilateur qui génère les fichiers .apk et .ipa",
+    "Un framework CSS pour React Native"
+  ]}
+  correctAnswer={1}
+  explanation="Expo Go est une application installée sur votre téléphone qui charge votre projet React Native via le réseau Wi-Fi. Vous scannez un QR code et l'application se charge instantanément, avec rechargement automatique à chaque modification du code (Fast Refresh)."
+/>
+
+<QuickCheck
+  question="5. Pourquoi utiliser npx expo install au lieu de npm install ?"
+  options={[
+    "npx expo install est plus rapide",
+    "npm install ne fonctionne pas avec React Native",
+    "npx expo install sélectionne la version du package compatible avec le SDK Expo",
+    "Il n'y a aucune différence"
+  ]}
+  correctAnswer={2}
+  explanation="npx expo install vérifie la compatibilité avec votre version du SDK Expo et installe la version appropriée du package. Avec npm install, vous pourriez installer une version incompatible qui provoque des erreurs."
+/>
+
+## Composants primitifs
+
+<QuickCheck
+  question="6. Que se passe-t-il si vous écrivez du texte directement dans une <View> ?"
+  options={[
+    "Le texte s'affiche normalement",
+    "React Native génère une erreur : le texte doit être dans un composant <Text>",
+    "Le texte s'affiche mais sans style",
+    "React Native convertit automatiquement le texte en composant <Text>"
+  ]}
+  correctAnswer={1}
+  explanation="Contrairement à <div> en HTML, <View> ne peut pas contenir de texte directement. Tout texte doit être encapsulé dans <Text>. L'erreur affichée est : 'Text strings must be rendered within a <Text> component'. C'est l'erreur la plus courante quand on passe du web au mobile."
+/>
+
+<QuickCheck
+  question="7. Pourquoi une image distante ne s'affiche-t-elle pas sans width et height ?"
+  options={[
+    "React Native affiche une erreur de compilation",
+    "L'image est chargée mais a une taille de 0x0 pixels par défaut",
+    "React Native ne supporte pas les images distantes",
+    "Les dimensions sont automatiquement calculées à partir de l'URL"
+  ]}
+  correctAnswer={1}
+  explanation="React Native ne connaît pas les dimensions d'une image distante avant son chargement. Sans width et height dans le style, l'image a une taille de 0x0 pixels : elle est chargée mais invisible. Les images locales (require) ont leurs dimensions déterminées à partir du fichier."
+/>
+
+<QuickCheck
+  question="8. Quelle est la différence entre ScrollView et View ?"
+  options={[
+    "ScrollView est plus rapide que View",
+    "View peut afficher du texte, ScrollView ne le peut pas",
+    "ScrollView permet le défilement du contenu, View ne le peut pas",
+    "ScrollView est uniquement pour les listes, View pour tout le reste"
+  ]}
+  correctAnswer={2}
+  explanation="En React Native, le défilement n'est pas automatique comme dans un navigateur web. View ne permet pas le scroll. ScrollView ajoute la possibilité de faire défiler le contenu. Si votre contenu dépasse la taille de l'écran, il faut utiliser ScrollView (ou FlatList pour les longues listes)."
+/>
+
+## StyleSheet et Flexbox
+
+<QuickCheck
+  question="9. Pourquoi React Native n'utilise-t-il pas de fichiers CSS ?"
+  options={[
+    "Le CSS est obsolète",
+    "React Native s'exécute sur des composants natifs, pas dans un navigateur avec un moteur CSS",
+    "Les fichiers CSS sont trop lourds pour le mobile",
+    "React Native utilise le CSS mais sous un autre nom"
+  ]}
+  correctAnswer={1}
+  explanation="React Native ne s'exécute pas dans un navigateur web : il n'y a pas de moteur CSS. Les styles sont des objets JavaScript dans StyleSheet.create() qui sont traduits en propriétés natives de chaque plateforme. Les propriétés sont similaires au CSS (backgroundColor, fontSize) mais pas identiques."
+/>
+
+<QuickCheck
+  question="10. Quelle est la direction par défaut de Flexbox en React Native ?"
+  options={[
+    "row (horizontal, comme en CSS web)",
+    "column (vertical)",
+    "row-reverse",
+    "Il n'y a pas de direction par défaut"
+  ]}
+  correctAnswer={1}
+  explanation="En React Native, flexDirection est 'column' par défaut : les éléments s'empilent verticalement. En CSS web, le défaut est 'row' (horizontal). C'est logique pour le mobile où le contenu défile naturellement de haut en bas. Si vous voulez des éléments côte à côte, ajoutez flexDirection: 'row'."
+/>
+
+<QuickCheck
+  question="11. Comment appliquer conditionnellement un style en React Native ?"
+  options={[
+    "Avec className et une condition ternaire",
+    "Avec un tableau de styles : style={[styles.base, condition && styles.variant]}",
+    "Avec la propriété CSS :hover",
+    "En modifiant le fichier CSS dynamiquement"
+  ]}
+  correctAnswer={1}
+  explanation="En React Native, on utilise un tableau de styles avec l'opérateur && : style={[styles.base, isActive && styles.active]}. Si la condition est false, le style conditionnel est ignoré. Il n'y a pas de className ni de CSS en React Native."
+/>
+
+<QuickCheck
+  question="12. Quelle propriété utiliser pour ajouter une ombre sur Android ?"
+  options={[
+    "box-shadow",
+    "shadowColor avec shadowOffset",
+    "elevation",
+    "shadow"
+  ]}
+  correctAnswer={2}
+  explanation="Sur Android, les ombres sont gérées par la propriété elevation (un nombre entier). Les propriétés shadowColor, shadowOffset, shadowOpacity, shadowRadius sont spécifiques à iOS. Pour un rendu cohérent sur les deux plateformes, il faut définir les deux."
+/>
+
+## Navigation
+
+<QuickCheck
+  question="13. Comment Expo Router définit-il les routes de l'application ?"
+  options={[
+    "Avec une configuration dans un fichier routes.js",
+    "Par la structure des fichiers dans le dossier app/",
+    "Avec des annotations dans le code des composants",
+    "Avec le fichier app.json"
+  ]}
+  correctAnswer={1}
+  explanation="Expo Router utilise le routing basé sur les fichiers : chaque fichier dans le dossier app/ correspond automatiquement à une route. Par exemple, app/about.tsx crée la route /about. Pas besoin de configuration manuelle des routes."
+/>
+
+<QuickCheck
+  question="14. Quelle est la différence entre router.push() et router.replace() ?"
+  options={[
+    "push est pour le web, replace pour le mobile",
+    "push ajoute un écran à la pile (retour possible), replace remplace l'écran actuel (pas de retour)",
+    "replace est plus rapide que push",
+    "push et replace font exactement la même chose"
+  ]}
+  correctAnswer={1}
+  explanation="router.push() empile un nouvel écran : l'utilisateur peut revenir en arrière avec un swipe ou le bouton retour. router.replace() remplace l'écran actuel sans l'empiler : pas de retour possible. replace est utile après une connexion pour ne pas pouvoir revenir à l'écran de login."
+/>
+
+<QuickCheck
+  question="15. Comment créer une route dynamique /users/42 avec Expo Router ?"
+  options={[
+    "En créant un fichier app/users/42.tsx",
+    "En créant un fichier app/users/[id].tsx et en utilisant useLocalSearchParams()",
+    "En ajoutant un paramètre dans app.json",
+    "En utilisant React Router comme en R4A10"
+  ]}
+  correctAnswer={1}
+  explanation="Les crochets dans le nom du fichier indiquent un paramètre dynamique : app/users/[id].tsx correspond à /users/1, /users/42, etc. On récupère le paramètre avec useLocalSearchParams(). C'est l'équivalent de /users/:id avec React Router et useParams() en R4A10."
+/>
+
+---
+
+## Résultats
+
+<Callout type="success" title="Bravo !">
+Si vous avez répondu correctement à la plupart des questions, vous êtes prêt(e) pour la **Séance 2 - État, Formulaires et Persistance** !
+
+**Score cible :** Au moins 12/15 pour passer confortablement à la gestion de l'état sur mobile.
+</Callout>
+
+<Callout type="warning" title="Besoin de réviser ?">
+Si vous avez eu des difficultés avec certaines questions, relisez les sections correspondantes :
+
+- **Paysage mobile** (Q1-2) : [Le paysage mobile](/r4a11/seance-1/mobile-landscape)
+- **React Native et Expo** (Q3-5) : [Introduction à React Native](/r4a11/seance-1/react-native-intro) et [Installation](/r4a11/seance-1/setup)
+- **Composants primitifs** (Q6-8) : [Composants primitifs](/r4a11/seance-1/primitives)
+- **StyleSheet et Flexbox** (Q9-12) : [StyleSheet et Flexbox](/r4a11/seance-1/stylesheet)
+- **Navigation** (Q13-15) : [Navigation](/r4a11/seance-1/navigation)
+</Callout>
+
+## Prochaines étapes
+
+<div className="grid grid-cols-1 md:grid-cols-2 gap-4 my-6">
+  <a href="/r4a11/seance-1/exercises" className="block p-4 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg hover:border-cyan-500 dark:hover:border-cyan-500 transition-colors">
+    <h3 className="font-semibold text-gray-900 dark:text-gray-100 mb-2">Refaire les exercices</h3>
+    <p className="text-sm text-gray-600 dark:text-gray-400">Pratiquez avec les 5 exercices de la Séance 1</p>
+  </a>
+
+  <a href="/r4a11/seance-2/introduction" className="block p-4 bg-cyan-50 dark:bg-cyan-900/20 border border-cyan-200 dark:border-cyan-800 rounded-lg hover:border-cyan-500 dark:hover:border-cyan-500 transition-colors">
+    <h3 className="font-semibold text-gray-900 dark:text-gray-100 mb-2">Séance 2 - État et Formulaires</h3>
+    <p className="text-sm text-gray-600 dark:text-gray-400">useState, TextInput, formulaires et AsyncStorage sur mobile</p>
+  </a>
+</div>
+
+<Callout type="tip" title="Conseil">
+Refaites ce quiz jusqu'à obtenir 13/15 ou plus sans regarder les explications. C'est le signe que vous maîtrisez les fondamentaux de React Native et que vous êtes prêt pour la Séance 2.
+</Callout>
+
+## Ressources
+
+<Resources resources={[
+  {
+    title: "React Native Documentation",
+    description: "Documentation officielle de React Native",
+    url: "https://reactnative.dev",
+    type: "doc"
+  },
+  {
+    title: "Expo Documentation",
+    description: "Documentation officielle d'Expo",
+    url: "https://docs.expo.dev",
+    type: "doc"
+  },
+  {
+    title: "React Native Core Components",
+    description: "Référence des composants primitifs",
+    url: "https://reactnative.dev/docs/components-and-apis",
+    type: "doc"
+  },
+  {
+    title: "Expo Router",
+    description: "Guide de navigation avec Expo Router",
+    url: "https://docs.expo.dev/router/introduction/",
+    type: "doc"
+  }
+]} />

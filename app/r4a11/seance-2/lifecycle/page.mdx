@@ -1,0 +1,377 @@
+# Cycle de Vie Mobile
+
+En R4A10 (Séance 4), vous avez appris `useEffect` pour exécuter du code en réaction aux changements d'état ou au montage d'un composant. En React Native, `useEffect` fonctionne de la même manière. Mais le mobile ajoute des événements de cycle de vie que le web ne connaît pas : le passage en **arrière-plan**, le retour au **premier plan**, et le **focus/blur** des écrans.
+
+## Rappel : useEffect
+
+Le hook `useEffect` permet d'exécuter des **effets de bord** : charger des données, s'abonner à des événements, mettre à jour un titre, etc.
+
+```jsx
+import { useState, useEffect } from 'react';
+
+function MyComponent() {
+  const [data, setData] = useState(null);
+
+  // Exécuté une seule fois, au montage du composant
+  useEffect(() => {
+    console.log('Composant monté');
+    // Charger des données, s'abonner à des événements...
+
+    return () => {
+      console.log('Composant démonté (nettoyage)');
+      // Se désabonner, annuler des timers...
+    };
+  }, []); // [] = exécuté une seule fois
+
+  // Exécuté à chaque changement de data
+  useEffect(() => {
+    console.log('data a changé :', data);
+  }, [data]); // [data] = exécuté quand data change
+}
+```
+
+### Les 3 cas d'utilisation
+
+```jsx
+// 1. Au montage uniquement (tableau de dépendances vide)
+useEffect(() => {
+  loadInitialData();
+}, []);
+
+// 2. Quand une valeur change (valeur dans le tableau)
+useEffect(() => {
+  saveData(todos);
+}, [todos]);
+
+// 3. Nettoyage au démontage (return dans useEffect)
+useEffect(() => {
+  const timer = setInterval(() => tick(), 1000);
+  return () => clearInterval(timer);  // Nettoyage
+}, []);
+```
+
+<Callout type="info" title="Rappel R4A10">
+Si vous n'êtes pas à l'aise avec `useEffect`, relisez la [Séance 4 de R4A10](/seance-4/useEffect). Les règles sont identiques en React Native :
+- Le tableau de dépendances contrôle **quand** l'effet s'exécute
+- La fonction de retour sert au **nettoyage** (désabonnement, annulation)
+- Ne jamais oublier le tableau de dépendances (sinon l'effet s'exécute à chaque rendu)
+</Callout>
+
+<QuickCheck
+  question="Que se passe-t-il si vous oubliez le tableau de dépendances dans useEffect ?"
+  options={[
+    "L'effet ne s'exécute jamais",
+    "L'effet s'exécute une seule fois au montage",
+    "L'effet s'exécute à CHAQUE rendu du composant (potentiellement des dizaines de fois par seconde)",
+    "React affiche une erreur"
+  ]}
+  correctAnswer={2}
+  explanation="Sans tableau de dépendances, useEffect s'exécute après CHAQUE rendu. Si l'effet modifie l'état (setState), cela déclenche un nouveau rendu, qui déclenche l'effet, qui déclenche un rendu... C'est une boucle infinie. Ajoutez toujours [] pour une exécution unique, ou [dep1, dep2] pour une exécution conditionnelle."
+/>
+
+## AppState : foreground et background
+
+Sur mobile, l'application peut être dans trois états :
+
+- **active** : l'application est au premier plan, l'utilisateur interagit avec
+- **background** : l'application est en arrière-plan (l'utilisateur a changé d'app, verrouillé le téléphone)
+- **inactive** (iOS uniquement) : état transitoire (appel entrant, centre de contrôle ouvert)
+
+Le module `AppState` de React Native permet de détecter ces changements :
+
+```jsx
+import { useEffect, useRef } from 'react';
+import { AppState, Text, View } from 'react-native';
+
+function AppStateExample() {
+  const appState = useRef(AppState.currentState);
+
+  useEffect(() => {
+    const subscription = AppState.addEventListener('change', (nextAppState) => {
+      if (appState.current === 'background' && nextAppState === 'active') {
+        console.log('L\'application revient au premier plan');
+        // Recharger les données, vérifier les notifications...
+      }
+
+      if (nextAppState === 'background') {
+        console.log('L\'application passe en arrière-plan');
+        // Sauvegarder les données, arrêter les animations...
+      }
+
+      appState.current = nextAppState;
+    });
+
+    return () => subscription.remove();  // Nettoyage
+  }, []);
+
+  return (
+    <View>
+      <Text>L'application est en cours d'utilisation</Text>
+    </View>
+  );
+}
+```
+
+### Cas d'utilisation courants
+
+```jsx
+useEffect(() => {
+  const subscription = AppState.addEventListener('change', (state) => {
+    if (state === 'background') {
+      // L'utilisateur quitte l'app
+      saveDataToStorage();        // Sauvegarder les données non enregistrées
+      pauseVideoPlayback();       // Mettre en pause la vidéo
+      stopLocationTracking();     // Arrêter le GPS
+    }
+
+    if (state === 'active') {
+      // L'utilisateur revient sur l'app
+      refreshData();              // Actualiser les données
+      checkForNotifications();    // Vérifier les notifications
+      resumeVideoPlayback();      // Reprendre la vidéo
+    }
+  });
+
+  return () => subscription.remove();
+}, []);
+```
+
+<Callout type="warning" title="Pas d'équivalent sur le web">
+Sur le web, il existe `document.visibilitychange` pour détecter quand un onglet devient visible ou caché. Mais ce n'est pas aussi critique qu'en mobile : un onglet web reste en mémoire indéfiniment. Sur mobile, le système peut **tuer l'application** en arrière-plan pour libérer de la mémoire. C'est pourquoi sauvegarder les données quand l'app passe en background est important.
+</Callout>
+
+<QuickCheck
+  question="Quand est-il important de sauvegarder les données avec AppState ?"
+  options={[
+    "Quand l'application devient active",
+    "Quand l'application passe en arrière-plan (background), car le système pourrait la fermer",
+    "Quand l'application est en état inactive",
+    "Jamais, les données sont automatiquement sauvegardées"
+  ]}
+  correctAnswer={1}
+  explanation="Quand l'application passe en background, le système peut la tuer à tout moment pour libérer de la mémoire. Les données en mémoire (useState) seraient alors perdues. C'est pourquoi il faut sauvegarder les données importantes (dans AsyncStorage par exemple) dès que l'app passe en arrière-plan."
+/>
+
+## useFocusEffect : focus et blur des écrans
+
+Avec la navigation (Expo Router), plusieurs écrans peuvent exister en mémoire simultanément. `useEffect` avec `[]` s'exécute au **montage** du composant, mais l'écran n'est monté qu'une seule fois et reste en mémoire quand on navigue vers un autre écran.
+
+Pour exécuter du code chaque fois qu'un écran **devient visible** (focus) ou **disparaît** (blur), utilisez `useFocusEffect` :
+
+```jsx
+import { useCallback } from 'react';
+import { useFocusEffect } from '@react-navigation/native';
+import { View, Text } from 'react-native';
+
+function ProfileScreen() {
+  useFocusEffect(
+    useCallback(() => {
+      // Exécuté chaque fois que l'écran devient visible
+      console.log('Écran ProfileScreen visible');
+      loadProfileData();
+
+      return () => {
+        // Exécuté quand l'écran perd le focus
+        console.log('Écran ProfileScreen masqué');
+      };
+    }, [])
+  );
+
+  return (
+    <View>
+      <Text>Profil</Text>
+    </View>
+  );
+}
+```
+
+### Différence entre useEffect et useFocusEffect
+
+```jsx
+function NotificationsScreen() {
+  // ❌ useEffect : s'exécute UNE SEULE FOIS au montage
+  // Si l'utilisateur navigue vers un autre écran puis revient,
+  // useEffect ne se ré-exécute PAS (le composant est toujours monté)
+  useEffect(() => {
+    loadNotifications();
+  }, []);
+
+  // ✅ useFocusEffect : s'exécute CHAQUE FOIS que l'écran est affiché
+  // Même si l'utilisateur navigue ailleurs puis revient
+  useFocusEffect(
+    useCallback(() => {
+      loadNotifications();
+    }, [])
+  );
+}
+```
+
+<Callout type="info" title="useCallback est obligatoire">
+`useFocusEffect` exige que la fonction passée soit enveloppée dans `useCallback`. Sans `useCallback`, la fonction serait recréée à chaque rendu, ce qui provoquerait des exécutions inutiles de l'effet. C'est une exigence de l'API, pas une optimisation optionnelle.
+</Callout>
+
+## Comparaison des hooks de cycle de vie
+
+<div className="overflow-x-auto my-6">
+  <table className="min-w-full border border-gray-200 dark:border-gray-700">
+    <thead className="bg-gray-50 dark:bg-gray-800">
+      <tr>
+        <th className="px-4 py-3 text-left text-sm font-semibold text-gray-900 dark:text-gray-100 border-b border-gray-200 dark:border-gray-700">Hook / API</th>
+        <th className="px-4 py-3 text-left text-sm font-semibold text-gray-900 dark:text-gray-100 border-b border-gray-200 dark:border-gray-700">Quand il s'exécute</th>
+        <th className="px-4 py-3 text-left text-sm font-semibold text-gray-900 dark:text-gray-100 border-b border-gray-200 dark:border-gray-700">Cas d'utilisation</th>
+      </tr>
+    </thead>
+    <tbody className="bg-white dark:bg-gray-900 divide-y divide-gray-200 dark:divide-gray-700">
+      <tr>
+        <td className="px-4 py-3 text-sm text-gray-700 dark:text-gray-300"><code>useEffect(fn, [])</code></td>
+        <td className="px-4 py-3 text-sm text-gray-700 dark:text-gray-300">Au montage du composant (une seule fois)</td>
+        <td className="px-4 py-3 text-sm text-gray-700 dark:text-gray-300">Charger les données initiales, initialiser des timers</td>
+      </tr>
+      <tr>
+        <td className="px-4 py-3 text-sm text-gray-700 dark:text-gray-300"><code>useEffect(fn, [dep])</code></td>
+        <td className="px-4 py-3 text-sm text-gray-700 dark:text-gray-300">Quand la dépendance change</td>
+        <td className="px-4 py-3 text-sm text-gray-700 dark:text-gray-300">Sauvegarder quand les données changent, filtrer une liste</td>
+      </tr>
+      <tr>
+        <td className="px-4 py-3 text-sm text-gray-700 dark:text-gray-300"><code>AppState</code></td>
+        <td className="px-4 py-3 text-sm text-gray-700 dark:text-gray-300">Quand l'app passe en foreground/background</td>
+        <td className="px-4 py-3 text-sm text-gray-700 dark:text-gray-300">Sauvegarder, rafraîchir, pause/reprise</td>
+      </tr>
+      <tr>
+        <td className="px-4 py-3 text-sm text-gray-700 dark:text-gray-300"><code>useFocusEffect</code></td>
+        <td className="px-4 py-3 text-sm text-gray-700 dark:text-gray-300">Chaque fois que l'écran devient visible</td>
+        <td className="px-4 py-3 text-sm text-gray-700 dark:text-gray-300">Recharger les données d'un écran, actualiser un compteur</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+### Quand utiliser quoi ?
+
+```jsx
+// Charger des données au premier affichage → useEffect
+useEffect(() => {
+  fetchUserProfile();
+}, []);
+
+// Sauvegarder automatiquement quand les notes changent → useEffect avec dépendance
+useEffect(() => {
+  AsyncStorage.setItem('notes', JSON.stringify(notes));
+}, [notes]);
+
+// Sauvegarder quand l'app passe en arrière-plan → AppState
+useEffect(() => {
+  const sub = AppState.addEventListener('change', (state) => {
+    if (state === 'background') saveDraft();
+  });
+  return () => sub.remove();
+}, []);
+
+// Recharger la liste à chaque visite de l'écran → useFocusEffect
+useFocusEffect(
+  useCallback(() => {
+    refreshNotificationCount();
+  }, [])
+);
+```
+
+<QuickCheck
+  question="Quelle est la différence entre useEffect(fn, []) et useFocusEffect ?"
+  options={[
+    "useEffect est pour React web, useFocusEffect est pour React Native",
+    "useEffect s'exécute au montage (une seule fois même si on navigue), useFocusEffect s'exécute chaque fois que l'écran devient visible",
+    "useFocusEffect est plus rapide que useEffect",
+    "Il n'y a pas de différence"
+  ]}
+  correctAnswer={1}
+  explanation="Avec la navigation par pile (Stack), les écrans restent montés en mémoire. useEffect(fn, []) ne s'exécute qu'au montage initial. Si l'utilisateur navigue vers un autre écran puis revient, useEffect ne se ré-exécute pas. useFocusEffect s'exécute chaque fois que l'écran redevient visible, ce qui permet de rafraîchir les données."
+/>
+
+## Exemple pratique : écran avec rafraîchissement
+
+```jsx
+import { useState, useEffect, useCallback } from 'react';
+import { View, Text, AppState, StyleSheet } from 'react-native';
+import { useFocusEffect } from '@react-navigation/native';
+
+export default function DashboardScreen() {
+  const [lastRefresh, setLastRefresh] = useState(new Date());
+  const [isBackground, setIsBackground] = useState(false);
+
+  // 1. Charger les données au montage
+  useEffect(() => {
+    console.log('Dashboard monté');
+    loadDashboardData();
+  }, []);
+
+  // 2. Détecter le passage en arrière-plan
+  useEffect(() => {
+    const subscription = AppState.addEventListener('change', (state) => {
+      setIsBackground(state === 'background');
+      if (state === 'active') {
+        console.log('Retour au premier plan, rafraîchissement...');
+        loadDashboardData();
+        setLastRefresh(new Date());
+      }
+    });
+    return () => subscription.remove();
+  }, []);
+
+  // 3. Rafraîchir à chaque visite de l'écran (navigation)
+  useFocusEffect(
+    useCallback(() => {
+      console.log('Dashboard visible');
+      loadDashboardData();
+      setLastRefresh(new Date());
+    }, [])
+  );
+
+  const loadDashboardData = () => {
+    // Charger les données depuis l'API ou le stockage local
+    console.log('Chargement des données...');
+  };
+
+  return (
+    <View style={styles.container}>
+      <Text style={styles.title}>Tableau de bord</Text>
+      <Text style={styles.refresh}>
+        Dernière mise à jour : {lastRefresh.toLocaleTimeString()}
+      </Text>
+    </View>
+  );
+}
+
+const styles = StyleSheet.create({
+  container: { flex: 1, padding: 16, justifyContent: 'center' },
+  title: { fontSize: 24, fontWeight: 'bold', textAlign: 'center' },
+  refresh: { fontSize: 14, color: '#666', textAlign: 'center', marginTop: 8 },
+});
+```
+
+<QuickCheck
+  question="Pourquoi utiliser useRef (au lieu de useState) pour stocker appState.current dans l'exemple AppState ?"
+  options={[
+    "useRef est plus rapide que useState",
+    "useRef ne déclenche pas de re-rendu quand la valeur change, ce qui est approprié quand on veut juste comparer les valeurs",
+    "useState ne peut pas stocker de chaînes de caractères",
+    "useRef est obligatoire pour AppState"
+  ]}
+  correctAnswer={1}
+  explanation="On utilise useRef pour stocker l'état précédent de l'app (pour comparer 'background' → 'active') sans déclencher de re-rendu à chaque changement. Si on utilisait useState, chaque changement d'état de l'app provoquerait un re-rendu inutile du composant."
+/>
+
+## À retenir
+
+<Callout type="success" title="Comprendre, pas mémoriser">
+**Cycle de vie mobile :**
+- `useEffect(fn, [])` : au montage (identique au web)
+- `useEffect(fn, [dep])` : quand une dépendance change (identique au web)
+- `AppState` : détecte foreground/background (spécifique mobile)
+- `useFocusEffect` : détecte quand un écran devient visible (spécifique navigation)
+
+**Quand utiliser quoi :**
+- Chargement initial de données → `useEffect(fn, [])`
+- Sauvegarde automatique → `useEffect(fn, [data])`
+- Sauvegarder avant que l'app soit tuée → `AppState` (background)
+- Rafraîchir les données d'un écran → `useFocusEffect`
+</Callout>

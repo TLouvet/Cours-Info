@@ -1,0 +1,268 @@
+# Introduction - R4A11 Séance 2
+
+Bienvenue dans la **Séance 2 du cours R4A11 - État, Formulaires et Persistance**. Après avoir posé les fondations du développement mobile en Séance 1, vous allez rendre vos applications **interactives** et capables de **conserver des données**.
+
+## Ce que vous avez accompli en Séance 1
+
+En Séance 1, vous avez appris à :
+
+- **Créer un projet** React Native avec Expo et le tester avec Expo Go
+- **Utiliser les composants primitifs** : View, Text, Image, ScrollView, SafeAreaView
+- **Appliquer des styles** avec StyleSheet.create() et Flexbox
+- **Naviguer entre écrans** avec Expo Router (Stack, Tabs, routes dynamiques)
+
+<Callout type="success" title="Vous avez déjà les bases">
+Vous savez construire des écrans et naviguer entre eux. Il manque deux éléments pour créer une application utile : la **saisie utilisateur** (formulaires) et le **stockage de données** (persistance). C'est le programme de cette séance.
+</Callout>
+
+## Pourquoi la gestion d'état sur mobile ?
+
+Une application mobile sans état est une application qui ne fait rien. L'état permet de :
+
+- **Réagir aux actions de l'utilisateur** : saisie de texte, appui sur un bouton, sélection d'un élément
+- **Afficher des données dynamiques** : liste de tâches, paramètres, messages
+- **Conserver des données** entre les sessions : préférences, brouillons, données hors ligne
+
+### Du web au mobile : même logique, nouveaux défis
+
+En R4A10 (Séance 3), vous avez appris `useState` et les formulaires contrôlés en React web. Ces concepts s'appliquent directement en React Native. Mais le mobile ajoute des contraintes que le web n'a pas :
+
+```jsx
+// React web (R4A10) - formulaire avec useState
+function LoginForm() {
+  const [email, setEmail] = useState('');
+  return (
+    <input
+      type="email"
+      value={email}
+      onChange={(e) => setEmail(e.target.value)}
+    />
+  );
+}
+
+// React Native (R4A11) - même logique, composants différents
+function LoginForm() {
+  const [email, setEmail] = useState('');
+  return (
+    <TextInput
+      keyboardType="email-address"
+      value={email}
+      onChangeText={setEmail}       // pas onChange !
+      autoCapitalize="none"          // spécifique mobile
+    />
+  );
+}
+```
+
+<Callout type="info" title="Contraintes spécifiques au mobile">
+Le mobile impose des défis que le web ne connaît pas :
+
+- **Le clavier virtuel** couvre la moitié de l'écran quand il apparaît
+- **L'application peut passer en arrière-plan** (appel téléphonique, notification)
+- **La connexion réseau** peut disparaître à tout moment
+- **Les données doivent persister** entre les relances de l'application
+
+Ces contraintes ne changent pas la logique React, mais elles nécessitent des composants et des patterns adaptés.
+</Callout>
+
+## Ce que vous allez construire
+
+Durant cette séance, vous allez progressivement construire les briques d'une **application de notes/tâches** :
+
+1. **Saisie de texte** : ajouter des notes avec TextInput
+2. **Gestion de liste** : ajouter, supprimer, marquer comme fait avec useState
+3. **Formulaire complet** : saisie avec validation et gestion du clavier
+4. **Persistance** : sauvegarder les données avec AsyncStorage pour les retrouver après fermeture
+5. **Mode hors ligne** : gérer l'absence de connexion
+
+```jsx
+// Aperçu de ce que vous saurez construire à la fin de cette séance
+function NotesApp() {
+  const [notes, setNotes] = useState([]);
+  const [text, setText] = useState('');
+
+  // Charger les notes sauvegardées au démarrage
+  useEffect(() => {
+    AsyncStorage.getItem('notes').then(data => {
+      if (data) setNotes(JSON.parse(data));
+    });
+  }, []);
+
+  // Sauvegarder à chaque modification
+  useEffect(() => {
+    AsyncStorage.setItem('notes', JSON.stringify(notes));
+  }, [notes]);
+
+  const addNote = () => {
+    if (text.trim()) {
+      setNotes([...notes, { id: Date.now(), text, done: false }]);
+      setText('');
+      Keyboard.dismiss(); // Fermer le clavier
+    }
+  };
+
+  return (
+    <KeyboardAvoidingView style={{ flex: 1 }} behavior="padding">
+      {/* Liste des notes + formulaire d'ajout */}
+    </KeyboardAvoidingView>
+  );
+}
+```
+
+## Ce que vous allez apprendre
+
+<Callout type="info" title="Objectifs de la Séance 2">
+À la fin de cette séance, vous serez capable de :
+
+- **Gérer l'état sur mobile** : useState avec les spécificités mobiles (clavier, arrière-plan)
+- **Utiliser TextInput** : saisie de texte, types de clavier, mots de passe
+- **Créer des formulaires** : composants contrôlés, KeyboardAvoidingView, validation
+- **Comprendre le cycle de vie** : useEffect, AppState, useFocusEffect
+- **Persister des données** : AsyncStorage (équivalent mobile de localStorage)
+- **Gérer le mode hors ligne** : détecter la connexion, stratégie offline-first
+</Callout>
+
+## Structure du parcours
+
+Cette séance suit une progression logique :
+
+1. **État sur mobile** : rappel useState et spécificités mobiles
+2. **TextInput** : le composant de saisie de texte
+3. **Formulaires** : formulaires contrôlés et gestion du clavier
+4. **Cycle de vie** : useEffect et événements mobiles (AppState, focus)
+5. **AsyncStorage** : persister des données localement
+6. **Mode offline** : gérer l'absence de connexion
+7. **Exercices et projet** : mise en pratique
+
+### Liens avec R4A10
+
+<div className="overflow-x-auto my-6">
+  <table className="min-w-full border border-gray-200 dark:border-gray-700">
+    <thead className="bg-gray-50 dark:bg-gray-800">
+      <tr>
+        <th className="px-4 py-3 text-left text-sm font-semibold text-gray-900 dark:text-gray-100 border-b border-gray-200 dark:border-gray-700">Concept R4A10</th>
+        <th className="px-4 py-3 text-left text-sm font-semibold text-gray-900 dark:text-gray-100 border-b border-gray-200 dark:border-gray-700">Séance R4A10</th>
+        <th className="px-4 py-3 text-left text-sm font-semibold text-gray-900 dark:text-gray-100 border-b border-gray-200 dark:border-gray-700">Équivalent R4A11 Séance 2</th>
+      </tr>
+    </thead>
+    <tbody className="bg-white dark:bg-gray-900 divide-y divide-gray-200 dark:divide-gray-700">
+      <tr>
+        <td className="px-4 py-3 text-sm text-gray-700 dark:text-gray-300"><code>useState</code></td>
+        <td className="px-4 py-3 text-sm text-gray-700 dark:text-gray-300">Séance 3</td>
+        <td className="px-4 py-3 text-sm text-gray-700 dark:text-gray-300">Même hook, mêmes règles + gestion clavier</td>
+      </tr>
+      <tr>
+        <td className="px-4 py-3 text-sm text-gray-700 dark:text-gray-300"><code>&lt;input&gt;</code> contrôlé</td>
+        <td className="px-4 py-3 text-sm text-gray-700 dark:text-gray-300">Séance 3</td>
+        <td className="px-4 py-3 text-sm text-gray-700 dark:text-gray-300"><code>&lt;TextInput&gt;</code> avec <code>onChangeText</code></td>
+      </tr>
+      <tr>
+        <td className="px-4 py-3 text-sm text-gray-700 dark:text-gray-300">Validation de formulaires</td>
+        <td className="px-4 py-3 text-sm text-gray-700 dark:text-gray-300">Séance 3</td>
+        <td className="px-4 py-3 text-sm text-gray-700 dark:text-gray-300">Même logique + KeyboardAvoidingView</td>
+      </tr>
+      <tr>
+        <td className="px-4 py-3 text-sm text-gray-700 dark:text-gray-300"><code>useEffect</code></td>
+        <td className="px-4 py-3 text-sm text-gray-700 dark:text-gray-300">Séance 4</td>
+        <td className="px-4 py-3 text-sm text-gray-700 dark:text-gray-300">Même hook + AppState et useFocusEffect</td>
+      </tr>
+      <tr>
+        <td className="px-4 py-3 text-sm text-gray-700 dark:text-gray-300"><code>localStorage</code></td>
+        <td className="px-4 py-3 text-sm text-gray-700 dark:text-gray-300">Séance 4</td>
+        <td className="px-4 py-3 text-sm text-gray-700 dark:text-gray-300"><code>AsyncStorage</code> (asynchrone, même API)</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+## Philosophie : comprendre, pas mémoriser
+
+<Callout type="warning" title="Comprendre, pas mémoriser">
+**L'objectif n'est PAS de tout mémoriser !**
+
+Votre vrai objectif est de :
+- **Reconnaître les patterns** : formulaire contrôlé, persistance, cycle de vie
+- **Adapter votre code React web** au contexte mobile (TextInput au lieu de input, AsyncStorage au lieu de localStorage)
+- **Savoir gérer les contraintes mobiles** : clavier, arrière-plan, hors ligne
+- **Valider le code généré par l'IA** en comprenant les patterns de données
+
+**L'IA peut générer du code, mais vous devez comprendre pourquoi on utilise AsyncStorage, comment fonctionne KeyboardAvoidingView, et quand sauvegarder les données.**
+</Callout>
+
+## Prérequis
+
+<Callout type="warning" title="Avant de commencer">
+**Assurez-vous d'avoir suivi :**
+
+1. **R4A10 Séance 3** : useState, événements, formulaires contrôlés
+2. **R4A10 Séance 4** : useEffect (chargement de données, effets de bord)
+3. **R4A11 Séance 1** : composants primitifs, StyleSheet, navigation
+
+**Si ces concepts ne sont pas clairs :**
+- useState et formulaires : [R4A10 Séance 3](/seance-3/introduction)
+- useEffect : [R4A10 Séance 4](/seance-4/introduction)
+- Composants React Native : [R4A11 Séance 1](/r4a11/seance-1/introduction)
+</Callout>
+
+## Pages de cette séance
+
+<div className="grid grid-cols-1 md:grid-cols-2 gap-4 my-6">
+  <a href="/r4a11/seance-2/state-mobile" className="block p-4 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg hover:border-violet-500 dark:hover:border-violet-500 transition-colors">
+    <h3 className="font-semibold text-gray-900 dark:text-gray-100 mb-2">État sur mobile</h3>
+    <p className="text-sm text-gray-600 dark:text-gray-400">useState, listes, et spécificités mobiles</p>
+  </a>
+
+  <a href="/r4a11/seance-2/text-input" className="block p-4 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg hover:border-violet-500 dark:hover:border-violet-500 transition-colors">
+    <h3 className="font-semibold text-gray-900 dark:text-gray-100 mb-2">TextInput</h3>
+    <p className="text-sm text-gray-600 dark:text-gray-400">Saisie de texte, types de clavier, mots de passe</p>
+  </a>
+
+  <a href="/r4a11/seance-2/forms" className="block p-4 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg hover:border-violet-500 dark:hover:border-violet-500 transition-colors">
+    <h3 className="font-semibold text-gray-900 dark:text-gray-100 mb-2">Formulaires</h3>
+    <p className="text-sm text-gray-600 dark:text-gray-400">Formulaires contrôlés, validation, KeyboardAvoidingView</p>
+  </a>
+
+  <a href="/r4a11/seance-2/lifecycle" className="block p-4 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg hover:border-violet-500 dark:hover:border-violet-500 transition-colors">
+    <h3 className="font-semibold text-gray-900 dark:text-gray-100 mb-2">Cycle de vie</h3>
+    <p className="text-sm text-gray-600 dark:text-gray-400">useEffect, AppState, useFocusEffect</p>
+  </a>
+
+  <a href="/r4a11/seance-2/async-storage" className="block p-4 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg hover:border-violet-500 dark:hover:border-violet-500 transition-colors">
+    <h3 className="font-semibold text-gray-900 dark:text-gray-100 mb-2">AsyncStorage</h3>
+    <p className="text-sm text-gray-600 dark:text-gray-400">Persistance locale des données</p>
+  </a>
+
+  <a href="/r4a11/seance-2/offline" className="block p-4 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg hover:border-violet-500 dark:hover:border-violet-500 transition-colors">
+    <h3 className="font-semibold text-gray-900 dark:text-gray-100 mb-2">Mode Offline</h3>
+    <p className="text-sm text-gray-600 dark:text-gray-400">Gestion de la connectivité et mode hors ligne</p>
+  </a>
+</div>
+
+## Ressources
+
+<Resources resources={[
+  {
+    title: "React Native Documentation",
+    description: "Documentation officielle de React Native",
+    url: "https://reactnative.dev",
+    type: "doc"
+  },
+  {
+    title: "Expo Documentation",
+    description: "Documentation officielle d'Expo",
+    url: "https://docs.expo.dev",
+    type: "doc"
+  },
+  {
+    title: "R4A10 Séance 3 - État et Formulaires",
+    description: "Prérequis : useState et formulaires contrôlés en React web",
+    url: "/seance-3/introduction",
+    type: "doc"
+  },
+  {
+    title: "R4A10 Séance 4 - useEffect et Données",
+    description: "Prérequis : useEffect, fetch, chargement de données",
+    url: "/seance-4/introduction",
+    type: "doc"
+  }
+]} />

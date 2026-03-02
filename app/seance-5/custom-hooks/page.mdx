@@ -1,6 +1,6 @@
 # Custom Hooks
 
-Les custom hooks vous permettent de reutiliser la logique stateful entre differents composants.
+Les custom hooks vous permettent de reutiliser la logique avec état (stateful) entre differents composants.
 
 <Callout type="info">
 **Un custom hook, c'est quoi ?**
@@ -134,7 +134,7 @@ function ProductsList() {
     "Une librairie externe"
   ]}
   correctAnswer={2}
-  explanation="Un custom hook est une fonction JavaScript (prefixee par 'use') qui utilise des hooks React (useState, useEffect, etc.) pour extraire et reutiliser de la logique stateful. Ce n'est pas un composant (pas de JSX retourne) ni une librairie externe."
+  explanation="Un custom hook est une fonction JavaScript (prefixee par 'use') qui utilise des hooks React (useState, useEffect, etc.) pour extraire et reutiliser de la logique avec etat. Ce n'est pas un composant (pas de JSX retourne) ni une librairie externe."
 />
 
 ## Regles des custom hooks
@@ -389,57 +389,6 @@ function ContactForm() {
 }
 ```
 
-### 5. useWindowSize
-
-Détecte la taille de la fenêtre (utile pour le responsive).
-
-```javascript
-// hooks/useWindowSize.js
-function useWindowSize() {
-  const [windowSize, setWindowSize] = useState({
-    width: window.innerWidth,
-    height: window.innerHeight
-  });
-
-  useEffect(() => {
-    function handleResize() {
-      setWindowSize({
-        width: window.innerWidth,
-        height: window.innerHeight
-      });
-    }
-
-    window.addEventListener('resize', handleResize);
-
-    // Cleanup
-    return () => window.removeEventListener('resize', handleResize);
-  }, []);
-
-  return windowSize;
-}
-
-export default useWindowSize;
-```
-
-**Utilisation**
-
-```jsx
-function ResponsiveComponent() {
-  const { width } = useWindowSize();
-
-  return (
-    <div>
-      {width < 768 ? (
-        <MobileMenu />
-      ) : (
-        <DesktopMenu />
-      )}
-      <p>Largeur de l'écran : {width}px</p>
-    </div>
-  );
-}
-```
-
 ## Améliorer useFetch
 
 Notre premier hook useFetch était simple. Améliorons-le !
@@ -500,7 +449,7 @@ export default useFetch;
 **Améliorations :**
 - Utilise async/await (plus lisible)
 - Vérifie le status HTTP
-- Évite les mises à jour après unmount (pas de memory leak)
+- Évite les mises à jour sur un composant démonté
 - Re-fetch automatiquement si l'URL change
 </Callout>
 

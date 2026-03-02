@@ -1,0 +1,192 @@
+# Projet Fil Rouge — Séance 5
+
+Application d'apprentissage du japonais : hooks avancés, optimisations et déploiement
+
+<Callout type="info" title="Suite du projet">
+C'est la **dernière séance** du projet fil rouge ! Vous allez finaliser la Kana App en ajoutant des hooks personnalisés, en améliorant l'expérience utilisateur, en persistant des données, puis en déployant l'application en production.
+
+- **Séance 2** : Tables de caractères (CharacterCard, CharacterGrid, kanaData)
+- **Séance 3** : Quiz interactif (useState, score, feedback)
+- **Séance 4** : Navigation React Router (/study et /quiz)
+- **Séance 5** : Hooks avancés, optimisations, localStorage, déploiement ← *vous êtes ici*
+
+**Rendu final :** Fin de la Séance 5 sur Moodle
+</Callout>
+
+---
+
+## Objectifs de la Séance 5
+
+1. **Auto-focus avec `useRef`** — améliorer l'ergonomie du quiz
+2. **Hook `useQuiz`** — extraire la logique du quiz dans un hook réutilisable
+3. **Hook `useLocalStorage`** — persister le meilleur score entre les sessions
+4. **Optimisation & déploiement** — `useMemo` pour éviter des calculs inutiles, mise en ligne sur Vercel
+
+---
+
+## Exercice 1 (Facile) — Auto-focus avec `useRef`
+
+### Objectif
+
+À chaque nouvelle question dans le quiz, le curseur doit se placer automatiquement dans le champ de saisie — sans que l'utilisateur ait à cliquer dessus.
+
+### Ce que vous devez faire
+
+- Créer une ref sur l'`<input>` de réponse dans `QuizMode`
+- Déclencher le focus sur cette ref à chaque fois que la question courante change
+
+### Indice
+
+Regardez la section `useRef` du cours — le cas d'usage "accéder à un élément DOM" est exactement celui-ci. Pensez à quel hook vous permet de réagir à un changement de valeur, et quelle dépendance mettre dans son tableau.
+
+<Callout type="tip" title="autoFocus ne suffit pas">
+L'attribut HTML `autoFocus` ne fonctionne qu'au montage initial du composant. Avec `useRef` + `useEffect`, le focus se remet à chaque nouvelle question.
+</Callout>
+
+### Résultat attendu
+
+- Quand une nouvelle question s'affiche, le curseur est déjà dans l'input
+- L'utilisateur peut taper sa réponse immédiatement, sans cliquer
+
+---
+
+## Exercice 2 (Moyen) — Hook `useQuiz`
+
+### Objectif
+
+Le composant `QuizMode` mélange probablement logique métier et affichage. Extrayez toute la logique dans un **hook personnalisé** `useQuiz` pour ne laisser que le JSX dans le composant.
+
+### Ce que vous devez faire
+
+- Créer le fichier `src/hooks/useQuiz.ts`
+- Y déplacer toute la logique d'état du quiz : index courant, réponse utilisateur, score, feedback, et les fonctions associées
+- Le hook prend `kanaData` en paramètre et retourne ce dont le composant a besoin pour s'afficher
+- `QuizMode` ne doit plus contenir que du JSX après le refactoring
+
+### Indice
+
+Pensez à ce que le composant a besoin de **lire** (état à afficher) et de **faire** (fonctions à appeler). Ce sont exactement les valeurs que votre hook doit retourner. La logique interne reste dans le hook, invisible pour le composant.
+
+<Callout type="warning" title="Testez après le refactoring">
+Un refactoring réussi ne change pas le comportement observable. Vérifiez que le quiz fonctionne exactement comme avant — même score, même feedback, même navigation entre questions.
+</Callout>
+
+### Résultat attendu
+
+- Le quiz fonctionne exactement comme avant
+- `QuizMode` n'a plus de `useState` ni de logique directement — seulement un appel au hook et du JSX
+- Le hook `useQuiz` est importable et réutilisable indépendamment
+
+---
+
+## Exercice 3 (Moyen) — Persistence avec `useLocalStorage`
+
+### Objectif
+
+Le meilleur score de l'utilisateur doit survivre à un rechargement de page.
+
+### Ce que vous devez faire
+
+- Créer `src/hooks/useLocalStorage.ts` — un hook générique qui synchronise un état React avec le localStorage
+- L'utiliser pour stocker et récupérer le meilleur score
+- Après chaque session, comparer le score courant au record enregistré et mettre à jour si nécessaire
+- Afficher le meilleur score dans l'interface du quiz
+
+### Indice
+
+`useLocalStorage` se comporte comme `useState`, mais avec une persistance automatique. Sa signature ressemble à :
+
+```
+useLocalStorage(clé, valeurInitiale) → [valeur, setValeur]
+```
+
+Pour lire la valeur initiale depuis le localStorage, regardez comment initialiser `useState` avec une **fonction** (lazy initialization) — cela évite de lire le localStorage à chaque render.
+
+<Callout type="tip" title="Toujours entourer localStorage d'un try/catch">
+`localStorage` peut lancer une erreur dans certains contextes (navigation privée, extensions de navigateur). Protégez vos lectures et écritures.
+</Callout>
+
+### Résultat attendu
+
+- Le meilleur score s'affiche dans l'interface
+- Rechargez la page → le meilleur score est toujours là
+- Le record se met à jour automatiquement si vous faites mieux
+
+---
+
+## Exercice 4 (Difficile) — Optimisation & Déploiement
+
+### Partie A — Optimiser avec `useMemo`
+
+Si vous mélangez le tableau `kanaData` pour le quiz, cette opération se recalcule probablement à chaque render — ce qui signifie un nouvel ordre à chaque fois, même inutilement.
+
+Utilisez `useMemo` pour que le mélange ne se recalcule que lorsque `kanaData` change réellement.
+
+<Callout type="warning" title="Optimisation en dernier">
+N'ajoutez `useMemo` qu'une fois que tout le reste fonctionne correctement. Si quelque chose casse, retirez-le et débuggez la logique d'abord.
+</Callout>
+
+### Partie B — Build de production
+
+Avant de déployer, vérifiez que le build passe sans erreur :
+
+```bash
+npm run build
+```
+
+Corrigez les erreurs TypeScript une par une en partant de la première. Les plus fréquentes : types de props incorrects, valeurs potentiellement `undefined`, noms de propriétés mal orthographiés.
+
+Puis testez le build localement :
+
+```bash
+npm run preview
+```
+
+### Partie C — Déploiement sur Vercel
+
+1. Poussez votre code sur GitHub
+2. Connectez-vous sur [vercel.com](https://vercel.com) avec votre compte GitHub
+3. Importez le projet — Vercel détecte Vite automatiquement
+4. Cliquez sur Deploy et récupérez votre URL publique
+
+<Callout type="tip" title="Page blanche après déploiement ?">
+Si votre app affiche une page blanche une fois déployée mais fonctionne en local, c'est souvent un problème de routing React Router. Cherchez "Vercel React Router rewrites" — la solution tient en 5 lignes de configuration.
+</Callout>
+
+---
+
+## Rendu final
+
+<Callout type="success" title="Ce que vous devez soumettre sur Moodle">
+
+**Lien GitHub** — repository public contenant tout le code source
+
+**URL Vercel** — lien vers l'application déployée et accessible en ligne
+
+**Description courte** — quelques phrases sur ce que vous avez implémenté durant les 4 séances
+
+</Callout>
+
+---
+
+## Fonctionnalités optionnelles (bonus)
+
+<Callout type="tip" title="Pour aller plus loin">
+
+**Mode inverse** — afficher le rōmaji et demander le caractère japonais correspondant
+
+**Sélection des lignes** — laisser l'utilisateur choisir quelles lignes de kana inclure dans le quiz (voyelles seulement, lignes avec dakuten, etc.)
+
+**`useCallback`** — si vous passez `handleSubmit` à un composant enfant, découvrez quand et pourquoi stabiliser une référence de fonction
+
+</Callout>
+
+---
+
+## Ressources
+
+- [React Docs — useRef](https://react.dev/reference/react/useRef)
+- [React Docs — useMemo](https://react.dev/reference/react/useMemo)
+- [React Docs — Custom Hooks](https://react.dev/learn/reusing-logic-with-custom-hooks)
+- [MDN — localStorage](https://developer.mozilla.org/fr/docs/Web/API/Window/localStorage)
+- [Vercel — Getting Started with Vite](https://vercel.com/docs/frameworks/vite)

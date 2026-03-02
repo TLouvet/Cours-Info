@@ -1,15 +1,13 @@
-# Quiz Final - Seance 5
+# Quiz Final — Séance 5
 
-Testez vos connaissances sur le workflow avec l'IA, les pratiques React, et tout ce que vous avez appris dans cette derniere seance.
+Testez vos connaissances sur le workflow avec l'IA, les custom hooks, useRef, useMemo, le débogage et le déploiement.
 
-<Callout type="info" title="Recapitulatif des sujets couverts">
-- **Workflow avec l'IA** : Prompts, validation, approche iterative
-- **Pratiques React** : SRP, immutabilite, conventions de nommage
-- **Structure de projet** : Organisation des dossiers, conventions de fichiers
-- **Custom hooks** : Creation, regles, exemples
-- **Hooks supplementaires** : useRef, useMemo, useCallback
-- **Debogage** : DevTools, erreurs courantes
-- **Deploiement** : Build, Vercel, variables d'environnement
+<Callout type="info" title="Sujets couverts">
+- **Workflow avec l'IA** : Prompts, validation, approche itérative
+- **Custom hooks** : Création, règles, exemples
+- **Autres hooks** : useRef, useMemo, useCallback
+- **Débogage** : DevTools, erreurs courantes
+- **Déploiement** : Build, Vercel, variables d'environnement
 </Callout>
 
 ## Workflow avec l'IA
@@ -23,113 +21,49 @@ Testez vos connaissances sur le workflow avec l'IA, les pratiques React, et tout
     "Ne jamais utiliser l'IA, tout coder soi-même"
   ]}
   correctAnswer={0}
-  explanation="✅ L'IA est un outil utile mais vous devez comprendre et valider le code généré. ❌ Copier-coller sans comprendre vous rend dépendant et incapable de déboguer. ❌ La documentation officielle reste la source de vérité, surtout pour les features récentes. ❌ Rejeter l'IA complètement serait vous priver d'un outil qui accélère le développement. Le bon équilibre : utilisez l'IA intelligemment, validez toujours."
+  explanation="✅ L'IA est un outil utile mais vous devez comprendre et valider le code généré. ❌ Copier-coller sans comprendre vous rend incapable de déboguer. ❌ La documentation officielle reste la source de vérité, surtout pour les features récentes. ❌ Rejeter l'IA complètement vous prive d'un outil qui accélère le développement. Le bon équilibre : utilisez l'IA intelligemment, validez toujours."
 />
 
 <QuickCheck
   question="2. Qu'est-ce qui fait un bon prompt pour générer du code React ?"
   options={[
-    "Spécifique, détaillé, avec contexte et contraintes",
+    "Spécifique, avec contexte, contraintes et code existant",
     "Court et vague pour laisser l'IA décider",
     "Juste 'Crée un composant React'",
     "Copier un message d'erreur sans contexte"
   ]}
   correctAnswer={0}
-  explanation="✅ Un bon prompt est spécifique (quels champs, quelle validation), détaillé (fonctionnalités exactes), avec contexte (votre code actuel, stack technique) et contraintes (hooks à utiliser, patterns à suivre). ❌ Un prompt vague donne des résultats génériques inutilisables. ❌ Trop simple ne donne pas assez d'informations. ❌ Une erreur seule sans code n'aide pas l'IA à comprendre le problème. Plus votre prompt est précis, meilleur sera le résultat."
+  explanation="✅ Un bon prompt inclut : ce que vous voulez faire, votre code existant, les contraintes (hooks à utiliser, TypeScript, etc.) et le comportement attendu. ❌ Un prompt vague donne des résultats génériques inutilisables. ❌ Trop simple ne donne pas assez d'informations. ❌ Une erreur seule sans code n'aide pas l'IA à comprendre le problème. Plus votre prompt est précis, meilleur sera le résultat."
 />
 
 <QuickCheck
-  question="3. Quand devez-vous consulter la documentation officielle plutôt que l'IA ?"
+  question="3. Quel pattern dans du code généré par l'IA doit vous alerter ?"
   options={[
-    "Pour les API officielles et les features récentes",
+    "class MyComponent extends React.Component",
+    "const [value, setValue] = useState()",
+    "useEffect(() => {}, [])",
+    "return <div>{children}</div>"
+  ]}
+  correctAnswer={0}
+  explanation="✅ Les class components sont un pattern obsolète. React moderne utilise exclusivement des function components avec hooks. Si l'IA génère un class component, elle utilise probablement des données d'entraînement trop anciennes. ❌ useState, useEffect et le JSX avec children sont tous des patterns React modernes et corrects."
+/>
+
+<QuickCheck
+  question="4. Quand devez-vous consulter la documentation officielle plutôt que l'IA ?"
+  options={[
+    "Pour les API officielles et les features récentes (< 6 mois)",
     "Jamais, l'IA sait tout",
     "Seulement pour TypeScript",
     "Uniquement quand l'IA donne une erreur"
   ]}
   correctAnswer={0}
-  explanation="✅ La documentation officielle est toujours à jour et fait autorité pour les API, hooks, breaking changes, et features récentes (< 6 mois). ❌ L'IA est entraînée sur des données passées et peut être obsolète. ❌ Ce n'est pas limité à TypeScript - React, Vite, tous les outils ont une doc officielle. ❌ Consultez la doc de manière proactive, pas seulement en cas d'erreur. Documentation = source de vérité."
-/>
-
-## Pratiques React
-
-<QuickCheck
-  question="4. Qu'est-ce que le Single Responsibility Principle pour les composants ?"
-  options={[
-    "Un composant doit avoir une seule responsabilité, une raison de changer",
-    "Un composant ne doit avoir qu'une seule fonction",
-    "Un composant doit être utilisé une seule fois",
-    "Un composant ne peut avoir qu'un seul état"
-  ]}
-  correctAnswer={0}
-  explanation="✅ Single Responsibility = un composant fait UNE chose et la fait bien. Si un composant gère users + products + orders + stats, il fait trop et doit être divisé. ❌ Ce n'est pas limité au nombre de fonctions dans le code. ❌ Un composant peut être réutilisé plusieurs fois. ❌ Un composant peut avoir plusieurs états si nécessaire. Le principe : diviser pour conquérir, faciliter la maintenance."
-/>
-
-<QuickCheck
-  question="5. Quelle convention de nommage pour les event handlers dans un composant ?"
-  options={[
-    "handle* (ex: handleClick, handleSubmit)",
-    "on* (ex: onClick, onSubmit)",
-    "do* (ex: doClick, doSubmit)",
-    "action* (ex: actionClick, actionSubmit)"
-  ]}
-  correctAnswer={0}
-  explanation="✅ Convention : handle* pour les fonctions définies dans le composant (handleClick, handleSubmit, handleChange). ❌ on* est réservé pour les props passées aux composants enfants. ❌ do* et action* ne sont pas des conventions React standard. Exemple : const handleClick = () => {} dans le composant, puis <button onClick={handleClick}>. Cohérence = lisibilité."
-/>
-
-<QuickCheck
-  question="6. Pourquoi ne faut-il JAMAIS muter l'état directement ?"
-  options={[
-    "React ne détecte pas les changements, pas de re-render",
-    "Ça ralentit l'application",
-    "C'est interdit en TypeScript",
-    "Ça supprime toutes les données"
-  ]}
-  correctAnswer={0}
-  explanation="✅ React compare les références d'objets/tableaux. Si vous mutez directement (users.push()), la référence reste la même, React ne détecte PAS le changement et ne re-render pas. ❌ Ce n'est pas une question de performance. ❌ TypeScript ne l'empêche pas automatiquement. ❌ Ça ne supprime rien mais casse la réactivité. Toujours créer de nouveaux objets/tableaux : setUsers([...users, newUser])."
-/>
-
-<QuickCheck
-  question="7. Quand faut-il diviser un composant en plusieurs ?"
-  options={[
-    "Quand il dépasse 150 lignes, ou a une logique réutilisable",
-    "Toujours diviser au maximum, 1 ligne par composant",
-    "Jamais, garder tout dans un seul fichier",
-    "Seulement quand l'IA le suggère"
-  ]}
-  correctAnswer={0}
-  explanation="✅ Divisez quand : > 150 lignes, logique réutilisable ailleurs, séparation claire des responsabilités, ou amélioration de la lisibilité. ❌ Sur-diviser rend le code aussi difficile à maintenir que sous-diviser. ❌ Un composant géant (300+ lignes) est impossible à maintenir. ❌ Ne vous fiez pas uniquement aux suggestions de l'IA. Règle d'or : une responsabilité = un composant."
-/>
-
-## Structure de Projet
-
-<QuickCheck
-  question="8. Quelle est une bonne structure de dossiers pour un projet React ?"
-  options={[
-    "src/ avec components/, hooks/, utils/, pages/",
-    "Tout dans un seul dossier",
-    "Un dossier par ligne de code",
-    "Pas besoin de structure, fichiers en vrac"
-  ]}
-  correctAnswer={0}
-  explanation="✅ Une structure claire sépare les responsabilités : components/ pour UI réutilisable, hooks/ pour custom hooks, utils/ pour fonctions utilitaires, pages/ pour les vues principales. ❌ Tout dans un dossier devient ingérable au-delà de 10 fichiers. ❌ Sur-structurer rend la navigation difficile. ❌ Pas de structure = chaos, impossible de trouver quoi que ce soit. Structure = scalabilité et maintenabilité."
-/>
-
-<QuickCheck
-  question="9. Où placer les fichiers de custom hooks ?"
-  options={[
-    "src/hooks/ avec un fichier par hook",
-    "Directement dans src/ avec tout le reste",
-    "Dans node_modules/",
-    "Les hooks ne vont pas dans des fichiers"
-  ]}
-  correctAnswer={0}
-  explanation="✅ Best practice : src/hooks/ avec un fichier par hook (useFetch.js, useLocalStorage.js). ❌ Mélanger hooks et composants dans src/ crée du désordre. ❌ node_modules/ est pour les dépendances externes uniquement. ❌ Les hooks sont des fonctions JavaScript qui vont dans des fichiers. Organisation claire = code maintenable et facile à trouver."
+  explanation="✅ La documentation officielle est toujours à jour et fait autorité pour les API, hooks, breaking changes et features récentes. L'IA est entraînée sur des données passées et peut être obsolète. ❌ L'IA peut se tromper, surtout sur des APIs récentes. ❌ Ce n'est pas limité à TypeScript. ❌ Consultez la doc de manière proactive. Documentation = source de vérité."
 />
 
 ## Custom Hooks
 
 <QuickCheck
-  question="10. Qu'est-ce qu'un custom hook ?"
+  question="5. Qu'est-ce qu'un custom hook ?"
   options={[
     "Une fonction JavaScript qui utilise des hooks React",
     "Un composant React spécial",
@@ -137,23 +71,35 @@ Testez vos connaissances sur le workflow avec l'IA, les pratiques React, et tout
     "Une librairie externe"
   ]}
   correctAnswer={0}
-  explanation="✅ Un custom hook est une fonction JavaScript (use*) qui utilise des hooks React (useState, useEffect, etc.) pour extraire et réutiliser de la logique stateful. ❌ Ce n'est pas un composant (pas de JSX retourné). ❌ Les hooks n'existent pas dans les class components. ❌ Ce n'est pas une librairie, c'est du code que vous écrivez. Exemple : useFetch pour réutiliser la logique de fetch."
+  explanation="✅ Un custom hook est une fonction JavaScript (préfixée use*) qui utilise des hooks React (useState, useEffect, etc.) pour extraire et réutiliser de la logique stateful. ❌ Ce n'est pas un composant — il ne retourne pas de JSX. ❌ Les hooks n'existent pas dans les class components. ❌ Ce n'est pas une librairie, c'est du code que vous écrivez vous-même."
 />
 
 <QuickCheck
-  question="11. Quelle convention de nommage pour les custom hooks ?"
+  question="6. Quelle convention de nommage pour les custom hooks ?"
   options={[
-    "Toujours commencer par 'use' (ex: useFetch)",
+    "Toujours commencer par 'use' (ex: useFetch, useQuiz)",
     "Commencer par 'custom' (ex: customFetch)",
     "Pas de convention spécifique",
     "Commencer par 'hook' (ex: hookFetch)"
   ]}
   correctAnswer={0}
-  explanation="✅ Convention obligatoire : les hooks commencent TOUJOURS par 'use' (useFetch, useLocalStorage, useForm). ❌ 'custom' n'est pas la convention React. ❌ La convention existe et est importante pour que React reconnaisse les hooks. ❌ 'hook' n'est pas la convention. Le préfixe 'use' permet à React d'appliquer les règles des hooks automatiquement. C'est une règle, pas une suggestion."
+  explanation="✅ Convention obligatoire : les hooks commencent TOUJOURS par 'use'. Ce préfixe permet à React (et aux linters) d'appliquer les règles des hooks automatiquement. ❌ 'custom', 'hook' ou aucune convention ne sont pas reconnus par React. C'est une règle, pas une suggestion."
 />
 
 <QuickCheck
-  question="12. Que retourne généralement un custom hook ?"
+  question="7. Quel est le principal avantage d'extraire la logique dans un custom hook ?"
+  options={[
+    "Réutiliser la logique stateful dans plusieurs composants",
+    "Rendre le composant plus lent",
+    "Éviter d'utiliser useState",
+    "Supprimer les props"
+  ]}
+  correctAnswer={0}
+  explanation="✅ Les custom hooks permettent d'extraire et réutiliser de la logique stateful (état + effets) sans dupliquer le code. Le composant devient plus lisible car il ne contient plus que du JSX. ❌ Les hooks n'ont pas d'impact négatif sur les performances. ❌ Les hooks utilisent useState en interne. ❌ Les props restent le mécanisme de passage de données entre composants."
+/>
+
+<QuickCheck
+  question="8. Que retourne généralement un custom hook ?"
   options={[
     "Un objet ou tableau avec état et fonctions",
     "Toujours du JSX",
@@ -161,13 +107,13 @@ Testez vos connaissances sur le workflow avec l'IA, les pratiques React, et tout
     "Rien (void)"
   ]}
   correctAnswer={0}
-  explanation="✅ Custom hooks retournent généralement : un objet { data, loading, error } ou un tableau [value, setValue] comme useState. ❌ Les hooks ne retournent PAS de JSX - ça c'est pour les composants. ❌ Ils peuvent retourner n'importe quel type de données. ❌ Ils retournent presque toujours quelque chose d'utile. Exemple : useFetch retourne { data, loading, error }, useLocalStorage retourne [value, setValue]."
+  explanation="✅ Custom hooks retournent généralement : un objet { data, loading, error } ou un tableau [value, setValue] comme useState. ❌ Les hooks ne retournent PAS de JSX — c'est réservé aux composants. ❌ Ils peuvent retourner n'importe quel type. ❌ Ils retournent presque toujours quelque chose d'utile. Exemple : useLocalStorage retourne [value, setValue]."
 />
 
 ## Autres Hooks
 
 <QuickCheck
-  question="13. À quoi sert useRef ?"
+  question="9. À quoi sert useRef ?"
   options={[
     "Créer une référence qui persiste sans déclencher de re-render",
     "Créer un état comme useState",
@@ -175,49 +121,49 @@ Testez vos connaissances sur le workflow avec l'IA, les pratiques React, et tout
     "Gérer les routes"
   ]}
   correctAnswer={0}
-  explanation="✅ useRef crée une référence mutable qui persiste entre les rendus SANS déclencher de re-render. Utilisé pour : accéder aux éléments DOM (inputRef.current.focus()), stocker des valeurs techniques (timers, previous values). ❌ Pour l'état qui affiche dans l'UI, utilisez useState. ❌ Pour les API, utilisez useEffect + fetch ou un custom hook. ❌ Pour les routes, utilisez React Router. useRef = valeurs techniques sans re-render."
+  explanation="✅ useRef crée une référence mutable qui persiste entre les rendus SANS déclencher de re-render. Utilisé pour : accéder aux éléments DOM (inputRef.current.focus()), stocker des valeurs techniques (timers, previous values). ❌ Pour l'état affiché dans l'UI, utilisez useState. ❌ Pour les API, utilisez useEffect + fetch. ❌ Pour les routes, utilisez React Router."
 />
 
 <QuickCheck
-  question="14. Quelle est la différence entre useRef et useState ?"
+  question="10. Quelle est la différence entre useRef et useState ?"
   options={[
     "useRef ne déclenche pas de re-render, useState oui",
     "Aucune différence",
-    "useRef est plus rapide",
+    "useRef est plus rapide que useState",
     "useState est obsolète"
   ]}
   correctAnswer={0}
-  explanation="✅ La différence clé : useState déclenche un re-render quand la valeur change, useRef ne déclenche JAMAIS de re-render. ❌ Ce sont des hooks différents avec des usages différents. ❌ Ce n'est pas une question de vitesse mais de comportement. ❌ useState est fondamental en React, pas obsolète. Utilisez useState pour les données affichées, useRef pour les valeurs techniques (timers, références DOM)."
+  explanation="✅ La différence clé : useState déclenche un re-render quand la valeur change, useRef ne déclenche JAMAIS de re-render. Utilisez useState pour les données affichées, useRef pour les valeurs techniques (timers, références DOM). ❌ Ce sont des hooks différents avec des usages différents. ❌ Ce n'est pas une question de vitesse mais de comportement."
 />
 
 <QuickCheck
-  question="15. Quand utiliser useMemo ?"
+  question="11. Quand utiliser useMemo ?"
   options={[
-    "Pour mémoriser le résultat d'un calcul coûteux",
+    "Pour mémoriser le résultat d'un calcul coûteux qui ne doit pas se recalculer à chaque render",
     "Pour tous les calculs, toujours",
     "Pour créer des états",
     "Pour faire des appels API"
   ]}
   correctAnswer={0}
-  explanation="✅ useMemo mémorise le résultat d'un calcul coûteux pour éviter de le recalculer à chaque render. Utilisez-le seulement si le calcul est vraiment lourd. ❌ Ne l'utilisez pas partout - ça ajoute de la complexité et peut ralentir. ❌ Pour l'état, utilisez useState. ❌ Pour les API, utilisez useEffect. Règle : optimisez seulement quand nécessaire, pas prématurément."
+  explanation="✅ useMemo mémorise le résultat d'un calcul coûteux pour éviter de le recalculer à chaque render. Utilisez-le seulement si le calcul est vraiment lourd — et seulement une fois que l'app fonctionne. ❌ L'utiliser partout ajoute de la complexité inutile. ❌ Pour l'état, utilisez useState. ❌ Pour les API, utilisez useEffect."
 />
 
 <QuickCheck
-  question="16. À quoi sert useCallback ?"
+  question="12. À quoi sert useCallback ?"
   options={[
-    "Mémoriser une fonction pour éviter de la recréer",
+    "Mémoriser une fonction pour stabiliser sa référence entre les renders",
     "Créer des fonctions asynchrones",
     "Remplacer useState",
     "Faire des appels API"
   ]}
   correctAnswer={0}
-  explanation="✅ useCallback mémorise une fonction pour qu'elle garde la même référence entre les renders. Utile pour : passer des callbacks à des composants enfants mémorisés, éviter des re-renders inutiles. ❌ Ce n'est pas pour créer des async/await. ❌ Il ne remplace pas useState. ❌ Pour les API, utilisez useEffect. Comme useMemo : optimisez seulement si nécessaire."
+  explanation="✅ useCallback mémorise une fonction pour qu'elle garde la même référence entre les renders. Utile quand on passe un callback à un composant enfant mémorisé avec React.memo. Vous verrez souvent ce hook dans des warnings ESLint. ❌ Ce n'est pas pour créer des async/await. ❌ Il ne remplace pas useState. Comme useMemo : n'optimisez que si nécessaire."
 />
 
 ## Débogage
 
 <QuickCheck
-  question="17. Quel est le meilleur outil pour déboguer React ?"
+  question="13. Quel est le meilleur outil pour déboguer React ?"
   options={[
     "React DevTools (extension navigateur)",
     "console.log() partout",
@@ -225,80 +171,126 @@ Testez vos connaissances sur le workflow avec l'IA, les pratiques React, et tout
     "Demander à l'IA sans regarder le code"
   ]}
   correctAnswer={0}
-  explanation="✅ React DevTools est l'outil dedie : inspecter les composants, voir props/state en temps réel, profiler les performances, tracer les renders. ❌ console.log() aide mais n'est pas suffisant pour les apps complexes. ❌ Deviner est la pire approche. ❌ L'IA peut aider mais il faut d'abord identifier le problème avec les DevTools. Installez React DevTools, c'est indispensable !"
+  explanation="✅ React DevTools est l'outil dédié : inspecter les composants, voir props et state en temps réel, profiler les performances, tracer les renders. ❌ console.log() aide mais ne suffit pas pour les apps complexes. ❌ Deviner est la pire approche. ❌ L'IA peut aider mais il faut d'abord identifier le problème. Installez React DevTools — c'est indispensable !"
 />
 
 <QuickCheck
-  question="18. Que signifie l'erreur 'Cannot read property of undefined' ?"
+  question="14. Que signifie l'erreur 'Cannot read property of undefined' ?"
   options={[
-    "Vous essayez d'accéder à une propriété d'une valeur undefined",
+    "Vous essayez d'accéder à une propriété d'une valeur undefined ou null",
     "React est cassé",
     "Votre ordinateur a un virus",
     "Il faut réinstaller Node.js"
   ]}
   correctAnswer={0}
-  explanation="✅ Cette erreur signifie : vous essayez user.name mais user est undefined/null. Solutions : vérifier que les données existent (user?.name), ajouter un if, ou initialiser correctement l'état. ❌ React fonctionne bien, c'est votre code. ❌ Ce n'est pas un virus. ❌ Node.js n'a rien à voir. Erreur très commune quand les données d'API ne sont pas encore chargées."
+  explanation="✅ Cette erreur signifie : vous essayez user.name mais user est undefined. Solutions : vérifier que les données existent (user?.name), ajouter un if, ou initialiser correctement l'état. Très commune quand les données d'API ne sont pas encore chargées. ❌ React fonctionne bien, c'est votre code. ❌ Ce n'est pas un virus. ❌ Node.js n'a rien à voir."
+/>
+
+<QuickCheck
+  question="15. Quelle est la cause la plus fréquente de 'Too many re-renders' ?"
+  options={[
+    "Un setState appelé directement dans le corps du composant (pas dans un handler ou useEffect)",
+    "Trop de composants dans l'application",
+    "Une connexion internet lente",
+    "Un fichier CSS trop grand"
+  ]}
+  correctAnswer={0}
+  explanation="✅ React déclenche cette erreur quand un composant se re-rend en boucle infinie. Cause fréquente : setState() appelé directement dans le rendu au lieu d'un event handler. ❌ Le nombre de composants n'a pas d'impact. ❌ C'est une erreur JavaScript, pas réseau. ❌ Le CSS n'affecte pas les re-renders."
 />
 
 ## Déploiement
 
 <QuickCheck
-  question="19. Quelle plateforme est recommandée pour déployer une app React ?"
+  question="16. Quelle plateforme est recommandée pour déployer une app React ?"
   options={[
-    "Vercel ou Netlify (gratuit, facile, optimisé)",
+    "Vercel ou Netlify (gratuit, déploiement automatique depuis GitHub)",
     "Votre propre serveur Linux",
     "Envoyer les fichiers par email",
     "USB à chaque utilisateur"
   ]}
   correctAnswer={0}
-  explanation="✅ Vercel et Netlify sont adaptes pour React : deploiement automatique, gratuit pour projets perso, CI/CD, CDN global, HTTPS inclus. ❌ Votre propre serveur necessite configuration et maintenance. ❌ Les fichiers par email... vraiment ? ❌ USB ne permet pas d'acces web. Vercel est cree par l'equipe de Next.js, adapte pour React."
+  explanation="✅ Vercel et Netlify sont adaptés pour React : déploiement automatique à chaque push, gratuit pour projets perso, HTTPS inclus. ❌ Votre propre serveur nécessite configuration et maintenance. ❌ Les fichiers par email... vraiment ? ❌ USB ne permet pas d'accès web. Vercel est parfaitement adapté pour React et Vite."
 />
 
 <QuickCheck
-  question="20. Que faut-il TOUJOURS ajouter au .gitignore ?"
+  question="17. Que fait 'npm run build' ?"
   options={[
-    ".env (variables d'environnement sensibles)",
+    "Génère les fichiers optimisés pour la production dans /dist",
+    "Lance le serveur de développement",
+    "Installe les dépendances",
+    "Supprime le projet"
+  ]}
+  correctAnswer={0}
+  explanation="✅ npm run build compile et optimise votre app pour la production. Les fichiers générés dans /dist sont ceux qu'on déploie. ❌ npm run dev lance le serveur de développement. ❌ npm install installe les dépendances. ❌ Rien ne supprime le projet."
+/>
+
+<QuickCheck
+  question="18. Que faut-il TOUJOURS ajouter au .gitignore ?"
+  options={[
+    ".env (variables d'environnement avec clés API et secrets)",
     "package.json",
     "src/",
     "README.md"
   ]}
   correctAnswer={0}
-  explanation="✅ .env contient des secrets (API keys, tokens) qui ne doivent JAMAIS être commités. Ajoutez aussi : node_modules/, dist/, .env.local. ❌ package.json DOIT être commité (c'est la config de votre projet). ❌ src/ DOIT être commité (c'est votre code source). ❌ README.md DOIT être commité (c'est la documentation). Règle d'or : ne committez JAMAIS de secrets ou fichiers générés."
+  explanation="✅ .env contient des secrets (clés API, tokens) qui ne doivent JAMAIS être commités. Ajoutez aussi : node_modules/, dist/. ❌ package.json DOIT être commité (config du projet). ❌ src/ DOIT être commité (votre code source). ❌ README.md DOIT être commité (documentation). Règle d'or : ne committez jamais de secrets."
+/>
+
+<QuickCheck
+  question="19. Comment accéder à une variable d'environnement dans un projet Vite ?"
+  options={[
+    "import.meta.env.VITE_MA_VARIABLE (préfixe VITE_ obligatoire)",
+    "process.env.MA_VARIABLE",
+    "window.env.MA_VARIABLE",
+    "global.MA_VARIABLE"
+  ]}
+  correctAnswer={0}
+  explanation="✅ Vite expose les variables d'environnement via import.meta.env. Seules les variables préfixées VITE_ sont exposées côté client. ❌ process.env est la syntaxe Node.js / Create React App, pas Vite. ❌ window.env et global.MA_VARIABLE n'existent pas en React standard."
+/>
+
+<QuickCheck
+  question="20. Votre app fonctionne en local mais affiche une page blanche sur Vercel. Quelle est la cause la plus probable ?"
+  options={[
+    "React Router nécessite une configuration de réécriture d'URL côté serveur",
+    "Vercel ne supporte pas React",
+    "Il faut payer Vercel pour que ça fonctionne",
+    "Le problème vient du CSS"
+  ]}
+  correctAnswer={0}
+  explanation="✅ En mode SPA, toutes les URLs doivent pointer vers index.html pour que React Router les gère. Sur Vercel, il faut ajouter un fichier vercel.json avec une règle de réécriture (rewrite). ❌ Vercel supporte parfaitement React et Vite. ❌ Le plan gratuit Vercel fonctionne très bien. ❌ Le CSS n'a rien à voir avec ce problème."
 />
 
 ---
 
-## Resultats
+## Résultats
 
-<Callout type="success" title="Felicitations !">
-Si vous avez repondu correctement a la plupart des questions, vous etes pret(e) pour le **Projet Final** !
+<Callout type="success" title="Félicitations !">
+Si vous avez répondu correctement à la plupart des questions, vous êtes prêt(e) pour le **Projet Fil Rouge** !
 
-**Score cible :** Au moins 17/20 pour etre confiant dans vos competences.
+**Score cible :** Au moins 17/20 pour être confiant dans vos compétences.
 </Callout>
 
-<Callout type="warning" title="Besoin de reviser ?">
-Si vous avez eu des difficultes avec certaines questions, revisez les sections correspondantes :
+<Callout type="warning" title="Besoin de réviser ?">
+Si vous avez eu des difficultés avec certaines questions, revisez les sections correspondantes :
 
-- **Workflow IA** : [Workflow avec l'IA](/seance-5/ai-workflow)
-- **Pratiques React** : [Pratiques React](/seance-5/best-practices)
-- **Structure** : [Structure de Projet](/seance-5/project-structure)
-- **Custom Hooks** : [Custom Hooks](/seance-5/custom-hooks)
-- **Autres Hooks** : [Autres Hooks](/seance-5/other-hooks)
-- **Debogage** : [Debugging](/seance-5/debugging)
-- **Deploiement** : [Deploiement](/seance-5/deployment)
+- **Workflow IA** → [Workflow avec l'IA](/seance-5/ai-workflow) · [Collaboration avec l'IA](/seance-5/ai-collaboration)
+- **Custom Hooks** → [Custom Hooks](/seance-5/custom-hooks)
+- **Autres Hooks** → [Autres Hooks](/seance-5/other-hooks)
+- **Débogage** → [Debugging](/seance-5/debugging)
+- **Déploiement** → [Déploiement](/seance-5/deployment)
 </Callout>
 
-## Prochaines etapes
+## Prochaine étape
 
 <div className="my-6">
-  <a href="/seance-5/final-project" className="block p-4 bg-cyan-50 dark:bg-cyan-900/20 border border-cyan-200 dark:border-cyan-800 rounded-lg hover:border-cyan-500 dark:hover:border-cyan-500 transition-colors">
-    <h3 className="font-semibold text-gray-900 dark:text-gray-100 mb-2">Projet Final</h3>
-    <p className="text-sm text-gray-600 dark:text-gray-400">Construisez votre propre application React complete</p>
+  <a href="/seance-5/project" className="block p-4 bg-cyan-50 dark:bg-cyan-900/20 border border-cyan-200 dark:border-cyan-800 rounded-lg hover:border-cyan-500 dark:hover:border-cyan-500 transition-colors">
+    <h3 className="font-semibold text-gray-900 dark:text-gray-100 mb-2">Projet Fil Rouge — Séance 5</h3>
+    <p className="text-sm text-gray-600 dark:text-gray-400">Finalisez et déployez votre application Kana</p>
   </a>
 </div>
 
 <Callout type="tip" title="Conseil">
-Refaites ce quiz jusqu'a obtenir 20/20 sans regarder les explications. C'est le signe que vous maitrisez les concepts.
+Refaites ce quiz jusqu'à obtenir 20/20 sans regarder les explications. C'est le signe que vous maîtrisez les concepts.
 </Callout>
 
 <Resources resources={[
@@ -309,14 +301,8 @@ Refaites ce quiz jusqu'a obtenir 20/20 sans regarder les explications. C'est le 
     type: "doc"
   },
   {
-    title: "React Router",
-    description: "Documentation officielle de React Router",
-    url: "https://reactrouter.com",
-    type: "doc"
-  },
-  {
     title: "Vercel Documentation",
-    description: "Guide de deploiement sur Vercel",
+    description: "Guide de déploiement sur Vercel",
     url: "https://vercel.com/docs",
     type: "doc"
   }

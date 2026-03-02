@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { FiArrowRight, FiBook, FiCode, FiTool, FiPackage, FiBox, FiActivity, FiAlertCircle, FiCloud, FiCheckCircle, FiAward } from 'react-icons/fi';
+import { FiArrowRight, FiBook, FiCode, FiTool, FiBox, FiActivity, FiAlertCircle, FiCloud, FiCheckCircle, FiAward } from 'react-icons/fi';
 
 export default function Seance5Page() {
   return (
@@ -10,10 +10,10 @@ export default function Seance5Page() {
           Séance 5
         </div>
         <h1 className="text-4xl font-bold text-gray-900 dark:text-gray-100 mb-4">
-          Projet Pratique & AI-Assisted Development
+          Hooks Avancés, IA & Déploiement
         </h1>
         <p className="text-xl text-gray-600 dark:text-gray-400">
-          Construisez une application React complete avec les pratiques du cours et l'aide de l'IA
+          Finalisez votre application Kana avec des custom hooks, optimisez avec useRef et useMemo, puis déployez en production
         </p>
       </div>
 
@@ -25,31 +25,23 @@ export default function Seance5Page() {
         <ul className="space-y-2 text-gray-700 dark:text-gray-300">
           <li className="flex items-start gap-2">
             <span className="text-cyan-600 dark:text-cyan-400">•</span>
-            <span>Travailler efficacement avec les outils d'IA pour le développement React</span>
+            <span>Utiliser l'IA efficacement — prompts précis, validation du code généré</span>
           </li>
           <li className="flex items-start gap-2">
             <span className="text-cyan-600 dark:text-cyan-400">•</span>
-            <span>Appliquer les pratiques React dans vos projets</span>
+            <span>Créer des custom hooks pour extraire et réutiliser la logique</span>
           </li>
           <li className="flex items-start gap-2">
             <span className="text-cyan-600 dark:text-cyan-400">•</span>
-            <span>Organiser et structurer une application React</span>
+            <span>useRef pour interagir avec le DOM, useMemo et useCallback pour optimiser</span>
           </li>
           <li className="flex items-start gap-2">
             <span className="text-cyan-600 dark:text-cyan-400">•</span>
-            <span>Créer et utiliser des custom hooks pour réutiliser la logique</span>
+            <span>Déboguer des erreurs React avec React DevTools</span>
           </li>
           <li className="flex items-start gap-2">
             <span className="text-cyan-600 dark:text-cyan-400">•</span>
-            <span>Déboguer efficacement les erreurs courantes en React</span>
-          </li>
-          <li className="flex items-start gap-2">
-            <span className="text-cyan-600 dark:text-cyan-400">•</span>
-            <span>Déployer votre application en production sur Vercel</span>
-          </li>
-          <li className="flex items-start gap-2">
-            <span className="text-cyan-600 dark:text-cyan-400">•</span>
-            <span>Construire une application complète de A à Z</span>
+            <span>Déployer votre application Kana sur Vercel</span>
           </li>
         </ul>
       </div>
@@ -96,7 +88,7 @@ export default function Seance5Page() {
                     Workflow avec l'IA
                   </h3>
                   <p className="text-sm text-gray-600 dark:text-gray-400">
-                    Utiliser l'IA efficacement pour le développement React
+                    Prompts efficaces, validation du code généré, red flags
                   </p>
                 </div>
               </div>
@@ -105,42 +97,20 @@ export default function Seance5Page() {
           </Link>
 
           <Link
-            href="/seance-5/best-practices"
+            href="/seance-5/ai-collaboration"
             className="group block p-4 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg hover:border-cyan-500 dark:hover:border-cyan-500 transition-colors"
           >
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-lg bg-yellow-100 dark:bg-yellow-900/30 flex items-center justify-center">
-                  <FiCheckCircle className="w-5 h-5 text-yellow-600 dark:text-yellow-400" />
+                <div className="w-10 h-10 rounded-lg bg-teal-100 dark:bg-teal-900/30 flex items-center justify-center">
+                  <FiCode className="w-5 h-5 text-teal-600 dark:text-teal-400" />
                 </div>
                 <div>
                   <h3 className="font-semibold text-gray-900 dark:text-gray-100 group-hover:text-cyan-600 dark:group-hover:text-cyan-400 transition-colors">
-                    Pratiques React
+                    Collaboration avec l'IA
                   </h3>
                   <p className="text-sm text-gray-600 dark:text-gray-400">
-                    Design de composants et conventions de code
-                  </p>
-                </div>
-              </div>
-              <FiArrowRight className="w-5 h-5 text-gray-400 group-hover:text-cyan-600 dark:group-hover:text-cyan-400 transition-colors" />
-            </div>
-          </Link>
-
-          <Link
-            href="/seance-5/project-structure"
-            className="group block p-4 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg hover:border-cyan-500 dark:hover:border-cyan-500 transition-colors"
-          >
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-lg bg-purple-100 dark:bg-purple-900/30 flex items-center justify-center">
-                  <FiPackage className="w-5 h-5 text-purple-600 dark:text-purple-400" />
-                </div>
-                <div>
-                  <h3 className="font-semibold text-gray-900 dark:text-gray-100 group-hover:text-cyan-600 dark:group-hover:text-cyan-400 transition-colors">
-                    Structure de Projet
-                  </h3>
-                  <p className="text-sm text-gray-600 dark:text-gray-400">
-                    Organiser vos fichiers et dossiers
+                    Valider et améliorer le code généré par l'IA
                   </p>
                 </div>
               </div>
@@ -162,7 +132,7 @@ export default function Seance5Page() {
                     Custom Hooks
                   </h3>
                   <p className="text-sm text-gray-600 dark:text-gray-400">
-                    Créer vos propres hooks pour réutiliser la logique
+                    Extraire la logique stateful dans des hooks réutilisables
                   </p>
                 </div>
               </div>
@@ -184,7 +154,7 @@ export default function Seance5Page() {
                     Autres Hooks Utiles
                   </h3>
                   <p className="text-sm text-gray-600 dark:text-gray-400">
-                    useRef, useMemo, useCallback
+                    useRef, useMemo, useCallback — quand et pourquoi
                   </p>
                 </div>
               </div>
@@ -228,7 +198,7 @@ export default function Seance5Page() {
                     Déploiement
                   </h3>
                   <p className="text-sm text-gray-600 dark:text-gray-400">
-                    Déployer votre application sur Vercel
+                    Déployer votre application Kana sur Vercel
                   </p>
                 </div>
               </div>
@@ -237,42 +207,20 @@ export default function Seance5Page() {
           </Link>
 
           <Link
-            href="/seance-5/ai-collaboration"
-            className="group block p-4 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg hover:border-cyan-500 dark:hover:border-cyan-500 transition-colors"
+            href="/seance-5/project"
+            className="group block p-4 bg-white dark:bg-gray-800 border border-cyan-300 dark:border-cyan-700 rounded-lg hover:border-cyan-500 dark:hover:border-cyan-500 transition-colors"
           >
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-lg bg-teal-100 dark:bg-teal-900/30 flex items-center justify-center">
-                  <FiCode className="w-5 h-5 text-teal-600 dark:text-teal-400" />
+                <div className="w-10 h-10 rounded-lg bg-cyan-100 dark:bg-cyan-900/30 flex items-center justify-center">
+                  <FiCheckCircle className="w-5 h-5 text-cyan-600 dark:text-cyan-400" />
                 </div>
                 <div>
                   <h3 className="font-semibold text-gray-900 dark:text-gray-100 group-hover:text-cyan-600 dark:group-hover:text-cyan-400 transition-colors">
-                    Collaboration avec l'IA
+                    Projet Fil Rouge — Séance 5
                   </h3>
                   <p className="text-sm text-gray-600 dark:text-gray-400">
-                    Valider et améliorer le code généré par l'IA
-                  </p>
-                </div>
-              </div>
-              <FiArrowRight className="w-5 h-5 text-gray-400 group-hover:text-cyan-600 dark:group-hover:text-cyan-400 transition-colors" />
-            </div>
-          </Link>
-
-          <Link
-            href="/seance-5/final-project"
-            className="group block p-4 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg hover:border-cyan-500 dark:hover:border-cyan-500 transition-colors"
-          >
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-lg bg-red-100 dark:bg-red-900/30 flex items-center justify-center">
-                  <FiCheckCircle className="w-5 h-5 text-red-600 dark:text-red-400" />
-                </div>
-                <div>
-                  <h3 className="font-semibold text-gray-900 dark:text-gray-100 group-hover:text-cyan-600 dark:group-hover:text-cyan-400 transition-colors">
-                    Projet Final
-                  </h3>
-                  <p className="text-sm text-gray-600 dark:text-gray-400">
-                    Assignment et critères d'évaluation
+                    Finalisation de l'application Kana (rendu Moodle)
                   </p>
                 </div>
               </div>
@@ -294,7 +242,7 @@ export default function Seance5Page() {
                     Conclusion
                   </h3>
                   <p className="text-sm text-gray-600 dark:text-gray-400">
-                    Récapitulatif et prochaines étapes
+                    Récapitulatif du cours et prochaines étapes
                   </p>
                 </div>
               </div>

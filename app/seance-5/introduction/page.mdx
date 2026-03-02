@@ -1,118 +1,106 @@
-# Introduction - Seance 5
+# Introduction — Séance 5
 
-Bienvenue a la derniere seance de ce cours ! Cette seance synthetise tout ce que vous avez appris et vous guide dans la construction d'une application React complete.
+Bienvenue à la dernière séance ! Vous allez finaliser votre application Kana tout en découvrant des outils et patterns qui vous seront utiles tout au long de votre carrière.
 
 ## Vue d'ensemble
 
-Cette seance est **differente** des precedentes :
-- Moins de nouveaux concepts theoriques
-- Plus de pratique et d'application
+Cette séance est **différente** des précédentes :
+- Moins de nouveaux concepts théiques
+- Plus de pratique sur votre propre projet
 - Focus sur le workflow avec l'IA
-- Construction d'un projet complet de A a Z
+- Finalisation et déploiement de l'application Kana
 
-<Callout type="info" title="Objectif de la seance">
-A la fin de cette seance, vous aurez construit une application React complete, deployee en production, en utilisant toutes les competences acquises durant ce cours.
+<Callout type="info" title="Objectif de la séance">
+À la fin de cette séance, vous aurez amélioré votre application Kana avec des custom hooks, optimisé certains rendus, et déployé l'app en production sur Vercel.
 </Callout>
 
-## Recapitulatif du cours
+## Récapitulatif du cours
 
-Avant de commencer, recapitulons ce que vous avez appris :
+Avant de commencer, récapitulons ce que vous avez appris :
 
-### Seance 1 : JavaScript ES6+
+### Séance 1 : JavaScript ES6+
 - Variables et fonctions (const, let, arrow functions)
-- Methodes de tableaux (.map(), .filter(), .reduce())
+- Méthodes de tableaux (.map(), .filter(), .reduce())
 - Destructuration et spread operator
 - Async/await et Promises
 
-### Seance 2 : Introduction a React
+### Séance 2 : Introduction à React
 - JSX et composants
 - Props et composition
-- Creation de projets avec Vite
-- Architecture de base
+- Listes avec `.map()` et rendu conditionnel
+- Projet Kana : affichage des tables hiragana et katakana
 
-### Seance 3 : Interactivite
-- useState pour la gestion d'etat
-- Evenements et handlers
-- Formulaires controles
-- Rendu conditionnel
+### Séance 3 : Interactivité
+- useState pour la gestion d'état
+- Événements et handlers
+- Formulaires contrôlés
+- Projet Kana : quiz interactif avec score
 
-### Seance 4 : Effets et Routing
+### Séance 4 : Effets et Routing
 - useEffect pour les side effects
-- Fetch API et appels API
 - React Router pour la navigation
 - Gestion du cycle de vie
+- Projet Kana : navigation entre mode étude et mode quiz
 
 ## Ce que vous allez apprendre aujourd'hui
 
 ### 1. Workflow avec l'IA
-- Utiliser l'IA comme assistant de developpement
-- Ecrire des prompts efficaces pour React
-- Valider et comprendre le code genere
+- Utiliser l'IA comme assistant de développement
+- Écrire des prompts efficaces avec contexte et code existant
+- Valider et comprendre le code généré
 
-### 2. Pratiques React
-- Design de composants (Single Responsibility Principle)
-- Conventions de nommage
-- Gestion de l'etat et immutabilite
+### 2. Custom Hooks
+- Créer des hooks pour réutiliser la logique stateful
+- Exemples : `useQuiz`, `useLocalStorage`
 
-### 3. Structure de Projet
-- Organiser vos fichiers et dossiers
-- Separation des responsabilites
-- Reutilisabilite du code
+### 3. Autres Hooks
+- `useRef` pour accéder au DOM (auto-focus sur l'input du quiz)
+- `useMemo` et `useCallback` — notions essentielles à connaître
 
-### 4. Custom Hooks
-- Creer vos hooks pour reutiliser la logique
-- Exemples : useFetch, useLocalStorage, useDebounce
-
-### 5. Autres Hooks
-- useRef pour les references DOM
-- useMemo et useCallback pour l'optimisation
-
-### 6. Debogage
+### 4. Débogage
 - React DevTools
 - Erreurs courantes et solutions
 
-### 7. Deploiement
+### 5. Déploiement
 - Build de production
-- Deploiement sur Vercel
+- Déploiement sur Vercel
 
-### 8. Projet Complet
-- Application "Ma Liste de Lecture"
-- Implementation guidee etape par etape
+### 6. Projet Fil Rouge — Séance 5
+- Finalisation de l'application Kana
+- Rendu final sur Moodle
 
-## Format de la seance
+## Format de la séance
 
-### Partie 1 : Theorie et Pratiques (1h30)
-- Workflow avec l'IA
-- Pratiques React
-- Structure de projet
-- Custom hooks et hooks supplementaires
+### Partie 1 : Théorie (1h40)
+- Workflow avec l'IA (40 min)
+- Custom hooks (40 min)
+- Pause (15 min)
+- useRef, useMemo, useCallback (25 min)
 
-### Pause (15 min)
+### Partie 2 : Pratique (1h35)
+- Débogage (20 min)
+- Déploiement (20 min)
+- Exercices — Projet Kana (50 min)
 
-### Partie 2 : Pratique Guidee (2h)
-- Debogage et deploiement
-- Projet guide : Construction etape par etape
-- Questions et assistance personnalisee
+## Prérequis
 
-## Prerequis
-
-<Callout type="warning" title="Verifications avant de commencer">
-- Node.js installe (version 16+)
-- Un editeur de code (VS Code recommande)
-- Git installe et configure
+<Callout type="warning" title="Vérifications avant de commencer">
+- Node.js installé (version 16+)
+- Un éditeur de code (VS Code recommandé)
+- Git installé et configuré
 - Un compte GitHub
 - Un compte Vercel (gratuit)
-- Les connaissances des seances 1-4
+- L'application Kana de la Séance 4 fonctionnelle
 </Callout>
 
-<Callout type="tip" title="L'IA comme outil, pas comme remplacant">
-L'objectif de cette seance n'est **pas** de vous apprendre a copier-coller du code d'IA sans comprendre.
+<Callout type="tip" title="L'IA comme outil, pas comme remplaçant">
+L'objectif de cette séance n'est **pas** de vous apprendre à copier-coller du code d'IA sans comprendre.
 
 C'est de vous montrer comment :
-- **Utiliser l'IA** pour accelerer votre developpement
-- **Comprendre** ce que fait le code genere
-- **Adapter** les solutions a vos besoins
-- **Deboguer** quand quelque chose ne va pas
+- **Utiliser l'IA** pour accélérer votre développement
+- **Comprendre** ce que fait le code généré
+- **Adapter** les solutions à votre application Kana
+- **Déboguer** quand quelque chose ne va pas
 
-**Vous pilotez, l'IA execute.**
+**Vous pilotez, l'IA exécute.**
 </Callout>

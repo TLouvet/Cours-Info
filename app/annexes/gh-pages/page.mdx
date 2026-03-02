@@ -1,71 +1,57 @@
-# Déployer une application React sur GitHub Pages
+# Déployer sur GitHub Pages
 
-GitHub Pages est un service gratuit qui permet d'héberger des sites web statiques directement depuis un repository GitHub. C'est parfait pour déployer vos applications React !
+GitHub Pages est un service d'hébergement gratuit intégré à GitHub. Il permet de mettre en ligne des applications statiques directement depuis un repository, sans configuration de serveur.
 
-<Callout type="info" title="Pourquoi GitHub Pages ?">
-**Avantages :**
-- ✅ **Gratuit** - Hébergement illimité pour les projets publics
-- ✅ **Simple** - Déploiement automatisé avec GitHub Actions
-- ✅ **Rapide** - CDN mondial pour un chargement rapide
-- ✅ **HTTPS** - SSL gratuit et automatique
-- ✅ **Idéal pour les portfolios** - Montrez vos projets facilement
+<Callout type="info" title="Quand choisir GitHub Pages ?">
+- Votre code est déjà sur GitHub — pas besoin d'un compte sur une plateforme supplémentaire
+- Projet personnel, portfolio, application sans backend
+- Vous voulez rester dans l'écosystème GitHub
 
-**Limitations :**
-- ⚠️ Sites statiques uniquement (pas de backend Node.js)
-- ⚠️ Repository public requis pour le plan gratuit
-- ⚠️ Pas de variables d'environnement côté serveur
+Pour les projets du cours, **Vercel reste l'option recommandée** (zéro configuration, déploiement automatique). GitHub Pages est une bonne alternative si vous préférez tout garder sur GitHub.
 </Callout>
 
-## Prérequis
+---
 
-Avant de commencer, assurez-vous d'avoir :
-- Un projet React créé avec Vite
-- Un compte GitHub
-- Git installé sur votre machine
-- Un repository GitHub pour votre projet
+## Étape 1 — Configurer le base path
 
-## Déploiement avec gh-pages
+GitHub Pages héberge votre app sous `https://username.github.io/nom-du-repo/` — pas à la racine `/`. Vite doit en être informé.
 
-### Étape 1 : Installer gh-pages
-
-```bash
-npm install --save-dev gh-pages
-```
-
-### Étape 2 : Configurer vite.config.ts
-
-Modifiez votre fichier `vite.config.ts` pour définir le `base` :
+Modifiez `vite.config.ts` :
 
 ```typescript
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 
-// https://vitejs.dev/config/
 export default defineConfig({
   plugins: [react()],
-  base: '/nom-de-votre-repo/', // ⚠️ Important : remplacez par le nom de votre repo !
+  base: '/nom-de-votre-repo/', // ⚠️ Remplacez par le nom exact de votre repo
 })
 ```
 
-<Callout type="warning" title="Attention au base path">
-Le `base` doit correspondre **exactement** au nom de votre repository GitHub.
+<Callout type="warning" title="Nom exact obligatoire">
+`base` doit correspondre **exactement** au nom du repository GitHub.
 
-**Exemples :**
-- Repository : `https://github.com/username/mon-app` → `base: '/mon-app/'`
-- Repository : `https://github.com/username/portfolio` → `base: '/portfolio/'`
-
-**Exception :** Si vous utilisez un domaine personnalisé ou `username.github.io`, utilisez `base: '/'`
+- Repo `https://github.com/alice/kana-app` → `base: '/kana-app/'`
+- Repo `https://github.com/alice/portfolio` → `base: '/portfolio/'`
 </Callout>
 
-### Étape 3 : Ajouter les scripts de déploiement
+---
 
-Dans `package.json`, ajoutez ces scripts :
+## Étape 2 — Installer gh-pages et configurer les scripts
+
+Installez le package `gh-pages` :
+
+```bash
+npm install --save-dev gh-pages
+```
+
+Ajoutez ces deux scripts dans `package.json` :
 
 ```json
 {
   "scripts": {
     "dev": "vite",
-    "build": "tsc && vite build",
+    "build": "vite build",
     "preview": "vite preview",
     "predeploy": "npm run build",
     "deploy": "gh-pages -d dist"
@@ -73,47 +59,64 @@ Dans `package.json`, ajoutez ces scripts :
 }
 ```
 
-**Explication :**
-- `predeploy` : S'exécute automatiquement avant `deploy`, build le projet
-- `deploy` : Déploie le dossier `dist` sur la branche `gh-pages`
+**Comment ça fonctionne :**
+- `predeploy` s'exécute automatiquement avant `deploy` — il build le projet
+- `deploy` pousse le contenu de `dist/` sur une branche `gh-pages`
 
-### Étape 4 : Déployer
+---
+
+## Étape 3 — Déployer
 
 ```bash
 npm run deploy
 ```
 
+Cette commande :
+1. Build l'application (`npm run build`)
+2. Crée ou met à jour la branche `gh-pages`
+3. Pousse le contenu de `dist/` sur cette branche
+
 <Callout type="success">
-Cette commande va :
-1. Build votre application (`npm run build`)
-2. Créer une branche `gh-pages`
-3. Pousser le contenu de `dist` sur cette branche
-4. Votre site sera accessible à `https://username.github.io/nom-repo/`
+Votre site sera accessible à `https://username.github.io/nom-du-repo/`
 </Callout>
 
-### Étape 5 : Activer GitHub Pages
+---
+
+## Étape 4 — Activer GitHub Pages
+
+La première fois seulement, activez GitHub Pages dans les paramètres du repo :
 
 1. Allez sur votre repository GitHub
-2. Cliquez sur **Settings** (Paramètres)
+2. Cliquez sur **Settings**
 3. Dans le menu latéral, cliquez sur **Pages**
-4. Sous **Source**, sélectionnez :
+4. Sous **Source**, choisissez :
    - Branch : `gh-pages`
    - Folder : `/ (root)`
 5. Cliquez sur **Save**
 
-Votre site sera disponible sous 2-3 minutes à l'URL indiquée !
+Votre app sera disponible en 1-2 minutes à l'URL indiquée.
 
-## Gérer les routes avec React Router
+<QuickCheck
+  question="Pourquoi faut-il configurer 'base' dans vite.config.ts pour GitHub Pages ?"
+  options={[
+    "Pour que Vite génère des chemins corrects sous /nom-du-repo/",
+    "Pour accélérer le build",
+    "Pour activer TypeScript",
+    "GitHub Pages l'exige pour des raisons de sécurité"
+  ]}
+  correctAnswer={0}
+  explanation="GitHub Pages héberge votre app sous /nom-du-repo/, pas à la racine /. Sans 'base', Vite génère des chemins comme /assets/index.js qui ne fonctionnent pas — il faut /nom-du-repo/assets/index.js. Le 'base' corrige automatiquement tous ces chemins dans le build."
+/>
 
-Si vous utilisez React Router, vous devez configurer le routing pour GitHub Pages.
+---
 
-### Problème
+## Gérer les routes React Router
 
-Les URLs comme `/about` ou `/contact` retournent une erreur 404 car GitHub Pages ne connaît que `index.html`.
+Si vous utilisez React Router, les URLs directes (ex: `/quiz`) retournent une 404 — GitHub Pages cherche un fichier `/quiz/index.html` qui n'existe pas.
 
-### Solution 1 : HashRouter (Le plus simple)
+### Solution : HashRouter
 
-Utilisez `HashRouter` au lieu de `BrowserRouter` :
+Remplacez `BrowserRouter` par `HashRouter` :
 
 ```tsx
 // Avant
@@ -131,267 +134,96 @@ function App() {
 }
 ```
 
-**URLs résultantes :**
-- `https://username.github.io/mon-app/#/`
-- `https://username.github.io/mon-app/#/about`
-- `https://username.github.io/mon-app/#/contact`
+Les URLs deviennent :
+- `https://username.github.io/kana-app/#/`
+- `https://username.github.io/kana-app/#/quiz`
+- `https://username.github.io/kana-app/#/study`
 
-<Callout type="warning">
-Le `#` dans l'URL n'est pas très élégant, mais c'est la solution la plus simple pour GitHub Pages.
+<Callout type="tip">
+Le `#` dans l'URL est moins propre que `BrowserRouter`, mais c'est la solution la plus simple et la plus fiable pour GitHub Pages. Pas de configuration supplémentaire.
 </Callout>
 
-### Solution 2 : 404.html trick (URLs propres)
+<QuickCheck
+  question="Pourquoi utiliser HashRouter plutôt que BrowserRouter sur GitHub Pages ?"
+  options={[
+    "HashRouter est plus rapide",
+    "GitHub Pages ne peut pas rediriger les URLs vers index.html comme le fait Vercel",
+    "BrowserRouter ne fonctionne pas avec React",
+    "HashRouter est la version moderne de BrowserRouter"
+  ]}
+  correctAnswer={1}
+  explanation="Sur Vercel, un fichier vercel.json redirige toutes les URLs vers index.html. GitHub Pages ne propose pas ce mécanisme de réécriture. HashRouter contourne le problème en encodant la route après le #, qui n'est jamais envoyé au serveur — le routing reste entièrement côté client."
+/>
 
-Pour garder `BrowserRouter` avec des URLs propres :
+---
 
-1. Créez un fichier `public/404.html` :
+## Mises à jour
 
-```html
-<!DOCTYPE html>
-<html>
-  <head>
-    <meta charset="utf-8">
-    <title>Redirecting...</title>
-    <script>
-      // Redirect to index.html with path in query
-      const path = window.location.pathname.slice(1);
-      window.location.replace(
-        window.location.origin +
-        window.location.pathname.split('/')[1] +
-        '/?redirect=' + path
-      );
-    </script>
-  </head>
-  <body></body>
-</html>
-```
-
-2. Dans `index.html`, ajoutez ce script avant le `</head>` :
-
-```html
-<script>
-  // Handle redirect from 404.html
-  (function() {
-    const redirect = new URLSearchParams(window.location.search).get('redirect');
-    if (redirect) {
-      history.replaceState(null, null, redirect);
-    }
-  })();
-</script>
-```
-
-## Domaine personnalisé
-
-Vous pouvez utiliser votre propre domaine au lieu de `username.github.io`.
-
-### Étape 1 : Ajouter CNAME
-
-Créez un fichier `public/CNAME` :
-
-```
-monsite.com
-```
-
-### Étape 2 : Configurer DNS
-
-Chez votre registrar (OVH, Gandi, etc.), ajoutez un enregistrement DNS :
-
-**Pour un apex domain (monsite.com) :**
-```
-A    @    185.199.108.153
-A    @    185.199.109.153
-A    @    185.199.110.153
-A    @    185.199.111.153
-```
-
-**Pour un subdomain (www.monsite.com) :**
-```
-CNAME    www    username.github.io.
-```
-
-### Étape 3 : Mettre à jour vite.config.ts
-
-```typescript
-export default defineConfig({
-  plugins: [react()],
-  base: '/', // Pas de sous-dossier avec un domaine personnalisé
-})
-```
-
-### Étape 4 : Configurer dans GitHub
-
-1. **Settings** → **Pages**
-2. Dans **Custom domain**, entrez : `monsite.com`
-3. Cochez **Enforce HTTPS**
-
-<Callout type="info">
-La propagation DNS peut prendre jusqu'à 24-48h. Soyez patient !
-</Callout>
-
-## Variables d'environnement
-
-GitHub Pages ne supporte pas les variables d'environnement côté serveur, mais vous pouvez utiliser les variables **build-time** de Vite.
-
-### Créer .env
+Pour redéployer après des modifications :
 
 ```bash
-# .env
-VITE_API_URL=https://api.monapp.com
-VITE_APP_NAME=Mon Application
+# Faites vos modifications, puis :
+git add .
+git commit -m "Update app"
+git push origin main
+
+# Redéployez
+npm run deploy
 ```
 
-### Utiliser dans le code
-
-```tsx
-const apiUrl = import.meta.env.VITE_API_URL;
-const appName = import.meta.env.VITE_APP_NAME;
-
-console.log(apiUrl); // "https://api.monapp.com"
-```
-
-<Callout type="warning" title="Sécurité">
-**Les variables `VITE_*` sont publiques** - elles sont incluses dans le bundle JavaScript.
-
-❌ **Ne mettez JAMAIS :**
-- Clés API secrètes
-- Tokens d'authentification
-- Mots de passe
-
-✅ **Utilisez uniquement pour :**
-- URLs publiques
-- Noms d'application
-- Identifiants publics (Google Analytics ID, etc.)
+<Callout type="warning">
+Contrairement à Vercel, GitHub Pages **ne se déploie pas automatiquement** à chaque push. Vous devez relancer `npm run deploy` manuellement.
 </Callout>
+
+---
 
 ## Dépannage
 
-### Erreur : Blank page après déploiement
+**Page blanche après déploiement**
+→ Vérifiez que `base` dans `vite.config.ts` correspond exactement au nom du repo.
 
-**Cause :** Le `base` dans `vite.config.ts` est incorrect.
+**Erreur 404 sur les routes**
+→ Passez de `BrowserRouter` à `HashRouter` (voir section ci-dessus).
 
-**Solution :**
-```typescript
-// Vérifiez que base correspond au nom de votre repo
-export default defineConfig({
-  base: '/nom-exact-du-repo/',
-})
-```
+**`npm run deploy` échoue**
+→ Vérifiez que `gh-pages` est installé (`npm install --save-dev gh-pages`) et que le build fonctionne (`npm run build`).
 
-### Erreur : 404 sur les routes
+**Les modifications ne s'affichent pas**
+→ GitHub Pages peut mettre 1-2 minutes à se mettre à jour. Forcez le rechargement avec Ctrl+Shift+R.
 
-**Cause :** Vous utilisez `BrowserRouter` sans configuration.
+---
 
-**Solution :** Utilisez `HashRouter` ou le trick 404.html (voir section précédente).
+## Récapitulatif
 
-### Erreur : CSS/JS ne se chargent pas
-
-**Cause :** Chemins absolus au lieu de chemins relatifs.
-
-**Solution :** Le `base` dans `vite.config.ts` corrige automatiquement les chemins. Assurez-vous de l'avoir configuré.
-
-### Erreur : npm run deploy échoue
-
-**Solution :** Vérifiez que :
-- Le package `gh-pages` est bien installé
-- Vous avez configuré les scripts `predeploy` et `deploy` dans `package.json`
-- Le build fonctionne (`npm run build`)
-- Vous avez les droits d'accès au repository
-
-## Workflow complet recommandé
-
-Voici un workflow complet de développement à déploiement :
-
-```bash
-# 1. Développement local
-npm run dev
-
-# 2. Tester le build localement
-npm run build
-npm run preview
-
-# 3. Commit et push
-git add .
-git commit -m "Add new feature"
-git push origin main
-
-# 4. Déploiement
-npm run deploy
-
-# 5. Vérifier le déploiement
-# Ouvrir https://username.github.io/mon-repo/
-```
-
-## Alternatives à GitHub Pages
-
-Si GitHub Pages ne convient pas à votre projet, voici des alternatives gratuites :
-
-### Vercel (Recommandé pour React)
-- Déploiement automatique depuis GitHub
-- Preview deployments pour chaque PR
-- Support SSR (Next.js)
-- CLI : `npm i -g vercel && vercel`
-
-### Netlify
-- Drag & drop ou GitHub integration
-- Redirects et rewrites faciles
-- Formulaires intégrés
-- Split testing A/B
-
-### Cloudflare Pages
-- CDN ultra-rapide
-- Builds illimités
-- Workers pour du code côté serveur
-
-<Callout type="tip" title="Pour les projets avec backend">
-Si vous avez besoin d'un backend (Node.js, base de données), utilisez :
-- **Vercel** ou **Netlify** pour le frontend
-- **Railway**, **Render** ou **Fly.io** pour le backend
-- Ou **Vercel/Netlify Serverless Functions** pour des API simples
+<Callout type="success" title="Checklist de déploiement">
+- [ ] `base` configuré dans `vite.config.ts` (nom exact du repo)
+- [ ] `gh-pages` installé (`npm install --save-dev gh-pages`)
+- [ ] Scripts `predeploy` et `deploy` dans `package.json`
+- [ ] `npm run build` fonctionne sans erreur
+- [ ] `HashRouter` si vous utilisez React Router
+- [ ] GitHub Pages activé dans Settings → Pages (branche `gh-pages`)
+- [ ] `npm run deploy` lancé
 </Callout>
 
 ## Ressources
 
-<Resources
-  resources={[
-    {
-      title: 'GitHub Pages Documentation',
-      description: 'Documentation officielle de GitHub Pages',
-      url: 'https://docs.github.com/en/pages',
-      type: 'doc'
-    },
-    {
-      title: 'Vite Static Deploy Guide',
-      description: 'Guide officiel Vite pour le déploiement statique',
-      url: 'https://vitejs.dev/guide/static-deploy.html',
-      type: 'doc'
-    },
-    {
-      title: 'gh-pages npm package',
-      description: 'Package npm pour déployer sur GitHub Pages',
-      url: 'https://www.npmjs.com/package/gh-pages',
-      type: 'doc'
-    },
-    {
-      title: 'Custom Domains on GitHub Pages',
-      description: 'Configurer un domaine personnalisé',
-      url: 'https://docs.github.com/en/pages/configuring-a-custom-domain-for-your-github-pages-site',
-      type: 'doc'
-    }
-  ]}
-/>
-
-## Checklist de déploiement
-
-<Callout type="success" title="Avant de déployer">
-- [ ] `base` configuré dans `vite.config.ts`
-- [ ] Scripts `predeploy` et `deploy` dans `package.json`
-- [ ] `npm run build` fonctionne sans erreur
-- [ ] `npm run preview` affiche correctement l'app
-- [ ] `.env` ne contient pas de secrets (seulement `VITE_*` publiques)
-- [ ] React Router configuré (HashRouter ou 404 trick)
-- [ ] Images et assets dans le dossier `public/`
-- [ ] Repository GitHub créé
-- [ ] GitHub Pages activé dans Settings
-</Callout>
-
-**Votre application React est maintenant en ligne ! 🚀**
+<Resources resources={[
+  {
+    title: "GitHub Pages Documentation",
+    description: "Documentation officielle de GitHub Pages",
+    url: "https://docs.github.com/en/pages",
+    type: "doc"
+  },
+  {
+    title: "Vite — Static Deploy Guide",
+    description: "Guide officiel Vite pour le déploiement statique sur GitHub Pages",
+    url: "https://vitejs.dev/guide/static-deploy.html",
+    type: "doc"
+  },
+  {
+    title: "gh-pages (npm)",
+    description: "Package npm pour déployer sur GitHub Pages",
+    url: "https://www.npmjs.com/package/gh-pages",
+    type: "doc"
+  }
+]} />

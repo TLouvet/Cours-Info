@@ -67,6 +67,23 @@ VITE_API_KEY=
 
 Ce fichier PEUT etre commite (sans les valeurs sensibles).
 
+**Utiliser les variables dans votre code :**
+
+Dans Vite, les variables sont accessibles via `import.meta.env` — seules celles préfixées par `VITE_` sont exposées côté client :
+
+```jsx
+// ✅ Accéder à une variable d'environnement Vite
+const apiUrl = import.meta.env.VITE_API_URL;
+
+function App() {
+  return <p>API : {import.meta.env.VITE_API_URL}</p>;
+}
+```
+
+<Callout type="warning">
+`process.env` est la syntaxe Node.js / Create React App. Dans un projet **Vite**, utilisez toujours `import.meta.env.VITE_MA_VARIABLE`.
+</Callout>
+
 <QuickCheck
   question="Que faut-il TOUJOURS ajouter au .gitignore ?"
   options={[
@@ -415,51 +432,13 @@ Si votre app affiche "undefined" pour une variable :
 2. Vérifiez qu'elle est définie dans Vercel (Settings → Environment Variables)
 3. Redéployez après l'ajout de variables
 
-## Alternative : Netlify
+## Alternative : GitHub Pages
 
-Netlify est une alternative à Vercel, tout aussi simple.
+Si vous préférez une alternative à Vercel, le cours propose un guide dédié au déploiement sur GitHub Pages dans les annexes.
 
-### Déploiement sur Netlify
-
-1. Allez sur [netlify.com](https://netlify.com)
-2. "Add new site" → "Import an existing project"
-3. Connectez GitHub et sélectionnez votre repo
-4. Build command: `npm run build`
-5. Publish directory: `dist`
-6. Deploy !
-
-Les deux plateformes offrent des fonctionnalites similaires. Choisissez celle que vous preferez.
-
-## Monitoring et Analytics
-
-### Vercel Analytics
-
-Pour suivre les visites :
-
-1. Dans Vercel Dashboard, allez dans Analytics
-2. Activez Analytics
-3. Vous verrez les statistiques de trafic
-
-### Google Analytics (optionnel)
-
-Si vous voulez des analytics plus détaillées :
-
-1. Créez un compte Google Analytics
-2. Installez le package :
-```bash
-npm install react-ga4
-```
-
-3. Configurez dans votre app :
-```jsx
-import ReactGA from 'react-ga4';
-
-// Dans App.jsx ou main.jsx
-ReactGA.initialize('G-XXXXXXXXXX'); // Votre ID Analytics
-
-// Track page views
-ReactGA.send({ hitType: 'pageview', page: window.location.pathname });
-```
+<Callout type="tip">
+Consultez le guide **[Déployer sur GitHub Pages](/annexes/gh-pages)** dans les Annexes pour une alternative gratuite hébergée directement sur GitHub.
+</Callout>
 
 ## Récapitulatif
 
@@ -479,7 +458,6 @@ Vous savez maintenant :
 ✅ **Maintenir** le site
 - Déploiement automatique
 - Optimisations
-- Monitoring
 
 ✅ **Déboguer** en production
 - Logs Vercel
@@ -493,9 +471,8 @@ Votre application est maintenant **accessible en ligne** !
 
 - [Vercel Documentation](https://vercel.com/docs)
 - [Vite Build Guide](https://vitejs.dev/guide/build.html)
-- [Netlify Documentation](https://docs.netlify.com/)
-- [GitHub Pages](https://pages.github.com/) (alternative gratuite)
+- [Déployer sur GitHub Pages](/annexes/gh-pages) (alternative dans les Annexes)
 
 <Callout type="tip">
-**Prochaine étape :** Construire un projet complet de A à Z avec tout ce que vous avez appris !
+**Prochaine étape :** Terminez le Projet Fil Rouge et déployez votre Kana App !
 </Callout>

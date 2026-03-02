@@ -8,6 +8,10 @@ Ces hooks sont moins fréquemment utilisés que useState/useEffect, mais très u
 
 ## useRef
 
+<Callout type="info" title="Rappel : re-render">
+Un **re-render** se produit quand React ré-exécute la fonction d'un composant pour mettre à jour l'affichage — par exemple quand un état change. Certaines valeurs n'ont pas besoin de déclencher ce recalcul.
+</Callout>
+
 Le hook useRef permet de **créer une référence** qui persiste entre les rendus sans déclencher de re-render.
 
 ### Cas d'usage 1 : Accéder aux éléments DOM
